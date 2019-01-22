@@ -1,3 +1,6 @@
+# Excluding the xcode-project
+xcode-project/
+
 # ------------------------------------------------
 # C++
 
