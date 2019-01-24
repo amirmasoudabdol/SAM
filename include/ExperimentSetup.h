@@ -7,11 +7,13 @@
 
 #include <vector>
 
-class ExperimentSetup {
+/**/class ExperimentSetup {
 public:
     ExperimentSetup();
 //    ExperimentSetup(int, int, std::vector<double>, std::vector<double>);
     ~ExperimentSetup();
+
+    double alpha = 0.05;
 
     int ngroups;
     std::vector<std::string> group_names;
@@ -23,7 +25,7 @@ public:
     std::vector<double> true_means;
     std::vector<double> true_vars;
     std::vector<double> true_cov;
-    std::vector<std::vector<double>> cov_matrix;
+    std::vector<std::vector<double>> true_cov_matrix;
 
 private:
     

@@ -12,14 +12,26 @@
 
 class Experiment {
 public:
-//    Experiment(ExperimentSetup setup) : { experiment_setup(setup) }
+    
+    ExperimentSetup params;
+
+    std::vector<std::vector<double>> measurements;
+    std::vector<double> means;
+    std::vector<double> vars;
+    std::vector<double> ses;
+    std::vector<double> statistics;
+    std::vector<double> pvalues;
+    std::vector<double> effects;
+
+
     Experiment();
+    ~Experiment();
 //    Experiment(ExperimentSetup);
 //    Experiment(ExperimentSetup, DataGenStrategy);
-    ~Experiment();
+//    Experiment(ExperimentSetup setup) : { experiment_setup(setup) }
 
     // Experiment Setup
-    ExperimentSetup experiment_setup;
+    DataGenStrategy data_strategy;
 
     // Initialize the Experiment
     void initData();
@@ -33,19 +45,12 @@ public:
 
     void setDataStrategy(DataGenStrategy);
     void genData();
-    void genNDataFor(int gid, int dvid, int n);
+    void genDataFor(int gid, int dvid, int n);
 
 private:
 
-    DataGenStrategy _data_strategy;
 
-    std::vector<std::vector<double>> _measurements;
-    std::vector<double> _means;
-    std::vector<double> _vars;
-    std::vector<double> _ses;
-    std::vector<double> _statistics;
-    std::vector<double> _pvalues;
-    std::vector<double> _effects;
+
 
 };
 
