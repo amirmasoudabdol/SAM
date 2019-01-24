@@ -9,6 +9,6 @@ find_package(Boost REQUIRED)
 include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
 
-add_executable(SAMpp main.cpp ${SOURCES})
+add_executable(SAMpp main.cpp ${SOURCES} src/Experiment.cpp include/Experiment.h src/ExperimentSetup.cpp include/ExperimentSetup.h src/DataGenStrategy.cpp include/DataGenStrategy.h src/Utilities.cpp include/Utilities.h src/RandomNumberGenerator.cpp include/RandomNumberGenerator.h)
 
 target_link_libraries(SAMpp GSL::gsl Boost::boost)
