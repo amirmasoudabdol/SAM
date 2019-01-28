@@ -3,6 +3,8 @@
 //
 
 #include <iostream>
+#include <ostream>
+#include <string>
 
 #include "Utilities.h"
 #include "gsl/gsl_rng.h"
@@ -11,9 +13,18 @@
 #include "gsl/gsl_vector.h"
 #include "gsl/gsl_matrix.h"
 
+//template <typename T>
+//std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
+//    if ( !v.empty() ) {
+//        out << '[';
+//        std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+//        out << "\b\b]";
+//    }
+//    return out;
+//}
 
 template<typename T>
-std::vector<T> flatten(const std::vector<std::vector<T>> &orig){
+std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
 	std::vector<T> ret;
 	for(const auto &v: orig)
 		ret.insert(ret.end(), v.begin(), v.end());
@@ -23,16 +34,49 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig){
 
 double mean(const std::vector<double>& v) {
 	return gsl_stats_mean(v.data(), 1, v.size());
-	return std::accumulate(v.begin(), v.end(), 0.) / v.size();
+	// return std::accumulate(v.begin(), v.end(), 0.) / v.size();
 }
 
-double sd(const std::vector<double>& v) {
+double standard_dv(const std::vector<double>& v) {
     return gsl_stats_sd(v.data(), 1, v.size());
+}
+
+double variance(const std::vector<double>& v) {
+    return gsl_stats_variance(v.data(), 1, v.size());
 }
 
 double cor(const std::vector<std::vector<double>>& dt, int i, int j){
 	return gsl_stats_correlation(dt[i].data(), 1, dt[j].data(), 1, dt[i].size());
 }
+
+std::pair<double, double>
+equal_var_ttest_denom(double v1, int n1, double v2, int n2) {
+
+    double df = n1 + n2 - 2.;
+    double svar = ((n1 - 1) * v1 + (n2 - 1) * v2) / df;
+    double denom = sqrt(svar * (1.0 / n1 + 1.0 / n2));
+    return std::make_pair(df, denom);
+}
+
+double ttest_finish(double t, double df) {
+    return gsl_ran_tdist_pdf(t, df) * 2;
+}
+
+std::pair<double, double>
+oneSampleTTest(double mean1, double sd1, int nobs1, double mean2, double sd2, int nobs2, bool equal_var) {
+
+    std::pair<double, double> df_denom;
+    if (equal_var) {
+        df_denom = equal_var_ttest_denom(sd1 * sd1, nobs1, sd2 * sd2, nobs2);
+    }
+
+    double d = mean1 - mean2;
+    double t = d / df_denom.second;
+    double prob = ttest_finish(t, df_denom.first);
+
+    return std::make_pair(t, prob);
+}
+
 
 
 std::vector<std::vector<double> >

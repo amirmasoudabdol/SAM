@@ -7,27 +7,32 @@
 
 #include <vector>
 
+#include "ExperimentSetup.h"
+#include "RandomNumberGenerator.h"
+
 class DataGenStrategy{
+
 public:
-    DataGenStrategy();
-    ~DataGenStrategy();
-
-    virtual std::vector<std::vector<double>> genData();
-
-    // Generating N new data for `dvid` in `gid`
-    virtual std::vector<double> genNDataFor(int gid, int dvid, int n);
-
-private:
-    int _ngroups;
-    int _ndvs;
-    std::vector<double> _mean;
-    std::vector<double> _sd;
-    std::vector<std::vector<double>> _data;
-
+    virtual std::vector<std::vector<double>> genData() = 0;
+    
 };
 
-class FixedEffectStrategy : DataGenStrategy {
+class FixedEffectStrategy : public DataGenStrategy {
+
 public:
+
+    ExperimentSetup setup;
+    RandomNumberGenerator rngEngine;
+
+
+    FixedEffectStrategy(const ExperimentSetup& e, RandomNumberGenerator& rng_engine) :
+        setup(e), rngEngine(rng_engine)
+    {
+        
+    };
+
+    std::vector<std::vector<double>> genData();
+
 
 private:
 

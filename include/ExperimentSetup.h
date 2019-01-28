@@ -7,27 +7,37 @@
 
 #include <vector>
 
-/**/class ExperimentSetup {
+class ExperimentSetup {
+
+
 public:
-    ExperimentSetup();
-//    ExperimentSetup(int, int, std::vector<double>, std::vector<double>);
-    ~ExperimentSetup();
+
+    int nc = 1;
+    int nd = 3;
+    int ng;
+    int nobs;
 
     double alpha = 0.05;
+//    std::vector<std::string> group_names;
+//    std::vector<std::string> dv_names;
 
-    int ngroups;
-    std::vector<std::string> group_names;
-
-    int ndvs;
-    std::vector<std::string> dv_names;
-
-    bool _is_correalted = false;    // If true, then we are expecting a matrix.
     std::vector<double> true_means;
     std::vector<double> true_vars;
-    std::vector<double> true_cov;
-    std::vector<std::vector<double>> true_cov_matrix;
+    
+    ExperimentSetup();
 
-private:
+    ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<double> vars);
+
+    ~ExperimentSetup() { };
+
+    // bool _is_correalted = false;    // If true, then we are expecting a matrix.
+
+
+    // double cov = 0.;
+    // std::vector<double> true_cov;
+    // std::vector<std::vector<double>> true_cov_matrix;
+
+//private:
     
 };
 
