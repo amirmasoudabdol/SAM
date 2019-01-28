@@ -70,3 +70,7 @@ RandomNumberGenerator::mvnorm(std::vector<double>& means, std::vector<std::vecto
 
 	return rns;
 }
+
+double RandomNumberGenerator::uniform() {
+    return gsl_rng_uniform(rng_stream);
+}

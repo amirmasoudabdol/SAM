@@ -8,24 +8,35 @@
 #include <string>
 #include <iostream>
 
-struct Submission{
+class Submission {
+
+public:
     int simid = 0;
     int pubid = 0;
     std::string method;
-    double stats;
+    double effect;
+    double stat;
     double pvalue;
-    bool sig;
-    bool side;
+    bool sig = false;
+    short side = 1;
+
 };
 
-//std::ostream& operator<<(std::ostream& os, const Submission& sub){
-//    return os << sub.simid << ", " <<
-//                 sub.pubid << ", " <<
-//                 sub.method << ", " <<
-//                 sub.stats << ", " <<
-//                 sub.pvalue << ", " <<
-//                 sub.sig << ", " <<
-//                 sub.side << ", ";
+//std::ostream& operator<<(std::ostream& os, const Submission& s);
+//
+//
+//std::ostream& operator<<(std::ostream& os, const Submission& s){
+////	return os << s.simid << ", " <<
+////			  s.pubid << ", " <<
+////			  s.method << ", " <<
+////			  s.effect << ", " <<
+////			  s.stat << ", " <<
+////			  s.pvalue << ", " <<
+////			  s.sig << ", " <<
+////			  s.side;
+//	return os;
 //}
+
+
 
 #endif //SAMPP_SUBMISSIONRECORD_H

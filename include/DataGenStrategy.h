@@ -25,7 +25,7 @@ public:
     RandomNumberGenerator rngEngine;
 
 
-    FixedEffectStrategy(const ExperimentSetup& e, RandomNumberGenerator& rng_engine) :
+    FixedEffectStrategy(ExperimentSetup& e, RandomNumberGenerator& rng_engine) :
         setup(e), rngEngine(rng_engine)
     {
         

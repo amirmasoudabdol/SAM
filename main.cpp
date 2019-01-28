@@ -14,6 +14,7 @@
 #include <RandomNumberGenerator.h>
 #include <Researcher.h>
 #include <Journal.h>
+#include <SelectionStrategies.h>
 
 using json = nlohmann::json;
 
@@ -93,9 +94,9 @@ int main(int argc, const char** argv){
                                                                true,                        // show help if requested
                                                                "SAMpp 0.1 (Alpha)");        // version string
 
-    for(auto const& arg : args) {
-        std::cout << arg.first << ": " << arg.second << std::endl;
-    }
+//    for(auto const& arg : args) {
+//        std::cout << arg.first << ": " << arg.second << std::endl;
+//    }
 
 //    testDOCOPT(args);
 //    testJSON(args["--config"].asString());
@@ -187,8 +188,11 @@ void estherSimulation(){
     int nc = 1;
     int nd = 4;
     int nobs = 200;
-    std::vector<double> means {0.147, 0.147, 0.147, 0.147};
+    std::vector<double> means {.15, .15, 0.147, 0.147};
     std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
+
+    double alpha= 0.95;
+    double pub_bias = 0.95;
 
 
     RandomNumberGenerator rngEngine(42, false);
@@ -200,29 +204,44 @@ void estherSimulation(){
     FixedEffectStrategy fixedEffectModel(estherSetup, rngEngine);
     estherExperiment.setDataStrategy(&fixedEffectModel);
 
-
 //    estherExperiment.initExperiment();
     estherExperiment.allocateResources();
     estherExperiment.generateData();
     estherExperiment.calculateStatistics();
-/**/
+
     Researcher esther(estherExperiment);
 
     TTest tTest(estherExperiment);
     esther.setTestStrategy(&tTest);
-//
-//
+
+
+    esther.calculateEffect();
     esther.runTest();
 
-    for (int i = 0; i < estherSetup.ng; ++i) {
-        std::cout << esther.experiment.means[i] << ", ";
-        std::cout << esther.experiment.vars[i] << ", ";
-        std::cout << esther.experiment.ses[i] << ", ";
+    Journal journal;
+    SignigicantSelection sigSelection(alpha, pub_bias);
+    journal.setSelectionStrategy(&sigSelection);
+//
+    esther.setJournal(journal);
+//
+    esther.selectTheOutcome();
+    esther.prepareTheSubmission();
+    esther.submitToJournal();
+//
+//    std::cout << esther.journal.submissionList[0];
+
+
+
+
+//    for (int i = 0; i < esther.experiment.setup.ng; ++i) {
+//        std::cout << esther.experiment.means[i] << ", ";
+//        std::cout << esther.experiment.vars[i] << ", ";
+//        std::cout << esther.experiment.ses[i] << ", ";
 //        std::cout << esther.experiment.statistics[i] << ", ";
 //        std::cout << esther.experiment.pvalues[i] << ", ";
 //        std::cout << esther.experiment.effects[i] << ", ";
-        std::cout << std::endl;
-    }
+//        std::cout << std::endl;
+//    }
 
 }
 

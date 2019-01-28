@@ -36,13 +36,13 @@ public:
 
     Experiment(ExperimentSetup& e) : setup(e) {
         // I can do things here, like some of the resizing
-
+        // nobs.resize(e.ng)
     };
 //    Experiment(ExperimentSetup, DataGenStrategy);
 //    Experiment(ExperimentSetup setup) : { experiment_setup(setup) }
 
 
-     DataGenStrategy* data_strategy;
+     DataGenStrategy* dataStrategy;
 
     // Initialize the Experiment
      void allocateResources();

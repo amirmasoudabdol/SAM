@@ -19,7 +19,11 @@ public:
         gsl_rng_env_setup();
         T = gsl_rng_default;
         rng_stream = gsl_rng_alloc(T);
-        gsl_rng_set(rng_stream, _seed);
+        if (seed != -1)
+            gsl_rng_set(rng_stream, _seed);
+        else
+            // TODO: This is not a good idea, since `gsl_rng_default_seed` is always 0!
+            gsl_rng_set(rng_stream, gsl_rng_default_seed);
     };
     ~RandomNumberGenerator() {
 
@@ -37,6 +41,9 @@ public:
     int getSeed() {
         return _seed;
     };
+
+    double uniform();
+    double uniform(double min, double max);
 
     std::vector<double> normal(double mean, double sd, int n);
     std::vector<std::vector<double> > normal(std::vector<double>& means, std::vector<double>& sds, int n);
