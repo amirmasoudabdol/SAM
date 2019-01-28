@@ -191,7 +191,8 @@ void estherSimulation(){
     std::vector<double> means {.15, .15, 0.147, 0.147};
     std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
 
-    double alpha= 0.95;
+    int max_pubs = 70;
+    double alpha= 0.05;
     double pub_bias = 0.95;
 
 
@@ -218,11 +219,11 @@ void estherSimulation(){
     esther.calculateEffect();
     esther.runTest();
 
-    Journal journal;
+    Journal journal(max_pubs, pub_bias, alpha);
     SignigicantSelection sigSelection(alpha, pub_bias);
     journal.setSelectionStrategy(&sigSelection);
 //
-    esther.setJournal(journal);
+    esther.setJournal(&journal);
 //
     esther.selectTheOutcome();
     esther.prepareTheSubmission();

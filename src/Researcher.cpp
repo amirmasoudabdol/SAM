@@ -39,10 +39,10 @@ void Researcher::prepareTheSubmission() {
 }
 
 void Researcher::submitToJournal() {
-	journal.review(submissionRecord);
+	journal->review(submissionRecord);
 }
 
-void Researcher::setJournal(Journal &j) {
+void Researcher::setJournal(Journal* j) {
 	// TODO: This is susspicious!
 	journal = j;
 }

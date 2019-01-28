@@ -17,7 +17,8 @@ class Researcher {
 public:
 
     Experiment experiment;
-    Journal journal;
+
+	Journal *journal;
 
     TestStrategies* testStrategy;
 
@@ -39,7 +40,7 @@ public:
     void prepareTheSubmission();
     void submitToJournal();
 
-	void setJournal(Journal& j);
+	void setJournal(Journal* j);
 
 
 private:
