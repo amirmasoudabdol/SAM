@@ -1,0 +1,12 @@
+{
+  "--p-hacking-methods": [
+    {
+      "type": "OS",
+      "size": 5
+    },
+    {
+      "type": "SR",
+      "method": "min_sig"
+    }
+  ]
+}

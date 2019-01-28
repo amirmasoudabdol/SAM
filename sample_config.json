@@ -1,0 +1,17 @@
+{
+  "--n-sims": 1,
+  "--pub-bias": 0.5,
+  "--master-seed": 42,
+  "--n-conditions": 1,
+  "--n-dvs": 3,
+  "--means": 0.147,
+  "--vars": 1.0,
+  "--is-correlated": false,
+  "--cov-const": 0.1,
+  "--cov-matrix": [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+  "--max-pubs": 70,
+  "--is-phacker": true,
+  "--output_path": "outputs/",
+  "--output-prefix": "0.147_0.5_70__",
+  "--hacking-methods-config": "../sample_hacking_methods.json"
+}
