@@ -10,10 +10,12 @@
 #include "ExperimentSetup.h"
 #include "RandomNumberGenerator.h"
 
-class DataGenStrategy{
+class DataGenStrategy {
 
 public:
     virtual std::vector<std::vector<double>> genData() = 0;
+    virtual std::vector<std::vector<double>> genNewObservationsForAllGroups(int n_new_obs) = 0;
+    virtual std::vector<double> genNewObservationsFor(int g, int n_new_obs) = 0;
     
 };
 
@@ -26,12 +28,15 @@ public:
 
 
     FixedEffectStrategy(ExperimentSetup& e, RandomNumberGenerator& rng_engine) :
-        setup(e), rngEngine(rng_engine)
-    {
-        
+        setup(e), rngEngine(rng_engine){
+        // TODO: I might need to pass rng_engine as a pointer too, 
+        // because I might ran into the same problem that it loses its state
+        // and produce unreliable results.
     };
 
     std::vector<std::vector<double>> genData();
+    std::vector<std::vector<double>> genNewObservationsForAllGroups(int n_new_obs);
+    std::vector<double> genNewObservationsFor(int g, int n_new_obs);
 
 
 private:
