@@ -23,7 +23,7 @@ bool Journal::review(Submission &s) {
 
 void Journal::accept(Submission s) {
     submissionList.push_back(s);
-    std::cout << s.pvalue << "\n";
+    // std::cout << s.pvalue << ": p\n";
 }
 
 void Journal::reject(Submission &s) {

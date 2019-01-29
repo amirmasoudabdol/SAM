@@ -60,6 +60,7 @@ R"(SAMpp
 // for convenience
 void testRandom();
 void estherSimulation();
+void estherSimulationTest();
 void testTTest();
 void effectEstimatorTest();
 void dataGenStrategyTest();
@@ -106,6 +107,7 @@ int main(int argc, const char** argv){
 //    testTTest();
 
     estherSimulation();
+//    estherSimulationTest();
 //    effectEstimatorTest();
 //    testRandomClass();
 
@@ -182,7 +184,7 @@ void effectEstimatorTest(){
 }
 
 
-void estherSimulation(){
+void estherSimulationTest(){
 
     // Declaring sample paramters
     int nc = 1;
@@ -243,6 +245,56 @@ void estherSimulation(){
 //        std::cout << esther.experiment.effects[i] << ", ";
 //        std::cout << std::endl;
 //    }
+
+}
+
+void estherSimulation(){
+    int nc = 1;
+    int nd = 4;
+    int nobs = 200;
+    int nsims = 1000;
+    std::vector<double> means {.147, .147, 0.147, 0.147};
+    std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
+
+    int max_pubs = 70;
+    double alpha= 0.05;
+    double pub_bias = 0.95;
+
+    RandomNumberGenerator rngEngine(42, false);
+
+    ExperimentSetup estherSetup(nc, nd, nobs, means, vars);
+
+    Experiment estherExperiment(estherSetup);
+
+    FixedEffectStrategy fixedEffectModel(estherSetup, rngEngine);
+    estherExperiment.setDataStrategy(&fixedEffectModel);
+
+    Journal journal(max_pubs, pub_bias, alpha);
+    SignigicantSelection sigSelection(alpha, pub_bias);
+    journal.setSelectionStrategy(&sigSelection);
+
+//    estherExperiment.initExperiment();
+    Researcher esther(&estherExperiment);
+    esther.experiment->initExperiment();
+
+    esther.setJournal(&journal);
+
+    TTest tTest(&estherExperiment);
+    esther.setTestStrategy(&tTest);
+
+    for (int i = 0; i < nsims; ++i) {
+
+//        std::cout << "i: " <<  i << "\n";
+
+        esther.experiment->initExperiment();
+
+        esther.calculateEffect();
+        esther.runTest();
+//
+        esther.selectTheOutcome();
+        esther.prepareTheSubmission();
+        esther.submitToJournal();
+    }
 
 }
 
