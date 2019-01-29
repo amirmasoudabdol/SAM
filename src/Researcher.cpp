@@ -24,17 +24,30 @@ void Researcher::calculateEffect(){
     experiment->effects = experiment->means;
 }
 
+void Researcher::hack() {
+	for (auto &h : hackingStrategies){
+		hackedSubmissions.push_back(h->perform());
+	}
+}
+
+// This always select the pre-registered outcome, [0]
 void Researcher::selectTheOutcome() {
-	_pvalue_min_arg = std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
+	_selected_outcome_inx = 0;
+//	_selected_outcome_inx= std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
 }
 
 void Researcher::prepareTheSubmission() {
-	submissionRecord.method = "t.test";
-	submissionRecord.simid = 1;
-	submissionRecord.pubid = 1;
-	submissionRecord.effect = experiment->effects[_pvalue_min_arg];
-	submissionRecord.stat = experiment->statistics[_pvalue_min_arg];
-	submissionRecord.pvalue = experiment->pvalues[_pvalue_min_arg];
+	if (!isHacker) {
+		submissionRecord.method = "t.test";
+		submissionRecord.simid = 1;
+		submissionRecord.pubid = 1;
+		submissionRecord.effect = experiment->effects[_selected_outcome_inx];
+		submissionRecord.stat = experiment->statistics[_selected_outcome_inx];
+		submissionRecord.pvalue = experiment->pvalues[_selected_outcome_inx];
+	}else{
+		// TODO: This needs generalization
+//		submissionRecord = hackedSubmissions[0];
+	}
 }
 
 void Researcher::submitToJournal() {
@@ -44,4 +57,8 @@ void Researcher::submitToJournal() {
 void Researcher::setJournal(Journal* j) {
 	// TODO: This is susspicious!
 	journal = j;
+}
+
+void Researcher::registerAHackingStrategy(HackingStrategy *h) {
+	hackingStrategies.push_back(h);
 }

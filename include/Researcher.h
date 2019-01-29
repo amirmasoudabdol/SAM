@@ -22,10 +22,10 @@ public:
 
     TestStrategies* testStrategy;
 
-
+    bool isHacker = false;
     std::vector<HackingStrategy*> hackingStrategies;
-	std::vector<Experiment> hacked_experiments;
-	std::vector<Submission> hacked_submissions;
+	std::vector<Experiment> hackedExperiments;
+	std::vector<Submission> hackedSubmissions;
 
     Submission submissionRecord;
 
@@ -36,7 +36,10 @@ public:
 
     void setTestStrategy(TestStrategies *t);
     void runTest();
-    void setHackingStrategies();
+
+    void registerAHackingStrategy(HackingStrategy* h);
+    void hack();
+    
     void calculateEffect();
     void selectTheOutcome();
     void prepareTheSubmission();
@@ -46,8 +49,10 @@ public:
 
 
 private:
-	int _pvalue_min_arg;
-	bool _is_phacker = false;
+	int _pvalue_min_inx;
+	int _max_effect_inx;
+	int _selected_outcome_inx = 0;
+
 };
 
 #endif //SAMPP_RESEARCHER_H
