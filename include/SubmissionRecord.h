@@ -19,24 +19,12 @@ public:
     double pvalue;
     bool sig = false;
     short side = 1;
+//    bool isHacked = false;
+//    std::string hacking_method = "";
+
+
+    friend std::ostream& operator<<(std::ostream& os, const Submission& s);
 
 };
-
-//std::ostream& operator<<(std::ostream& os, const Submission& s);
-//
-//
-//std::ostream& operator<<(std::ostream& os, const Submission& s){
-////	return os << s.simid << ", " <<
-////			  s.pubid << ", " <<
-////			  s.method << ", " <<
-////			  s.effect << ", " <<
-////			  s.stat << ", " <<
-////			  s.pvalue << ", " <<
-////			  s.sig << ", " <<
-////			  s.side;
-//	return os;
-//}
-
-
 
 #endif //SAMPP_SUBMISSIONRECORD_H

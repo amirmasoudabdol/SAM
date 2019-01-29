@@ -5,6 +5,8 @@
 #include <iostream>
 #include <ostream>
 #include <string>
+#include <algorithm>
+#include <numeric>
 
 #include "Utilities.h"
 #include "gsl/gsl_rng.h"
@@ -13,15 +15,15 @@
 #include "gsl/gsl_vector.h"
 #include "gsl/gsl_matrix.h"
 
-//template <typename T>
-//std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
-//    if ( !v.empty() ) {
-//        out << '[';
-//        std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-//        out << "\b\b]";
-//    }
-//    return out;
-//}
+template <typename T>
+std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
+    if ( !v.empty() ) {
+        out << '[';
+        std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+        out << "\b\b]";
+    }
+    return out;
+}
 
 template<typename T>
 std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
@@ -30,6 +32,17 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
 		ret.insert(ret.end(), v.begin(), v.end());
 	return ret;
 }
+
+//template <typename T>
+//long argMin(const std::vector<T> &v){
+//	return std::distance(v.begin(), std::min_element(v.begin(), v.end()));
+//}
+//
+//template <typename T>
+//long argMax(const std::vector<T> &v){
+//	return std::distance(v.begin(), std::max_element(v.begin(), v.end()));
+//}
+
 
 
 double mean(const std::vector<double>& v) {

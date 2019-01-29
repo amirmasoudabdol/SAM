@@ -31,4 +31,10 @@ double ttest_finish(double t, double df);
 template<typename T>
 std::vector<T> flatten(const std::vector<std::vector<T>> &orig);
 
+//template <typename T>
+//long argMin(const std::vector<T> &v);
+//
+//template <typename T>
+//long argMax(const std::vector<T> &v);
+
 #endif //SAMPP_UTILITIES_H

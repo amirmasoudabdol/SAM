@@ -35,7 +35,7 @@ std::vector<std::vector<double>> TTest::computeStatsPvalue() {
     for (int i = 0; i < experiment->setup.ng; ++i) {
         stats[i] = experiment->vars[i] / experiment->ses[i];
         // TODO: `nobs` needs to be generalized for each group.
-        pvalue[i] = gsl_ran_tdist_pdf(stats[i], experiment->setup.nobs - 1);
+        pvalue[i] = gsl_ran_tdist_pdf(stats[i], experiment->measurements[i].size() - 1);
     }
 
 //    t.pdf(self.effects_df.stat, df = self.effects_df.nobs - 1)

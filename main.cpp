@@ -15,6 +15,7 @@
 #include <Researcher.h>
 #include <Journal.h>
 #include <SelectionStrategies.h>
+#include <HackingStrategies.h>
 
 using json = nlohmann::json;
 
@@ -252,7 +253,7 @@ void estherSimulation(){
     int nc = 1;
     int nd = 4;
     int nobs = 200;
-    int nsims = 1000;
+    int nsims = 5;
     std::vector<double> means {.147, .147, 0.147, 0.147};
     std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
 
@@ -277,6 +278,10 @@ void estherSimulation(){
     Researcher esther(&estherExperiment);
     esther.experiment->initExperiment();
 
+    OutcomeSwitching outSwitcher(&estherExperiment, "Min Pvalue");
+    esther.isHacker = true;
+    esther.registerAHackingStrategy(&outSwitcher);
+
     esther.setJournal(&journal);
 
     TTest tTest(&estherExperiment);
@@ -292,8 +297,14 @@ void estherSimulation(){
         esther.runTest();
 //
         esther.selectTheOutcome();
+//        if (esther.isHacker){
+//            esther.hack();
+//        }
+
         esther.prepareTheSubmission();
         esther.submitToJournal();
+        
+//        std::cout << esther.submissionRecord << "\n";
     }
 
 }
