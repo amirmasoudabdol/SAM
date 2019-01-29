@@ -23,11 +23,13 @@ public:
 class TTest : public TestStrategies {
 
 public:
-    Experiment experiment;
+    Experiment* experiment;
     // std::string name = "t.test";
 
 
-    TTest(Experiment& e) : experiment(e) {}
+    TTest(Experiment* e) {
+    	experiment = e;
+    }
 
     void runTest();
     std::vector<std::vector<double>> computeStatsPvalue();

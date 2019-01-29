@@ -210,9 +210,9 @@ void estherSimulation(){
     estherExperiment.generateData();
     estherExperiment.calculateStatistics();
 
-    Researcher esther(estherExperiment);
+    Researcher esther(&estherExperiment);
 
-    TTest tTest(estherExperiment);
+    TTest tTest(&estherExperiment);
     esther.setTestStrategy(&tTest);
 
 

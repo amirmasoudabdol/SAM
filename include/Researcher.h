@@ -16,9 +16,9 @@ class Researcher {
 
 public:
 
-    Experiment experiment;
+    Experiment* experiment;
 
-	Journal *journal;
+	Journal* journal;
 
     TestStrategies* testStrategy;
 
@@ -29,7 +29,9 @@ public:
 
     Submission submissionRecord;
 
-    Researcher(Experiment& e) : experiment(e) {};
+    Researcher(Experiment* e) {
+        experiment = e;
+    };
 //	Researcher(Experiment& e, Journal& j) : experiment(e), journal(j) {};
 
     void setTestStrategy(TestStrategies *t);
