@@ -27,15 +27,17 @@ public:
     ExperimentSetup();
 
     ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<double> vars);
+    ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<std::vector<double>> true_sigma);
 
     ~ExperimentSetup() { };
 
     // bool _is_correalted = false;    // If true, then we are expecting a matrix.
 
 
-    // double cov = 0.;
-    // std::vector<double> true_cov;
-    // std::vector<std::vector<double>> true_cov_matrix;
+    bool isMultivariate = false;
+    double cov = 0.;
+    std::vector<double> true_cov;
+    std::vector<std::vector<double>> true_sigma;
 
 //private:
     

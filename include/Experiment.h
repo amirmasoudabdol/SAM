@@ -28,11 +28,13 @@ public:
     std::vector<double> pvalues;
     std::vector<double> effects;
 
-
     // Need a copy constructor
     // Need a move constructor
     Experiment();
-    ~Experiment() {};
+    ~Experiment() {
+        // TODO: Use shared_ptr<> to make sure that I don't have
+        // to do cleanup
+    };
 
     Experiment(ExperimentSetup& e) : setup(e) {
         // I can do things here, like some of the resizing
