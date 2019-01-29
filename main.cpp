@@ -278,8 +278,8 @@ void estherSimulation(){
     Researcher esther(&estherExperiment);
     esther.experiment->initExperiment();
 
-    OutcomeSwitching outSwitcher(&estherExperiment, "Min Pvalue");
-    esther.isHacker = true;
+    OutcomeSwitching outSwitcher(&estherExperiment, "min pvalue");
+    esther.isHacker = false;
     esther.registerAHackingStrategy(&outSwitcher);
 
     esther.setJournal(&journal);
@@ -291,20 +291,22 @@ void estherSimulation(){
 
 //        std::cout << "i: " <<  i << "\n";
 
+//        esther.rest();
+        esther.hackedSubmissions.clear();
         esther.experiment->initExperiment();
 
         esther.calculateEffect();
         esther.runTest();
 //
         esther.selectTheOutcome();
-//        if (esther.isHacker){
-//            esther.hack();
-//        }
+        if (esther.isHacker){
+            esther.hack();
+        }
 
         esther.prepareTheSubmission();
         esther.submitToJournal();
-        
-//        std::cout << esther.submissionRecord << "\n";
+
+        std::cout << esther.submissionRecord << "\n";
     }
 
 }

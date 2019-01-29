@@ -38,6 +38,8 @@ public:
 private:
     std::string _method = "Min PValue";
     long _selected_outcome_inx = 0;
+    Submission _create_submission_record(int inx);
+
 };
 
 class OptionalStopping : public HackingStrategy {

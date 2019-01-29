@@ -42,16 +42,21 @@ public:
     
     void calculateEffect();
     void selectTheOutcome();
+	
     void prepareTheSubmission();
     void submitToJournal();
 
 	void setJournal(Journal* j);
+
+	// Reset the researcher state!
+	void rest();
 
 
 private:
 	int _pvalue_min_inx;
 	int _max_effect_inx;
 	int _selected_outcome_inx = 0;
+	Submission _create_submission_record(int inx);
 
 };
 

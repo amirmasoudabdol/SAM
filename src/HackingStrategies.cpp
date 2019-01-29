@@ -17,17 +17,26 @@ Submission OutcomeSwitching::perform() {
 
     long selectedOutcome = 0;
     
-    if (_method == "Min Pvalue"){
+    if (_method == "min pvalue"){
         selectedOutcome = std::distance(this->experiment->pvalues.begin(), std::min_element(this->experiment->pvalues.begin(), this->experiment->pvalues.end()));
 
         // selectedOutcome = argMin(this->experiment->pvalues);
-    }else if (_method == "Max Effect"){
+    }else if (_method == "max effect"){
         selectedOutcome = std::distance(this->experiment->effects.begin(), std::max_element(this->experiment->effects.begin(), this->experiment->effects.end()));
 //         selectedOutcome = argMax(this->experiment->effects);
     }
     
     _selected_outcome_inx = selectedOutcome;
-    return hackedSubmission;
+    return this->_create_submission_record(selectedOutcome);
+}
+
+Submission OutcomeSwitching::_create_submission_record(int inx) {
+    Submission sub;
+    sub.effect = experiment->effects[inx];
+    sub.stat = experiment->statistics[inx];
+    sub.pvalue = experiment->pvalues[inx];
+
+    return sub;
 }
 
 Submission OptionalStopping::perform() {

@@ -36,17 +36,21 @@ void Researcher::selectTheOutcome() {
 //	_selected_outcome_inx= std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
 }
 
+Submission Researcher::_create_submission_record(int inx){
+	Submission sub;
+	sub.effect = experiment->effects[inx];
+	sub.stat = experiment->statistics[inx];
+	sub.pvalue = experiment->pvalues[inx];
+
+	return sub;
+}
+
 void Researcher::prepareTheSubmission() {
 	if (!isHacker) {
-		submissionRecord.method = "t.test";
-		submissionRecord.simid = 1;
-		submissionRecord.pubid = 1;
-		submissionRecord.effect = experiment->effects[_selected_outcome_inx];
-		submissionRecord.stat = experiment->statistics[_selected_outcome_inx];
-		submissionRecord.pvalue = experiment->pvalues[_selected_outcome_inx];
+		submissionRecord = _create_submission_record(_selected_outcome_inx);
 	}else{
 		// TODO: This needs generalization
-//		submissionRecord = hackedSubmissions[0];
+		submissionRecord = hackedSubmissions[0];
 	}
 }
 
