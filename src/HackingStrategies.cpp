@@ -26,7 +26,7 @@ Submission OutcomeSwitching::perform() {
 //         selectedOutcome = argMax(this->experiment->effects);
     }
     
-    _selected_outcome_inx = selectedOutcome;
+//    _selected_outcome_inx = selectedOutcome;
     return this->_create_submission_record(selectedOutcome);
 }
 
@@ -39,11 +39,15 @@ Submission OutcomeSwitching::_create_submission_record(int inx) {
     return sub;
 }
 
+Submission OutcomeSwitching::performOnCopy() {
+    return Submission();
+}
+
 Submission OptionalStopping::perform() {
 
     // std::cout << "Optional Stopping\n";
 
-    if (!experiment->setup.isMultivariate){
+    if (experiment->setup.isMultivariate){
 
     }else{
         auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(3);

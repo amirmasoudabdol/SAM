@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "Experiment.h"
-#include "TestStrategies.h"
+#include "TestStrategy.h"
 #include "SubmissionRecord.h"
 #include "HackingStrategies.h"
 #include "Journal.h"
@@ -20,7 +20,7 @@ public:
 
 	Journal* journal;
 
-    TestStrategies* testStrategy;
+//    TestStrategies* testStrategy;
 
     bool isHacker = false;
     std::vector<HackingStrategy*> hackingStrategies;
@@ -34,9 +34,11 @@ public:
     };
 //	Researcher(Experiment& e, Journal& j) : experiment(e), journal(j) {};
 
-    void setTestStrategy(TestStrategies *t);
-    void runTest();
+//    void setTestStrategy(TestStrategies *t);
+//    void runTest();
 
+    // This probably needs to be a class of itself as well
+    std::string decisionStrategy = "asap";
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
     

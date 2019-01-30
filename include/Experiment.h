@@ -10,13 +10,14 @@
 #include "DataGenStrategy.h"
 #include "ExperimentSetup.h"
 #include "EffectEstimators.h"
+#include "TestStrategy.h"
 
 class Experiment {
 
 
 public:
     ExperimentSetup setup;
-    
+
     // ExperimentSetup setup;
 
     std::vector<int> nobs;
@@ -30,27 +31,35 @@ public:
 
     // Need a copy constructor
     // Need a move constructor
-    Experiment();
+//    Experiment();
     ~Experiment() {
         // TODO: Use shared_ptr<> to make sure that I don't have
         // to do cleanup
     };
 
     Experiment(ExperimentSetup& e) : setup(e) {
-        // I can do things here, like some of the resizing
+        // I can do things here, like some of the r/**/esizing
         // nobs.resize(e.ng)
+//        testStrategy = nullptr;
+//        dataStrategy = nullptr;
     };
 //    Experiment(ExperimentSetup, DataGenStrategy);
 //    Experiment(ExperimentSetup setup) : { experiment_setup(setup) }
 
+    TestStrategy* testStrategy;
+    void setTestStrategy(TestStrategy* t);
+    void runTest();
 
-     DataGenStrategy* dataStrategy;
+    DataGenStrategy* dataStrategy;
+    void setDataStrategy(DataGenStrategy* d);
 
     // Initialize the Experiment
-     void allocateResources();
-     void initExperiment();
-     void generateData();
-     void calculateStatistics();
+    void allocateResources();
+    void initExperiment();
+    void generateData();
+    void calculateStatistics();
+    void calculateEffects();
+
 
     // Randomize
     // void randomizeData();
@@ -58,8 +67,7 @@ public:
     // std::vector<std::vector<double>> setMeasurements();
     // std::vector<std::vector<double>> getMeasurements();
 
-     void setDataStrategy(DataGenStrategy *strategy);
-     void setDataStrategy(std::string strategy);
+     // void setDataStrategy(std::string strategy);
     // void genData();
     // void genDataFor(int gid, int dvid, int n);
 

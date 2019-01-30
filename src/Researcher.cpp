@@ -6,39 +6,44 @@
 
 #include <iostream>
 
-void Researcher::setTestStrategy(TestStrategies *t) {
-    testStrategy = t;
-}
+// void Researcher::setTestStrategy(TestStrategies *t) {
+//     testStrategy = t;
+// }
 
 
-void Researcher::runTest() {
-	// NOTE: This is super inefficient and I had to do it this way,
-	// because I wanted to avoid pointer somehow, I need to revisit this
-	// TODO: maybe rewrite it with pointers.
-    
-    // TODO: This could move into testStrategy->run()
-//    auto stat_pvalue = testStrategy->computeStatsPvalue();
-//    experiment->statistics = stat_pvalue[0];
-//    experiment->pvalues = stat_pvalue[1];
-    
-    testStrategy->run();
-}
+// void Researcher::runTest() {
+//     testStrategy->run();
+// }
 
-void Researcher::calculateEffect(){
-    experiment->effects = experiment->means;
-}
+//void Researcher::calculateEffect(){
+//    experiment->effects = experiment->means;
+//}
 
 void Researcher::hack() {
+    Submission sub;
 	for (auto &h : hackingStrategies){
-		hackedSubmissions.push_back(h->perform());
+        // I can either check the significance here and stop after finding one
+        sub = h->perform();
+        
+        if (decisionStrategy == "asap"){
+            if (sub.pvalue < experiment->setup.alpha){
+                hackedSubmissions.push_back(sub);
+                return;
+            }
+        }
+        
+        
+        
 	}
+    
+    // Or, I can run all of them, and then decide
 }
 
 // This always select the pre-registered outcome, [0]
-void Researcher::selectTheOutcome() {
-	_selected_outcome_inx = 0;
-//	_selected_outcome_inx= std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
-}
+//void Researcher::selectTheOutcome() {
+//    _selected_outcome_inx = 0;
+////    _selected_outcome_inx= std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
+//}
 
 Submission Researcher::_create_submission_record(int inx){
 	Submission sub;
@@ -54,7 +59,16 @@ void Researcher::prepareTheSubmission() {
 		submissionRecord = _create_submission_record(_selected_outcome_inx);
 	}else{
 		// TODO: This needs generalization
-		submissionRecord = hackedSubmissions[0];
+//        submissionRecord = hackedSubmissions[0];
+        if (decisionStrategy == "asap"){
+            if (hackedSubmissions.size() != 0){
+                submissionRecord = hackedSubmissions.back();
+            }else{
+                submissionRecord = _create_submission_record(_selected_outcome_inx);
+            }
+        }else if (decisionStrategy == "all-in"){
+            // Check for the smallest p-value or largest effect
+        }
 	}
 }
 

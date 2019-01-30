@@ -5,12 +5,12 @@
 #ifndef SAMPP_TESTSTRATEGIES_H
 #define SAMPP_TESTSTRATEGIES_H
 
-#include <Experiment.h>
+// #include <Experiment.h>
 #include <memory>
 #include <iostream>
 #include <string>
 
-class TestStrategies {
+class TestStrategy {
 
 public:
 
@@ -20,16 +20,19 @@ public:
 
 };
 
-class TTest : public TestStrategies {
+class TTest : public TestStrategy {
 
 public:
-    Experiment* experiment;
+//    Experiment* experiment;
     // std::string name = "t.test";
 
 
-    TTest(Experiment* e) {
-    	experiment = e;
-    }
+//    TTest(Experiment* e) {
+//        experiment = e;
+//    }
+    
+    TTest();
+    
 
     void run();
     std::vector<std::vector<double>> computeStatsPvalue();

@@ -3,6 +3,8 @@
 //
 
 #include "Experiment.h"
+#include "TestStrategy.h"
+
 #include <iostream>
 #include <string>
 #include <numeric>
@@ -20,20 +22,23 @@ void Experiment::generateData() {
     // std::cout << measurements[0][0] << "<\n";
 }
 
-void Experiment::setDataStrategy(std::string strategy) {
-//    if (strategy == "Fixed Model"){
-//        dataStrategy = FixedEffectStrategy(setup);
-//    }
+void Experiment::setDataStrategy(DataGenStrategy* d) {
+    dataStrategy = d;
 }
 
-void Experiment::setDataStrategy(DataGenStrategy *strategy) {
-    dataStrategy = strategy;
+void Experiment::setTestStrategy(TestStrategy *t){
+    testStrategy = t;
+}
+
+void Experiment::runTest(){
+    testStrategy->run();
 }
 
 void Experiment::initExperiment() {
     allocateResources();
     generateData();
     calculateStatistics();
+    calculateEffects();
 }
 
 void Experiment::allocateResources() {
@@ -61,3 +66,8 @@ void Experiment::calculateStatistics() {
 
    // std::cout << means[0] << ", ";
 }
+
+void Experiment::calculateEffects() {
+    effects = means;
+}
+

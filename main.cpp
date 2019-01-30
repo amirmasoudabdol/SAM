@@ -11,7 +11,7 @@
 #include <ExperimentSetup.h>
 #include <EffectEstimators.h>
 #include <DataGenStrategy.h>
-#include <TestStrategies.h>
+#include <TestStrategy.h>
 #include <RandomNumberGenerator.h>
 #include <Researcher.h>
 #include <Journal.h>
@@ -219,12 +219,12 @@ void estherSimulationTest(){
 
     Researcher esther(&estherExperiment);
 
-    TTest tTest(&estherExperiment);
-    esther.setTestStrategy(&tTest);
-
-
-    esther.calculateEffect();
-    esther.runTest();
+//    TTest tTest(&estherExperiment);
+//    esther.setTestStrategy(&tTest);
+//
+//
+//    // esther.calculateEffect();
+//    esther.runTest();
 
     Journal journal(max_pubs, pub_bias, alpha);
     SignigicantSelection sigSelection(alpha, pub_bias);
@@ -232,7 +232,7 @@ void estherSimulationTest(){
 //
     esther.setJournal(&journal);
 //
-    esther.selectTheOutcome();
+    // esther.selectTheOutcome();
     esther.prepareTheSubmission();
     esther.submitToJournal();
 //
@@ -283,13 +283,14 @@ void estherSimulation(){
     // esther.experiment->initExperiment();
 
     OutcomeSwitching outSwitcher(&estherExperiment, "min pvalue");
-    esther.isHacker = false;
+    esther.isHacker = true;
     esther.registerAHackingStrategy(&outSwitcher);
 
     esther.setJournal(&journal);
 
-    TTest tTest(&estherExperiment);
-    esther.setTestStrategy(&tTest);
+//    TTest tTest(&estherExperiment);
+    // TTest tTest;
+    // esther.experiment->setTestStrategy(&tTest);
 
     for (int i = 0; i < nsims; ++i) {
 
@@ -308,9 +309,10 @@ void estherSimulation(){
             esther.experiment->calculateEffects();
 
             // esther.calculateEffect();
-            esther.runTest();
+            // esther.runTest();
+            esther.experiment->runTest();
             
-            esther.selectTheOutcome();
+            // esther.selectTheOutcome();
             if (esther.isHacker) {
                 esther.hack();
             }

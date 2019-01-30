@@ -14,6 +14,8 @@ public:
 //    HackingStrategy();
 
     virtual Submission perform() = 0;
+    
+    double defensibility;
 };
 
 class OutcomeSwitching : public HackingStrategy {
@@ -34,16 +36,17 @@ public:
 
     Submission hackedSubmission;
     Submission perform();
+    Submission performOnCopy();
 
 private:
     std::string _method = "Min PValue";
-    long _selected_outcome_inx = 0;
+//    long _selected_outcome_inx = 0;
     Submission _create_submission_record(int inx);
 
 };
 
 class OptionalStopping : public HackingStrategy {
-public:
+public:/**/
     Experiment* experiment;
 
 
@@ -60,6 +63,38 @@ public:
 private:
     int _max_new_obs;
 
+};
+
+// If I need more variations here, I think it's the best if I make different subclass
+class OutlierRemoval : public HackingStrategy {
+public:
+    Experiment* experiment;
+
+    OutlierRemoval();
+
+    Submission hackedSubmission;
+    Submission perform();
+
+};
+
+class GroupPooling : public HackingStrategy {
+public:
+    Experiment* experiment;
+    
+    GroupPooling(std::string scheme) : _scheme(scheme) {} ;
+    
+    Submission perform();
+    Submission hackedSubmission;
+    
+private:
+    std::string _scheme;
+};
+
+class QuestionableRounding : public HackingStrategy {
+    int _threshold;
+    
+public:
+    QuestionableRounding(int threshold) : _threshold(threshold) {};
 };
 
 #endif //SAMPP_HACKINGSTRATEGIES_H
