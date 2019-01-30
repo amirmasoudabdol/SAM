@@ -14,7 +14,7 @@ class TestStrategies {
 
 public:
 
-    virtual void runTest() = 0;
+    virtual void run() = 0;
 	virtual std::vector<std::vector<double>> computeStatsPvalue() = 0;
     // void setExperiment(std::shared_ptr<Experiment> expr) ;
 
@@ -31,7 +31,7 @@ public:
     	experiment = e;
     }
 
-    void runTest();
+    void run();
     std::vector<std::vector<double>> computeStatsPvalue();
 
 

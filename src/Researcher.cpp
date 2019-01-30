@@ -15,9 +15,13 @@ void Researcher::runTest() {
 	// NOTE: This is super inefficient and I had to do it this way,
 	// because I wanted to avoid pointer somehow, I need to revisit this
 	// TODO: maybe rewrite it with pointers.
-	auto stat_pvalue = testStrategy->computeStatsPvalue();
-	experiment->statistics = stat_pvalue[0];
-	experiment->pvalues = stat_pvalue[1];
+    
+    // TODO: This could move into testStrategy->run()
+//    auto stat_pvalue = testStrategy->computeStatsPvalue();
+//    experiment->statistics = stat_pvalue[0];
+//    experiment->pvalues = stat_pvalue[1];
+    
+    testStrategy->run();
 }
 
 void Researcher::calculateEffect(){

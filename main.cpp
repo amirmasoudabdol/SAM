@@ -20,6 +20,22 @@
 
 using json = nlohmann::json;
 
+// TODO: This works for now but it needs more casting to be a better interface between JSON and DOCOPT
+namespace nlohmann {
+    template <>
+    struct adl_serializer<docopt::value> {
+        static void to_json(json& j, docopt::value t) {
+            if (t.isString()) {
+                j = t.asString();
+            }else if (t.isBool()){
+                j = t.asBool();
+            }else if (t.isLong()){
+                j = t.asLong();
+            }
+        }
+    };
+}
+
 json inputParams;
 
 static const char USAGE[] =
@@ -75,23 +91,6 @@ void testDOCOPT(std::map<std::string, docopt::value> args);
 using json = nlohmann::json;
 
 tqdm simulationBar;
-
-
-// TODO: This works for now but it needs more casting to be a better interface between JSON and DOCOPT
-namespace nlohmann {
-    template <>
-    struct adl_serializer<docopt::value> {
-        static void to_json(json& j, docopt::value t) {
-            if (t.isString()) {
-                j = t.asString();
-            }else if (t.isBool()){
-                j = t.asBool();
-            }else if (t.isLong()){
-                j = t.asLong();
-            }
-        }
-    };
-}
 
 
 int main(int argc, const char** argv){
@@ -291,16 +290,11 @@ void estherSimulation(){
 
     TTest tTest(&estherExperiment);
     esther.setTestStrategy(&tTest);
-    
+
     for (int i = 0; i < nsims; ++i) {
 
-//        std::cout << "i: " <<  i << "\n";
-
-
-
-//        std::cout << "\n";
         while (journal.isStillAccepting()) {
-//            std::cout << journal.submissionList.size() << ", ";
+
 //            esther.rest();
 //            simulationBar.progress(i * max_pubs + i, nsims * max_pubs);
 
@@ -309,7 +303,7 @@ void estherSimulation(){
 
             esther.calculateEffect();
             esther.runTest();
-//
+            
             esther.selectTheOutcome();
             if (esther.isHacker) {
                 esther.hack();
@@ -318,12 +312,12 @@ void estherSimulation(){
             esther.prepareTheSubmission();
             esther.submitToJournal();
 
-//            std::cout << esther.submissionRecord << "\n";
+           std::cout << esther.submissionRecord << "\n";
         }
 
         journal.clear();
     }
-    simulationBar.finish();
+//    simulationBar.finish();
 
 
 }
