@@ -280,7 +280,7 @@ void estherSimulation(){
 
 //    estherExperiment.initExperiment();
     Researcher esther(&estherExperiment);
-    esther.experiment->initExperiment();
+    // esther.experiment->initExperiment();
 
     OutcomeSwitching outSwitcher(&estherExperiment, "min pvalue");
     esther.isHacker = false;
@@ -299,9 +299,15 @@ void estherSimulation(){
 //            simulationBar.progress(i * max_pubs + i, nsims * max_pubs);
 
             esther.hackedSubmissions.clear();
-            esther.experiment->initExperiment();
+//            esther.experiment->initExperiment();
+            // These four are technically in initExperiment(),
+            // I'll have them here individually for testing.
+            esther.experiment->allocateResources();
+            esther.experiment->generateData();
+            esther.experiment->calculateStatistics();
+            esther.experiment->calculateEffects();
 
-            esther.calculateEffect();
+            // esther.calculateEffect();
             esther.runTest();
             
             esther.selectTheOutcome();
@@ -310,6 +316,7 @@ void estherSimulation(){
             }
 
             esther.prepareTheSubmission();
+            
             esther.submitToJournal();
 
            std::cout << esther.submissionRecord << "\n";
