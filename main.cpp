@@ -4,6 +4,7 @@
 #include <memory>
 #include "Utilities.h"
 #include "docopt.h"
+#include "tqdm/tqdm.h"
 #include <nlohmann/json.hpp>
 
 #include <Experiment.h>
@@ -32,6 +33,7 @@ R"(SAMpp
               [--alpha A] [--pub-bias B] [--max-pubs K]
               [--is-p-hacker] [--hacking-methods-config JSON]
               [--output-path PATH] [--output-prefix PREFIX]
+              [--progress]
 
 
 
@@ -39,6 +41,7 @@ R"(SAMpp
         -h --help          Show this screen.
         -v --version          Show version.
         --verbose          Print more texts.
+        --progress          Show progress bar [default: false]
         --master-seed=S    Set the master seed [default: 42]
         --n-sims=I         Number of simulations [default: 10000]
         --n-conditions=C   Number of conditions [default: 1]
@@ -70,6 +73,8 @@ void testJSON(std::string file);
 void testDOCOPT(std::map<std::string, docopt::value> args);
 
 using json = nlohmann::json;
+
+tqdm simulationBar;
 
 
 // TODO: This works for now but it needs more casting to be a better interface between JSON and DOCOPT
@@ -252,7 +257,7 @@ void estherSimulationTest(){
 void estherSimulation(){
     int nc = 1;
     int nd = 4;
-    int nobs = 200;
+    int nobs = 10;
     int nsims = 5;
     std::vector<double> means {.147, .147, 0.147, 0.147};
     std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
@@ -286,28 +291,40 @@ void estherSimulation(){
 
     TTest tTest(&estherExperiment);
     esther.setTestStrategy(&tTest);
-
+    
     for (int i = 0; i < nsims; ++i) {
 
 //        std::cout << "i: " <<  i << "\n";
 
-//        esther.rest();
-        esther.hackedSubmissions.clear();
-        esther.experiment->initExperiment();
 
-        esther.calculateEffect();
-        esther.runTest();
+
+//        std::cout << "\n";
+        while (journal.isStillAccepting()) {
+//            std::cout << journal.submissionList.size() << ", ";
+//            esther.rest();
+//            simulationBar.progress(i * max_pubs + i, nsims * max_pubs);
+
+            esther.hackedSubmissions.clear();
+            esther.experiment->initExperiment();
+
+            esther.calculateEffect();
+            esther.runTest();
 //
-        esther.selectTheOutcome();
-        if (esther.isHacker){
-            esther.hack();
+            esther.selectTheOutcome();
+            if (esther.isHacker) {
+                esther.hack();
+            }
+
+            esther.prepareTheSubmission();
+            esther.submitToJournal();
+
+//            std::cout << esther.submissionRecord << "\n";
         }
 
-        esther.prepareTheSubmission();
-        esther.submitToJournal();
-
-        std::cout << esther.submissionRecord << "\n";
+        journal.clear();
     }
+    simulationBar.finish();
+
 
 }
 

@@ -28,6 +28,8 @@ public:
     void accept(Submission s);
     void reject(Submission& s);
 
+    void clear();
+
     bool isStillAccepting(){
         return _still_accepting;
     }

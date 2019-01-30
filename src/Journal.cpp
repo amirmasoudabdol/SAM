@@ -23,9 +23,20 @@ bool Journal::review(Submission &s) {
 
 void Journal::accept(Submission s) {
     submissionList.push_back(s);
+
+    // std::cout << submissionList.size();
+    if (submissionList.size() == _max_pubs){
+        _still_accepting = false;
+    }
     // std::cout << s.pvalue << ": p\n";
 }
 
 void Journal::reject(Submission &s) {
 
+}
+
+void Journal::clear() {
+    submissionList.clear();
+    _still_accepting = true;
+    // std::cout << submissionList.size() << "<<" << "max_pubs: " << _max_pubs;
 }
