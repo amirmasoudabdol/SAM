@@ -1,3 +1,6 @@
+# Excluding docs
+doc/
+
 # Excluding the xcode-project
 xcode-project/
 cling-playground/
