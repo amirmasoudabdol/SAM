@@ -287,17 +287,25 @@ void estherSimulation(){
 
 //    estherExperiment.initExperiment();
     Researcher esther(&estherExperiment);
-    // esther.experiment->initExperiment();
+//     esther.experiment->initExperiment();
 
-    OutcomeSwitching outSwitcher("min pvalue");
-    esther.isHacker = true;
-    esther.registerAHackingStrategy(&outSwitcher);
+//    OutcomeSwitching outSwitcher("min pvalue");
+//    esther.isHacker = true;
+//    esther.registerAHackingStrategy(&outSwitcher);
 
-    OptionalStopping optStopping(3000);
-    // esther.isHacker = true;
+    OptionalStopping optStopping(3000, 5);
+     esther.isHacker = true;
     esther.registerAHackingStrategy(&optStopping);
 
     esther.setJournal(&journal);
+    
+//    Experiment copiedExpr = estherExperiment;
+//    Experiment cpExpr = *esther.experiment;
+//    esther.experiment->means[0] = 15;
+//    std::cout << estherExperiment.means[0] << "\n";
+////    cpExpr.means[0] = 10;
+//    std::cout << cpExpr.means[0] << "\n";
+    
 
     // I think this is a bit dangerous since I might lose track at some point,
     // It would be nicer if I can say `setTestStrategy(this)` or `setTestStrategy(parent)`
@@ -308,7 +316,7 @@ void estherSimulation(){
 
         while (journal.isStillAccepting()) {
 
-//            esther.rest();
+            esther.rest();
 //            simulationBar.progress(i * max_pubs + i, nsims * max_pubs);
 
             esther.hackedSubmissions.clear();
@@ -322,16 +330,20 @@ void estherSimulation(){
 
             esther.experiment->runTest();
             
+//            printVector(esther.experiment->means); std::cout << ": o, esther, means, [1]\n";
             if (esther.isHacker) {
                 // std::cout << "hacking\n";
                 esther.hack();
+//                printVector(esther.experiment->means); std::cout << ": h, esther, means [3]\n";
+//                printVector(esther.hackedExperiments[0].means); std::cout << ": hacked array, means [4]\n";
             }
+
 
             esther.prepareTheSubmission();
             
             esther.submitToJournal();
 
-           std::cout << esther.submissionRecord << "\n";
+           std::cout << esther.submissionRecord<< "\n";
         }
 
         journal.clear();

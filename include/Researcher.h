@@ -12,6 +12,11 @@
 #include "HackingStrategies.h"
 #include "Journal.h"
 
+enum HackingStyle {
+    onOrig,
+    onCopy
+};
+
 class Researcher {
 
 public:
@@ -23,6 +28,7 @@ public:
 //    TestStrategies* testStrategy;
 
     bool isHacker = false;
+    HackingStyle hackingStyle = onCopy;
     std::vector<HackingStrategy*> hackingStrategies;
 	std::vector<Experiment> hackedExperiments;
 	std::vector<Submission> hackedSubmissions;
@@ -46,6 +52,7 @@ public:
     void calculateEffect();
     void selectTheOutcome();
 	
+    // This could be renamed to something like, selectThePreferedSubmission()
     void prepareTheSubmission();
     void submitToJournal();
 

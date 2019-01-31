@@ -48,6 +48,8 @@ public:
 
     TestStrategy* testStrategy;
     void setTestStrategy(TestStrategy* t);
+    // I'm not even sure if this is necessary or not, I need to run some tests
+    void pointTestStrategyToThis();
     void runTest();
 
     DataGenStrategy* dataStrategy;
@@ -74,6 +76,23 @@ public:
 
     void sayHi();
 
+    // I actually don't need to write a copy instructor,
+    // because I don't mind if pointers are pointing to the old testStrategy,
+    // and dataStrategy, that's fine.
+    // TODO: However, I need to make sure that the testStrategy points to the new
+    // copy of the Experiment. The `updateExperimentPointer()` and `pointTestStrategyToThis()`
+    // will take care of this, but maybe I can have them inside the copy and = to
+    // comply with RAII.
+    
+//    Experiment(const Experiment& other){
+//
+//    }
+//    
+//    Experiment& operator=(const Experiment& lhs){
+//
+//    };
+
+    
 private:
 
 

@@ -11,23 +11,23 @@
 #include <algorithm>
 #include <numeric>
 
-Submission OutcomeSwitching::perform(Experiment experiment) {
+Submission OutcomeSwitching::perform(Experiment* experiment) {
 
 //    std::cout << "Outcome Switching\n";
 
     long selectedOutcome = 0;
     
     if (_method == "min pvalue"){
-        selectedOutcome = std::distance(experiment.pvalues.begin(), std::min_element(experiment.pvalues.begin(), experiment.pvalues.end()));
+        selectedOutcome = std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
 
-        // selectedOutcome = argMin(experiment.pvalues);
+        // selectedOutcome = argMin(experiment->pvalues);
     }else if (_method == "max effect"){
-        selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
-//         selectedOutcome = argMax(this->experiment.effects);
+        selectedOutcome = std::distance(experiment->effects.begin(), std::max_element(experiment->effects.begin(), experiment->effects.end()));
+//         selectedOutcome = argMax(this->experiment->effects);
     }
     
 //    _selected_outcome_inx = selectedOutcome;
-    return _create_submission_record(experiment, selectedOutcome);
+    return _create_submission_record(*experiment, selectedOutcome);
 }
 
 Submission _create_submission_record(Experiment& experiment, int inx) {
@@ -39,24 +39,37 @@ Submission _create_submission_record(Experiment& experiment, int inx) {
     return sub;
 }
 
-Submission OptionalStopping::perform(Experiment experiment) {
+Submission OptionalStopping::perform(Experiment* experiment) {
 
      // std::cout << "Optional Stopping\n";
 
-    if (experiment.setup.isMultivariate){
+    // TODO: Implemented the multi_trial
+    
+    if (experiment->setup.isMultivariate){
 
     }else{
-        auto newObs = experiment.dataStrategy->genNewObservationsForAllGroups(_n_new_obs);
-        for (int i = 0; i < experiment.setup.ng; ++i) {
-            experiment.measurements[i].insert(experiment.measurements[i].begin(),
+        auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(_n_new_obs);
+        for (int i = 0; i < experiment->setup.ng; ++i) {
+            experiment->measurements[i].insert(experiment->measurements[i].begin(),
                                                 newObs[i].begin(),
                                                 newObs[i].end());
         }
     }
 
-    experiment.calculateStatistics();
-    experiment.calculateEffects();
-    experiment.runTest();
+    experiment->calculateStatistics();
+    experiment->calculateEffects();
+    experiment->runTest();
     
-    return _create_submission_record(experiment, 0);
+    // TODO: this needs to change, it needs to pick and select instead of 0;
+    return _create_submission_record(*experiment, 0);
 }
+
+
+//Submission OutlierRemoval::perform(Experiment* experiment) {
+//    
+//    
+//    
+//    
+//    // TODO: this needs to change, it needs to pick and select instead of 0;
+//    return _create_submission_record(*experiment, 0);
+//}

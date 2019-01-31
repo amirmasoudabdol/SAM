@@ -19,6 +19,7 @@ public:
 //    Experiment exp;
 
     virtual void run() = 0;
+    virtual void updateExperimentPointer(Experiment *e) = 0;
 //    virtual std::vector<std::vector<double>> computeStatsPvalue() = 0;
     // void setExperiment(std::shared_ptr<Experiment> expr) ;
 
@@ -38,7 +39,7 @@ public:
     
     TTest();
     
-    
+    void updateExperimentPointer(Experiment *e);
     void run();
     void computeStatsPvalue();
     

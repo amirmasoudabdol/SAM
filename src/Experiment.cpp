@@ -71,3 +71,8 @@ void Experiment::calculateEffects() {
     effects = means;
 }
 
+
+// This is a tricky business!
+void Experiment::pointTestStrategyToThis() {
+    testStrategy->updateExperimentPointer(this);
+}

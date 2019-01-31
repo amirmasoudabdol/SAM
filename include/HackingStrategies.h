@@ -18,7 +18,7 @@ Submission _create_submission_record(Experiment& experiment, int inx);
 
 class HackingStrategy {
 
-    double defensibility;
+//    double defensibility;
 
 public:
 
@@ -30,7 +30,7 @@ public:
     // Also, I still don't know how to implement the case where a researcher
     // wants to run several hacking over one experiment. I guess for this to be
     // done properly I need to do implement some sort of Template Pattern.
-    virtual Submission perform(Experiment experiment) = 0;
+    virtual Submission perform(Experiment* experiment) = 0;
     
     const int& getSelectedOutcome() const {
         return selectedOutcome;
@@ -53,7 +53,7 @@ public:
     };
     
     // Submission hackedSubmission;
-    Submission perform(Experiment experiment);
+    Submission perform(Experiment* experiment);
 
 private:
     std::string _method = "min pvalue";
@@ -62,16 +62,17 @@ private:
 class OptionalStopping : public HackingStrategy {
 public:
 
-    OptionalStopping(int n_new_obs) : _n_new_obs(n_new_obs) {
+    OptionalStopping(int n_new_obs, int n_trials) :
+        _n_new_obs(n_new_obs), _n_trials(n_trials) {
         // selectedOutcome = 3;
     };
 
     // int selectedOutcome;
     // Submission hackedSubmission;
-    Submission perform(Experiment experiment);
+    Submission perform(Experiment* experiment);
 
 private:
-    int _n_new_obs;
+    int _n_new_obs, _n_trials;
 
 };
 
@@ -82,7 +83,7 @@ public:
     OutlierRemoval();
 
     // Submission hackedSubmission;
-    Submission perform(Experiment experiment);
+    Submission perform(Experiment* experiment);
 
 };
 
@@ -92,7 +93,7 @@ public:
     GroupPooling(std::string scheme) : _scheme(scheme) {} ;
     
     // Submission hackedSubmission;
-    Submission perform(Experiment experiment);
+    Submission perform(Experiment* experiment);
     
 private:
     std::string _scheme;

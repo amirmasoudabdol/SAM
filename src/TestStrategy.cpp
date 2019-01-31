@@ -24,3 +24,8 @@ void TTest::computeStatsPvalue() {
 
 }
 
+void TTest::updateExperimentPointer(Experiment* e) {
+    experiment = e;
+}
+
+
