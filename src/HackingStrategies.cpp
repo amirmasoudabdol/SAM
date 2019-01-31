@@ -13,7 +13,7 @@
 
 Submission OutcomeSwitching::perform() {
 
-    // std::cout << "Outcome Switching\n";
+    std::cout << "Outcome Switching\n";
 
     long selectedOutcome = 0;
     
@@ -39,8 +39,28 @@ Submission OutcomeSwitching::_create_submission_record(int inx) {
     return sub;
 }
 
-Submission OutcomeSwitching::performOnCopy() {
-    return Submission();
+Submission OutcomeSwitching::performOnCopy(Experiment expr) {
+    std::cout << "Outcome Switching on a Copy\n";
+    
+    long selectedOutcome = 0;
+    
+    if (_method == "min pvalue"){
+        selectedOutcome = std::distance(expr.pvalues.begin(), std::min_element(expr.pvalues.begin(), expr.pvalues.end()));
+        
+        // selectedOutcome = argMin(expr.pvalues);
+    }else if (_method == "max effect"){
+        selectedOutcome = std::distance(expr.effects.begin(), std::max_element(expr.effects.begin(), expr.effects.end()));
+        //         selectedOutcome = argMax(expr.effects);
+    }
+    
+//        _selected_outcome_inx = selectedOutcome;
+    Submission sub;
+    sub.effect = expr.effects[selectedOutcome];
+    sub.stat = expr.statistics[selectedOutcome];
+    sub.pvalue = expr.pvalues[selectedOutcome];
+//    return this->_create_submission_record(selectedOutcome);
+//    return Submission();
+    return sub;
 }
 
 Submission OptionalStopping::perform() {

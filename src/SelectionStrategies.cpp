@@ -8,7 +8,7 @@ bool SignigicantSelection::review(Submission &s) {
     if (s.pvalue < _alpha){
         return true;
     }else
-        if (_rngEngine->uniform() < 1 - _pub_bias) {
+        if (_rngEngine->uniform() < _pub_bias) {
             return true;
         }
 

@@ -39,6 +39,14 @@ void Researcher::hack() {
     // Or, I can run all of them, and then decide
 }
 
+void Researcher::testHack(){
+    HackingStrategy* h = hackingStrategies[0];
+    auto sub = h->performOnCopy(*experiment);
+    std::cout << _create_submission_record(0) << ": o\n";
+    std::cout << sub << ": h\n";
+    
+}
+
 // This always select the pre-registered outcome, [0]
 //void Researcher::selectTheOutcome() {
 //    _selected_outcome_inx = 0;
@@ -77,7 +85,6 @@ void Researcher::submitToJournal() {
 }
 
 void Researcher::setJournal(Journal* j) {
-	// TODO: This is susspicious!
 	journal = j;
 }
 

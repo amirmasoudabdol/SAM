@@ -41,6 +41,7 @@ public:
     std::string decisionStrategy = "asap";
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
+    void testHack();
     
     void calculateEffect();
     void selectTheOutcome();

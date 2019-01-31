@@ -14,6 +14,8 @@ public:
 //    HackingStrategy();
 
     virtual Submission perform() = 0;
+    virtual Submission performOnCopy(Experiment expr) = 0;
+    // virtual void setExperiment() = 0;
     
     double defensibility;
 };
@@ -34,19 +36,21 @@ public:
 
     }
 
+    void setExperiment(Experiment& e);
+    
     Submission hackedSubmission;
     Submission perform();
-    Submission performOnCopy();
+    Submission performOnCopy(Experiment expr);
 
 private:
-    std::string _method = "Min PValue";
+    std::string _method = "min pvalue";
 //    long _selected_outcome_inx = 0;
     Submission _create_submission_record(int inx);
 
 };
 
 class OptionalStopping : public HackingStrategy {
-public:/**/
+public:
     Experiment* experiment;
 
 

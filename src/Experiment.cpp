@@ -14,7 +14,7 @@
 
 
 void Experiment::sayHi() {
-    std::cout << "Experiment says Hi";
+    std::cout << "Experiment says Hi!\n";
 }
 
 void Experiment::generateData() {

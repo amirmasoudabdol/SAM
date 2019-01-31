@@ -94,6 +94,9 @@ using json = nlohmann::json;
 
 tqdm simulationBar;
 
+// TODO: Replace pointers with shared_ptr and unique_ptr. Check if it's possible
+// to do this with gsl_ stuffs too.
+
 
 int main(int argc, const char** argv){
 
@@ -258,9 +261,11 @@ void estherSimulationTest(){
 void estherSimulation(){
     int nc = 1;
     int nd = 4;
-    int nobs = 10;
-    int nsims = 5;
-    std::vector<double> means {.147, .147, 0.147, 0.147};
+    int nobs = 25;
+    int nsims = 1;
+//    std::vector<double> means {.147, .147, 0.147, 0.147};
+    std::vector<double> means {0.1, 0.3, 0.5, 0.7};
+//    std::vector<double> means {.8, .9, 1., 2.};
     std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
 
     int max_pubs = 70;
@@ -290,6 +295,8 @@ void estherSimulation(){
 
     esther.setJournal(&journal);
 
+    // I think this is a bit dangerous since I might lose track at some point,
+    // It would be nicer if I can say `setTestStrategy(this)` or `setTestStrategy(parent)`
     TTest tTest(&estherExperiment);
     esther.experiment->setTestStrategy(&tTest);
 
@@ -309,13 +316,13 @@ void estherSimulation(){
             esther.experiment->calculateStatistics();
             esther.experiment->calculateEffects();
 
-            // esther.calculateEffect();
-            // esther.runTest();
             esther.experiment->runTest();
             
             // esther.selectTheOutcome();
             if (esther.isHacker) {
+                std::cout << "hacking\n";
                 esther.hack();
+                // esther.testHack();
             }
 
             esther.prepareTheSubmission();
