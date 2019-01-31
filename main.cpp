@@ -322,11 +322,9 @@ void estherSimulation(){
 
             esther.experiment->runTest();
             
-            // esther.selectTheOutcome();
             if (esther.isHacker) {
-                std::cout << "hacking\n";
+                // std::cout << "hacking\n";
                 esther.hack();
-                // esther.testHack();
             }
 
             esther.prepareTheSubmission();
