@@ -19,7 +19,7 @@ public:
 //    Experiment exp;
 
     virtual void run() = 0;
-	virtual std::vector<std::vector<double>> computeStatsPvalue() = 0;
+//    virtual std::vector<std::vector<double>> computeStatsPvalue() = 0;
     // void setExperiment(std::shared_ptr<Experiment> expr) ;
 
 };
@@ -28,19 +28,19 @@ public:
 class TTest : public TestStrategy {
     
 public:
-        Experiment* experiment;
+    Experiment* experiment;
     // std::string name = "t.test";
     
     
-    //    TTest(Experiment* e) {
-    //        experiment = e;
-    //    }
+    TTest(Experiment* e) {
+        experiment = e;
+    }
     
     TTest();
     
     
     void run();
-    std::vector<std::vector<double>> computeStatsPvalue();
+    void computeStatsPvalue();
     
     
     

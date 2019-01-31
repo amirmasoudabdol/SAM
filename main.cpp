@@ -20,6 +20,7 @@
 
 using json = nlohmann::json;
 
+// \cond HIDDEN_SYMBOLS
 // TODO: This works for now but it needs more casting to be a better interface between JSON and DOCOPT
 namespace nlohmann {
     template <>
@@ -35,6 +36,7 @@ namespace nlohmann {
         }
     };
 }
+// \endcond
 
 json inputParams;
 
@@ -288,9 +290,8 @@ void estherSimulation(){
 
     esther.setJournal(&journal);
 
-//    TTest tTest(&estherExperiment);
-    // TTest tTest;
-    // esther.experiment->setTestStrategy(&tTest);
+    TTest tTest(&estherExperiment);
+    esther.experiment->setTestStrategy(&tTest);
 
     for (int i = 0; i < nsims; ++i) {
 

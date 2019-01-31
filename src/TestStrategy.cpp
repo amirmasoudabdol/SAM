@@ -8,7 +8,7 @@
 #include "gsl/gsl_statistics.h"
 #include "gsl/gsl_randist.h"
 
-//#include <Experiment.h>
+#include <Experiment.h>
 
 void TTest::run() {
 	// std::cout << "this is t.test ";
@@ -29,30 +29,30 @@ void TTest::run() {
 //     }
 //     std::cout << std::endl;
 
-    auto stat_pvalue = this->computeStatsPvalue();
+//    auto stat_pvalue = this->computeStatsPvalue();
+    this->computeStatsPvalue();
 //    experiment->statistics = stat_pvalue[0];
 //    experiment->pvalues = stat_pvalue[1];
 }
 
-std::vector<std::vector<double>> TTest::computeStatsPvalue() {
+void TTest::computeStatsPvalue() {
+//    int n = this->experiment->setup.ng;
 //    std::vector<double> stats(experiment->setup.ng);
 //    std::vector<double> pvalue(experiment->setup.ng);
 
-    std::vector<double> stats;
-    std::vector<double> pvalue;
+//    std::vector<double> stats;
+//    std::vector<double> pvalue;
 
-//    for (int i = 0; i < experiment->setup.ng; ++i) {
-//        stats[i] = experiment->vars[i] / experiment->ses[i];
-//
-//        pvalue[i] = gsl_ran_tdist_pdf(stats[i], experiment->measurements[i].size() - 1);
-//    }
+    for (int i = 0; i < experiment->setup.ng; ++i) {
+        experiment->statistics[i] = experiment->vars[i] / experiment->ses[i];
 
-//    t.pdf(self.effects_df.stat, df = self.effects_df.nobs - 1)
+        experiment->pvalues[i] = gsl_ran_tdist_pdf(experiment->statistics[i], experiment->measurements[i].size() - 1);
+    }
 
-    std::vector<std::vector<double> > t_p;
-    t_p.push_back(stats);
-    t_p.push_back(pvalue);
+//    std::vector<std::vector<double> > t_p;
+//    t_p.push_back(stats);
+//    t_p.push_back(pvalue);
 
-    return t_p;
+//    return t_p;
 }
 
