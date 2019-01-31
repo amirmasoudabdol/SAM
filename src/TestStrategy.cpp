@@ -8,6 +8,8 @@
 #include "gsl/gsl_statistics.h"
 #include "gsl/gsl_randist.h"
 
+//#include <Experiment.h>
+
 void TTest::run() {
 	// std::cout << "this is t.test ";
 	// std::cout << "ng: " << experiment->setup.ng << std::endl;
