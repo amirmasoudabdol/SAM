@@ -9,96 +9,102 @@
 #include "SubmissionRecord.h"
 #include <string>
 
-class HackingStrategy {
-public:
-//    HackingStrategy();
+enum HackingMethod {
+    OUTCOME_SWITCHING,
+    OUTLIER_REMOVAL
+};
 
-    virtual Submission perform() = 0;
-    virtual Submission performOnCopy(Experiment expr) = 0;
-    // virtual void setExperiment() = 0;
-    
+Submission _create_submission_record(Experiment& experiment, int inx);
+
+class HackingStrategy {
+
     double defensibility;
+
+public:
+
+    // `perform()` makes a copy of the experiment, and perform the hacking.
+    // This is usually a good idea, but its expensive if I have to do a lot of
+    // them. Keep in mind that not all *HackingStrategies* need to modify the
+    // *experiment*, so maybe later on, I can decide what kind of hacking I'm
+    // performing, and decide if I need to make a copy or not.
+    // Also, I still don't know how to implement the case where a researcher
+    // wants to run several hacking over one experiment. I guess for this to be
+    // done properly I need to do implement some sort of Template Pattern.
+    virtual Submission perform(Experiment experiment) = 0;
+    
+    const int& getSelectedOutcome() const {
+        return selectedOutcome;
+    };
+    void setSelectedOutcome(const int& _o_inx){
+        selectedOutcome = _o_inx;
+    }
+
+private:
+    int selectedOutcome;
+    Submission hackedSubmission;
 };
 
 class OutcomeSwitching : public HackingStrategy {
 public:
-    Experiment* experiment;
-
 
     OutcomeSwitching();
     OutcomeSwitching(std::string method) : _method(method) {
 
     };
-
-    OutcomeSwitching(Experiment* e, std::string method) :
-        experiment(e), _method(method) {
-        // TODO: I might need a copy constructor in the Experiment to be able to copy the pointers.
-
-    }
-
-    void setExperiment(Experiment& e);
     
-    Submission hackedSubmission;
-    Submission perform();
-    Submission performOnCopy(Experiment expr);
+    // Submission hackedSubmission;
+    Submission perform(Experiment experiment);
 
 private:
     std::string _method = "min pvalue";
-//    long _selected_outcome_inx = 0;
-    Submission _create_submission_record(int inx);
-
 };
 
 class OptionalStopping : public HackingStrategy {
 public:
-    Experiment* experiment;
 
+    OptionalStopping(int n_new_obs) : _n_new_obs(n_new_obs) {
+        // selectedOutcome = 3;
+    };
 
-    OptionalStopping(int max_new_obs) : _max_new_obs(max_new_obs) {};
-
-    // OptionalStopping(Experiment* e, int max_new_obs) :
-    //     experiment(e), _max_new_obs(max_new_obs){
-
-    // };
-
-    Submission hackedSubmission;
-    Submission perform();
+    // int selectedOutcome;
+    // Submission hackedSubmission;
+    Submission perform(Experiment experiment);
 
 private:
-    int _max_new_obs;
+    int _n_new_obs;
 
 };
 
 // If I need more variations here, I think it's the best if I make different subclass
 class OutlierRemoval : public HackingStrategy {
 public:
-    Experiment* experiment;
 
     OutlierRemoval();
 
-    Submission hackedSubmission;
-    Submission perform();
+    // Submission hackedSubmission;
+    Submission perform(Experiment experiment);
 
 };
 
 class GroupPooling : public HackingStrategy {
 public:
-    Experiment* experiment;
     
     GroupPooling(std::string scheme) : _scheme(scheme) {} ;
     
-    Submission perform();
-    Submission hackedSubmission;
+    // Submission hackedSubmission;
+    Submission perform(Experiment experiment);
     
 private:
     std::string _scheme;
 };
 
 class QuestionableRounding : public HackingStrategy {
-    int _threshold;
     
 public:
     QuestionableRounding(int threshold) : _threshold(threshold) {};
+    
+private:
+    int _threshold;
 };
 
 #endif //SAMPP_HACKINGSTRATEGIES_H

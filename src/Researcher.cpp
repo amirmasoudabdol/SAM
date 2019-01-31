@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include <Utilities.h>
+
 // void Researcher::setTestStrategy(TestStrategies *t) {
 //     testStrategy = t;
 // }
@@ -23,7 +25,13 @@ void Researcher::hack() {
     Submission sub;
 	for (auto &h : hackingStrategies){
         // I can either check the significance here and stop after finding one
-        sub = h->perform();
+        printVector(experiment->means); std::cout << " :o, means\n";
+        // std::cout << experiment->measurements[0].size() << " :meas.size()\n";
+        std::cout << _create_submission_record(0) << " :o, sub\n";
+        sub = h->perform(*experiment);
+        printVector(experiment->means); std::cout << " :hack, o, means\n";
+        std::cout << sub << " :h, sub\n";
+        std::cout << "\n" << h->getSelectedOutcome() << " :selectedOutcome\n";
         
         if (decisionStrategy == "asap"){
             if (sub.pvalue < experiment->setup.alpha){
@@ -39,13 +47,13 @@ void Researcher::hack() {
     // Or, I can run all of them, and then decide
 }
 
-void Researcher::testHack(){
-    HackingStrategy* h = hackingStrategies[0];
-    auto sub = h->performOnCopy(*experiment);
-    std::cout << _create_submission_record(0) << ": o\n";
-    std::cout << sub << ": h\n";
-    
-}
+//void Researcher::testHack(){
+//    HackingStrategy* h = hackingStrategies[0];
+//    auto sub = h->performOnCopy(*experiment);
+//    std::cout << _create_submission_record(0) << ": o\n";
+//    std::cout << sub << ": h\n";
+//    
+//}
 
 // This always select the pre-registered outcome, [0]
 //void Researcher::selectTheOutcome() {

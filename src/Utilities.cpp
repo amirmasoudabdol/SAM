@@ -15,14 +15,24 @@
 #include "gsl/gsl_vector.h"
 #include "gsl/gsl_matrix.h"
 
-template <typename T>
-std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
-    if ( !v.empty() ) {
-        out << '[';
-        std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-        out << "\b\b]";
+// template <typename T>
+// std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
+// 	for (auto const& tmp : v)
+//         out << tmp << " ";
+//     out << std::endl;
+//     return out;
+// }
+
+void printVector(std::vector<double>& v)
+{
+    
+    if(!v.empty())
+    {
+        std::copy(v.begin(),
+                  --v.end(),
+                  std::ostream_iterator<double>(std::cout, ", "));
+        std::cout << v.back();
     }
-    return out;
 }
 
 template<typename T>

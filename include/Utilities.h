@@ -9,6 +9,8 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <iostream>
+#include <ostream>
 
 
 double mean(const std::vector<double> &);
@@ -30,6 +32,11 @@ double ttest_finish(double t, double df);
 
 template<typename T>
 std::vector<T> flatten(const std::vector<std::vector<T>> &orig);
+
+template<typename T>
+std::ostream& operator<< (std::ostream& out, const std::vector<double>& v);
+
+void printVector(std::vector<double>& v);
 
 //template <typename T>
 //long argMin(const std::vector<T> &v);

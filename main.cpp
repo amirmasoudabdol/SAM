@@ -289,9 +289,13 @@ void estherSimulation(){
     Researcher esther(&estherExperiment);
     // esther.experiment->initExperiment();
 
-    OutcomeSwitching outSwitcher(&estherExperiment, "min pvalue");
+    OutcomeSwitching outSwitcher("min pvalue");
     esther.isHacker = true;
     esther.registerAHackingStrategy(&outSwitcher);
+
+    OptionalStopping optStopping(3000);
+    // esther.isHacker = true;
+    esther.registerAHackingStrategy(&optStopping);
 
     esther.setJournal(&journal);
 
