@@ -23,6 +23,13 @@
 
 void Researcher::hack() {
     
+    // Preparing the history
+    // With this, I basically save everything, and then later on the decisionStrategy
+    // can use it to make the final decision
+    Experiment e = *experiment;
+    experimentsList.push_back(e);
+    submissionsList.push_back(decisionStrategy->selectOutcome(e));
+    
     Submission sub;
     
 	for (auto &h : hackingStrategies){
@@ -31,20 +38,22 @@ void Researcher::hack() {
             // Just send the pointer
             Experiment* tempExpr = experiment;
             sub = h->perform(tempExpr);
+            sub = decisionStrategy->selectOutcome(*tempExpr);
 //            printVector(tempExpr->means); std::cout << " :h, res, on orig, means [2]\n";
-            hackedExperiments.push_back(*tempExpr);
+            experimentsList.push_back(*tempExpr);
         }else if (hackingStyle == onCopy){
             // Sending the copy
             Experiment copiedExpr = *experiment;
             sub = h->perform(&copiedExpr);
+            sub = decisionStrategy->selectOutcome(copiedExpr);
 //            printVector(copiedExpr.means); std::cout << " :h, res, copy, means [2]\n";
-            hackedExperiments.push_back(copiedExpr);
+            experimentsList.push_back(copiedExpr);
         }
         
         
 //        sub = h->perform(*experiment);
 
-        hackedSubmissions.push_back(sub);
+        submissionsList.push_back(sub);
         
 //        if (decisionStrategy == "asap"){
 //            if (sub.pvalue < experiment->setup.alpha){
@@ -57,25 +66,28 @@ void Researcher::hack() {
     // Or, I can run all of them, and then decide
 }
 
-Submission Researcher::_create_submission_record(int inx){
-	Submission sub;
-	sub.effect = experiment->effects[inx];
-	sub.stat = experiment->statistics[inx];
-	sub.pvalue = experiment->pvalues[inx];
-
-	return sub;
-}
+//Submission Researcher::_create_submission_record(int inx){
+//    Submission sub;
+//    sub.effect = experiment->effects[inx];
+//    sub.statistic = experiment->statistics[inx];
+//    sub.pvalue = experiment->pvalues[inx];
+//
+//    return sub;
+//}
 
 void Researcher::prepareTheSubmission() {
 	if (!isHacker) {
         // Return the pre-registered outcome, always [0].
-		submissionRecord = _create_submission_record(0);
+//        submissionRecord = _create_submission_record(0);
+//        submissionRecord = Submission(*experiment, 0);
+        submissionRecord = decisionStrategy->selectOutcome(*experiment);
 	}else{
 		// TODO: This needs generalization
 //        submissionRecord = hackedSubmissions[0];
 //        if (decisionStrategy == "asap"){
 //            if (hackedSubmissions.size() != 0){
-                submissionRecord = hackedSubmissions.back();
+//                submissionRecord = submissionsList.back();
+        submissionRecord = decisionStrategy->selectBetweenSubmission(submissionsList);
 //            }else{
 //                submissionRecord = _create_submission_record(_selected_outcome_inx);
 //            }
@@ -98,7 +110,12 @@ void Researcher::registerAHackingStrategy(HackingStrategy *h) {
 }
 
 void Researcher::rest() {
-    hackedExperiments.clear();
-    hackedSubmissions.clear();
+    experimentsList.clear();
+    submissionsList.clear();
 }
+
+void Researcher::setDecisionStrategy(DecisionStrategy* d) {
+    decisionStrategy = d;
+}
+
 

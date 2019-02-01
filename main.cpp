@@ -17,6 +17,7 @@
 #include <Journal.h>
 #include <SelectionStrategies.h>
 #include <HackingStrategies.h>
+#include <DecisionStrategy.h>
 
 using json = nlohmann::json;
 
@@ -268,7 +269,7 @@ void estherSimulation(){
 //    std::vector<double> means {.8, .9, 1., 2.};
     std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
 
-    int max_pubs = 70;
+    int max_pubs = 20;
     double alpha= 0.05;
     double pub_bias = 0.95;
 
@@ -294,10 +295,13 @@ void estherSimulation(){
 //    esther.registerAHackingStrategy(&outSwitcher);
 
     OptionalStopping optStopping(3000, 5);
-     esther.isHacker = true;
+     esther.isHacker = false;
     esther.registerAHackingStrategy(&optStopping);
 
     esther.setJournal(&journal);
+    
+    ReportPreregisteredGroup preRegReporter(0);
+    esther.setDecisionStrategy(&preRegReporter);
     
 //    Experiment copiedExpr = estherExperiment;
 //    Experiment cpExpr = *esther.experiment;
@@ -319,7 +323,7 @@ void estherSimulation(){
             esther.rest();
 //            simulationBar.progress(i * max_pubs + i, nsims * max_pubs);
 
-            esther.hackedSubmissions.clear();
+            esther.submissionsList.clear();
 //            esther.experiment->initExperiment();
             // These four are technically in initExperiment(),
             // I'll have them here individually for testing.

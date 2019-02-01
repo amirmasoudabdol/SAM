@@ -27,17 +27,18 @@ Submission OutcomeSwitching::perform(Experiment* experiment) {
     }
     
 //    _selected_outcome_inx = selectedOutcome;
-    return _create_submission_record(*experiment, selectedOutcome);
+//    return _create_submission_record(*experiment, selectedOutcome);
+    return Submission(*experiment, selectedOutcome);
 }
 
-Submission _create_submission_record(Experiment& experiment, int inx) {
-    Submission sub;
-    sub.effect = experiment.effects[inx];
-    sub.stat = experiment.statistics[inx];
-    sub.pvalue = experiment.pvalues[inx];
-
-    return sub;
-}
+//Submission _create_submission_record(Experiment& experiment, int inx) {
+//    Submission sub;
+//    sub.effect = experiment.effects[inx];
+//    sub.statistic = experiment.statistics[inx];
+//    sub.pvalue = experiment.pvalues[inx];
+//
+//    return sub;
+//}
 
 Submission OptionalStopping::perform(Experiment* experiment) {
 
@@ -61,7 +62,8 @@ Submission OptionalStopping::perform(Experiment* experiment) {
     experiment->runTest();
     
     // TODO: this needs to change, it needs to pick and select instead of 0;
-    return _create_submission_record(*experiment, 0);
+//    return _create_submission_record(*experiment, 0);
+    return Submission(*experiment, 0);
 }
 
 

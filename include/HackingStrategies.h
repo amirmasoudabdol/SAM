@@ -14,7 +14,7 @@ enum HackingMethod {
     OUTLIER_REMOVAL
 };
 
-Submission _create_submission_record(Experiment& experiment, int inx);
+//Submission _create_submission_record(Experiment& experiment, int inx);
 
 class HackingStrategy {
 

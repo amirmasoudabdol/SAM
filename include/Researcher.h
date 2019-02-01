@@ -11,6 +11,7 @@
 #include "SubmissionRecord.h"
 #include "HackingStrategies.h"
 #include "Journal.h"
+#include "DecisionStrategy.h"
 
 enum HackingStyle {
     onOrig,
@@ -30,8 +31,8 @@ public:
     bool isHacker = false;
     HackingStyle hackingStyle = onCopy;
     std::vector<HackingStrategy*> hackingStrategies;
-	std::vector<Experiment> hackedExperiments;
-	std::vector<Submission> hackedSubmissions;
+	std::vector<Experiment> experimentsList;
+	std::vector<Submission> submissionsList;
 
     Submission submissionRecord;
 
@@ -44,15 +45,27 @@ public:
 //    void runTest();
 
     // This probably needs to be a class of itself as well
-    std::string decisionStrategy = "asap";
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
     void testHack();
     
+    // std::string decisionStrategy = "asap";
+    DecisionStrategy* decisionStrategy;
+    void setDecisionStrategy(DecisionStrategy* d);
+    
+//    DecisionStrategy* finalDecision;
+    // The `finalDecision` can be used alongside the `decisionStrategy`. While
+    // `decisionStrategy` is being used to construct a submission from an experiment,
+    // the `finalDecision` can be used to travese between all other submisions, and
+    // pick the ultimate best. Having two decision strategy allow for more detail
+    // implementation.
+
+    
     void calculateEffect();
-    void selectTheOutcome();
+
 	
     // This could be renamed to something like, selectThePreferedSubmission()
+    void selectOutcome();
     void prepareTheSubmission();
     void submitToJournal();
 

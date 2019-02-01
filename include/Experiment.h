@@ -55,7 +55,7 @@ public:
     DataGenStrategy* dataStrategy;
     void setDataStrategy(DataGenStrategy* d);
 
-    // Initialize the Experiment
+    // Initialize the Experiment/**/
     void allocateResources();
     void initExperiment();
     void generateData();
