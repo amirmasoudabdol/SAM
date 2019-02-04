@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <numeric>
 
-Submission OutcomeSwitching::perform(Experiment* experiment) {
+void OutcomeSwitching::perform(Experiment* experiment) {
 
 //    std::cout << "Outcome Switching\n";
 
@@ -28,7 +28,7 @@ Submission OutcomeSwitching::perform(Experiment* experiment) {
     
 //    _selected_outcome_inx = selectedOutcome;
 //    return _create_submission_record(*experiment, selectedOutcome);
-    return Submission(*experiment, selectedOutcome);
+//    return Submission(*experiment, selectedOutcome);
 }
 
 //Submission _create_submission_record(Experiment& experiment, int inx) {
@@ -40,7 +40,7 @@ Submission OutcomeSwitching::perform(Experiment* experiment) {
 //    return sub;
 //}
 
-Submission OptionalStopping::perform(Experiment* experiment) {
+void OptionalStopping::perform(Experiment* experiment) {
 
      // std::cout << "Optional Stopping\n";
 
@@ -63,7 +63,7 @@ Submission OptionalStopping::perform(Experiment* experiment) {
     
     // TODO: this needs to change, it needs to pick and select instead of 0;
 //    return _create_submission_record(*experiment, 0);
-    return Submission(*experiment, 0);
+//    return Submission(*experiment, 0);
 }
 
 

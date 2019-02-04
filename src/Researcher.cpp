@@ -23,7 +23,7 @@
 
 void Researcher::hack() {
     
-    // Preparing the history
+    // Preparing the history ------------------------------
     // With this, I basically save everything, and then later on the decisionStrategy
     // can use it to make the final decision
     Experiment e = *experiment;
@@ -37,14 +37,14 @@ void Researcher::hack() {
         if (hackingStyle == onOrig){
             // Just send the pointer
             Experiment* tempExpr = experiment;
-            sub = h->perform(tempExpr);
+            h->perform(tempExpr);
             sub = decisionStrategy->selectOutcome(*tempExpr);
 //            printVector(tempExpr->means); std::cout << " :h, res, on orig, means [2]\n";
             experimentsList.push_back(*tempExpr);
         }else if (hackingStyle == onCopy){
             // Sending the copy
             Experiment copiedExpr = *experiment;
-            sub = h->perform(&copiedExpr);
+            h->perform(&copiedExpr);
             sub = decisionStrategy->selectOutcome(copiedExpr);
 //            printVector(copiedExpr.means); std::cout << " :h, res, copy, means [2]\n";
             experimentsList.push_back(copiedExpr);

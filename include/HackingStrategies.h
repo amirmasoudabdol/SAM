@@ -30,7 +30,7 @@ public:
     // Also, I still don't know how to implement the case where a researcher
     // wants to run several hacking over one experiment. I guess for this to be
     // done properly I need to do implement some sort of Template Pattern.
-    virtual Submission perform(Experiment* experiment) = 0;
+    virtual void perform(Experiment* experiment) = 0;
     
     const int& getSelectedOutcome() const {
         return selectedOutcome;
@@ -54,7 +54,7 @@ public:
     
     // Submission hackedSubmission;
     // TODO: I don't think it's even necessary for the `perform()` to return a Submission
-    Submission perform(Experiment* experiment);
+    void perform(Experiment* experiment);
 
 private:
     std::string _method = "min pvalue";
@@ -70,7 +70,7 @@ public:
 
     // int selectedOutcome;
     // Submission hackedSubmission;
-    Submission perform(Experiment* experiment);
+    void perform(Experiment* experiment);
 
 private:
     int _n_new_obs, _n_trials;
@@ -84,7 +84,7 @@ public:
     OutlierRemoval();
 
     // Submission hackedSubmission;
-    Submission perform(Experiment* experiment);
+    void perform(Experiment* experiment);
 
 };
 
@@ -94,7 +94,7 @@ public:
     GroupPooling(std::string scheme) : _scheme(scheme) {} ;
     
     // Submission hackedSubmission;
-    Submission perform(Experiment* experiment);
+    void perform(Experiment* experiment);
     
 private:
     std::string _scheme;
