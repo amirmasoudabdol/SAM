@@ -1,12 +1,13 @@
 {
   "--p-hacking-methods": [
     {
-      "type": "OS",
-      "size": 5
+      "type": "optional stopping",
+      "size": 3,
+      "attemps": 5
     },
     {
-      "type": "SR",
-      "method": "min_sig"
+      "type": "outcome switching",
+      "method": "min pvalue"
     }
   ]
 }

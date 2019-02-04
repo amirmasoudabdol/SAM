@@ -5,7 +5,6 @@
 #include "Utilities.h"
 #include "docopt.h"
 #include "tqdm/tqdm.h"
-#include <nlohmann/json.hpp>
 
 #include <Experiment.h>
 #include <ExperimentSetup.h>
@@ -18,6 +17,8 @@
 #include <SelectionStrategies.h>
 #include <HackingStrategies.h>
 #include <DecisionStrategy.h>
+
+#include "ioUtilities.h"
 
 using json = nlohmann::json;
 
@@ -46,8 +47,9 @@ R"(SAMpp
 
     Usage:
         SAMpp [--master-seed S] [--config FILE]
-              [--n-conditions C] [--n-dvs D]
-              [--n-obs N] [--means M] [--vars V]
+              [--n-conditions C] [--n-dep-vars D]
+              [--n-items I]
+              [--n-obs O] [--means M] [--vars V]
               [--is-correlated] [--cov-const CV]
               [--alpha A] [--pub-bias B] [--max-pubs K]
               [--is-p-hacker] [--hacking-methods-config JSON]
@@ -58,17 +60,18 @@ R"(SAMpp
 
     Options:
         -h --help          Show this screen.
-        -v --version          Show version.
+        -v --version       Show version.
         --verbose          Print more texts.
-        --progress          Show progress bar [default: false]
+        --progress         Show progress bar [default: false]
         --master-seed=S    Set the master seed [default: 42]
-        --n-sims=I         Number of simulations [default: 10000]
+        --n-sims=N         Number of simulations [default: 10000]
         --n-conditions=C   Number of conditions [default: 1]
-        --n-dvs=D          Number of dependent variables [default: 1]
+        --n-dep-vars=D     Number of dependent variables [default: 1]
+        --n-items=I        Number of items [default: 0]
         --alpha=A          Alpha [default: 0.05]
         --pub-bias=B       Publication bias rate [default: 0.95]
         --max-pubs=K       Maximum number of publications [default: 70]
-        --n-obs=N          Number of observations [default: 20]
+        --n-obs=O          Number of observations [default: 20]
         --means=M            List of means for each group [default: 0.15]
         --vars=V             List of variances for each group [default: 0.01]
         --is-correlated     Whether conditions are correlated [default: false]
@@ -92,6 +95,8 @@ void testJSON(std::string file);
 void testDOCOPT(std::map<std::string, docopt::value> args);
 void latentStrategyTest();
 
+void runSimulation(json& simConfig);
+
 using json = nlohmann::json;
 
 tqdm simulationBar;
@@ -103,18 +108,15 @@ int main(int argc, const char** argv){
                                                                true,                        // show help if requested
                                                                "SAMpp 0.1 (Alpha)");        // version string
 
-//    for(auto const& arg : args) {
-//        std::cout << arg.first << ": " << arg.second << std::endl;
-//    }
 
-//    testDOCOPT(args);
-//    testJSON(args["--config"].asString());
-//    testJSON(args["--hacking-methods-config"].asString());
+    json jSimConfig = readJSON(args["--config"].asString());
 
 //    testRandom();
 //    testTTest();
 
     estherSimulation();
+
+    runSimulation(jSimConfig);
     
 //    latentStrategyTest();
     
@@ -123,6 +125,116 @@ int main(int argc, const char** argv){
 //    testRandomClass();
 
     return 0;
+}
+
+void runSimulation(json& simConfig){
+
+    RandomNumberGenerator mainRNGengine(simConfig["--master-seed"], false);
+    
+    // Initializing Experiment Setup
+    ExperimentSetup experimentSetup(simConfig["--n-conditions"],
+                       simConfig["--n-dep-vars"],
+                       simConfig["--n-obs"],
+                       simConfig["--means"].get<std::vector<double>>(),
+                       simConfig["--vars"].get<std::vector<double>>());
+    
+    // Initializing Journal
+    Journal journal(simConfig["--max-pubs"],
+                    simConfig["--pub-bias"],
+                    simConfig["--alpha"]);
+    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"]);
+    journal.setSelectionStrategy(&sigSelection);
+    
+    // Initializing Experiment
+    Experiment experiment(experimentSetup);
+    
+        // Setting Data Model
+        FixedEffectStrategy fixedEffectModel(experimentSetup, mainRNGengine);
+        experiment.setDataStrategy(&fixedEffectModel);
+    
+        // Setting the Test Strategy
+        TTest tTest(&experiment);
+        experiment.setTestStrategy(&tTest);
+    
+    // Initializing the Researcher
+    Researcher researcher(&experiment);
+    
+        // Assigning the Journal
+        researcher.setJournal(&journal);
+    
+        // Setting the Decision Strategy
+        ReportPreregisteredGroup preRegReporter(0);
+        researcher.setDecisionStrategy(&preRegReporter);
+    
+    // Initializing Hacking Routines
+        researcher.isHacker = true;
+    
+    if (simConfig["--is-phacker"]){
+        json hackingConfig = readJSON(simConfig["--hacking-methods-config"]);
+        for (auto &item : hackingConfig["--p-hacking-methods"]){
+            if (item["type"] == "optional stopping") {
+                OptionalStopping optStopping(item["size"], item["attemps"]);
+                researcher.registerAHackingStrategy(&optStopping);
+            }else if (item["type"] == "outcome switching") {
+                OutcomeSwitching outSwitcher(item["method"]);
+                researcher.registerAHackingStrategy(&outSwitcher);
+            }
+        }
+    }    
+    
+    // Initiate the csvWriter
+    std::ofstream csvWriter("output.csv");
+    csvWriter << "simid, pid, effect, statistic, pvalue\n";
+    
+    
+    int maxPubs = simConfig["--max-pubs"];
+    int nSims = simConfig["--n-sims"];
+    
+    
+    for (int i = 0; i < simConfig["--n-sims"]; i++) {
+        
+        while (journal.isStillAccepting()) {
+            
+            researcher.rest();
+            
+            researcher.experiment->allocateResources();
+            researcher.experiment->generateData();
+            researcher.experiment->calculateStatistics();
+            researcher.experiment->calculateEffects();
+            
+            researcher.experiment->runTest();
+            
+            if (researcher.isHacker){
+                researcher.hack();
+            }
+            
+            researcher.prepareTheSubmission();
+            
+            researcher.submitToJournal();
+            
+            if (simConfig["--progress"])
+                simulationBar.progress(i, nSims);
+
+        }
+        
+        if (simConfig["--save-output"]){
+            int pid = 0;
+            for (auto& p : journal.submissionList) {
+                p.simid = i;
+                p.pubid = pid++;
+                csvWriter << p << "\n";
+            }
+        }
+        
+        journal.clear();
+    }
+    
+    if (simConfig["--save-output"]){
+        csvWriter.close();
+    }
+    
+    if (simConfig["--progress"])
+        simulationBar.finish();
 }
 
 void testDOCOPT(std::map<std::string, docopt::value> args){
@@ -374,7 +486,7 @@ void estherSimulation(){
             
             esther.submitToJournal();
 
-           std::cout << esther.submissionRecord<< "\n";
+//           std::cout << esther.submissionRecord<< "\n";
         }
 
         journal.clear();

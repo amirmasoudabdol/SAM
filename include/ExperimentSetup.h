@@ -12,7 +12,7 @@
 enum ExperimentType {
     FixedModel,
     RandomModel,
-    LatentModel
+    FactorModel
 };
 
 
@@ -31,7 +31,7 @@ public:
     
     int nc = 1;     ///< Number of experimental conditions, e.g., treatment 1, treatment 2.
     int nd = 3;     ///< Number of _dependent variables_ in each experimental condition.
-    int ni = 0;     ///< Number of items for each latent variable, if `isLatentExpr` is `true`.
+    int ni = 0;     ///< Number of items for each latent variable, if `isFactorModel` is `true`.
     int ng;         ///< \brief Total number of groups
                     ///< Always calculated as \f$n_g = n_c * n_d\f$, unless the simulation contains latent variables, \f$n_g = n_c * n_d * n_i\f$
     
@@ -44,12 +44,16 @@ public:
     std::vector<double> true_means;
     std::vector<double> true_vars;
     
-    ExperimentSetup();
+    ExperimentSetup() = default;
 
-    ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<double> vars);
-    ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<std::vector<double>> true_sigma);
+    ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<double> vars)
+    : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_vars(vars) {
+        ng = nc * nd;
+    }
+    
+    ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<std::vector<double>> sigma);
 
-    ~ExperimentSetup() { };
+    ~ExperimentSetup() = default;
 
     // bool _is_correalted = false;    // If true, then we are expecting a matrix.
 
@@ -61,8 +65,8 @@ public:
     std::vector<std::vector<double>> true_sigma;
     
     // Latent Experiments
-    bool isLatentExpr = false;
-    std::vector<double> latentA;
+    bool isFactorModel = false;
+    std::vector<double> factorLoads;
     
 
 //private:
