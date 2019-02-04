@@ -53,6 +53,7 @@ public:
     };
     
     // Submission hackedSubmission;
+    // TODO: I don't think it's even necessary for the `perform()` to return a Submission
     Submission perform(Experiment* experiment);
 
 private:

@@ -90,6 +90,7 @@ void dataGenStrategyTest();
 void testRandomClass();
 void testJSON(std::string file);
 void testDOCOPT(std::map<std::string, docopt::value> args);
+void latentStrategyTest();
 
 using json = nlohmann::json;
 
@@ -117,7 +118,10 @@ int main(int argc, const char** argv){
 //    testRandom();
 //    testTTest();
 
-    estherSimulation();
+//    estherSimulation();
+    
+    latentStrategyTest();
+    
 //    estherSimulationTest();
 //    effectEstimatorTest();
 //    testRandomClass();
@@ -189,9 +193,36 @@ void testTTest(){
     std::cout << "t: " << ttest_res.first << "p: " << ttest_res.second << std::endl;
 }
 
-void effectEstimatorTest(){
-    StandardMeanDiffEffectEstimator _effect_estimator;
-    _effect_estimator.computeEffectFromStats(1, 2, 3, 4, 5, 6);
+//void effectEstimatorTest(){
+//    StandardMeanDiffEffectEstimator _effect_estimator;
+//    _effect_estimator.computeEffectFromStats(1, 2, 3, 4, 5, 6);
+//}
+
+
+void latentStrategyTest() {
+    // Declaring sample paramters
+    int nc = 1;
+    int nd = 4;
+    int nobs = 200;
+    std::vector<double> means {.15, .15, 0.147, 0.147};
+    std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
+//
+//    int max_pubs = 70;
+//    double alpha= 0.05;
+//    double pub_bias = 0.95;
+    
+    
+    RandomNumberGenerator rngEngine(42, false);
+    
+    ExperimentSetup estherSetup(nc, nd, nobs, means, vars);
+    
+    Experiment estherExperiment(estherSetup);
+    
+    LatentDataStrategy latentGen(estherSetup, rngEngine);
+    estherExperiment.setDataStrategy(&latentGen);
+    
+    latentGen.latentModelTest();
+    
 }
 
 
@@ -294,9 +325,9 @@ void estherSimulation(){
 //    esther.isHacker = true;
 //    esther.registerAHackingStrategy(&outSwitcher);
 
-    OptionalStopping optStopping(3000, 5);
-     esther.isHacker = false;
-    esther.registerAHackingStrategy(&optStopping);
+//    OptionalStopping optStopping(3000, 5);
+//     esther.isHacker = false;
+//    esther.registerAHackingStrategy(&optStopping);
 
     esther.setJournal(&journal);
     

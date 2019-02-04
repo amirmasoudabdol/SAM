@@ -28,6 +28,11 @@ public:
     std::vector<double> statistics;
     std::vector<double> pvalues;
     std::vector<double> effects;
+    
+//    std::vector<std::vector<double> > items;
+    std::vector<double> latent_means;
+    std::vector<double> latent_variances;
+    std::vector<std::vector<double>> latent_cov_matrix;
 
     // Need a copy constructor
     // Need a move constructor

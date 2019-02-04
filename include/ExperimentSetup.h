@@ -8,11 +8,24 @@
 #include <vector>
 
 
+enum ExperimentType {
+    FixedModel,
+    RandomModel,
+    LatentModel
+};
+
+
 class ExperimentSetup {
 
 
 public:
+    
+    ExperimentType experimentType;
+    
+    std::vector<double> latent_alpha;
 
+    int ni;     ///< Number of items in each DV
+    
     int nc = 1;
     int nd = 3;
     int ng;

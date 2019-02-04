@@ -5,7 +5,7 @@
 #include <EffectEstimators.h>
 #include <iostream>
 
-void StandardMeanDiffEffectEstimator::computeEffectFromStats(double mean1, double sd1, double nobs1, double mean2,
-                                                             double sd2, double nobs2) {
-    std::cout << "hi";
-}
+//void StandardMeanDiffEffectEstimator::computeEffectFromStats(double mean1, double sd1, double nobs1, double mean2,
+//                                                             double sd2, double nobs2) {
+//    std::cout << "hi";
+//}
