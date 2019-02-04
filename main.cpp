@@ -96,10 +96,6 @@ using json = nlohmann::json;
 
 tqdm simulationBar;
 
-// TODO: Replace pointers with shared_ptr and unique_ptr. Check if it's possible
-// to do this with gsl_ stuffs too.
-
-
 int main(int argc, const char** argv){
 
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
@@ -118,9 +114,9 @@ int main(int argc, const char** argv){
 //    testRandom();
 //    testTTest();
 
-//    estherSimulation();
+    estherSimulation();
     
-    latentStrategyTest();
+//    latentStrategyTest();
     
 //    estherSimulationTest();
 //    effectEstimatorTest();

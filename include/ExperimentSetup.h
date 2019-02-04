@@ -8,6 +8,7 @@
 #include <vector>
 
 
+
 enum ExperimentType {
     FixedModel,
     RandomModel,
@@ -15,6 +16,12 @@ enum ExperimentType {
 };
 
 
+/**
+ \brief Define a class for ExperimentSetup.
+ 
+ ExperimentSetup contains the necessary parameters for initiating and generating
+ the data needed for the Experiment.
+ */
 class ExperimentSetup {
 
 
@@ -22,14 +29,13 @@ public:
     
     ExperimentType experimentType;
     
-    std::vector<double> latent_alpha;
-
-    int ni;     ///< Number of items in each DV
+    int nc = 1;     ///< Number of experimental conditions, e.g., treatment 1, treatment 2.
+    int nd = 3;     ///< Number of _dependent variables_ in each experimental condition.
+    int ni = 0;     ///< Number of items for each latent variable, if `isLatentExpr` is `true`.
+    int ng;         ///< \brief Total number of groups
+                    ///< Always calculated as \f$n_g = n_c * n_d\f$, unless the simulation contains latent variables, \f$n_g = n_c * n_d * n_i\f$
     
-    int nc = 1;
-    int nd = 3;
-    int ng;
-    int nobs;
+    int nobs;       ///< Number of observations in each group
 
     double alpha = 0.05;
 //    std::vector<std::string> group_names;
@@ -48,10 +54,16 @@ public:
     // bool _is_correalted = false;    // If true, then we are expecting a matrix.
 
 
+    // Multivariate Experiments
     bool isMultivariate = false;
     double cov = 0.;
     std::vector<double> true_cov;
     std::vector<std::vector<double>> true_sigma;
+    
+    // Latent Experiments
+    bool isLatentExpr = false;
+    std::vector<double> latentA;
+    
 
 //private:
     

@@ -12,14 +12,8 @@
 #include "Utilities.h"
 #include "gsl/gsl_statistics.h"
 
-
-void Experiment::sayHi() {
-    std::cout << "Experiment says Hi!\n";
-}
-
 void Experiment::generateData() {
     measurements = dataStrategy->genData();
-    // std::cout << measurements[0][0] << "<\n";
 }
 
 void Experiment::setDataStrategy(DataGenStrategy* d) {

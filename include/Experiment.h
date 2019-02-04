@@ -18,9 +18,7 @@ class Experiment {
 public:
     ExperimentSetup setup;
 
-    // ExperimentSetup setup;
-
-    std::vector<int> nobs;
+//    std::vector<int> nobs;
     std::vector<std::vector<double>> measurements;
     std::vector<double> means;
     std::vector<double> vars;
@@ -29,7 +27,8 @@ public:
     std::vector<double> pvalues;
     std::vector<double> effects;
     
-//    std::vector<std::vector<double> > items;
+    bool latentDesign = false;
+    std::vector<std::vector<double> > items;
     std::vector<double> latent_means;
     std::vector<double> latent_variances;
     std::vector<std::vector<double>> latent_cov_matrix;
@@ -77,9 +76,6 @@ public:
      // void setDataStrategy(std::string strategy);
     // void genData();
     // void genDataFor(int gid, int dvid, int n);
-
-
-    void sayHi();
 
     // I actually don't need to write a copy instructor,
     // because I don't mind if pointers are pointing to the old testStrategy,

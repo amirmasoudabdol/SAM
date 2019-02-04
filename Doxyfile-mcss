@@ -1,8 +1,0 @@
-@INCLUDE                = Doxyfile
-GENERATE_HTML           = NO
-GENERATE_XML            = YES
-XML_PROGRAMLISTING      = NO
-HTML_EXTRA_STYLESHEET = \
-    ../css/m-light+doxygen.compiled.css
-M_THEME_COLOR = #cb4b16
-M_FAVICON = favicon-light.png
