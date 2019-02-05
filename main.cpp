@@ -159,26 +159,35 @@ void runSimulation(json& simConfig){
     // Initializing the Researcher
     Researcher researcher(&experiment);
     
+        // Setting the Selection Preference
+        researcher.selectionPref = PreRegisteredOutcome;
+    
         // Assigning the Journal
         researcher.setJournal(&journal);
     
         // Setting the Decision Strategy
-        ReportPreregisteredGroup preRegReporter(0);
-        researcher.setDecisionStrategy(&preRegReporter);
+        ImpatientDecisionMaker impatientReporter(0, simConfig["--alpha"], researcher.selectionPref);
+        researcher.setDecisionStrategy(&impatientReporter);
     
     // Initializing Hacking Routines
-        researcher.isHacker = true;
+    researcher.isHacker = simConfig["--is-phacker"];
     
     if (simConfig["--is-phacker"]){
+        
+        // Overwriting the selection preference, this is technically works as the
+        // researcher is performing _Outcome Switching_.
+        if (simConfig["--selection-pref"] == "min pvalue"){
+            researcher.selectionPref = MinPvalue;
+            researcher.decisionStrategy->selectionPref = MinPvalue;
+        } /* else if for other options */
+        
+        
         json hackingConfig = readJSON(simConfig["--hacking-methods-config"]);
         for (auto &item : hackingConfig["--p-hacking-methods"]){
             if (item["type"] == "optional stopping") {
                 OptionalStopping optStopping(item["size"], item["attemps"]);
                 researcher.registerAHackingStrategy(&optStopping);
-            }else if (item["type"] == "outcome switching") {
-                OutcomeSwitching outSwitcher(item["method"]);
-                researcher.registerAHackingStrategy(&outSwitcher);
-            }
+            }/*else if for other options*/
         }
     }    
     
@@ -186,10 +195,7 @@ void runSimulation(json& simConfig){
     std::ofstream csvWriter("output.csv");
     csvWriter << "simid, pid, effect, statistic, pvalue\n";
     
-    
-    int maxPubs = simConfig["--max-pubs"];
     int nSims = simConfig["--n-sims"];
-    
     
     for (int i = 0; i < simConfig["--n-sims"]; i++) {
         
@@ -211,6 +217,8 @@ void runSimulation(json& simConfig){
             researcher.prepareTheSubmission();
             
             researcher.submitToJournal();
+            
+            std::cout << researcher.submissionRecord << "\n";
             
             if (simConfig["--progress"])
                 simulationBar.progress(i, nSims);

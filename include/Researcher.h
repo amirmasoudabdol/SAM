@@ -27,7 +27,7 @@ public:
 	Journal* journal;
 
 //    TestStrategies* testStrategy;
-
+    
     bool isHacker = false;
     HackingStyle hackingStyle = onCopy;
     std::vector<HackingStrategy*> hackingStrategies;
@@ -47,7 +47,10 @@ public:
     // This probably needs to be a class of itself as well
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
-    void testHack();
+//    void testHack();
+    
+    ResearcherPreference selectionPref = PreRegisteredOutcome;
+//    void selectOutcome(Experiment& e);
     
     // std::string decisionStrategy = "asap";
     DecisionStrategy* decisionStrategy;

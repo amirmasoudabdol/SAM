@@ -20,6 +20,7 @@
   "--output-path": "../outputs/",
   "--output-prefix": "auto",
   "--is-phacker": true,
+  "--selection-pref": "pre reg reporter",
   "--hacking-methods-config": "../sample_hacking_methods.json",
   "--decision-strategy": "pre-reg-reporter"
 }

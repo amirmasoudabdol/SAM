@@ -37,23 +37,36 @@ void Researcher::hack() {
         if (hackingStyle == onOrig){
             // Just send the pointer
             Experiment* tempExpr = experiment;
+            
             h->perform(tempExpr);
-            sub = decisionStrategy->selectOutcome(*tempExpr);
-//            printVector(tempExpr->means); std::cout << " :h, res, on orig, means [2]\n";
             experimentsList.push_back(*tempExpr);
-        }else if (hackingStyle == onCopy){
+            
+//            printVector(tempExpr->means); std::cout <<
+//            " :h, res, on orig, means [2]\n";
+            sub = decisionStrategy->selectOutcome(*tempExpr);
+        }
+        else if (hackingStyle == onCopy){
             // Sending the copy
             Experiment copiedExpr = *experiment;
+            
             h->perform(&copiedExpr);
-            sub = decisionStrategy->selectOutcome(copiedExpr);
-//            printVector(copiedExpr.means); std::cout << " :h, res, copy, means [2]\n";
             experimentsList.push_back(copiedExpr);
+            
+//            printVector(copiedExpr.means); std::cout <<
+//            " :h, res, copy, means [2]\n";
+            
+            sub = decisionStrategy->selectOutcome(copiedExpr);
         }
-        
-        
-//        sub = h->perform(*experiment);
 
         submissionsList.push_back(sub);
+        
+        decisionStrategy->verdict(submissionsList, experimentsList);
+        
+//        std::cout << decisionStrategy->finalSubmission << "\n";
+        
+        if (!decisionStrategy->isStillHacking){
+            break;
+        }
         
 //        if (decisionStrategy == "asap"){
 //            if (sub.pvalue < experiment->setup.alpha){
@@ -82,12 +95,15 @@ void Researcher::prepareTheSubmission() {
 //        submissionRecord = Submission(*experiment, 0);
         submissionRecord = decisionStrategy->selectOutcome(*experiment);
 	}else{
+        
+        submissionRecord = decisionStrategy->finalSubmission;
+        
 		// TODO: This needs generalization
 //        submissionRecord = hackedSubmissions[0];
 //        if (decisionStrategy == "asap"){
 //            if (hackedSubmissions.size() != 0){
 //                submissionRecord = submissionsList.back();
-        submissionRecord = decisionStrategy->selectBetweenSubmission(submissionsList);
+//        submissionRecord = decisionStrategy->selectBetweenSubmission(submissionsList);
 //            }else{
 //                submissionRecord = _create_submission_record(_selected_outcome_inx);
 //            }
