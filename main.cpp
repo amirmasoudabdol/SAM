@@ -176,7 +176,7 @@ void runSimulation(json& simConfig){
         
         // Overwriting the selection preference, this is technically works as the
         // researcher is performing _Outcome Switching_.
-        if (simConfig["--selection-pref"] == "min pvalue"){
+        if (simConfig["--selection-pref"] == "MinPvalue"){
             researcher.selectionPref = MinPvalue;
             researcher.decisionStrategy->selectionPref = MinPvalue;
         } /* else if for other options */
@@ -184,7 +184,7 @@ void runSimulation(json& simConfig){
         
         json hackingConfig = readJSON(simConfig["--hacking-methods-config"]);
         for (auto &item : hackingConfig["--p-hacking-methods"]){
-            if (item["type"] == "optional stopping") {
+            if (item["type"] == "OptionalStopping") {
                 OptionalStopping optStopping(item["size"], item["attemps"]);
                 researcher.registerAHackingStrategy(&optStopping);
             }/*else if for other options*/

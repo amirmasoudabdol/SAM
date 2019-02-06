@@ -19,15 +19,19 @@ enum ResearcherPreference {
     MinPvalueMaxEffect
 };
 
+/**
+ \brief Abstract class for different decision strategies.
+ 
+ */
 class DecisionStrategy {
 
 public:
     
-    ResearcherPreference selectionPref;
-    bool isStillHacking = true;
+    ResearcherPreference selectionPref;     ///< Indicates researcher's selection preference on how he choose the outcome variable for submission.
+    bool isStillHacking = true;         ///< If `true`, the Researcher will continue traversing through the hacknig methods, otherwise, he/she will stop the hacking and prepare the finalSubmission. It will be updated on each call of verdict(). Basically verdict() decides if the Researcher is happy with the submission record or not.
     
-    int preRegGroup = 0;
-    Submission finalSubmission;
+    int preRegGroup = 0;            ///< Indicates the pre-registered outcome in the case where the Researcher prefers the PreRegisteredOutcome
+    Submission finalSubmission;     ///< This will set to the final submission recrod that the Researcher is satisfied about. At the same time, isStillHacking will set to `false`.
     
     double alpha = 0.05;
     
@@ -44,10 +48,14 @@ public:
     
     virtual void verdict(std::vector<Submission>&, std::vector<Experiment>&) = 0;
     
+    //    virtual void finalDecision();
+    
     Submission _select_Outcome(Experiment&);
 };
 
-
+/**
+ \brief Implementation of an impatient researcher. In this case, the Researcher will stop as soon as find a significant result and will not continue exploring other hacking methods in his arsenal.
+ */
 class ImpatientDecisionMaker : public DecisionStrategy {
 
 public:
@@ -66,6 +74,7 @@ public:
         
         finalSubmission = submissions.back();
         
+        // TODO: Move the significance test to the Submission
         if (submissions.back().pvalue < alpha) {
             isStillHacking = false;
         }else{

@@ -10,8 +10,9 @@
 #include <string>
 
 enum HackingMethod {
-    OUTCOME_SWITCHING,
-    OUTLIER_REMOVAL
+    _OutcomeSwitching,
+    _OptionalStopping,
+    _OutlierRemoval
 };
 
 //Submission _create_submission_record(Experiment& experiment, int inx);
