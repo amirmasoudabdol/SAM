@@ -7,6 +7,7 @@
 
 #include "Experiment.h"
 #include "SubmissionRecord.h"
+#include "DecisionStrategy.h"
 #include <string>
 
 enum HackingMethod {
@@ -31,7 +32,7 @@ public:
     // Also, I still don't know how to implement the case where a researcher
     // wants to run several hacking over one experiment. I guess for this to be
     // done properly I need to do implement some sort of Template Pattern.
-    virtual void perform(Experiment* experiment) = 0;
+    virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
     
     const int& getSelectedOutcome() const {
         return selectedOutcome;
@@ -55,7 +56,7 @@ public:
     
     // Submission hackedSubmission;
     // TODO: I don't think it's even necessary for the `perform()` to return a Submission
-    void perform(Experiment* experiment);
+    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
 
 private:
     std::string _method = "min pvalue";
@@ -71,7 +72,7 @@ public:
 
     // int selectedOutcome;
     // Submission hackedSubmission;
-    void perform(Experiment* experiment);
+    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
 
 private:
     int _n_new_obs, _n_trials;
@@ -85,7 +86,7 @@ public:
     OutlierRemoval();
 
     // Submission hackedSubmission;
-    void perform(Experiment* experiment);
+    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
 
 };
 
@@ -95,19 +96,19 @@ public:
     GroupPooling(std::string scheme) : _scheme(scheme) {} ;
     
     // Submission hackedSubmission;
-    void perform(Experiment* experiment);
+    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
     
 private:
     std::string _scheme;
 };
 
-class QuestionableRounding : public HackingStrategy {
-    
-public:
-    QuestionableRounding(int threshold) : _threshold(threshold) {};
-    
-private:
-    int _threshold;
-};
+//class QuestionableRounding : public HackingStrategy {
+//
+//public:
+//    QuestionableRounding(int threshold) : _threshold(threshold) {};
+//
+//private:
+//    int _threshold;
+//};
 
 #endif //SAMPP_HACKINGSTRATEGIES_H

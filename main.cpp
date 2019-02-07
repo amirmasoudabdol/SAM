@@ -114,7 +114,7 @@ int main(int argc, const char** argv){
 //    testRandom();
 //    testTTest();
 
-    estherSimulation();
+//    estherSimulation();
 
     runSimulation(jSimConfig);
     
