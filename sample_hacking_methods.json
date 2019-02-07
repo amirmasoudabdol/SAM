@@ -2,7 +2,7 @@
   "--p-hacking-methods": [
     {
       "type": "OptionalStopping",
-      "size": 30,
+      "size": 3,
       "attemps": 5
     }
   ]

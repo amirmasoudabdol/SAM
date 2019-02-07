@@ -39,6 +39,7 @@ void Experiment::allocateResources() {
     // std::cout << "alloc, ng is :" << setup.ng;
     // TODO: There is an issue with the allocation;
     // TODO: I either need to initiate or push_back
+    // FIXME: This is very error prune, since it's fixed number
     means.resize(setup.ng, 0);
     vars.resize(setup.ng, 0);
     ses.resize(setup.ng, 0);
@@ -57,8 +58,12 @@ void Experiment::calculateStatistics() {
     }
     // std::cout << vars[0] << ": v\n";
 
-
-   // std::cout << means[0] << ", ";
+//    std::cout << "means: ";
+//    for (auto &m : means) {
+//        std::cout << m << ", ";
+//    }
+//    std::cout << "\n";
+    
 }
 
 void Experiment::calculateEffects() {

@@ -48,6 +48,7 @@ public:
     ExperimentSetup setup;
     RandomNumberGenerator rngEngine;
     
+
     LatentDataStrategy(ExperimentSetup& es, RandomNumberGenerator& rng_engine) :
     setup(es), rngEngine(rng_engine) {
         
@@ -58,10 +59,10 @@ public:
     std::vector<double> genNewObservationsFor(int g, int n_new_obs);
     
 
-    std::vector<double> computeItemsMean();     // This will fill the experiment->measurements
-    std::vector<double> _compute_latent_means();
-    std::vector<double> _compute_latent_variances();
-    std::vector<std::vector<double> > _construct_latent_cov_matrix();
+//    std::vector<double> computeItemsMean();     // This will fill the experiment->measurements
+//    std::vector<double> _compute_latent_means();
+//    std::vector<double> _compute_latent_variances();
+//    std::vector<std::vector<double> > _construct_latent_cov_matrix();
     
     void latentModelTest();
     
@@ -73,13 +74,13 @@ public:
     
     
 //private:
-    std::vector<double> fMeans;
-    std::vector<double> fVars;
-    std::vector<std::vector<double>> fSigma;
-    
-    std::vector<double> _a;     ///< 1 - setup.latent_alpha;
-    std::vector<double> epsilonMeans;
-    std::vector<std::vector<double>> epsilonSigma;
+//    std::vector<double> fMeans;
+//    std::vector<double> fVars;
+//    std::vector<std::vector<double>> fSigma;
+//
+//    std::vector<double> _a;     ///< 1 - setup.latent_alpha;
+//    std::vector<double> epsilonMeans;
+//    std::vector<std::vector<double>> epsilonSigma;
     
     
     

@@ -132,25 +132,38 @@ void runSimulation(json& simConfig){
 
     RandomNumberGenerator mainRNGengine(simConfig["--master-seed"], simConfig["--is-multivariate"]);
     
-    std::cout << "1\n";
-   ExperimentSetup experimentSetup;
-   if (!simConfig["--is-multivariate"]) {
-//        // Initializing Experiment Setup
-       experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-                                       simConfig["--n-dep-vars"],
-                                       simConfig["--n-obs"],
-                                       simConfig["--means"].get<std::vector<double>>(),
-                                       simConfig["--vars"].get<std::vector<double>>());
-   }else{
-        // Initializing Experiment Setup
-        experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-                                        simConfig["--n-dep-vars"],
-                                        simConfig["--n-obs"],
-                                        simConfig["--means"].get<std::vector<double>>(),
-                                        simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>());
-   }
-//    std::cout << "2\n";
+//    std::cout << "1\n";
+    ExperimentSetup experimentSetup;
+    if (simConfig["--data-strategy"] == "FixedModel"){
+        if (!simConfig["--is-multivariate"]) {
+        //        // Initializing Experiment Setup
+           experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+                                           simConfig["--n-dep-vars"],
+                                           simConfig["--n-obs"],
+                                           simConfig["--means"].get<std::vector<double>>(),
+                                           simConfig["--vars"].get<std::vector<double>>());
+        }else{
+            // Initializing Experiment Setup
+            experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+                                            simConfig["--n-dep-vars"],
+                                            simConfig["--n-obs"],
+                                            simConfig["--means"].get<std::vector<double>>(),
+                                            simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>());
+        }
+    }
     
+    if (simConfig["--data-strategy"] == "LatentModel") {
+        std::cout << "Latent Model\n";
+        experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+                                          simConfig["--n-dep-vars"],
+                                          simConfig["--n-items"],
+                                          simConfig["--n-obs"],
+                                          simConfig["--factor-loadings"].get<std::vector<double>>(),
+                                          simConfig["--factor-means"].get<std::vector<double>>(),
+                                          simConfig["--factor-cov"].get<std::vector<std::vector<double>>>(),
+                                          simConfig["--error-cov"].get<std::vector<std::vector<double>>>());
+        std::cout << "Latent Model Setup!\n";
+    }
 
     
     // Initializing Journal
@@ -159,34 +172,58 @@ void runSimulation(json& simConfig){
                     simConfig["--alpha"]);
     SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"]);
     journal.setSelectionStrategy(&sigSelection);
-    
+    std::cout << "Initializing Journal, Done!\n";
+
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-    
+        std::cout << "Initializing Experiment, Done!\n";
+
         // Setting Data Model
+//        FixedEffectStrategy fixedEffectModel;
         FixedEffectStrategy fixedEffectModel(experimentSetup, mainRNGengine);
-        experiment.setDataStrategy(&fixedEffectModel);
+    
+//        LatentDataStrategy latentDataModel;
+        LatentDataStrategy latentDataModel(experimentSetup, mainRNGengine);
+        // FIXME: I cannot make these object so nicely, I think I need a factor for a few of them
+        if (simConfig["--data-strategy"] == "FixedModel"){
+            
+            experiment.setDataStrategy(&fixedEffectModel);
+        }
+        else if (simConfig["--data-strategy"] == "LatentModel") {
+//            std::cout << "LATENT MODEL";
+            
+            experiment.setDataStrategy(&latentDataModel);
+        }
+//        std::cout << "Setting Data Model, Done!\n";
+    
     
         // Setting the Test Strategy
         TTest tTest(&experiment);
         experiment.setTestStrategy(&tTest);
-    
+        std::cout << "Setting the Test Strategy, Done!\n";
+
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    
+    std::cout << "Initializing the Researcher, Done!\n";
+
         // Setting the Selection Preference
         researcher.selectionPref = PreRegisteredOutcome;
-    
+        std::cout << "Setting the Selection Preference, Done!\n";
+
         // Assigning the Journal
         researcher.setJournal(&journal);
-    
+        std::cout << "Assigning the Journal, Done!\n";
+
         // Setting the Decision Strategy
         ImpatientDecisionMaker impatientReporter(0, simConfig["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
-    
+        std::cout << "Setting the Decision Strategy, Done!\n";
+
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["--is-phacker"];
-    
+    std::cout << "Initializing Hacking Routines, Done!\n";
+
+    // Registering Hacking Methods
     if (simConfig["--is-phacker"]){
         
         // Overwriting the selection preference, this is technically works as the
@@ -208,7 +245,8 @@ void runSimulation(json& simConfig){
                 researcher.registerAHackingStrategy(&cfOutlierRemoval);
             }
         }
-    }    
+    }
+    std::cout << "Registering Hacking Methods, Done!\n";
     
     // Initiate the csvWriter
     std::ofstream csvWriter("output.csv");

@@ -35,7 +35,7 @@ public:
     int ni = 0;     ///< Number of items for each latent variable, if `isFactorModel` is `true`.
     int ng;         ///< \brief Total number of groups
                     ///< Always calculated as \f$n_g = n_c * n_d\f$, unless the simulation contains latent variables, \f$n_g = n_c * n_d * n_i\f$
-    
+    int nrows;
     int nobs;       ///< Number of observations in each group
 
     double alpha = 0.05;
@@ -52,12 +52,26 @@ public:
         ng = nc * nd;
     }
     
+    // For Multivariate
     ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<std::vector<double>> sigma) 
     : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sigma(sigma) {        
         ng = nc * nd;
         isMultivariate = true;
     }
 
+    // For LatentModel
+    ExperimentSetup(int n_conditions, int n_dep_vars, int n_items, int n_obs,
+                    std::vector<double> factor_loading, std::vector<double> factor_means, std::vector<std::vector<double>> facror_cov, std::vector<std::vector<double>> error_cov)
+    : nc(n_conditions), nd(n_dep_vars), ni(n_items), nobs(n_obs), 
+    factorLoadings(factor_loading),  factorMeans(factor_means), factorCov(facror_cov), errorCov(error_cov)
+         {
+        ng = nc * nd;
+        nrows = ng * ni;
+        // isMultivariate = true;      // I don't think this will be necessary!
+        // FIXME: Having this crashes the code, I did something wrong in initalization
+    }
+    
+    
     ~ExperimentSetup() = default;
 
     // bool _is_correalted = false;    // If true, then we are expecting a matrix.
@@ -71,7 +85,10 @@ public:
     
     // Latent Experiments
     bool isFactorModel = false;
-    std::vector<double> factorLoads;
+    std::vector<double> factorLoadings;                 ///< \f$\lambda\f$
+    std::vector<double> factorMeans;                    ///< \f$\beta\f$
+    std::vector<std::vector<double>> factorCov;         ///<
+    std::vector<std::vector<double>> errorCov;          ///<
     
 
 //private:

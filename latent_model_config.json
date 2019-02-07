@@ -9,7 +9,7 @@
   "--n-items": 3,
   "--n-obs": 25,
   "--alpha": 0.05,
-  "--data-strategy": "LatentModel",
+  "--data-strategy": "FixedModel",
   "--means": [0.1, 0.3, 0.5, 0.7],
   "--vars": [0.1, 0.1, 0.1, 0.1],
   "--is-correlated": false,
