@@ -6,6 +6,7 @@
 #define SAMPP_EXPERIMENTSETUP_H
 
 #include <vector>
+#include <iostream>
 
 
 
@@ -51,7 +52,11 @@ public:
         ng = nc * nd;
     }
     
-    ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<std::vector<double>> sigma);
+    ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<std::vector<double>> sigma) 
+    : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sigma(sigma) {        
+        ng = nc * nd;
+        isMultivariate = true;
+    }
 
     ~ExperimentSetup() = default;
 

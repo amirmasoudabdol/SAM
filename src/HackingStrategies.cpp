@@ -31,22 +31,29 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
     
 }
 
+/**
+ \brief Implementation of optional stopping.
+ 
+ This will use two parameters set at construction of the OptionalStopping class, `_n_trials` and `_n_new_obs`
+ for every trial, the routine will add `_n_new_obs` to all groups, recalculate the statistics, and run the test. It will then select an outcome based on researcher's preference and check it's significance. If
+ the results is significant, it'll not make a new attempt to add more data, and will return to the hack() routine.
+ */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
 
     Submission tmpSub;
     
     for (int t = 0; t < _n_trials; t++) {
         
-        if (experiment->setup.isMultivariate){
-            // I can move this check to the dataStrategy and basically set it as Static when I'm initiating the class!
-        }else{
+//        if (experiment->setup.isMultivariate){
+//            // I can move this check to the dataStrategy and basically set it as Static when I'm initiating the class!
+//        }else{
             auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(_n_new_obs);
             for (int i = 0; i < experiment->setup.ng; ++i) {
                 experiment->measurements[i].insert(experiment->measurements[i].begin(),
                                                     newObs[i].begin(),
                                                     newObs[i].end());
             }
-        }
+//        }
 
         // Recalculate the experiment
         experiment->calculateStatistics();

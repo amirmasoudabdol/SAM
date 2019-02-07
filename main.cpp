@@ -24,20 +24,20 @@ using json = nlohmann::json;
 
 // \cond HIDDEN_SYMBOLS
 // TODO: This works for now but it needs more casting to be a better interface between JSON and DOCOPT
-namespace nlohmann {
-    template <>
-    struct adl_serializer<docopt::value> {
-        static void to_json(json& j, docopt::value t) {
-            if (t.isString()) {
-                j = t.asString();
-            }else if (t.isBool()){
-                j = t.asBool();
-            }else if (t.isLong()){
-                j = t.asLong();
-            }
-        }
-    };
-}
+//namespace nlohmann {
+//    template <>
+//    struct adl_serializer<docopt::value> {
+//        static void to_json(json& j, docopt::value t) {
+//            if (t.isString()) {
+//                j = t.asString();
+//            }else if (t.isBool()){
+//                j = t.asBool();
+//            }else if (t.isLong()){
+//                j = t.asLong();
+//            }
+//        }
+//    };
+//}
 // \endcond
 
 json inputParams;
@@ -78,7 +78,7 @@ R"(SAMpp
         --cov-const=CV        Constant covariant [default: 0.5]
         --output-prefix=PREFIX    Output prefix used for saving files [default: auto]
         --output-path=PATH      Output path [default: output/]
-        --config=FILE      JSON config file [default: ../sample_config.json]
+        --config=FILE      JSON config file [default: /Users/amabdol/Projects/SAMpp/sample_config.json]
         --is-p-hacker      If true, the Researcher will perform phacking techniques on the data [default: false]
         --hacking-methods-config=FILE  JSON config storing p-hacking methods and their parameters [default: ../sample_hacking_methods.json]
 )";
@@ -122,6 +122,7 @@ int main(int argc, const char** argv){
     
 //    estherSimulationTest();
 //    effectEstimatorTest();
+    
 //    testRandomClass();
 
     return 0;
@@ -129,14 +130,28 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
 
-    RandomNumberGenerator mainRNGengine(simConfig["--master-seed"], false);
+    RandomNumberGenerator mainRNGengine(simConfig["--master-seed"], simConfig["--is-multivariate"]);
     
-    // Initializing Experiment Setup
-    ExperimentSetup experimentSetup(simConfig["--n-conditions"],
-                       simConfig["--n-dep-vars"],
-                       simConfig["--n-obs"],
-                       simConfig["--means"].get<std::vector<double>>(),
-                       simConfig["--vars"].get<std::vector<double>>());
+    std::cout << "1\n";
+   ExperimentSetup experimentSetup;
+   if (!simConfig["--is-multivariate"]) {
+//        // Initializing Experiment Setup
+       experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+                                       simConfig["--n-dep-vars"],
+                                       simConfig["--n-obs"],
+                                       simConfig["--means"].get<std::vector<double>>(),
+                                       simConfig["--vars"].get<std::vector<double>>());
+   }else{
+        // Initializing Experiment Setup
+        experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+                                        simConfig["--n-dep-vars"],
+                                        simConfig["--n-obs"],
+                                        simConfig["--means"].get<std::vector<double>>(),
+                                        simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>());
+   }
+//    std::cout << "2\n";
+    
+
     
     // Initializing Journal
     Journal journal(simConfig["--max-pubs"],
@@ -249,18 +264,18 @@ void runSimulation(json& simConfig){
         simulationBar.finish();
 }
 
-void testDOCOPT(std::map<std::string, docopt::value> args){
-    json config;
-
-    for(auto const& arg : args) {
-//        if (arg.second.isString())
-            config[arg.first] = arg.second;
-//        std::cout << arg.first << ": " << arg.second << std::endl;
-    }
-
-    std::cout << config;
-
-}
+//void testDOCOPT(std::map<std::string, docopt::value> args){
+//    json config;
+//
+//    for(auto const& arg : args) {
+////        if (arg.second.isString())
+//            config[arg.first] = arg.second;
+////        std::cout << arg.first << ": " << arg.second << std::endl;
+//    }
+//
+//    std::cout << config;
+//
+//}
 
 void testJSON(std::string file){
 
@@ -510,21 +525,21 @@ void estherSimulation(){
 
 void testRandomClass(){
     std::cout << std::endl;
-    RandomNumberGenerator normal(42, true);
+    RandomNumberGenerator rngEngine(42, true);
 
     std::vector<double> means = {10, 20, 30};
     std::vector<std::vector<double >> vars = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
 
-    auto mvnormrng = normal.mvnorm(means, vars);
-    auto rng = normal.mvnorm(means, vars, 100);
+    auto mvnormrng = rngEngine.mvnorm(means, vars);
+    auto rng = rngEngine.mvnorm(means, vars, 100);
 
 //    auto rng = normal.normal({10, 20}, {1, 5}, 10);
 
-//    for (auto &row : rng){
-//        std::cout << "mean: " << mean(row);
-//        std::cout << " - sd: " << sd(row);
-//        std::cout << std::endl;
-//    }
+    for (auto &row : rng){
+        std::cout << "mean: " << mean(row);
+//        std::cout << " - sd: " << vars(row);
+        std::cout << std::endl;
+    }
 
 
 }
