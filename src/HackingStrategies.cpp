@@ -33,8 +33,6 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
 
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
 
-//      std::cout << "Optional Stopping\n";
-    
     Submission tmpSub;
     
     for (int t = 0; t < _n_trials; t++) {
@@ -92,6 +90,4 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
-    
-    
 }
