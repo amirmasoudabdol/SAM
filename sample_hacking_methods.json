@@ -1,8 +1,9 @@
 {
   "--p-hacking-methods": [
     {
-      "type": "SDOutlierRemoval",
-      "sd_multiplier": 1
+      "type": "OptionalStopping",
+      "size": 30,
+      "attemps": 5
     }
   ]
 }

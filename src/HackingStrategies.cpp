@@ -33,7 +33,7 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
 
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
 
-     // std::cout << "Optional Stopping\n";
+//      std::cout << "Optional Stopping\n";
     
     Submission tmpSub;
     
@@ -50,6 +50,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
             }
         }
 
+        // Recalculate the experiment
         experiment->calculateStatistics();
         experiment->calculateEffects();
         experiment->runTest();
@@ -63,6 +64,14 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
 }
 
 
+
+/**
+ \brief Implementation of Outliers Removal based on an item's distance from the \f$\mu\f$.
+ 
+ The `_sd_multiplier`, \f$d\f$ is set at the construction, and it'll be used to check whether a measurement
+ should be removed or not. Any item satisfying the \f$ v > |\mu - d * \sigma| \f$ will be removed from the
+ dataset.
+ */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
     int gi = 0;     // Only to access the means, vars
@@ -79,6 +88,7 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
         gi++;
     }
     
+    // Recalculate the experiment
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
