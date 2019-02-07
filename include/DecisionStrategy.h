@@ -75,7 +75,7 @@ public:
         finalSubmission = submissions.back();
         
         // TODO: Move the significance test to the Submission
-        if (submissions.back().pvalue < alpha) {
+        if (submissions.back().isSig()) {
             isStillHacking = false;
         }else{
             isStillHacking = true;
