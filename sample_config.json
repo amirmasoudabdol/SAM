@@ -11,7 +11,7 @@
   "--alpha": 0.05,
   "--data-startegy": "fixed-model",
   "--means": [0.1, 0.3, 0.5, 0.7],
-  "--vars": [0.01, 0.01, 0.01, 0.01],
+  "--vars": [0.1, 0.1, 0.1, 0.1],
   "--is-correlated": false,
   "--cov-const": 0.1,
   "--cov-matrix": [[1, 0.5, 0.5], [0.5, 1, 0.5], [0.5, 0.5, 1]],

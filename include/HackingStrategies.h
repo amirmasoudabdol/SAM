@@ -80,13 +80,16 @@ private:
 };
 
 // If I need more variations here, I think it's the best if I make different subclass
-class OutlierRemoval : public HackingStrategy {
+class SDOutlierRemoval : public HackingStrategy {
 public:
 
-    OutlierRemoval();
+    SDOutlierRemoval(double sd_multiplier) : _sd_multiplier(sd_multiplier) {};
 
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+    
+private:
+    double _sd_multiplier;      ///< Specifies the multiplier threshold for removing the outliers
 
 };
 

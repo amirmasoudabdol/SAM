@@ -60,20 +60,28 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         
     }
     
-    // This can also ask for the verdict and if it's not fine,
-    // go for more trials.
-    
-    // TODO: this needs to change, it needs to pick and select instead of 0;
-//    return _create_submission_record(*experiment, 0);
-//    return Submission(*experiment, 0);
 }
 
 
-//Submission OutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
-//    
-//    
-//    
-//    
-//    // TODO: this needs to change, it needs to pick and select instead of 0;
-//    return _create_submission_record(*experiment, 0);
-//}
+void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
+    
+    int gi = 0;     // Only to access the means, vars
+    for (auto &g : experiment->measurements) {
+        
+        g.erase(std::remove_if(g.begin(),
+                               g.end(),
+                               [this, experiment, gi](double v){ return (v < experiment->means[gi] - this->_sd_multiplier * sqrt(experiment->vars[gi]))
+                                                                        ||
+                                                                        (v > experiment->means[gi] + this->_sd_multiplier * sqrt(experiment->vars[gi])); }),
+                g.end()
+                );
+        
+        gi++;
+    }
+    
+    experiment->calculateStatistics();
+    experiment->calculateEffects();
+    experiment->runTest();
+    
+    
+}

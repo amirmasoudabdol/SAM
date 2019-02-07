@@ -188,6 +188,10 @@ void runSimulation(json& simConfig){
                 OptionalStopping optStopping(item["size"], item["attemps"]);
                 researcher.registerAHackingStrategy(&optStopping);
             }/*else if for other options*/
+            else if(item["type"] == "CFOutlierRemoval") {
+                SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
+                researcher.registerAHackingStrategy(&cfOutlierRemoval);
+            }
         }
     }    
     
