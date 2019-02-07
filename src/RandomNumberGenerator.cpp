@@ -23,7 +23,7 @@ RandomNumberGenerator::normal(std::vector<double>& means, std::vector<double>& s
 	std::vector<std::vector<double>> rns;
 
 	for (int i = 0; i < means.size(); ++i){
-		rns.push_back(normal(means[i], means[i], n));
+		rns.push_back(normal(means[i], sds[i], n));
 	}
 
 	return rns;
