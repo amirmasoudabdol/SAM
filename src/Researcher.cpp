@@ -38,7 +38,7 @@ void Researcher::hack() {
             // Just send the pointer
             Experiment* tempExpr = experiment;
             
-            h->perform(tempExpr);
+            h->perform(tempExpr, decisionStrategy);
             experimentsList.push_back(*tempExpr);
             
 //            printVector(tempExpr->means); std::cout <<
@@ -49,7 +49,7 @@ void Researcher::hack() {
             // Sending the copy
             Experiment copiedExpr = *experiment;
             
-            h->perform(&copiedExpr);
+            h->perform(&copiedExpr, decisionStrategy);
             experimentsList.push_back(copiedExpr);
             
 //            printVector(copiedExpr.means); std::cout <<
