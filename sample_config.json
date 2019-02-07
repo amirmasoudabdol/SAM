@@ -9,7 +9,7 @@
   "--n-items": 0,
   "--n-obs": 25,
   "--alpha": 0.05,
-  "--data-startegy": "fixed-model",
+  "--data-startegy": "FixedModel",
   "--means": [0.1, 0.3, 0.5, 0.7],
   "--vars": [0.1, 0.1, 0.1, 0.1],
   "--is-correlated": false,
@@ -22,5 +22,5 @@
   "--output-prefix": "auto",
   "--is-phacker": true,
   "--selection-pref": "MinPvalue",
-  "--hacking-methods-config": "../sample_hacking_methods.json"
+  "--hacking-methods-config": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json"
 }
