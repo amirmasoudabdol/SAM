@@ -25,7 +25,7 @@ void Experiment::setTestStrategy(TestStrategy *t){
 }
 
 void Experiment::runTest(){
-    testStrategy->run();
+    testStrategy->run(this);
 }
 
 void Experiment::initExperiment() {
@@ -73,6 +73,6 @@ void Experiment::calculateEffects() {
 
 // This is a tricky business!
 // I don't remember why I have this here!
-void Experiment::pointTestStrategyToThis() {
-    testStrategy->updateExperimentPointer(this);
-}
+// void Experiment::pointTestStrategyToThis() {
+//     testStrategy->updateExperimentPointer(this);
+// }

@@ -198,7 +198,7 @@ void runSimulation(json& simConfig){
     
     
         // Setting the Test Strategy
-        TTest tTest(&experiment);
+        TTest tTest;
         experiment.setTestStrategy(&tTest);
         std::cout << "Setting the Test Strategy, Done!\n";
 
@@ -517,7 +517,7 @@ void estherSimulation(){
 
     // I think this is a bit dangerous since I might lose track at some point,
     // It would be nicer if I can say `setTestStrategy(this)` or `setTestStrategy(parent)`
-    TTest tTest(&estherExperiment);
+    TTest tTest;
     esther.experiment->setTestStrategy(&tTest);
 
     for (int i = 0; i < nsims; ++i) {

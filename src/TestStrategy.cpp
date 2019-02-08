@@ -10,11 +10,11 @@
 
 #include <Experiment.h>
 
-void TTest::run() {
-    this->computeStatsPvalue();
+void TTest::run(Experiment* experiment) {
+    this->computeStatsPvalue(experiment);
 }
 
-void TTest::computeStatsPvalue() {
+void TTest::computeStatsPvalue(Experiment* experiment) {
 
     for (int i = 0; i < experiment->setup.ng; ++i) {
         experiment->statistics[i] = experiment->vars[i] / experiment->ses[i];
@@ -24,8 +24,8 @@ void TTest::computeStatsPvalue() {
 
 }
 
-void TTest::updateExperimentPointer(Experiment* e) {
-    experiment = e;
-}
+//void TTest::updateExperimentPointer(Experiment* e) {
+//    experiment = e;
+//}
 
 
