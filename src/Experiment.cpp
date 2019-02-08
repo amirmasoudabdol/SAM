@@ -13,7 +13,7 @@
 #include "gsl/gsl_statistics.h"
 
 void Experiment::generateData() {
-    measurements = dataStrategy->genData();
+    dataStrategy->genData(this);
 }
 
 void Experiment::setDataStrategy(DataGenStrategy* d) {

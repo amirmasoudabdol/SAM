@@ -180,10 +180,10 @@ void runSimulation(json& simConfig){
 
         // Setting Data Model
 //        FixedEffectStrategy fixedEffectModel;
-        FixedEffectStrategy fixedEffectModel(experimentSetup, mainRNGengine);
+        FixedEffectStrategy fixedEffectModel(mainRNGengine);
     
 //        LatentDataStrategy latentDataModel;
-        LatentDataStrategy latentDataModel(experimentSetup, mainRNGengine);
+        LatentDataStrategy latentDataModel(mainRNGengine);
         // FIXME: I cannot make these object so nicely, I think I need a factor for a few of them
         if (simConfig["--data-strategy"] == "FixedModel"){
             
@@ -391,7 +391,7 @@ void latentStrategyTest() {
     
     Experiment estherExperiment(estherSetup);
     
-    LatentDataStrategy latentGen(estherSetup, rngEngine);
+    LatentDataStrategy latentGen(rngEngine);
     estherExperiment.setDataStrategy(&latentGen);
     
     latentGen.latentModelTest();
@@ -419,7 +419,7 @@ void estherSimulationTest(){
 
     Experiment estherExperiment(estherSetup);
 
-    FixedEffectStrategy fixedEffectModel(estherSetup, rngEngine);
+    FixedEffectStrategy fixedEffectModel(rngEngine);
     estherExperiment.setDataStrategy(&fixedEffectModel);
 
 //    estherExperiment.initExperiment();
@@ -483,7 +483,7 @@ void estherSimulation(){
 
     Experiment estherExperiment(estherSetup);
 
-    FixedEffectStrategy fixedEffectModel(estherSetup, rngEngine);
+    FixedEffectStrategy fixedEffectModel(rngEngine);
     estherExperiment.setDataStrategy(&fixedEffectModel);
 
     Journal journal(max_pubs, pub_bias, alpha);

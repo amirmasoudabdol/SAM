@@ -7,25 +7,27 @@
 #include "gsl/gsl_statistics.h"
 
 #include "Utilities.h"
+#include "Experiment.h"
 
-std::vector<std::vector<double>> FixedEffectStrategy::genData()  {
+void FixedEffectStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
-    if (!setup.isMultivariate){
-        return this->rngEngine.normal(setup.true_means, setup.true_vars, setup.nobs);
+    if (!experiment->setup.isMultivariate){
+        experiment->measurements = this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_vars, experiment->setup.nobs);
     }else{
-        return this->rngEngine.mvnorm(setup.true_means, setup.true_sigma, setup.nobs);
+        experiment->measurements = this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, experiment->setup.nobs);
     }
 }
 
-std::vector<std::vector<double>> FixedEffectStrategy::genNewObservationsForAllGroups(int n_new_obs) {
-    if (!setup.isMultivariate){
-        return this->rngEngine.normal(setup.true_means, setup.true_vars, n_new_obs);
+std::vector<std::vector<double>> FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
+    // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
+    if (!experiment->setup.isMultivariate){
+        return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_vars, n_new_obs);
     }else{
-        return this->rngEngine.mvnorm(setup.true_means, setup.true_sigma, n_new_obs);
+        return this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
     }
 }
 
-std::vector<double> FixedEffectStrategy::genNewObservationsFor(int g, int n_new_obs) {
+std::vector<double> FixedEffectStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
 
     return std::vector<double>();
 }
@@ -35,7 +37,7 @@ std::vector<double> FixedEffectStrategy::genNewObservationsFor(int g, int n_new_
 
 // This is different from other genData, since it should generate items, but will
 // only return the means!
-std::vector<std::vector<double>> LatentDataStrategy::genData()  {
+void LatentDataStrategy::genData(Experiment* experiment)  {
 
 //    std::cout << "LatentModel, GenData Started!\n";
 
@@ -48,31 +50,31 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
     
     
     
-    int ni = setup.ni;
-    int nc = setup.nc;
-    int nd = setup.nd;
-    int ng = setup.ng;
-    int nrows = setup.nrows;       // Total number of rows
+    int ni = experiment->setup.ni;
+    int nc = experiment->setup.nc;
+    int nd = experiment->setup.nd;
+    int ng = experiment->setup.ng;
+    int nrows = experiment->setup.nrows;       // Total number of rows
     
-    int nobs = setup.nobs;
+    int nobs = experiment->setup.nobs;
     
     // This is correct, you have one a for each item.
     gsl_vector* lambda = gsl_vector_alloc(ni);
-    lambda->data = setup.factorLoadings.data();
+    lambda->data = experiment->setup.factorLoadings.data();
     // gsl_vector_set_all(lambda, 0.1);
     
     // DV ---------------------------------------------
     // Mean of each dv
     gsl_vector* dvMeans = gsl_vector_calloc(nd);    // this needs to be broadcasted to ng * ng
     // double dvm[] = {0, 5, 10};
-    dvMeans->data = setup.factorMeans.data();
+    dvMeans->data = experiment->setup.factorMeans.data();
     
     // gsl_vector* dvVars = gsl_vector_calloc(nd);
     // gsl_vector_set_all(dvVars, 1);
     
     gsl_matrix* dvSigma = gsl_matrix_alloc(nd, nd);     // this needs to be broadcasted to ng * ng
     gsl_matrix_set_identity(dvSigma);                   // Set to 1 diagonally
-    dvSigma->data = flatten(setup.factorCov).data();
+    dvSigma->data = flatten(experiment->setup.factorCov).data();
     // ------------------------------------------------
     
     
@@ -84,7 +86,7 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
     gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
     
     gsl_matrix* allErrorsSigma = gsl_matrix_calloc(nrows, nrows);
-    allErrorsSigma->data = flatten(setup.errorCov).data();
+    allErrorsSigma->data = flatten(experiment->setup.errorCov).data();
     
     gsl_matrix* allErrors = gsl_matrix_calloc(nrows, nobs);
     
@@ -149,14 +151,14 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
         
     }
     
-    return meaurements;
+    // return meaurements;
 }
 
-std::vector<std::vector<double>> LatentDataStrategy::genNewObservationsForAllGroups(int n_new_obs) {
-    return this->rngEngine.normal(setup.true_means, setup.true_vars, n_new_obs);
+std::vector<std::vector<double>> LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
+    return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_vars, n_new_obs);
 }
 
-std::vector<double> LatentDataStrategy::genNewObservationsFor(int g, int n_new_obs) {
+std::vector<double> LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
     
     return std::vector<double>();
 }

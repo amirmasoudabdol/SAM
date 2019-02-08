@@ -7,15 +7,18 @@
 
 #include <vector>
 
-#include "ExperimentSetup.h"
+//#include "ExperimentSetup.h"
+//#include "Experiment.h"
 #include "RandomNumberGenerator.h"
+
+class Experiment;
 
 class DataGenStrategy {
 
 public:
-    virtual std::vector<std::vector<double>> genData() = 0;
-    virtual std::vector<std::vector<double>> genNewObservationsForAllGroups(int n_new_obs) = 0;
-    virtual std::vector<double> genNewObservationsFor(int g, int n_new_obs) = 0;
+    virtual void genData(Experiment* experiment) = 0;
+    virtual std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
+    virtual std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
     
 };
 
@@ -23,20 +26,20 @@ class FixedEffectStrategy : public DataGenStrategy {
 
 public:
 
-    ExperimentSetup setup;
+//    ExperimentSetup setup;
     RandomNumberGenerator rngEngine;
 
 
-    FixedEffectStrategy(ExperimentSetup& es, RandomNumberGenerator& rng_engine) :
-        setup(es), rngEngine(rng_engine){
+    FixedEffectStrategy(RandomNumberGenerator& rng_engine) :
+        rngEngine(rng_engine){
         // TODO: I might need to pass rng_engine as a pointer too, 
         // because I might ran into the same problem that it loses its state
         // and produce unreliable results.
     };
 
-    std::vector<std::vector<double>> genData();
-    std::vector<std::vector<double>> genNewObservationsForAllGroups(int n_new_obs);
-    std::vector<double> genNewObservationsFor(int g, int n_new_obs);
+    void genData(Experiment* experiment);
+    std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+    std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
 
 
 private:
@@ -45,18 +48,18 @@ private:
 
 class LatentDataStrategy : public DataGenStrategy {
 public:
-    ExperimentSetup setup;
+//    ExperimentSetup setup;
     RandomNumberGenerator rngEngine;
     
 
-    LatentDataStrategy(ExperimentSetup& es, RandomNumberGenerator& rng_engine) :
-    setup(es), rngEngine(rng_engine) {
+    LatentDataStrategy(RandomNumberGenerator& rng_engine) :
+        rngEngine(rng_engine) {
         
     };
     
-    std::vector<std::vector<double>> genData();
-    std::vector<std::vector<double>> genNewObservationsForAllGroups(int n_new_obs);
-    std::vector<double> genNewObservationsFor(int g, int n_new_obs);
+    void genData(Experiment* experiment);
+    std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+    std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
     
 
 //    std::vector<double> computeItemsMean();     // This will fill the experiment->measurements

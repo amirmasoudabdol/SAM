@@ -20,7 +20,7 @@
   "--save-output": true,
   "--output-path": "../outputs/",
   "--output-prefix": "auto",
-  "--is-phacker": false,
+  "--is-phacker": true,
   "--selection-pref": "MinPvalue",
   "--hacking-methods-config": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json",
   "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],

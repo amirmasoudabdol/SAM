@@ -47,7 +47,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
 //        if (experiment->setup.isMultivariate){
 //            // I can move this check to the dataStrategy and basically set it as Static when I'm initiating the class!
 //        }else{
-            auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(_n_new_obs);
+            auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(experiment, _n_new_obs);
             for (int i = 0; i < experiment->setup.ng; ++i) {
                 experiment->measurements[i].insert(experiment->measurements[i].begin(),
                                                     newObs[i].begin(),
