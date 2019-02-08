@@ -27,6 +27,7 @@ public:
     };
     ~RandomNumberGenerator() {
 
+        // I think I'm surely missing stuff here!
         if (_is_multivariate && _is_gsl_containers_initialized){
             gsl_rng_free(rng_stream);
             gsl_vector_free(_mu);
@@ -50,8 +51,11 @@ public:
 
     std::vector<double> mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma);
     std::vector<std::vector<double> > mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma, int n);
+    
+    void mvnorm_n(gsl_vector* means, gsl_matrix* sigma, gsl_matrix* ran_values);
 
     void allocGSLContainers() {
+        // TODO: I get the idea here but I think it's terrible, I need to change it!
         _mu = gsl_vector_alloc(_size);
         _sigma = gsl_matrix_alloc(_size, _size);
         _mvnorm_row = gsl_vector_alloc(_size);

@@ -24,7 +24,7 @@
   "--selection-pref": "MinPvalue",
   "--hacking-methods-config": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json",
   "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
-  "--factor-means": [0, 0],
+  "--factor-means": [5, 10],
   "--factor-cov": [[1, 0.5], [0.5, 1]],
   "--error-cov": [[1, 0, 0, 0, 0, 0] ,[0, 1, 0, 0, 0, 0] ,[0, 0, 1, 0, 0, 0] ,[0, 0, 0, 1, 0, 0] ,[0, 0, 0, 0, 1, 0] ,[0, 0, 0, 0, 0, 1]]
 }

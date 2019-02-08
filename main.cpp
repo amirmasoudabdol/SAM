@@ -123,7 +123,7 @@ int main(int argc, const char** argv){
 //    estherSimulationTest();
 //    effectEstimatorTest();
     
-//    testRandomClass();
+//   testRandomClass();
 
     return 0;
 }
@@ -194,7 +194,7 @@ void runSimulation(json& simConfig){
             
             experiment.setDataStrategy(&latentDataModel);
         }
-//        std::cout << "Setting Data Model, Done!\n";
+        std::cout << "Setting Data Model, Done!\n";
     
     
         // Setting the Test Strategy
@@ -571,13 +571,19 @@ void testRandomClass(){
     auto mvnormrng = rngEngine.mvnorm(means, vars);
     auto rng = rngEngine.mvnorm(means, vars, 100);
 
-//    auto rng = normal.normal({10, 20}, {1, 5}, 10);
-
     for (auto &row : rng){
         std::cout << "mean: " << mean(row);
-//        std::cout << " - sd: " << vars(row);
         std::cout << std::endl;
     }
 
+    
+    gsl_vector* mu = gsl_vector_alloc(3);
+    mu->data = means.data();
+    gsl_matrix* sigma = gsl_matrix_alloc(3, 3);
+    gsl_matrix_set_all(sigma, 1);
+    
+    gsl_matrix* mvnorm_rans = gsl_matrix_alloc(3, 50);
+    
+    rngEngine.mvnorm_n(mu, sigma, mvnorm_rans);
 
 }

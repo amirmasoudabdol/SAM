@@ -39,17 +39,19 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
 
 //    std::cout << "LatentModel, GenData Started!\n";
 
-    std::vector<std::vector<double> > items;
-    std::vector<double> means;
+    std::vector<std::vector<double> > items;        // nrows * nobs
+    std::vector<std::vector<double> > meaurements;  // ng * nobs
+    std::vector<double> means;                      // 1 * ng
     
     // Measurement here is technically the mean of each row, it'll be
     // ng * nobs
-    std::vector<std::vector<double> > meas;
+    
     
     
     int ni = setup.ni;
     int nc = setup.nc;
     int nd = setup.nd;
+    int ng = setup.ng;
     int nrows = setup.nrows;       // Total number of rows
     
     int nobs = setup.nobs;
@@ -73,53 +75,23 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
     dvSigma->data = flatten(setup.factorCov).data();
     // ------------------------------------------------
     
-//    gsl_vector* errorMeans = gsl_vector_calloc(ni);     // Usually 0.
-    
-    // gsl_matrix* errorSigma = gsl_matrix_calloc(ni, ni);
-    // gsl_matrix_set_identity(errorSigma);
-    // gsl_matrix_scale(errorSigma, 0.9);
-    // errorSigma->data = flatten(setup.errorCov).data();
-    
-    
-    gsl_rng_env_setup();
-
-    const gsl_rng_type *T;
-    T = gsl_rng_default;
-    
-    gsl_rng* rng_stream;
-    rng_stream = gsl_rng_alloc(T);
     
     gsl_matrix* factorScores = gsl_matrix_calloc(nd, nobs);
-//    gsl_matrix* itemErrors = gsl_matrix_calloc(ni, nobs);
     
-    gsl_vector* scoreCol = gsl_vector_calloc(nd);
-//    gsl_vector* errorCol = gsl_vector_calloc(ni);
-    
-    for (int n = 0; n < nobs; n++) {
-        gsl_ran_multivariate_gaussian(rng_stream, dvMeans, dvSigma, scoreCol);
-        gsl_matrix_set_col(factorScores, n, scoreCol);
-        
-//        gsl_ran_multivariate_gaussian(rng_stream, errorMeans, errorSigma, errorCol);
-//        gsl_matrix_set_col(itermErrors, n, errorCol);
-    }
+    // Generating factor values
+    this->rngEngine.mvnorm_n(dvMeans, dvSigma, factorScores);
     
     gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
     
     gsl_matrix* allErrorsSigma = gsl_matrix_calloc(nrows, nrows);
-    // gsl_matrix_set_identity(allErrorsSigma);
-    // gsl_matrix_scale(allErrorsSigma, 0.9);
     allErrorsSigma->data = flatten(setup.errorCov).data();
     
     gsl_matrix* allErrors = gsl_matrix_calloc(nrows, nobs);
     
-    gsl_vector* allErrorCol = gsl_vector_calloc(nrows);
-    for (int n = 0; n < nobs; n++) {
-        gsl_ran_multivariate_gaussian(rng_stream, allErrorMeans, allErrorsSigma, allErrorCol);
-        gsl_matrix_set_col(allErrors, n, allErrorCol);
-    }
+    // Generating errors
+    this->rngEngine.mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
     
     gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
-//    gsl_vector* tempRow = gsl_vector_calloc(ni);
     
     int row = 0;
     int col = 0;
@@ -137,40 +109,28 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
                                        gsl_matrix_get(allErrors, row * ni + i, col)
                                    );
                     
-//                    std::cout << row * ni + i << ", " << col << ": " << gsl_matrix_get(allScores, row * ni + i, col)
-//                                    << " - " << gsl_vector_get(dvMeans, d)
-//                                    << std::endl;
-                    
                     // I can compute mean of each row (of items) here and put it into `measurements` if necessary
+                    // item[i][j] = 
                 }
             }
         }
     }
     
-    gsl_vector* itemMeans = gsl_vector_calloc(nrows);
-    gsl_vector* tmpRow = gsl_vector_alloc(nobs);
-    for (int n = 0; n < nrows; n++) {
-        gsl_matrix_get_row(tmpRow, allScores, n);
-        gsl_vector_set(itemMeans, n, gsl_stats_mean(tmpRow->data, 1, nobs));
-//        std::cout << gsl_vector_get(itemMeans, n) << std::endl;
-    }
+//    gsl_vector* itemMeans = gsl_vector_calloc(nrows);
+//    gsl_vector* tmpRow = gsl_vector_alloc(nobs);
+//    for (int r = 0; r < nrows; r++) {
+//        gsl_matrix_get_row(tmpRow, allScores, r);
+//        gsl_vector_set(itemMeans, r, gsl_stats_mean(tmpRow->data, 1, nobs));
+////        std::cout << gsl_vector_get(itemMeans, n) << std::endl;
+//    }
+
     
-    for (int r = 0; r < nrows; r++) {
-        items.push_back(std::vector<double>(nobs));
-        for (int n = 0; n < nobs; n++) {
-            items[r][n] = gsl_matrix_get(allScores, r, n);
-        }
-        means.push_back(gsl_vector_get(itemMeans, r));
+    for (int g = 0; g < ng; g++) {
+        meaurements.push_back(std::vector<double>(nobs));
     }
     
     int rowOffset = 0;
     gsl_vector* v = gsl_vector_alloc(nrows);
-//    gsl_matrix_view dv_items;
-
-    
-    for (int r = 0; r < nrows; r++) {
-        meas.push_back(std::vector<double>(nobs));
-    }
         
     for (int n = 0; n < nobs; n++) {
         gsl_matrix_get_col(v, allScores, n);
@@ -181,27 +141,15 @@ std::vector<std::vector<double>> LatentDataStrategy::genData()  {
                 rowOffset = c * nd + d;
             
                 gsl_vector_view vsub = gsl_vector_subvector(v, rowOffset * ni, ni);
-//                std::cout << gsl_stats_mean(vsub.vector.data, 1, ni) << "\n";
                 
-                meas[c * nd + d][n] = gsl_stats_mean(vsub.vector.data, 1, ni); // << "\n";
-                
-//                 std::cout << c * nd + d << ", " << meas[c * nd + d][n] << ", ";
-//                std::cout << c * nd + d << ", " << n << "\n";
-//                                rowOffset * ni << ", " << rowOffset * ni + ni << "\n";
-            
-            
+                meaurements[c * nd + d][n] = gsl_stats_mean(vsub.vector.data, 1, ni);
+                            
             }
-//            std::cout << "\n";
         }
         
     }
     
-//    std::cout << meas.size() << ": size\n" << meas[0].size() << " :<--\n";
-
-    // REMEMEBR:
-    // FIXME: This is the incorrent measurements that I'm returning. I need to be careful here.
-    return meas;
-    // return this->rngEngine.normal(setup.true_means, setup.true_vars, setup.nobs);
+    return meaurements;
 }
 
 std::vector<std::vector<double>> LatentDataStrategy::genNewObservationsForAllGroups(int n_new_obs) {

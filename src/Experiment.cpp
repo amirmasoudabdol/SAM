@@ -58,11 +58,11 @@ void Experiment::calculateStatistics() {
     }
     // std::cout << vars[0] << ": v\n";
 
-//    std::cout << "means: ";
-//    for (auto &m : means) {
-//        std::cout << m << ", ";
-//    }
-//    std::cout << "\n";
+   // std::cout << "means: ";
+   // for (auto &m : means) {
+   //     std::cout << m << ", ";
+   // }
+   // std::cout << "\n";
     
 }
 
@@ -72,6 +72,7 @@ void Experiment::calculateEffects() {
 
 
 // This is a tricky business!
+// I don't remember why I have this here!
 void Experiment::pointTestStrategyToThis() {
     testStrategy->updateExperimentPointer(this);
 }
