@@ -2,8 +2,8 @@
   "--p-hacking-methods": [
     {
       "type": "OptionalStopping",
-      "size": 3,
-      "attemps": 5
+      "size": 5000,
+      "attemps": 1
     }
   ]
 }

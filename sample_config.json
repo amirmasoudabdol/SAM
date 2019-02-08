@@ -9,7 +9,7 @@
   "--n-items": 3,
   "--n-obs": 25,
   "--alpha": 0.05,
-  "--data-strategy": "FixedModel",
+  "--data-strategy": "LatentModel",
   "--means": [0.1, 0.3, 0.5, 0.7],
   "--vars": [0.1, 0.1, 0.1, 0.1],
   "--is-correlated": false,
@@ -20,11 +20,11 @@
   "--save-output": true,
   "--output-path": "../outputs/",
   "--output-prefix": "auto",
-  "--is-phacker": true,
+  "--is-phacker": false,
   "--selection-pref": "MinPvalue",
   "--hacking-methods-config": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json",
   "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
-  "--factor-means": [5, 10],
+  "--factor-means": [50, 10],
   "--factor-cov": [[1, 0.5], [0.5, 1]],
   "--error-cov": [[1, 0, 0, 0, 0, 0] ,[0, 1, 0, 0, 0, 0] ,[0, 0, 1, 0, 0, 0] ,[0, 0, 0, 1, 0, 0] ,[0, 0, 0, 0, 1, 0] ,[0, 0, 0, 0, 0, 1]]
 }

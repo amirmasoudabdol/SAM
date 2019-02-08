@@ -394,7 +394,7 @@ void latentStrategyTest() {
     LatentDataStrategy latentGen(rngEngine);
     estherExperiment.setDataStrategy(&latentGen);
     
-    latentGen.latentModelTest();
+//    latentGen.latentModelTest();
     
 }
 

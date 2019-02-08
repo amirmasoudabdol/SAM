@@ -67,7 +67,7 @@ public:
 //    std::vector<double> _compute_latent_variances();
 //    std::vector<std::vector<double> > _construct_latent_cov_matrix();
     
-    void latentModelTest();
+//    void latentModelTest();
     
     // Routine
     //  1. Compute Latent Means
