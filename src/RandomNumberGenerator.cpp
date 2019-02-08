@@ -35,6 +35,8 @@ RandomNumberGenerator::mvnorm(std::vector<double>& means, std::vector<std::vecto
 	std::vector<double> rn(means.size());
 
 
+	// TODO: This can be moved to the Constructor somewhere!
+	// FIXME: This was the source of error before due to non-initialized variables
 	if (!_is_gsl_containers_initialized){
 		_size = means.size();
 		allocGSLContainers();
@@ -74,3 +76,30 @@ RandomNumberGenerator::mvnorm(std::vector<double>& means, std::vector<std::vecto
 double RandomNumberGenerator::uniform() {
     return gsl_rng_uniform(rng_stream);
 }
+
+void RandomNumberGenerator::mvnorm_n(gsl_vector *means, gsl_matrix *sigma, gsl_matrix *ran_values) {
+    
+    if (!_is_gsl_containers_initialized){
+//        _size = means.size();
+        _size = means->size;
+        allocGSLContainers();
+    } // TODO: Check the case that we suddenly decide to change the size of means;
+
+    
+    gsl_vector* tmp_vector = gsl_vector_alloc(means->size);
+    
+    for (int i = 0; i < ran_values->size2; i++) {
+        gsl_ran_multivariate_gaussian(rng_stream, means, sigma, tmp_vector);
+        gsl_matrix_set_col(ran_values, i, tmp_vector);
+    }
+    
+    // for (int i = 0; i < ran_values->size1; i++) {
+    //     for (int j = 0; j < ran_values->size2; j++) {
+    //         std::cout << i << ", " << j << ": " << gsl_matrix_get(ran_values, i, j) << std::endl;
+    //     }
+    //     std::cout << "\n";
+    // }
+    
+    gsl_vector_free(tmp_vector);
+}
+
