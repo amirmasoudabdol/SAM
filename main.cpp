@@ -103,6 +103,9 @@ using json = nlohmann::json;
 tqdm simulationBar;
 
 int main(int argc, const char** argv){
+    
+    // I probably need to seed this with master-seed
+//    srand(time(NULL));
 
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
                                                                { argv + 1, argv + argc },
@@ -162,16 +165,21 @@ void runSimulation(json& simConfig){
         //        // Initializing Experiment Setup
            experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
                                            simConfig["--n-dep-vars"],
-                                           simConfig["--n-obs"],
+                                           /*simConfig["--n-obs"],*/ nobs,
                                            simConfig["--means"].get<std::vector<double>>(),
                                            simConfig["--sds"].get<std::vector<double>>());
         }else{
             // Initializing Experiment Setup
+            std::vector<std::vector<double> > covMatrix;
+            if (!simConfig["--cov-matrix"].is_null()) {
+                covMatrix = simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>();
+            }
+            
             experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
                                             simConfig["--n-dep-vars"],
-                                            simConfig["--n-obs"],
+                                            /*simConfig["--n-obs"],*/ nobs,
                                             simConfig["--means"].get<std::vector<double>>(),
-                                            simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>());
+                                            covMatrix);
         }
     }
     
@@ -220,34 +228,34 @@ void runSimulation(json& simConfig){
             
             experiment.setDataStrategy(&latentDataModel);
         }
-        std::cout << "Setting Data Model, Done!\n";
+        // std::cout << "Setting Data Model, Done!\n";
     
     
         // Setting the Test Strategy
         TTest tTest;
         experiment.setTestStrategy(&tTest);
-        std::cout << "Setting the Test Strategy, Done!\n";
+        // std::cout << "Setting the Test Strategy, Done!\n";
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    std::cout << "Initializing the Researcher, Done!\n";
+    // std::cout << "Initializing the Researcher, Done!\n";
 
         // Setting the Selection Preference
         researcher.selectionPref = PreRegisteredOutcome;
-        std::cout << "Setting the Selection Preference, Done!\n";
+        // std::cout << "Setting the Selection Preference, Done!\n";
 
         // Assigning the Journal
         researcher.setJournal(&journal);
-        std::cout << "Assigning the Journal, Done!\n";
+        // std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
         ImpatientDecisionMaker impatientReporter(0, simConfig["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
-        std::cout << "Setting the Decision Strategy, Done!\n";
+        // std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["--is-phacker"];
-    std::cout << "Initializing Hacking Routines, Done!\n";
+    // std::cout << "Initializing Hacking Routines, Done!\n";
 
     // Registering Hacking Methods
     if (simConfig["--is-phacker"]){
@@ -259,10 +267,12 @@ void runSimulation(json& simConfig){
             researcher.decisionStrategy->selectionPref = MinPvalue;
         } /* else if for other options */
 
+        
+        // Check if any there is any hacking methods at all!
         if (!simConfig["--p-hacking-methods"].is_null()) {
             for (auto &item : simConfig["--p-hacking-methods"]){
                 if (item["type"] == "OptionalStopping") {
-                    OptionalStopping optStopping(item["size"], item["attemps"]);
+                    OptionalStopping optStopping(item["size"], item["attempts"]);
                     researcher.registerAHackingStrategy(&optStopping);
                 }/*else if for other options*/
                 else if(item["type"] == "SDOutlierRemoval") {
@@ -284,11 +294,11 @@ void runSimulation(json& simConfig){
 //            }
 //        }
     }
-    std::cout << "Registering Hacking Methods, Done!\n";
+    // std::cout << "Registering Hacking Methods, Done!\n";
     
     // Initiate the csvWriter
     std::ofstream csvWriter( simConfig["--output-path"].get<std::string>() + simConfig["--output-prefix"].get<std::string>() + ".csv");
-    csvWriter << "simid, pid, effect, statistic, pvalue\n";
+    csvWriter << "simid, pid, nobs, effect, statistic, pvalue, side\n";
     
     int nSims = simConfig["--n-sims"];
     
@@ -314,10 +324,15 @@ void runSimulation(json& simConfig){
             
             researcher.submitToJournal();
             
-            std::cout << researcher.submissionRecord << "\n";
+            if (simConfig["--debug"])
+                std::cout << researcher.submissionRecord << "\n";
             
             if (simConfig["--progress"])
                 simulationBar.progress(i, nSims);
+            
+            // Initializing a new experiment
+            // TODO: The main loop needs some cleanup
+            researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
 
         }
         
@@ -476,7 +491,7 @@ void estherSimulationTest(){
 //    esther.runTest();
 
     Journal journal(max_pubs, pub_bias, alpha);
-    SignigicantSelection sigSelection(alpha, pub_bias);
+    SignigicantSelection sigSelection(alpha, pub_bias, 1, rand());
     journal.setSelectionStrategy(&sigSelection);
 //
     esther.setJournal(&journal);
@@ -526,7 +541,7 @@ void estherSimulation(){
     estherExperiment.setDataStrategy(&fixedEffectModel);
 
     Journal journal(max_pubs, pub_bias, alpha);
-    SignigicantSelection sigSelection(alpha, pub_bias);
+    SignigicantSelection sigSelection(alpha, pub_bias, 1, rand());
     journal.setSelectionStrategy(&sigSelection);
 
 //    estherExperiment.initExperiment();

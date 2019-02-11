@@ -1,12 +1,14 @@
 {
+  "--debug": true,
+  "--verbose": false,
   "--progress": false,
   "--n-sims": 1,
   "--pub-bias": 0.95,
   "--journal-selection-model": "default",
   "--master-seed": 42,
-  "--n-conditions": 1,
+  "--n-conditions": 2,
   "--n-dep-vars": 2,
-  "--n-items": 3,
+  "--n-items": 0,
   "--n-obs": 25,
   "--alpha": 0.05,
   "--data-strategy": "FixedModel",
@@ -23,8 +25,9 @@
   "--is-phacker": true,
   "--p-hacking-methods": [
       {
-        "type": "SDOutlierRemoval",
-        "sd_multiplier": 1
+        "type": "OptionalStopping",
+        "size": 0,
+        "attempts": 10
       }
   ],
   "--selection-pref": "MinPvalue",
