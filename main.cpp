@@ -130,7 +130,14 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
 
-    RandomNumberGenerator mainRNGengine(simConfig["--master-seed"], simConfig["--is-multivariate"]);
+    int masterSeed;
+    if (simConfig["--master-seed"] == "random") {
+        masterSeed = rand();
+    }else{
+        masterSeed = simConfig["--master-seed"].get<int>();
+    }
+    RandomNumberGenerator mainRNGengine(masterSeed, simConfig["--is-multivariate"]);
+    std::cout << "Master seed: " << masterSeed << std::endl;
     
 //    std::cout << "1\n";
     ExperimentSetup experimentSetup;
