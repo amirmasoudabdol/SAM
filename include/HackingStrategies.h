@@ -66,6 +66,23 @@ private:
     std::string _method = "min pvalue";
 };
 
+
+/**
+ \brief Declartion of OptionalStopping hacking strategy
+ 
+ In order to apply the OptionalStopping, use the following format in the JSON
+ config file where `n` specify number of new observations that is going to be
+ added to the experiment in each trial, `m`.
+ 
+ ```
+ {
+    "type": "OptionalStopping",
+    "size": n,
+    "attempts": m
+ }
+ ```
+ 
+ */
 class OptionalStopping : public HackingStrategy {
 public:
 
@@ -84,6 +101,19 @@ private:
 };
 
 // If I need more variations here, I think it's the best if I make different subclass
+/**
+ \brief Declaration of SD-based Outlier Removal.
+ 
+ `sd_multiplier` ...
+ 
+ ```
+     {
+     "type": "SDOutlierRemoval",
+     "sd_multiplier": d
+     }
+ 
+ ```
+ */
 class SDOutlierRemoval : public HackingStrategy {
 public:
 
