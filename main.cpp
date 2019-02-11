@@ -133,19 +133,26 @@ void runSimulation(json& simConfig){
     
     std::stringstream output_path_file;
 
-    int masterSeed;
     if (simConfig["--master-seed"] == "random") {
-        masterSeed = rand();
+        srand(time(NULL));
     }else{
-        masterSeed = simConfig["--master-seed"].get<int>();
+        srand(simConfig["--master-seed"].get<int>());
     }
-    RandomNumberGenerator mainRNGengine(masterSeed, simConfig["--is-multivariate"]);
-    std::cout << "Master seed: " << masterSeed << std::endl;
+
+    int samplingSeed = rand();
+    simConfig["--sampling-rng-seed"] = samplingSeed;
     
+    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-multivariate"]);
+    std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
     
     int nobs;
-    if (simConfig["--n-obs"] == "auto"){
-        // TODO: Use RandomNumberGenerator::genSampleSize();
+    int nobsSeed = rand();
+    simConfig["--nobs-seed"] = nobsSeed;
+    
+    RandomNumberGenerator nobsGenerator(nobsSeed, false);
+    if (simConfig["--n-obs"] == 0){
+        // FIXME: My variables are hard-coded!
+        nobs = nobsGenerator.genSampleSize(75, 20, 100, 300);
     }
         
 //    std::cout << "1\n";
@@ -186,13 +193,16 @@ void runSimulation(json& simConfig){
     Journal journal(simConfig["--max-pubs"],
                     simConfig["--pub-bias"],
                     simConfig["--alpha"]);
-    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"]);
+    
+    int selectionSeed = rand();
+    simConfig["--selection-seed"] = selectionSeed;
+    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"], 1, selectionSeed);
     journal.setSelectionStrategy(&sigSelection);
-    std::cout << "Initializing Journal, Done!\n";
+    // std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-        std::cout << "Initializing Experiment, Done!\n";
+        // std::cout << "Initializing Experiment, Done!\n";
 
         // Setting Data Model
 //        FixedEffectStrategy fixedEffectModel;

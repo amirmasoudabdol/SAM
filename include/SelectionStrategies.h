@@ -18,10 +18,10 @@ public:
 class SignigicantSelection : public SelectionStrategy {
 
 public:
-    SignigicantSelection(double alpha, double pub_bias):
-        _alpha(alpha),  _pub_bias(pub_bias) {
+    SignigicantSelection(double alpha, double pub_bias, int side, int seed):
+        _alpha(alpha),  _pub_bias(pub_bias), _side(side), _seed(seed) {
         // TODO: initialize without seed, basically a random seed
-        _rngEngine = new RandomNumberGenerator(42, false);
+        _rngEngine = new RandomNumberGenerator(_seed, false);
     };
 
     ~SignigicantSelection(){};
@@ -29,6 +29,8 @@ public:
     bool review(Submission& s);
 
 private:
+    int _seed;
+    int _side;
     double _pub_bias;
     double _alpha;
     RandomNumberGenerator* _rngEngine;
