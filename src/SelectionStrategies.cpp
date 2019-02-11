@@ -5,7 +5,7 @@
 #include <SelectionStrategies.h>
 
 bool SignigicantSelection::review(Submission &s) {
-    if (s.pvalue < _alpha){
+    if (s.pvalue < _alpha && s.side == _side){
         return true;
     }else
         if (_rngEngine->uniform() < _pub_bias) {
