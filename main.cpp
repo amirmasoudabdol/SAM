@@ -268,7 +268,7 @@ void runSimulation(json& simConfig){
     std::cout << "Registering Hacking Methods, Done!\n";
     
     // Initiate the csvWriter
-    std::ofstream csvWriter("output.csv");
+    std::ofstream csvWriter( simConfig["--output-path"].get<std::string>() + simConfig["--output-prefix"].get<std::string>() + ".csv");
     csvWriter << "simid, pid, effect, statistic, pvalue\n";
     
     int nSims = simConfig["--n-sims"];
