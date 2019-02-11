@@ -54,6 +54,11 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
 
     Submission tmpSub;
     
+    // If `_n_new_obs` is not specified
+    if (_n_new_obs == 0){
+        _n_new_obs = experiment->setup.nobs / 3;
+    }
+    
     for (int t = 0; t < _n_trials; t++) {
         
 //        if (experiment->setup.isMultivariate){
