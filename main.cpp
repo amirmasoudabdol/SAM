@@ -298,7 +298,7 @@ void runSimulation(json& simConfig){
     
     // Initiate the csvWriter
     std::ofstream csvWriter( simConfig["--output-path"].get<std::string>() + simConfig["--output-prefix"].get<std::string>() + ".csv");
-    csvWriter << "simid, pid, nobs, effect, statistic, pvalue, side\n";
+    csvWriter << "simid, pid, nobs, yi, sei, statistic, pvalue, side\n";
     
     int nSims = simConfig["--n-sims"];
     
