@@ -74,7 +74,31 @@ RandomNumberGenerator::mvnorm(std::vector<double>& means, std::vector<std::vecto
 }
 
 double RandomNumberGenerator::uniform() {
-    return gsl_rng_uniform(rng_stream);
+    return gsl_ran_flat(rng_stream, 0, 1);
+}
+
+double RandomNumberGenerator::uniform(double min, double max){
+    return gsl_ran_flat(rng_stream, min, max);
+}
+
+
+/**
+ Return a value between \f$[a, b)\f$ or \f$[b, c)\f$ based on the outcome of a Bernoulli trial with
+ probability of \f$p\f$. The return value has \f$p\f$ chance of being in \f$[a, b)\f$ and \f$1-p\f$
+ chance of being in \f$[b, c)\f$.
+
+ @param p Bernoulli trial probability
+ @param a Lower bound
+ @param b Middle bound
+ @param c Upper bound
+ @return A value between [a, c)
+ */
+double RandomNumberGenerator::genSampleSize(double p, double a, double b, double c){
+    if (!gsl_ran_bernoulli(rng_stream, p)) {
+        return gsl_ran_flat(rng_stream, a, b);
+    }else{
+        return gsl_ran_flat(rng_stream, b, c);
+    }
 }
 
 void RandomNumberGenerator::mvnorm_n(gsl_vector *means, gsl_matrix *sigma, gsl_matrix *ran_values) {

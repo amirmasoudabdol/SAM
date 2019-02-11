@@ -141,6 +141,12 @@ void runSimulation(json& simConfig){
     }
     RandomNumberGenerator mainRNGengine(masterSeed, simConfig["--is-multivariate"]);
     std::cout << "Master seed: " << masterSeed << std::endl;
+    
+    
+    int nobs;
+    if (simConfig["--n-obs"] == "auto"){
+        // TODO: Use RandomNumberGenerator::genSampleSize();
+    }
         
 //    std::cout << "1\n";
     ExperimentSetup experimentSetup;
