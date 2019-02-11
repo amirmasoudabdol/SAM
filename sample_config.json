@@ -20,9 +20,15 @@
   "--save-output": true,
   "--output-path": "../outputs/",
   "--output-prefix": "auto",
-  "--is-phacker": false,
+  "--is-phacker": true,
+  "--p-hacking-methods": [
+      {
+        "type": "SDOutlierRemoval",
+        "sd_multiplier": 1
+      }
+  ],
   "--selection-pref": "MinPvalue",
-  "--hacking-methods-config": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json",
+  "--p-hacking-config-file": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json",
   "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
   "--factor-means": [50, 10],
   "--factor-cov": [[1, 0.5], [0.5, 1]],

@@ -1,6 +1,10 @@
 # Excluding docs
 doc/
 
+# Excluding input/output
+inputs/
+outputs/
+
 # Excluding the xcode-project
 xcode-project/
 cling-playground/

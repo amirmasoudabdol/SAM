@@ -232,19 +232,31 @@ void runSimulation(json& simConfig){
             researcher.selectionPref = MinPvalue;
             researcher.decisionStrategy->selectionPref = MinPvalue;
         } /* else if for other options */
-        
-        
-        json hackingConfig = readJSON(simConfig["--hacking-methods-config"]);
-        for (auto &item : hackingConfig["--p-hacking-methods"]){
-            if (item["type"] == "OptionalStopping") {
-                OptionalStopping optStopping(item["size"], item["attemps"]);
-                researcher.registerAHackingStrategy(&optStopping);
-            }/*else if for other options*/
-            else if(item["type"] == "SDOutlierRemoval") {
-                SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
-                researcher.registerAHackingStrategy(&cfOutlierRemoval);
+
+        if (!simConfig["--p-hacking-methods"].is_null()) {
+            for (auto &item : simConfig["--p-hacking-methods"]){
+                if (item["type"] == "OptionalStopping") {
+                    OptionalStopping optStopping(item["size"], item["attemps"]);
+                    researcher.registerAHackingStrategy(&optStopping);
+                }/*else if for other options*/
+                else if(item["type"] == "SDOutlierRemoval") {
+                    SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
+                    researcher.registerAHackingStrategy(&cfOutlierRemoval);
+                }
             }
         }
+        
+//        json hackingConfig = readJSON(simConfig["--p-hacking-config-file"]);
+//        for (auto &item : hackingConfig["--p-hacking-methods"]){
+//            if (item["type"] == "OptionalStopping") {
+//                OptionalStopping optStopping(item["size"], item["attemps"]);
+//                researcher.registerAHackingStrategy(&optStopping);
+//            }/*else if for other options*/
+//            else if(item["type"] == "SDOutlierRemoval") {
+//                SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
+//                researcher.registerAHackingStrategy(&cfOutlierRemoval);
+//            }
+//        }
     }
     std::cout << "Registering Hacking Methods, Done!\n";
     
@@ -254,6 +266,7 @@ void runSimulation(json& simConfig){
     
     int nSims = simConfig["--n-sims"];
     
+    std::cout << std::endl;
     for (int i = 0; i < simConfig["--n-sims"]; i++) {
         
         while (journal.isStillAccepting()) {
