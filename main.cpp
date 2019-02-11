@@ -49,7 +49,7 @@ R"(SAMpp
         SAMpp [--master-seed S] [--config FILE]
               [--n-conditions C] [--n-dep-vars D]
               [--n-items I]
-              [--n-obs O] [--means M] [--vars V]
+              [--n-obs O] [--means M] [--sd T]
               [--is-correlated] [--cov-const CV]
               [--alpha A] [--pub-bias B] [--max-pubs K]
               [--is-p-hacker] [--hacking-methods-config JSON]
@@ -73,7 +73,7 @@ R"(SAMpp
         --max-pubs=K       Maximum number of publications [default: 70]
         --n-obs=O          Number of observations [default: 20]
         --means=M            List of means for each group [default: 0.15]
-        --vars=V             List of variances for each group [default: 0.01]
+        --sd=T             List of variances for each group [default: 0.01]
         --is-correlated     Whether conditions are correlated [default: false]
         --cov-const=CV        Constant covariant [default: 0.5]
         --output-prefix=PREFIX    Output prefix used for saving files [default: auto]
@@ -141,7 +141,7 @@ void runSimulation(json& simConfig){
                                            simConfig["--n-dep-vars"],
                                            simConfig["--n-obs"],
                                            simConfig["--means"].get<std::vector<double>>(),
-                                           simConfig["--vars"].get<std::vector<double>>());
+                                           simConfig["--sds"].get<std::vector<double>>());
         }else{
             // Initializing Experiment Setup
             experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
@@ -391,7 +391,7 @@ void latentStrategyTest() {
     int nd = 4;
     int nobs = 200;
     std::vector<double> means {.15, .15, 0.147, 0.147};
-    std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
+    std::vector<double> sds {0.01, 0.01, 0.01, 0.01};
 //
 //    int max_pubs = 70;
 //    double alpha= 0.05;
@@ -400,7 +400,7 @@ void latentStrategyTest() {
     
     RandomNumberGenerator rngEngine(42, false);
     
-    ExperimentSetup estherSetup(nc, nd, nobs, means, vars);
+    ExperimentSetup estherSetup(nc, nd, nobs, means, sds);
     
     Experiment estherExperiment(estherSetup);
     
@@ -419,7 +419,7 @@ void estherSimulationTest(){
     int nd = 4;
     int nobs = 200;
     std::vector<double> means {.15, .15, 0.147, 0.147};
-    std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
+    std::vector<double> sds {0.01, 0.01, 0.01, 0.01};
 
     int max_pubs = 70;
     double alpha= 0.05;
@@ -428,7 +428,7 @@ void estherSimulationTest(){
 
     RandomNumberGenerator rngEngine(42, false);
 
-    ExperimentSetup estherSetup(nc, nd, nobs, means, vars);
+    ExperimentSetup estherSetup(nc, nd, nobs, means, sds);
 
     Experiment estherExperiment(estherSetup);
 
@@ -484,7 +484,7 @@ void estherSimulation(){
 //    std::vector<double> means {.147, .147, 0.147, 0.147};
     std::vector<double> means {0.1, 0.3, 0.5, 0.7};
 //    std::vector<double> means {.8, .9, 1., 2.};
-    std::vector<double> vars {0.01, 0.01, 0.01, 0.01};
+    std::vector<double> sds {0.01, 0.01, 0.01, 0.01};
 
     int max_pubs = 20;
     double alpha= 0.05;
@@ -492,7 +492,7 @@ void estherSimulation(){
 
     RandomNumberGenerator rngEngine(42, false);
 
-    ExperimentSetup estherSetup(nc, nd, nobs, means, vars);
+    ExperimentSetup estherSetup(nc, nd, nobs, means, sds);
 
     Experiment estherExperiment(estherSetup);
 
@@ -579,10 +579,10 @@ void testRandomClass(){
     RandomNumberGenerator rngEngine(42, true);
 
     std::vector<double> means = {10, 20, 30};
-    std::vector<std::vector<double >> vars = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
+    std::vector<std::vector<double >> sds = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
 
-    auto mvnormrng = rngEngine.mvnorm(means, vars);
-    auto rng = rngEngine.mvnorm(means, vars, 100);
+    auto mvnormrng = rngEngine.mvnorm(means, sds);
+    auto rng = rngEngine.mvnorm(means, sds, 100);
 
     for (auto &row : rng){
         std::cout << "mean: " << mean(row);

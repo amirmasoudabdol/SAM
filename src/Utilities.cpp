@@ -115,14 +115,14 @@ mvnorm_rng(){
 	}
 
 	std::vector<double> means = {10, 20, 30};
-	std::vector<std::vector<double >> vars = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
+	std::vector<std::vector<double >> sds = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
 
 	gsl_vector *mu = gsl_vector_alloc(means.size());
 	gsl_matrix *sigma = gsl_matrix_alloc(means.size(), means.size());
 	gsl_vector *res = gsl_vector_alloc(means.size());
 
 	mu->data = means.data();
-	sigma->data = flatten(vars).data();
+	sigma->data = flatten(sds).data();
 
 	const gsl_rng_type *T;
 	gsl_rng *r;
@@ -158,7 +158,7 @@ norm_rng(){
 	std::vector<std::vector<double> > ran_vector;
 
 	double means[6] = {10, 20, 30, 40, 50, 60};
-	double vars[6] = {1, 2, 3, 4, 5, 6};
+	double sds[6] = {1, 2, 3, 4, 5, 6};
 
 
 	const gsl_rng_type *T;
@@ -180,7 +180,7 @@ norm_rng(){
         	std::cout << inx << ',';
             std::vector<double> _d_meas(n);
             for (int i = 0; i < n; ++i) {
-                _d_meas[i] = means[inx] + gsl_ran_gaussian(r, vars[inx]);
+                _d_meas[i] = means[inx] + gsl_ran_gaussian(r, sds[inx]);
             }
             ran_vector.push_back(_d_meas);
         }
@@ -197,7 +197,7 @@ gen_norm_rng(){
 	std::vector<std::vector<double> > ran_vector;
 
 	double means[6] = {10, 20, 30, 40, 50, 60};
-	double vars[6] = {1, 2, 3, 4, 5, 6};
+	double sds[6] = {1, 2, 3, 4, 5, 6};
 
 
 	const gsl_rng_type *T;
@@ -218,7 +218,7 @@ gen_norm_rng(){
 			int inx = g * nd + d;
 			std::cout << inx << ',';
 			std::vector<double> _d_meas(n);
-			std::generate(_d_meas.begin(), _d_meas.end(), [r, vars, inx]() { return gsl_ran_gaussian(r, vars[inx]); } );
+			std::generate(_d_meas.begin(), _d_meas.end(), [r, sds, inx]() { return gsl_ran_gaussian(r, sds[inx]); } );
 			ran_vector.push_back(_d_meas);
 		}
 	}

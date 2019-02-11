@@ -43,12 +43,12 @@ public:
 //    std::vector<std::string> dv_names;
 
     std::vector<double> true_means;
-    std::vector<double> true_vars;
+    std::vector<double> true_sds;
     
     ExperimentSetup() = default;
 
-    ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<double> vars)
-    : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_vars(vars) {
+    ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<double> sds)
+    : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sds(sds) {
         ng = nc * nd;
     }
     
