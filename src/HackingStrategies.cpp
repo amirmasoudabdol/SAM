@@ -12,6 +12,18 @@
 #include <algorithm>
 #include <numeric>
 
+std::ostream& operator<<(std::ostream& os, HackingMethod m)
+{
+    switch(m)
+    {
+        case _OutcomeSwitching   : os << "Outcome Switching";    break;
+        case _OptionalStopping   : os << "Optional Stopping"; break;
+        case _OutlierRemoval     : os << "Outlier Removal";  break;
+        default    : os.setstate(std::ios_base::failbit);
+    }
+    return os;
+}
+
 /**
  This has been deprecated. The outcome switching is now implemeted as part of DecisionStrategy
  where the researcher specifies how he'd approach selecting an outcome. This is determinded by

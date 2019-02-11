@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <memory>
 #include "Utilities.h"
@@ -129,6 +130,8 @@ int main(int argc, const char** argv){
 }
 
 void runSimulation(json& simConfig){
+    
+    std::stringstream output_path_file;
 
     int masterSeed;
     if (simConfig["--master-seed"] == "random") {
@@ -138,7 +141,7 @@ void runSimulation(json& simConfig){
     }
     RandomNumberGenerator mainRNGengine(masterSeed, simConfig["--is-multivariate"]);
     std::cout << "Master seed: " << masterSeed << std::endl;
-    
+        
 //    std::cout << "1\n";
     ExperimentSetup experimentSetup;
     if (simConfig["--data-strategy"] == "FixedModel"){
