@@ -39,10 +39,6 @@ public:
     Researcher(Experiment* e) {
         experiment = e;
     };
-//	Researcher(Experiment& e, Journal& j) : experiment(e), journal(j) {};
-
-//    void setTestStrategy(TestStrategies *t);
-//    void runTest();
 
     // This probably needs to be a class of itself as well
     void registerAHackingStrategy(HackingStrategy* h);

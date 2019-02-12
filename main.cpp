@@ -104,9 +104,6 @@ tqdm simulationBar;
 
 int main(int argc, const char** argv){
     
-    // I probably need to seed this with master-seed
-//    srand(time(NULL));
-
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
                                                                { argv + 1, argv + argc },
                                                                true,                        // show help if requested

@@ -8,19 +8,6 @@
 
 #include <Utilities.h>
 
-// void Researcher::setTestStrategy(TestStrategies *t) {
-//     testStrategy = t;
-// }
-
-
-// void Researcher::runTest() {
-//     testStrategy->run();
-// }
-
-//void Researcher::calculateEffect(){
-//    experiment->effects = experiment->means;
-//}
-
 void Researcher::hack() {
     
     // Preparing the history ------------------------------
@@ -78,15 +65,6 @@ void Researcher::hack() {
     
     // Or, I can run all of them, and then decide
 }
-
-//Submission Researcher::_create_submission_record(int inx){
-//    Submission sub;
-//    sub.effect = experiment->effects[inx];
-//    sub.statistic = experiment->statistics[inx];
-//    sub.pvalue = experiment->pvalues[inx];
-//
-//    return sub;
-//}
 
 void Researcher::prepareTheSubmission() {
 	if (!isHacker) {
