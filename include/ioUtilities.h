@@ -13,6 +13,30 @@
 
 using json = nlohmann::json;
 
+struct InputParameters {
+    
+    // SAM
+    bool debug = false;
+    bool verbose = false;
+    bool progress = false;
+    
+    
+    
+    int nsims;
+    int nconditions;
+    int ndependentvars;
+    int nitems;
+    
+    int nobs;
+    
+    
+    // Journal
+    int alpha;
+//    SelectionType selectionType;
+    
+    
+};
+
 bool validateCliParams(std::map<std::string, docopt::value> docConfig);
 bool validateJSON(json jSimConfig);
 

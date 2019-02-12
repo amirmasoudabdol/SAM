@@ -21,3 +21,5 @@ void printDocoptArgs(std::map<std::string, docopt::value>& docConfig) {
         std::cout << arg.first << ": " << arg.second << std::endl;
     }
 }
+
+

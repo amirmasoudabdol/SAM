@@ -8,6 +8,10 @@
 #include "SubmissionRecord.h"
 #include "RandomNumberGenerator.h"
 
+enum SelectionType {
+    signigicantSelection,
+};
+
 class SelectionStrategy{
 
 public:
