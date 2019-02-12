@@ -22,11 +22,11 @@
   "--save-output": true,
   "--output-path": "../outputs/",
   "--output-prefix": "auto",
-  "--is-phacker": true,
+  "--is-phacker": false,
   "--p-hacking-methods": [
       {
         "type": "OptionalStopping",
-        "size": 0,
+        "size": 3,
         "attempts": 10
       }
   ],

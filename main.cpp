@@ -135,11 +135,13 @@ int main(int argc, const char** argv){
 void runSimulation(json& simConfig){
     
     std::stringstream output_path_file;
+    
+    output_path_file << simConfig["--output-path"] << "_";
 
     if (simConfig["--master-seed"] == "random") {
         srand(time(NULL));
     }else{
-        srand(simConfig["--master-seed"].get<int>());
+        srand(simConfig["--master-seed"]);
     }
 
     int samplingSeed = rand();
@@ -256,6 +258,8 @@ void runSimulation(json& simConfig){
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["--is-phacker"];
     // std::cout << "Initializing Hacking Routines, Done!\n";
+    
+    output_path_file << simConfig["--is-phacker"] << "_";
 
     // Registering Hacking Methods
     if (simConfig["--is-phacker"]){
@@ -279,6 +283,8 @@ void runSimulation(json& simConfig){
                     SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
                     researcher.registerAHackingStrategy(&cfOutlierRemoval);
                 }
+                
+                output_path_file << item["type"] << "_";
             }
         }
         
