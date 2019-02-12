@@ -398,35 +398,10 @@ void testJSON(std::string file){
 //    }
 }
 
-void testRandom() {
-    std::__1::cout << "Hello" << std::__1::endl;
-    std::__1::cout << "Here are some random numbers..." << std::__1::endl;
-//    std::vector<std::vector<double>> rng = norm_rng();
-//    std::vector<std::vector<double>> rng = gen_norm_rng();
-
-    std::__1::vector<std::__1::vector<double>> rng = mvnorm_rng();
-
-    for (auto &row : rng){
-//        for (auto &v : row){
-//            std::cout << v << ',';
-//        }
-        std::__1::cout << "mean: " << mean(row);
-        std::__1::cout << " - sd: " << standard_dv(row);
-        std::__1::cout << std::__1::endl;
-    }
-
-    std::__1::cout << "cor: " << cor(rng, 0, 1);
-}
-
 void testTTest(){
     auto ttest_res = oneSampleTTest(15, sqrt(87.5), 13, 12, sqrt(39), 11, true);
     std::cout << "t: " << ttest_res.first << "p: " << ttest_res.second << std::endl;
 }
-
-//void effectEstimatorTest(){
-//    StandardMeanDiffEffectEstimator _effect_estimator;
-//    _effect_estimator.computeEffectFromStats(1, 2, 3, 4, 5, 6);
-//}
 
 
 void latentStrategyTest() {

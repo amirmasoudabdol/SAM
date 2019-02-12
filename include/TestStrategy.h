@@ -12,38 +12,38 @@
 
 class Experiment;
 
+/**
+ \brief Abstract class for defining test strategies.
+ 
+ Statistical test strategies will investigate if there is a meaningful difference
+ between means of two samples. Every test strategy should provide a `run()` method.
+ The `run()` method will accept a pointer to the experiment and update necessary
+ variables, e.g., _statistics_ & _p-value_.
+ */
 class TestStrategy {
 
 public:
     
-//    Experiment exp;
-
     virtual void run(Experiment* experiment) = 0;
-//    virtual void updateExperimentPointer(Experiment *e) = 0;
-//    virtual std::vector<std::vector<double>> computeStatsPvalue() = 0;
-    // void setExperiment(std::shared_ptr<Experiment> expr) ;
 
 };
 
-
+/**
+ Declration of t-test.
+ 
+ The `run()` method will check the significance of the difference between two groups.
+ In the current setup, every `experiment->means` is considered an effect size between
+ a treatment group and a control group with the mean of zero. Therefore, computing the
+ t-statistics and computing the p-value would be sufficient. This is technically an
+ implementation of [one sample t-test](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test).
+ 
+ */
 class TTest : public TestStrategy {
     
 public:
-//    Experiment* experiment;
-//    // std::string name = "t.test";
-//
-//
-//    TTest(Experiment* e) {
-//        experiment = e;
-//    }
-    
     TTest() = default;
     
-//    void updateExperimentPointer(Experiment *e);
     void run(Experiment* experiment);
-    void computeStatsPvalue(Experiment *experiment);
-    
-    
     
 };
 

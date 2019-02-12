@@ -12,15 +12,17 @@
 #include <iostream>
 #include <ostream>
 
+template<typename T>
+std::vector<T> flatten(const std::vector<std::vector<T>> &orig);
 
 double mean(const std::vector<double> &);
 double standard_dv(const std::vector<double> &);
 double variance(const std::vector<double> &);
 double cor(const std::vector<std::vector<double>>&, int, int);
 
-std::vector<std::vector<double> > norm_rng();
-std::vector<std::vector<double> > gen_norm_rng();
-std::vector<std::vector<double> > mvnorm_rng();
+//std::vector<std::vector<double> > norm_rng();
+//std::vector<std::vector<double> > gen_norm_rng();
+//std::vector<std::vector<double> > mvnorm_rng();
 //std::vector<std::vector<double> > mvnorm(std::vector<double>, std::vector<std::vector<double> >, int);
 
 
@@ -30,8 +32,7 @@ std::pair<double, double> equal_var_ttest_denom(double v1, int n1, double v2, in
 
 double ttest_finish(double t, double df);
 
-template<typename T>
-std::vector<T> flatten(const std::vector<std::vector<T>> &orig);
+
 
 template<typename T>
 std::ostream& operator<< (std::ostream& out, const std::vector<double>& v);

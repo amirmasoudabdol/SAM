@@ -23,6 +23,14 @@
 //     return out;
 // }
 
+template<typename T>
+std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
+    std::vector<T> ret;
+    for(const auto &v: orig)
+        ret.insert(ret.end(), v.begin(), v.end());
+    return ret;
+}
+
 void printVector(std::vector<double>& v)
 {
     
@@ -35,13 +43,7 @@ void printVector(std::vector<double>& v)
     }
 }
 
-template<typename T>
-std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
-	std::vector<T> ret;
-	for(const auto &v: orig)
-		ret.insert(ret.end(), v.begin(), v.end());
-	return ret;
-}
+
 
 //template <typename T>
 //long argMin(const std::vector<T> &v){
@@ -152,79 +154,3 @@ mvnorm_rng(){
 
 }
 
-
-std::vector<std::vector<double> > 
-norm_rng(){
-	std::vector<std::vector<double> > ran_vector;
-
-	double means[6] = {10, 20, 30, 40, 50, 60};
-	double sds[6] = {1, 2, 3, 4, 5, 6};
-
-
-	const gsl_rng_type *T;
-	gsl_rng *r;
-
-	int ng = 2;
-	int nd = 3;
-	int n = 10000;
-
-	gsl_rng_env_setup();
-
-	T = gsl_rng_default;
-	r = gsl_rng_alloc(T);
-
-
-    for (int g = 0; g < ng; ++g) {
-        for (int d = 0; d < nd; ++d) {
-        	int inx = g * nd + d;
-        	std::cout << inx << ',';
-            std::vector<double> _d_meas(n);
-            for (int i = 0; i < n; ++i) {
-                _d_meas[i] = means[inx] + gsl_ran_gaussian(r, sds[inx]);
-            }
-            ran_vector.push_back(_d_meas);
-        }
-    }
-
-    std::cout << std::endl;
-
-	return ran_vector;
-
-}
-
-std::vector<std::vector<double> >
-gen_norm_rng(){
-	std::vector<std::vector<double> > ran_vector;
-
-	double means[6] = {10, 20, 30, 40, 50, 60};
-	double sds[6] = {1, 2, 3, 4, 5, 6};
-
-
-	const gsl_rng_type *T;
-	gsl_rng *r;
-
-	int ng = 2;
-	int nd = 3;
-	int n = 10000;
-
-	gsl_rng_env_setup();
-
-	T = gsl_rng_default;
-	r = gsl_rng_alloc(T);
-
-
-	for (int g = 0; g < ng; ++g) {
-		for (int d = 0; d < nd; ++d) {
-			int inx = g * nd + d;
-			std::cout << inx << ',';
-			std::vector<double> _d_meas(n);
-			std::generate(_d_meas.begin(), _d_meas.end(), [r, sds, inx]() { return gsl_ran_gaussian(r, sds[inx]); } );
-			ran_vector.push_back(_d_meas);
-		}
-	}
-
-	std::cout << std::endl;
-
-	return ran_vector;
-
-}
