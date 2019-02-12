@@ -13,6 +13,16 @@
 
 class Experiment;
 
+/**
+ \brief Abstract class for Data Strategies
+
+ A DataGenStrategy should at least two methods, `genData` and `genNewObservationForAllGroups`.
+ The former is mainly used to populate a new Experiment while the latter is being used by some 
+ hacking strategies, e.g. OptionalStopping, where new data — from the same population — is needed.
+
+ \note Each Data Strategy should have access to an instance of RandomNumberGenerator. This is usually done
+ by creating a desired _random engine_ and passing the pointer to the DataGenStrategy.
+ */
 class DataGenStrategy {
 
 public:
@@ -22,11 +32,14 @@ public:
     
 };
 
+/**
+ The fixed-effect data strategy will produce data from a fixed-effect
+ model with the given \f$\mu\f$ and \f$sigma\f$.
+ */
 class FixedEffectStrategy : public DataGenStrategy {
 
 public:
 
-//    ExperimentSetup setup;
     RandomNumberGenerator rngEngine;
 
 
@@ -40,15 +53,17 @@ public:
     void genData(Experiment* experiment);
     std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
     std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
-
-
-private:
-
 };
 
+/**
+ A Data Strategy for constructing a general [Structural Equaiton Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).
+
+ \note LatentDataStrategy will generate individual items, therefore it might be slower than other models.
+ */
 class LatentDataStrategy : public DataGenStrategy {
+
 public:
-//    ExperimentSetup setup;
+
     RandomNumberGenerator rngEngine;
     
 
@@ -60,32 +75,6 @@ public:
     void genData(Experiment* experiment);
     std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
     std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
-    
-
-//    std::vector<double> computeItemsMean();     // This will fill the experiment->measurements
-//    std::vector<double> _compute_latent_means();
-//    std::vector<double> _compute_latent_variances();
-//    std::vector<std::vector<double> > _construct_latent_cov_matrix();
-    
-//    void latentModelTest();
-    
-    // Routine
-    //  1. Compute Latent Means
-    //  2. Compute Latent Variances
-    //  3. Construct Latent Covarinace Matrix
-    //  4. Generate data with _latent_means, _latent_variances;
-    
-    
-//private:
-//    std::vector<double> fMeans;
-//    std::vector<double> fVars;
-//    std::vector<std::vector<double>> fSigma;
-//
-//    std::vector<double> _a;     ///< 1 - setup.latent_alpha;
-//    std::vector<double> epsilonMeans;
-//    std::vector<std::vector<double>> epsilonSigma;
-    
-    
     
 };
 

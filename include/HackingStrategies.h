@@ -20,8 +20,17 @@ enum HackingMethod {
 
 
 
-//Submission _create_submission_record(Experiment& experiment, int inx);
-
+/**
+ \brief Abstract class for Hacking Strategies
+ 
+ Each _Hacking Strategy_ should provide a `perform()` method. The `perform()` method
+ will take over a **pointer** copy of an Experiment and apply the implemented hacking on it. Changes
+ will be applied to the copy and will be return to the Researcher.
+ 
+ \note Researcher decides if it's going to pass a copy or a reference to an existing Experiment. This is important since it allows the researcher to either stack
+    different hacking over each others or pass a new copy — usually the original experiment —
+ to the experiment.
+ */
 class HackingStrategy {
 
 //    double defensibility;
@@ -50,6 +59,11 @@ private:
     Submission hackedSubmission;
 };
 
+/**
+ \brief Declration of Outcome Swithcing.
+ 
+ \note This has been deprecated.
+ */
 class OutcomeSwitching : public HackingStrategy {
 public:
 
@@ -63,7 +77,7 @@ public:
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
 
 private:
-    std::string _method = "min pvalue";
+    std::string _method = "MinPvalue";
 };
 
 
@@ -100,9 +114,9 @@ private:
 
 };
 
-// If I need more variations here, I think it's the best if I make different subclass
 /**
- \brief Declaration of SD-based Outlier Removal.
+ \brief Declaration of Outlier Removal hacking method based on items' distance from their
+ sample mean.
  
  `sd_multiplier` ...
  

@@ -16,16 +16,16 @@ public:
     // FIXME: This needs to be more flexible and generalized.
     double alpha = 0.05;
     
-    int simid = 0;
-    int pubid = 0;
+    int simid = 0;          ///< Simulation ID
+    int pubid = 0;          ///< Publication ID
 //    std::string method;
-    int nobs;
-    double yi;
-    double sei;
-    double statistic;
-    double pvalue;
-    bool sig = false;
-    short side = 1;
+    int nobs;               ///< Number of observation in submitted group
+    double yi;              ///< Effect size of the submitted group
+    double sei;             ///< Standard error of the submitted group
+    double statistic;       ///< Corresponding statistics of the submitted group
+    double pvalue;          ///< _P_-value of the submitted group
+    bool sig = false;       ///< Indicates if the submission is significant or not
+    short side = 1;         ///< The side of the observed effect
 //    bool isHacked = false;
 //    std::string hacking_method = "";
 
@@ -48,6 +48,10 @@ public:
     
     ~Submission() = default;
     
+    
+    /**
+     @return `true` if the Submission is significant, `false` otherwise
+     */
     bool isSig() {
         return sig;
     }

@@ -9,6 +9,7 @@
 #include "Utilities.h"
 #include "Experiment.h"
 
+
 void FixedEffectStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
     if (!experiment->setup.isMultivariate){
@@ -18,7 +19,8 @@ void FixedEffectStrategy::genData(Experiment* experiment)  {
     }
 }
 
-std::vector<std::vector<double>> FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
+std::vector<std::vector<double>>
+FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
     if (!experiment->setup.isMultivariate){
         return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
@@ -27,7 +29,8 @@ std::vector<std::vector<double>> FixedEffectStrategy::genNewObservationsForAllGr
     }
 }
 
-std::vector<double> FixedEffectStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
+std::vector<double>
+FixedEffectStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
 
     return std::vector<double>();
 }
@@ -35,21 +38,17 @@ std::vector<double> FixedEffectStrategy::genNewObservationsFor(Experiment* exper
 
 // LatentDataStrategy
 
-// This is different from other genData, since it should generate items, but will
-// only return the means!
+
+/**
+ Construct a structural equation model based on the given paramters specified in
+ the ExperimentSteup.
+ Beside `experiment->measurements`, LatentDataStrategy populates the `experiment->items` as well.
+ 
+ TODO: Link to the illustration that explain the model
+
+ */
 void LatentDataStrategy::genData(Experiment* experiment)  {
 
-//    std::cout << "LatentModel, GenData Started!\n";
-
-//    std::vector<std::vector<double> > items;        // nrows * nobs
-//    std::vector<std::vector<double> > meaurements;  // ng * nobs
-//    std::vector<double> means;                      // 1 * ng
-    
-    // Measurement here is technically the mean of each row, it'll be
-    // ng * nobs
-    
-    
-    
     int ni = experiment->setup.ni;
     int nc = experiment->setup.nc;
     int nd = experiment->setup.nd;
@@ -165,7 +164,8 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
     // return meaurements;
 }
 
-std::vector<std::vector<double>> LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
+std::vector<std::vector<double>>
+LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // if (!experiment->setup.isMultivariate){
     //     return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_vars, n_new_obs);
     // }else{
@@ -173,7 +173,8 @@ std::vector<std::vector<double>> LatentDataStrategy::genNewObservationsForAllGro
     // }
 }
 
-std::vector<double> LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
+std::vector<double>
+LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
     
     return std::vector<double>();
 }
