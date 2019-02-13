@@ -201,10 +201,10 @@ void runSimulation(json& simConfig){
                     simConfig["--pub-bias"],
                     simConfig["--alpha"]);
     
-    int selectionSeed = rand();
-    simConfig["--selection-seed"] = selectionSeed;
-    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"], 1, selectionSeed);
-    journal.setSelectionStrategy(&sigSelection);
+//    int selectionSeed = rand();
+//    simConfig["--selection-seed"] = selectionSeed;
+//    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"], 1, selectionSeed);
+    journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig));
     // std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment

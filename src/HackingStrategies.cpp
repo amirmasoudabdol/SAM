@@ -117,12 +117,12 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
 }
 
 
-HackingStrategy *HackingStrategy::buildHackingMethod(json h_params) {
-    std::string type = h_params["type"];
+HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
+    std::string type = config["type"];
     if (type == "OptionalStopping"){
-        return new OptionalStopping(h_params["size"],           h_params["attempts"]);
+        return new OptionalStopping(config["size"],           config["attempts"]);
     }else if (type == "SDOutlierRemoval") {
-        return new SDOutlierRemoval(h_params["sd_multiplier"]);
+        return new SDOutlierRemoval(config["sd_multiplier"]);
     }else if (type == "GroupPooling") {
         return new GroupPooling("first");
     }else{

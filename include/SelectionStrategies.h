@@ -22,6 +22,8 @@ enum SelectionType {
 class SelectionStrategy{
 
 public:
+    
+    static SelectionStrategy* buildSelectionStrategy(json& config);
 
     virtual bool review(Submission& s) = 0 ;
 };

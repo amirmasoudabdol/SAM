@@ -4,7 +4,7 @@
   "--progress": false,
   "--n-sims": 1,
   "--pub-bias": 0.95,
-  "--journal-selection-model": "default",
+  "--selection-strategy": "SignificantSelection",
   "--master-seed": 42,
   "--n-conditions": 2,
   "--n-dep-vars": 2,
