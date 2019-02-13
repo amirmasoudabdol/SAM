@@ -148,6 +148,7 @@ void runSimulation(json& simConfig){
     std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
     
     int nobs;
+    int nobs = simConfig["--n-obs"];
     int nobsSeed = rand();
     simConfig["--nobs-seed"] = nobsSeed;
     
