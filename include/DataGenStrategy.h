@@ -11,6 +11,10 @@
 //#include "Experiment.h"
 #include "RandomNumberGenerator.h"
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 class Experiment;
 
 /**
@@ -26,6 +30,9 @@ class Experiment;
 class DataGenStrategy {
 
 public:
+    
+    static DataGenStrategy* buildDataStrategy(json config);
+    
     virtual void genData(Experiment* experiment) = 0;
     virtual std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
     virtual std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;

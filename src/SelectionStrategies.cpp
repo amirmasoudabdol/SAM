@@ -25,9 +25,9 @@ bool SignigicantSelection::review(Submission &s) {
 
 
 SelectionStrategy *SelectionStrategy::buildSelectionStrategy(json& config) {
-    if (config["--selection-strategy"] == "SignificantSelection") {
+//    if (config["--selection-strategy"] == "SignificantSelection") {
         int selectionSeed = rand();
         config["--selection-seed"] = selectionSeed;
         return new SignigicantSelection(config["--pub-bias"], config["--alpha"], 1, selectionSeed);
-    }
+//    }
 }

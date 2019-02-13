@@ -8,6 +8,10 @@
 #include "SubmissionRecord.h"
 #include "RandomNumberGenerator.h"
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 enum SelectionType {
     signigicantSelection,
 };

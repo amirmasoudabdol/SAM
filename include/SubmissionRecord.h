@@ -42,8 +42,12 @@ public:
         sig = pvalue < alpha;
         
         // CHECK: This will cause problem if I do GroupPooling!
-        double diff = yi - e.setup.true_means[index];
-        side = (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
+        // BUG: This is also a problem if I'm working with the LatentModel because I'm
+        // storing latent means, vars with different names. **This is just not a good idea**.
+        // Submission should be self-contained and I shouldn't look into another object
+//        double diff = yi - e.setup.true_means[index];
+//        side = (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
+        side = 1;
     };
     
     ~Submission() = default;

@@ -13,7 +13,9 @@
 #include "TestStrategy.h"
 
 class Experiment {
-
+    
+    // TODO: This is starting to look like that it needs to be an Abstract
+    // There is a lot of different between different Experiments.
 
 public:
     ExperimentSetup setup;

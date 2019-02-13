@@ -8,12 +8,14 @@
 #include <vector>
 #include <iostream>
 
+#include "nlohmann/json.hpp"
 
+using json = nlohmann::json;
 
 enum ExperimentType {
     FixedModel,
     RandomModel,
-    FactorModel
+    LatentModel
 };
 
 
@@ -42,10 +44,13 @@ public:
 //    std::vector<std::string> group_names;
 //    std::vector<std::string> dv_names;
 
+    std::vector<int>    true_nobs;
     std::vector<double> true_means;
     std::vector<double> true_sds;
     
     ExperimentSetup() = default;
+    
+    ExperimentSetup(json& config);
 
     ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<double> sds)
     : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sds(sds) {
@@ -76,6 +81,12 @@ public:
 
     // bool _is_correalted = false;    // If true, then we are expecting a matrix.
 
+    void setNObs(int n_obs) {
+        std::fill(true_nobs.begin(), true_nobs.end(), n_obs);
+    };
+    void setNObs(std::vector<int>& n_obs_v) {
+        true_nobs = n_obs_v;
+    }
 
     // Multivariate Experiments
     bool isCorrelated = false;
@@ -87,6 +98,7 @@ public:
 //    bool isFactorModel = false;
     std::vector<double> factorLoadings;                 ///< \f$\lambda\f$
     std::vector<double> factorMeans;                    ///< \f$\beta\f$
+    std::vector<double> factorSds;
     std::vector<std::vector<double>> factorCov;         ///<
     std::vector<std::vector<double>> errorCov;          ///<
     

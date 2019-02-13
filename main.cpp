@@ -144,10 +144,9 @@ void runSimulation(json& simConfig){
     int samplingSeed = rand();
     simConfig["--sampling-rng-seed"] = samplingSeed;
     
-    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-multivariate"]);
+    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-correlated"]);
     std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
     
-    int nobs;
     int nobs = simConfig["--n-obs"];
     int nobsSeed = rand();
     simConfig["--nobs-seed"] = nobsSeed;
@@ -161,30 +160,31 @@ void runSimulation(json& simConfig){
 //    std::cout << "1\n";
     ExperimentSetup experimentSetup;
     if (simConfig["--data-strategy"] == "FixedModel"){
-        if (!simConfig["--is-multivariate"]) {
+//        if (!simConfig["--is-correlated"]) {
         //        // Initializing Experiment Setup
-           experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-                                           simConfig["--n-dep-vars"],
-                                           /*simConfig["--n-obs"],*/ nobs,
-                                           simConfig["--means"].get<std::vector<double>>(),
-                                           simConfig["--sds"].get<std::vector<double>>());
-        }else{
-            // Initializing Experiment Setup
-            std::vector<std::vector<double> > covMatrix;
-            if (!simConfig["--cov-matrix"].is_null()) {
-                covMatrix = simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>();
-            }
+//           experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+//                                           simConfig["--n-dep-vars"],
+//                                           /*simConfig["--n-obs"],*/ nobs,
+//                                           simConfig["--means"].get<std::vector<double>>(),
+//                                           simConfig["--sds"].get<std::vector<double>>());
             
-            experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-                                            simConfig["--n-dep-vars"],
-                                            /*simConfig["--n-obs"],*/ nobs,
-                                            simConfig["--means"].get<std::vector<double>>(),
-                                            covMatrix);
-        }
+            experimentSetup = ExperimentSetup(simConfig);
+//        }else{
+//            // Initializing Experiment Setup
+//            std::vector<std::vector<double> > covMatrix;
+//            if (!simConfig["--cov-matrix"].is_null()) {
+//                covMatrix = simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>();
+//            }
+//
+//            experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
+//                                            simConfig["--n-dep-vars"],
+//                                            /*simConfig["--n-obs"],*/ nobs,
+//                                            simConfig["--means"].get<std::vector<double>>(),
+//                                            covMatrix);
+//        }
     }
     
     if (simConfig["--data-strategy"] == "LatentModel") {
-        std::cout << "Latent Model\n";
         experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
                                           simConfig["--n-dep-vars"],
                                           simConfig["--n-items"],
@@ -193,24 +193,26 @@ void runSimulation(json& simConfig){
                                           simConfig["--factor-means"].get<std::vector<double>>(),
                                           simConfig["--factor-cov"].get<std::vector<std::vector<double>>>(),
                                           simConfig["--error-cov"].get<std::vector<std::vector<double>>>());
-        std::cout << "Latent Model Setup!\n";
+        std::cout << "Latent Model Setup, Done!\n";
     }
 
     
     // Initializing Journal
-    Journal journal(simConfig["--max-pubs"],
-                    simConfig["--pub-bias"],
-                    simConfig["--alpha"]);
+//    Journal journal(simConfig["--max-pubs"],
+//                    simConfig["--pub-bias"],
+//                    simConfig["--alpha"]);
+    
+    Journal journal(simConfig);
     
 //    int selectionSeed = rand();
 //    simConfig["--selection-seed"] = selectionSeed;
 //    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"], 1, selectionSeed);
     journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig));
-    // std::cout << "Initializing Journal, Done!\n";
+    std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-        // std::cout << "Initializing Experiment, Done!\n";
+        std::cout << "Initializing Experiment, Done!\n";
 
         // Setting Data Model
 //        FixedEffectStrategy fixedEffectModel;
@@ -228,34 +230,34 @@ void runSimulation(json& simConfig){
             
             experiment.setDataStrategy(&latentDataModel);
         }
-        // std::cout << "Setting Data Model, Done!\n";
+        std::cout << "Setting Data Model, Done!\n";
     
     
         // Setting the Test Strategy
         TTest tTest;
         experiment.setTestStrategy(&tTest);
-        // std::cout << "Setting the Test Strategy, Done!\n";
+        std::cout << "Setting the Test Strategy, Done!\n";
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    // std::cout << "Initializing the Researcher, Done!\n";
+    std::cout << "Initializing the Researcher, Done!\n";
 
         // Setting the Selection Preference
         researcher.selectionPref = PreRegisteredOutcome;
-        // std::cout << "Setting the Selection Preference, Done!\n";
+        std::cout << "Setting the Selection Preference, Done!\n";
 
         // Assigning the Journal
         researcher.setJournal(&journal);
-        // std::cout << "Assigning the Journal, Done!\n";
+        std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
         ImpatientDecisionMaker impatientReporter(0, simConfig["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
-        // std::cout << "Setting the Decision Strategy, Done!\n";
+        std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["--is-phacker"];
-    // std::cout << "Initializing Hacking Routines, Done!\n";
+    std::cout << "Initializing Hacking Routines, Done!\n";
     
     output_path_file << simConfig["--is-phacker"] << "_";
 
@@ -280,7 +282,7 @@ void runSimulation(json& simConfig){
             }
         }
     }
-    // std::cout << "Registering Hacking Methods, Done!\n";
+    std::cout << "Registering Hacking Methods, Done!\n";
     
     // Initiate the csvWriter
     std::ofstream csvWriter( simConfig["--output-path"].get<std::string>() + simConfig["--output-prefix"].get<std::string>() + ".csv");
@@ -319,6 +321,8 @@ void runSimulation(json& simConfig){
             // Initializing a new experiment
             // TODO: The main loop needs some cleanup
             researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
+            
+//            researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
 
         }
         

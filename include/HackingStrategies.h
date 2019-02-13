@@ -39,7 +39,7 @@ class HackingStrategy {
 
 public:
     
-    static HackingStrategy* buildHackingMethod(json h_params);
+    static HackingStrategy* buildHackingMethod(json& config);
 
     // `perform()` makes a copy of the experiment, and perform the hacking.
     // This is usually a good idea, but its expensive if I have to do a lot of

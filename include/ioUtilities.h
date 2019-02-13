@@ -38,7 +38,9 @@ struct InputParameters {
 };
 
 bool validateCliParams(std::map<std::string, docopt::value> docConfig);
-bool validateJSON(json jSimConfig);
+bool validateJSON(json& config);
+
+void validateAndPrepareJSON(json& config);
 
 json readJSON(const std::string& filename);
 json docoptToJSON(std::map<std::string, docopt::value>& args);

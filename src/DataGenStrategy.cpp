@@ -178,3 +178,8 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
     
     return std::vector<double>();
 }
+
+
+//DataGenStrategy *DataGenStrategy::buildDataStrategy(json config) {
+//    return new FixedEffectStrategy;
+//}
