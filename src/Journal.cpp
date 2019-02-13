@@ -5,6 +5,16 @@
 #include <Journal.h>
 #include <iostream>
 
+Journal::Journal(json& config){
+    _max_pubs = config["--max-pubs"];
+    _pub_bias = config["--pub-bias"];
+    _alpha = config["--alpha"];
+
+    _still_accepting = true;
+    
+    // This can even initialize and set the SelectionStrategy
+}
+
 void Journal::setSelectionStrategy(SelectionStrategy *s) {
     selectionStrategy = s;
 }

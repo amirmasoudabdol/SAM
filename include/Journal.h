@@ -16,6 +16,8 @@ public:
     std::vector<Submission> submissionList;
 
     SelectionStrategy* selectionStrategy;
+    
+    Journal(json& config);
 
     Journal(double max_pubs, double pub_bias, double alpha) :
             _max_pubs(max_pubs), _pub_bias(pub_bias), _alpha(alpha){
