@@ -56,7 +56,7 @@ public:
     ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<std::vector<double>> sigma) 
     : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sigma(sigma) {        
         ng = nc * nd;
-        isMultivariate = true;
+        isCorrelated = true;
     }
 
     // For LatentModel
@@ -78,13 +78,13 @@ public:
 
 
     // Multivariate Experiments
-    bool isMultivariate = false;
+    bool isCorrelated = false;
     double cov = 0.;
-    std::vector<double> true_cov;
+//    std::vector<double> true_cov;
     std::vector<std::vector<double>> true_sigma;
     
     // Latent Experiments
-    bool isFactorModel = false;
+//    bool isFactorModel = false;
     std::vector<double> factorLoadings;                 ///< \f$\lambda\f$
     std::vector<double> factorMeans;                    ///< \f$\beta\f$
     std::vector<std::vector<double>> factorCov;         ///<

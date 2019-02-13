@@ -12,7 +12,7 @@
 
 void FixedEffectStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
-    if (!experiment->setup.isMultivariate){
+    if (!experiment->setup.isCorrelated){
         experiment->measurements = this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.nobs);
     }else{
         experiment->measurements = this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, experiment->setup.nobs);
@@ -22,7 +22,7 @@ void FixedEffectStrategy::genData(Experiment* experiment)  {
 std::vector<std::vector<double>>
 FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
-    if (!experiment->setup.isMultivariate){
+    if (!experiment->setup.isCorrelated){
         return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
     }else{
         return this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
