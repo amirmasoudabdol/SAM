@@ -51,7 +51,7 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
  the results is significant, it'll not make a new attempt to add more data, and will return to the hack() routine.
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
-
+    
     Submission tmpSub;
     
     // If `_n_new_obs` is not specified
@@ -114,4 +114,24 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
+}
+
+
+HackingStrategy *HackingStrategy::buildHackingMethod(json h_params) {
+    std::string type = h_params["type"];
+    if (type == "OptionalStopping"){
+        return new OptionalStopping(h_params["size"],           h_params["attempts"]);
+    }else if (type == "SDOutlierRemoval") {
+        return new SDOutlierRemoval(h_params["sd_multiplier"]);
+    }else if (type == "GroupPooling") {
+        return new GroupPooling("first");
+    }else{
+        return new OutcomeSwitching("none");
+    }
+    
+}
+
+
+void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
+    
 }

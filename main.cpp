@@ -267,35 +267,17 @@ void runSimulation(json& simConfig){
             researcher.selectionPref = MinPvalue;
             researcher.decisionStrategy->selectionPref = MinPvalue;
         } /* else if for other options */
-
         
-        // Check if any there is any hacking methods at all!
+        
+        // -------------------------
+        // Using the Factory Pattern
         if (!simConfig["--p-hacking-methods"].is_null()) {
             for (auto &item : simConfig["--p-hacking-methods"]){
-                if (item["type"] == "OptionalStopping") {
-                    OptionalStopping optStopping(item["size"], item["attempts"]);
-                    researcher.registerAHackingStrategy(&optStopping);
-                }/*else if for other options*/
-                else if(item["type"] == "SDOutlierRemoval") {
-                    SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
-                    researcher.registerAHackingStrategy(&cfOutlierRemoval);
-                }
+                researcher.hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
                 
                 output_path_file << item["type"] << "_";
             }
         }
-        
-//        json hackingConfig = readJSON(simConfig["--p-hacking-config-file"]);
-//        for (auto &item : hackingConfig["--p-hacking-methods"]){
-//            if (item["type"] == "OptionalStopping") {
-//                OptionalStopping optStopping(item["size"], item["attemps"]);
-//                researcher.registerAHackingStrategy(&optStopping);
-//            }/*else if for other options*/
-//            else if(item["type"] == "SDOutlierRemoval") {
-//                SDOutlierRemoval cfOutlierRemoval(item["sd_multiplier"]);
-//                researcher.registerAHackingStrategy(&cfOutlierRemoval);
-//            }
-//        }
     }
     // std::cout << "Registering Hacking Methods, Done!\n";
     

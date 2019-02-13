@@ -11,13 +11,15 @@
 #include <string>
 #include <map>
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 enum HackingMethod {
     _OutcomeSwitching,
     _OptionalStopping,
     _OutlierRemoval
 };
-
-
 
 
 /**
@@ -36,6 +38,8 @@ class HackingStrategy {
 //    double defensibility;
 
 public:
+    
+    static HackingStrategy* buildHackingMethod(json h_params);
 
     // `perform()` makes a copy of the experiment, and perform the hacking.
     // This is usually a good idea, but its expensive if I have to do a lot of
@@ -46,17 +50,6 @@ public:
     // wants to run several hacking over one experiment. I guess for this to be
     // done properly I need to do implement some sort of Template Pattern.
     virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
-    
-    const int& getSelectedOutcome() const {
-        return selectedOutcome;
-    };
-    void setSelectedOutcome(const int& _o_inx){
-        selectedOutcome = _o_inx;
-    }
-
-private:
-    int selectedOutcome;
-    Submission hackedSubmission;
 };
 
 /**
