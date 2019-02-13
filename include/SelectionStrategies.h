@@ -48,10 +48,12 @@ public:
     bool review(Submission& s);
 
 private:
-    int _seed;
-    int _side;
-    double _pub_bias;
     double _alpha;
+    double _pub_bias;
+    int _side;
+    int _seed;
+    
+
     RandomNumberGenerator* _rngEngine;
 };
 
