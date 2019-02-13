@@ -1,0 +1,54 @@
+{
+  "--debug": true,
+  "--verbose": false,
+  "--progress": false,
+  "--n-sims": 1,
+  "--master-seed": 42,
+  "--save-output": true,
+  "--output-path": "../outputs/",
+  "--output-prefix": "auto",
+  "Journal Parameters" :{
+    "--pub-bias": 0.95,
+    "--journal-selection-model": "default",
+    "--max-pubs": 20,
+    "--alpha": 0.05,
+  },
+  "Experiment Parameters": {
+    "--data-strategy": "FixedModel",
+    "--n-conditions": 2,
+    "--n-dep-vars": 2,
+    "--n-items": 0,
+    "--n-obs": 25,
+    "--means": [0.1, 0.3, 0.5, 0.7],
+    "--sds": [0.1, 0.1, 0.1, 0.1],
+    "--is-correlated": false,
+    "--is-multivariate": false,
+    "--cov-const": 0.1,
+    "--cov-matrix": [[1, 0.5, 0.5, 0.5],
+                     [0.5, 1, 0.5, 0.5],
+                     [0.5, 0.5, 1, 0.5],
+                     [0.5, 0.5, 0.5, 1]],
+    "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+    "--factor-means": [50, 10],
+    "--factor-cov": [[1, 0.5],
+                     [0.5, 1]],
+    "--error-cov": [[1, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 1]]
+  },
+  "Researcher Parameters": {
+    "--is-phacker": false,
+    "--selection-pref": "MinPvalue",
+    "--p-hacking-methods": [
+        {
+          "type": "OptionalStopping",
+          "size": 3,
+          "attempts": 10
+        }
+    ],
+    "--p-hacking-config-file": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json"
+  }
+}

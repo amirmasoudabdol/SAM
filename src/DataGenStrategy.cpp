@@ -63,10 +63,10 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
     
     // DV ---------------------------------------------
     // Mean of each dv
-    gsl_vector* dvMeans = gsl_vector_calloc(nd);    // this needs to be broadcasted to ng * ng
+    gsl_vector* dvMeans = gsl_vector_calloc(nd);        // TODO: This needs to be ng
     dvMeans->data = experiment->setup.factorMeans.data();
     
-    gsl_matrix* dvSigma = gsl_matrix_alloc(nd, nd);     // this needs to be broadcasted to ng * ng
+    gsl_matrix* dvSigma = gsl_matrix_alloc(nd, nd);     // TODO: This needs to be ng
     gsl_matrix_set_identity(dvSigma);                   // Set to 1 diagonally
     dvSigma->data = flatten(experiment->setup.factorCov).data();
     // ------------------------------------------------
