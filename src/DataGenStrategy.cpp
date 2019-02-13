@@ -52,8 +52,8 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
     int ni = experiment->setup.ni;
     int nc = experiment->setup.nc;
     int nd = experiment->setup.nd;
-    int ng = experiment->setup.ng;
-    int nrows = experiment->setup.nrows;       // Total number of rows
+    int ng = experiment->setup.ng;                  // nc * nd
+    int nrows = experiment->setup.nrows;            // nc * nd * ni
     
     int nobs = experiment->setup.nobs;
     
@@ -63,15 +63,14 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
     
     // DV ---------------------------------------------
     // Mean of each dv
-    gsl_vector* dvMeans = gsl_vector_calloc(nd);        // TODO: This needs to be ng
-    dvMeans->data = experiment->setup.factorMeans.data();
+    gsl_vector* dvMeans = gsl_vector_calloc(ng);
+    dvMeans->data = experiment->setup.true_means.data();
     
-    gsl_matrix* dvSigma = gsl_matrix_alloc(nd, nd);     // TODO: This needs to be ng
-    gsl_matrix_set_identity(dvSigma);                   // Set to 1 diagonally
-    dvSigma->data = flatten(experiment->setup.factorCov).data();
+    gsl_matrix* dvSigma = gsl_matrix_alloc(ng, ng);
+    dvSigma->data = flatten(experiment->setup.true_sigma).data();
     // ------------------------------------------------
     
-    gsl_matrix* factorScores = gsl_matrix_calloc(nd, nobs);
+    gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
     
     // Generating factor values
     this->rngEngine.mvnorm_n(dvMeans, dvSigma, factorScores);
@@ -166,11 +165,7 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
 
 std::vector<std::vector<double>>
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
-    // if (!experiment->setup.isMultivariate){
-    //     return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_vars, n_new_obs);
-    // }else{
-        return this->rngEngine.mvnorm(experiment->setup.factorMeans, experiment->setup.factorCov, n_new_obs);
-    // }
+    return this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
 }
 
 std::vector<double>

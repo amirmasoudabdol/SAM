@@ -50,32 +50,7 @@ public:
     
     ExperimentSetup() = default;
     
-    ExperimentSetup(json& config);
-
-    ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<double> sds)
-    : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sds(sds) {
-        ng = nc * nd;
-    }
-    
-    // For Multivariate
-    ExperimentSetup(int n_conditions, int n_dep_vars, int n_obs, std::vector<double> means, std::vector<std::vector<double>> sigma) 
-    : nc(n_conditions), nd(n_dep_vars), nobs(n_obs), true_means(means), true_sigma(sigma) {        
-        ng = nc * nd;
-        isCorrelated = true;
-    }
-
-    // For LatentModel
-    ExperimentSetup(int n_conditions, int n_dep_vars, int n_items, int n_obs,
-                    std::vector<double> factor_loading, std::vector<double> factor_means, std::vector<std::vector<double>> facror_cov, std::vector<std::vector<double>> error_cov)
-    : nc(n_conditions), nd(n_dep_vars), ni(n_items), nobs(n_obs), 
-    factorLoadings(factor_loading),  factorMeans(factor_means), factorCov(facror_cov), errorCov(error_cov)
-         {
-        ng = nc * nd;
-        nrows = ng * ni;
-        // isMultivariate = true;      // I don't think this will be necessary!
-        // FIXME: Having this crashes the code, I did something wrong in initalization
-    }
-    
+    ExperimentSetup(json& config);    
     
     ~ExperimentSetup() = default;
 
@@ -90,16 +65,17 @@ public:
 
     // Multivariate Experiments
     bool isCorrelated = false;
-    double cov = 0.;
+    double cov = 0;
 //    std::vector<double> true_cov;
     std::vector<std::vector<double>> true_sigma;
     
     // Latent Experiments
 //    bool isFactorModel = false;
     std::vector<double> factorLoadings;                 ///< \f$\lambda\f$
-    std::vector<double> factorMeans;                    ///< \f$\beta\f$
-    std::vector<double> factorSds;
-    std::vector<std::vector<double>> factorCov;         ///<
+//    std::vector<double> factorMeans;                    ///< \f$\beta\f$
+//    std::vector<double> factorSds;
+//    std::vector<std::vector<double>> factorCov;         ///<
+    std::vector<double> errorSD;
     std::vector<std::vector<double>> errorCov;          ///<
     
 

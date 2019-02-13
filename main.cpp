@@ -158,67 +158,23 @@ void runSimulation(json& simConfig){
     }
         
 //    std::cout << "1\n";
-    ExperimentSetup experimentSetup;
-    if (simConfig["--data-strategy"] == "FixedModel"){
-//        if (!simConfig["--is-correlated"]) {
-        //        // Initializing Experiment Setup
-//           experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-//                                           simConfig["--n-dep-vars"],
-//                                           /*simConfig["--n-obs"],*/ nobs,
-//                                           simConfig["--means"].get<std::vector<double>>(),
-//                                           simConfig["--sds"].get<std::vector<double>>());
-            
-            experimentSetup = ExperimentSetup(simConfig);
-//        }else{
-//            // Initializing Experiment Setup
-//            std::vector<std::vector<double> > covMatrix;
-//            if (!simConfig["--cov-matrix"].is_null()) {
-//                covMatrix = simConfig["--cov-matrix"].get<std::vector<std::vector<double>>>();
-//            }
-//
-//            experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-//                                            simConfig["--n-dep-vars"],
-//                                            /*simConfig["--n-obs"],*/ nobs,
-//                                            simConfig["--means"].get<std::vector<double>>(),
-//                                            covMatrix);
-//        }
-    }
-    
-    if (simConfig["--data-strategy"] == "LatentModel") {
-        experimentSetup = ExperimentSetup(simConfig["--n-conditions"],
-                                          simConfig["--n-dep-vars"],
-                                          simConfig["--n-items"],
-                                          simConfig["--n-obs"],
-                                          simConfig["--factor-loadings"].get<std::vector<double>>(),
-                                          simConfig["--factor-means"].get<std::vector<double>>(),
-                                          simConfig["--factor-cov"].get<std::vector<std::vector<double>>>(),
-                                          simConfig["--error-cov"].get<std::vector<std::vector<double>>>());
-        std::cout << "Latent Model Setup, Done!\n";
-    }
-
-    
-    // Initializing Journal
-//    Journal journal(simConfig["--max-pubs"],
-//                    simConfig["--pub-bias"],
-//                    simConfig["--alpha"]);
+    ExperimentSetup experimentSetup(simConfig);
     
     Journal journal(simConfig);
     
-//    int selectionSeed = rand();
-//    simConfig["--selection-seed"] = selectionSeed;
-//    SignigicantSelection sigSelection(simConfig["--pub-bias"], simConfig["--alpha"], 1, selectionSeed);
-    journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig));
-    std::cout << "Initializing Journal, Done!\n";
+        // Setting Journal's Selection Strategy
+        journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig));
+        std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
         std::cout << "Initializing Experiment, Done!\n";
 
         // Setting Data Model
-//        FixedEffectStrategy fixedEffectModel;
+        // FixedEffectStrategy fixedEffectModel;
         FixedEffectStrategy fixedEffectModel(mainRNGengine);
     
-//        LatentDataStrategy latentDataModel;
+        // LatentDataStrategy latentDataModel;
         LatentDataStrategy latentDataModel(mainRNGengine);
         // FIXME: I cannot make these object so nicely, I think I need a factor for a few of them
         if (simConfig["--data-strategy"] == "FixedModel"){
@@ -320,7 +276,8 @@ void runSimulation(json& simConfig){
             
             // Initializing a new experiment
             // TODO: The main loop needs some cleanup
-            researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
+            // FIXME: I don't work with the LatentModel! Something with the gsl_vector!
+//            researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
             
 //            researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
 
@@ -390,195 +347,6 @@ void testTTest(){
     std::cout << "t: " << ttest_res.first << "p: " << ttest_res.second << std::endl;
 }
 
-
-void latentStrategyTest() {
-    // Declaring sample paramters
-    int nc = 1;
-    int nd = 4;
-    int nobs = 200;
-    std::vector<double> means {.15, .15, 0.147, 0.147};
-    std::vector<double> sds {0.01, 0.01, 0.01, 0.01};
-//
-//    int max_pubs = 70;
-//    double alpha= 0.05;
-//    double pub_bias = 0.95;
-    
-    
-    RandomNumberGenerator rngEngine(42, false);
-    
-    ExperimentSetup estherSetup(nc, nd, nobs, means, sds);
-    
-    Experiment estherExperiment(estherSetup);
-    
-    LatentDataStrategy latentGen(rngEngine);
-    estherExperiment.setDataStrategy(&latentGen);
-    
-//    latentGen.latentModelTest();
-    
-}
-
-
-void estherSimulationTest(){
-
-    // Declaring sample paramters
-    int nc = 1;
-    int nd = 4;
-    int nobs = 200;
-    std::vector<double> means {.15, .15, 0.147, 0.147};
-    std::vector<double> sds {0.01, 0.01, 0.01, 0.01};
-
-    int max_pubs = 70;
-    double alpha= 0.05;
-    double pub_bias = 0.95;
-
-
-    RandomNumberGenerator rngEngine(42, false);
-
-    ExperimentSetup estherSetup(nc, nd, nobs, means, sds);
-
-    Experiment estherExperiment(estherSetup);
-
-    FixedEffectStrategy fixedEffectModel(rngEngine);
-    estherExperiment.setDataStrategy(&fixedEffectModel);
-
-//    estherExperiment.initExperiment();
-    estherExperiment.allocateResources();
-    estherExperiment.generateData();
-    estherExperiment.calculateStatistics();
-
-    Researcher esther(&estherExperiment);
-
-//    TTest tTest(&estherExperiment);
-//    esther.setTestStrategy(&tTest);
-//
-//
-//    // esther.calculateEffect();
-//    esther.runTest();
-
-    Journal journal(max_pubs, pub_bias, alpha);
-    SignigicantSelection sigSelection(alpha, pub_bias, 1, rand());
-    journal.setSelectionStrategy(&sigSelection);
-//
-    esther.setJournal(&journal);
-//
-    // esther.selectTheOutcome();
-    esther.prepareTheSubmission();
-    esther.submitToJournal();
-//
-//    std::cout << esther.journal.submissionList[0];
-
-
-
-
-//    for (int i = 0; i < esther.experiment.setup.ng; ++i) {
-//        std::cout << esther.experiment.means[i] << ", ";
-//        std::cout << esther.experiment.vars[i] << ", ";
-//        std::cout << esther.experiment.ses[i] << ", ";
-//        std::cout << esther.experiment.statistics[i] << ", ";
-//        std::cout << esther.experiment.pvalues[i] << ", ";
-//        std::cout << esther.experiment.effects[i] << ", ";
-//        std::cout << std::endl;
-//    }
-
-}
-
-void estherSimulation(){
-    int nc = 1;
-    int nd = 4;
-    int nobs = 25;
-    int nsims = 1;
-//    std::vector<double> means {.147, .147, 0.147, 0.147};
-    std::vector<double> means {0.1, 0.3, 0.5, 0.7};
-//    std::vector<double> means {.8, .9, 1., 2.};
-    std::vector<double> sds {0.01, 0.01, 0.01, 0.01};
-
-    int max_pubs = 20;
-    double alpha= 0.05;
-    double pub_bias = 0.95;
-
-    RandomNumberGenerator rngEngine(42, false);
-
-    ExperimentSetup estherSetup(nc, nd, nobs, means, sds);
-
-    Experiment estherExperiment(estherSetup);
-
-    FixedEffectStrategy fixedEffectModel(rngEngine);
-    estherExperiment.setDataStrategy(&fixedEffectModel);
-
-    Journal journal(max_pubs, pub_bias, alpha);
-    SignigicantSelection sigSelection(alpha, pub_bias, 1, rand());
-    journal.setSelectionStrategy(&sigSelection);
-
-//    estherExperiment.initExperiment();
-    Researcher esther(&estherExperiment);
-//     esther.experiment->initExperiment();
-
-//    OutcomeSwitching outSwitcher("min pvalue");
-//    esther.isHacker = true;
-//    esther.registerAHackingStrategy(&outSwitcher);
-
-//    OptionalStopping optStopping(3000, 5);
-//     esther.isHacker = false;
-//    esther.registerAHackingStrategy(&optStopping);
-
-    esther.setJournal(&journal);
-    
-    ReportPreregisteredGroup preRegReporter(0);
-    esther.setDecisionStrategy(&preRegReporter);
-    
-//    Experiment copiedExpr = estherExperiment;
-//    Experiment cpExpr = *esther.experiment;
-//    esther.experiment->means[0] = 15;
-//    std::cout << estherExperiment.means[0] << "\n";
-////    cpExpr.means[0] = 10;
-//    std::cout << cpExpr.means[0] << "\n";
-    
-
-    // I think this is a bit dangerous since I might lose track at some point,
-    // It would be nicer if I can say `setTestStrategy(this)` or `setTestStrategy(parent)`
-    TTest tTest;
-    esther.experiment->setTestStrategy(&tTest);
-
-    for (int i = 0; i < nsims; ++i) {
-
-        while (journal.isStillAccepting()) {
-
-            esther.rest();
-//            simulationBar.progress(i * max_pubs + i, nsims * max_pubs);
-
-            esther.submissionsList.clear();
-//            esther.experiment->initExperiment();
-            // These four are technically in initExperiment(),
-            // I'll have them here individually for testing.
-            esther.experiment->allocateResources();
-            esther.experiment->generateData();
-            esther.experiment->calculateStatistics();
-            esther.experiment->calculateEffects();
-
-            esther.experiment->runTest();
-            
-//            printVector(esther.experiment->means); std::cout << ": o, esther, means, [1]\n";
-            if (esther.isHacker) {
-                // std::cout << "hacking\n";
-                esther.hack();
-//                printVector(esther.experiment->means); std::cout << ": h, esther, means [3]\n";
-//                printVector(esther.hackedExperiments[0].means); std::cout << ": hacked array, means [4]\n";
-            }
-
-
-            esther.prepareTheSubmission();
-            
-            esther.submitToJournal();
-
-//           std::cout << esther.submissionRecord<< "\n";
-        }
-
-        journal.clear();
-    }
-//    simulationBar.finish();
-
-
-}
 
 void testRandomClass(){
     std::cout << std::endl;
