@@ -79,7 +79,7 @@ R"(SAMpp
         --cov-const=CV        Constant covariant [default: 0.5]
         --output-prefix=PREFIX    Output prefix used for saving files [default: auto]
         --output-path=PATH      Output path [default: output/]
-        --config=FILE      JSON config file [default: /Users/amabdol/Projects/SAMpp/sample_config.json]
+        --config=FILE      JSON config file [default: /Users/amabdol/Projects/SAMpp/new_config_file.json]
         --is-p-hacker      If true, the Researcher will perform phacking techniques on the data [default: false]
         --hacking-methods-config=FILE  JSON config storing p-hacking methods and their parameters [default: ../sample_hacking_methods.json]
 )";
@@ -147,7 +147,7 @@ void runSimulation(json& simConfig){
 //    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-correlated"]);
 //    std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
     
-    int nobs = simConfig["--n-obs"];
+    int nobs = simConfig["Experiment Parameters"]["--n-obs"];
     int nobsSeed = rand();
     simConfig["--nobs-seed"] = nobsSeed;
     
@@ -158,12 +158,13 @@ void runSimulation(json& simConfig){
     }
         
 //    std::cout << "1\n";
-    ExperimentSetup experimentSetup(simConfig);
+    ExperimentSetup experimentSetup(simConfig["Experiment Parameters"]);
     
-    Journal journal(simConfig);
+    Journal journal(simConfig["Journal Parameters"]);
     
         // Setting Journal's Selection Strategy
-        journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig));
+        // TODO: Perhaps Journal should create this itself!
+        journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
         std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
@@ -193,22 +194,22 @@ void runSimulation(json& simConfig){
         std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
-        ImpatientDecisionMaker impatientReporter(0, simConfig["--alpha"], researcher.selectionPref);
+        ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
         std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
-    researcher.isHacker = simConfig["--is-phacker"];
+    researcher.isHacker = simConfig["Researcher Parameters"]["--is-phacker"];
     std::cout << "Initializing Hacking Routines, Done!\n";
     
-    output_path_file << simConfig["--is-phacker"] << "_";
+    output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
 
     // Registering Hacking Methods
-    if (simConfig["--is-phacker"]){
+    if (simConfig["Researcher Parameters"]["--is-phacker"]){
         
         // Overwriting the selection preference, this is technically works as the
         // researcher is performing _Outcome Switching_.
-        if (simConfig["--selection-pref"] == "MinPvalue"){
+        if (simConfig["Researcher Parameters"]["--selection-pref"] == "MinPvalue"){
             researcher.selectionPref = MinPvalue;
             researcher.decisionStrategy->selectionPref = MinPvalue;
         } /* else if for other options */
@@ -216,8 +217,8 @@ void runSimulation(json& simConfig){
         
         // -------------------------
         // Using the Factory Pattern
-        if (!simConfig["--p-hacking-methods"].is_null()) {
-            for (auto &item : simConfig["--p-hacking-methods"]){
+        if (!simConfig["Researcher Parameters"]["--p-hacking-methods"].is_null()) {
+            for (auto &item : simConfig["Researcher Parameters"]["--p-hacking-methods"]){
                 researcher.hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
                 
                 output_path_file << item["type"] << "_";
