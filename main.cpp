@@ -112,19 +112,7 @@ int main(int argc, const char** argv){
 
     json jSimConfig = readJSON(args["--config"].asString());
 
-//    testRandom();
-//    testTTest();
-
-//    estherSimulation();
-
     runSimulation(jSimConfig);
-    
-//    latentStrategyTest();
-    
-//    estherSimulationTest();
-//    effectEstimatorTest();
-    
-//   testRandomClass();
 
     return 0;
 }

@@ -23,14 +23,6 @@
 //     return out;
 // }
 
-template<typename T>
-std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
-    std::vector<T> ret;
-    for(const auto &v: orig)
-        ret.insert(ret.end(), v.begin(), v.end());
-    return ret;
-}
-
 void printVector(std::vector<double>& v)
 {
     

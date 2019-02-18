@@ -9,6 +9,7 @@
 #include <string>
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
+#include "Utilities.h"
 
 
 class RandomNumberGenerator {
@@ -75,7 +76,7 @@ private:
     gsl_vector *_mu;
     gsl_matrix *_sigma;
     gsl_vector *_mvnorm_row;
-    gsl_matrix *_mvnorm_nrows_ncols;
+//    gsl_matrix *_mvnorm_nrows_ncols;
 
     const gsl_rng_type *T;
     gsl_rng *rng_stream;

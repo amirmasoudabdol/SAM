@@ -12,8 +12,17 @@
 #include <iostream>
 #include <ostream>
 
+//template<typename T>
+//std::vector<T> flatten(const std::vector<std::vector<T>> &orig);
+
 template<typename T>
-std::vector<T> flatten(const std::vector<std::vector<T>> &orig);
+std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
+    std::vector<T> ret;
+    for(const auto &v: orig)
+        ret.insert(ret.end(), v.begin(), v.end());
+    return ret;
+}
+
 
 double mean(const std::vector<double> &);
 double standard_dv(const std::vector<double> &);
