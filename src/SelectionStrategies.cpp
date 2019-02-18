@@ -16,7 +16,7 @@ bool SignigicantSelection::review(Submission &s) {
     if (s.pvalue < _alpha && s.side == _side){
         return true;
     }else
-        if (_rngEngine->uniform() < _pub_bias) {
+        if (mainRngStream->uniform() < _pub_bias) {
             return true;
         }
 

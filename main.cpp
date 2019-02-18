@@ -144,8 +144,8 @@ void runSimulation(json& simConfig){
     int samplingSeed = rand();
     simConfig["--sampling-rng-seed"] = samplingSeed;
     
-    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-correlated"]);
-    std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
+//    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-correlated"]);
+//    std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
     
     int nobs = simConfig["--n-obs"];
     int nobsSeed = rand();
@@ -168,24 +168,10 @@ void runSimulation(json& simConfig){
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-        std::cout << "Initializing Experiment, Done!\n";
-
-        // Setting Data Model
-        // FixedEffectStrategy fixedEffectModel;
-        FixedEffectStrategy fixedEffectModel(mainRNGengine);
+    std::cout << "Initializing Experiment, Done!\n";
     
-        // LatentDataStrategy latentDataModel;
-        LatentDataStrategy latentDataModel(mainRNGengine);
-        // FIXME: I cannot make these object so nicely, I think I need a factor for a few of them
-        if (simConfig["--data-strategy"] == "FixedModel"){
-            
-            experiment.setDataStrategy(&fixedEffectModel);
-        }
-        else if (simConfig["--data-strategy"] == "LatentModel") {
-//            std::cout << "LATENT MODEL";
-            
-            experiment.setDataStrategy(&latentDataModel);
-        }
+        experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
+    
         std::cout << "Setting Data Model, Done!\n";
     
     

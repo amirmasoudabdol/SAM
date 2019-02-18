@@ -1,2 +1,2 @@
-# S(P)AM
-### Science (Publishing) Abstract Model
+# SAM
+### Science Abstract Model

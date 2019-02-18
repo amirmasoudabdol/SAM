@@ -13,9 +13,9 @@
 void FixedEffectStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
     if (!experiment->setup.isCorrelated){
-        experiment->measurements = this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.nobs);
+        experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.nobs);
     }else{
-        experiment->measurements = this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, experiment->setup.nobs);
+        experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, experiment->setup.nobs);
     }
 }
 
@@ -23,9 +23,9 @@ std::vector<std::vector<double>>
 FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
     if (!experiment->setup.isCorrelated){
-        return this->rngEngine.normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
+        return this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
     }else{
-        return this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+        return this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
     }
 }
 
@@ -73,7 +73,7 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
     gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
     
     // Generating factor values
-    this->rngEngine.mvnorm_n(dvMeans, dvSigma, factorScores);
+    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
     
     gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
     
@@ -83,7 +83,7 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
     gsl_matrix* allErrors = gsl_matrix_calloc(nrows, nobs);
     
     // Generating errors
-    this->rngEngine.mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
+    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
     
     gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
     
@@ -165,7 +165,7 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
 
 std::vector<std::vector<double>>
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
-    return this->rngEngine.mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+    return this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
 }
 
 std::vector<double>
@@ -175,6 +175,28 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
 }
 
 
-//DataGenStrategy *DataGenStrategy::buildDataStrategy(json config) {
-//    return new FixedEffectStrategy;
+//DataGenStrategy *DataGenStrategy::buildDataStrategy(json& config) {
+//
+//    if (config["--data-strategy"] == "FixedModel"){
+//        int main_rng_stream_seed = rand();
+//
+//    }else{
+//        // config["--data-strategy"] == "LatendModel"
+//
+//    }
+//
 //}
+
+DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
+    switch (setup.experimentType) {
+        case FixedModel:
+            return new FixedEffectStrategy(setup);
+            break;
+
+        case LatentModel:
+            return new LatentDataStrategy(setup);
+            
+        default:
+            break;
+    }
+}

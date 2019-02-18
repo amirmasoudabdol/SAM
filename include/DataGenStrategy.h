@@ -7,8 +7,7 @@
 
 #include <vector>
 
-//#include "ExperimentSetup.h"
-//#include "Experiment.h"
+#include "ExperimentSetup.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
@@ -30,12 +29,13 @@ class Experiment;
 class DataGenStrategy {
 
 public:
-    
-    static DataGenStrategy* buildDataStrategy(json config);
+
+    static DataGenStrategy* buildDataStrategy(ExperimentSetup& setup);
     
     virtual void genData(Experiment* experiment) = 0;
     virtual std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
     virtual std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
+    
     
 };
 
@@ -46,20 +46,22 @@ public:
 class FixedEffectStrategy : public DataGenStrategy {
 
 public:
-
-    RandomNumberGenerator rngEngine;
-
-
-    FixedEffectStrategy(RandomNumberGenerator& rng_engine) :
-        rngEngine(rng_engine){
-        // TODO: I might need to pass rng_engine as a pointer too, 
-        // because I might ran into the same problem that it loses its state
-        // and produce unreliable results.
+    
+    FixedEffectStrategy(ExperimentSetup& setup) {
+        _main_seed = rand();
+        _sec_seed = rand();
+        
+        mainRngStream = new RandomNumberGenerator(_main_seed, setup.isCorrelated);
     };
-
+    
     void genData(Experiment* experiment);
     std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
     std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+    
+private:
+    int _main_seed;
+    int _sec_seed;
+    RandomNumberGenerator *mainRngStream;
 };
 
 /**
@@ -70,18 +72,22 @@ public:
 class LatentDataStrategy : public DataGenStrategy {
 
 public:
-
-    RandomNumberGenerator rngEngine;
     
-
-    LatentDataStrategy(RandomNumberGenerator& rng_engine) :
-        rngEngine(rng_engine) {
+    LatentDataStrategy(ExperimentSetup& setup){
+        _main_seed = rand();
+        _sec_seed = rand();
         
-    };
+        mainRngStream = new RandomNumberGenerator(_main_seed, setup.isCorrelated);
+    }
     
     void genData(Experiment* experiment);
     std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
     std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+    
+private:
+    int _main_seed;
+    int _sec_seed;
+    RandomNumberGenerator *mainRngStream;
     
 };
 

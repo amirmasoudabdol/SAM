@@ -46,7 +46,7 @@ class SignigicantSelection : public SelectionStrategy {
 public:
     SignigicantSelection(double alpha, double pub_bias, int side, int seed):
         _alpha(alpha),  _pub_bias(pub_bias), _side(side), _seed(seed) {
-        _rngEngine = new RandomNumberGenerator(_seed, false);
+        mainRngStream = new RandomNumberGenerator(_seed, false);
     };
 
     ~SignigicantSelection(){};
@@ -59,8 +59,7 @@ private:
     int _side;
     int _seed;
     
-
-    RandomNumberGenerator* _rngEngine;
+    RandomNumberGenerator* mainRngStream;
 };
 
 #endif //SAMPP_SELECTIONSTRATEGIES_H
