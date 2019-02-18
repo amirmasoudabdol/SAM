@@ -23,9 +23,9 @@ std::vector<std::vector<double>>
 FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
     if (!experiment->setup.isCorrelated){
-        return this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
+        return this->secRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
     }else{
-        return this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+        return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
     }
 }
 
@@ -165,7 +165,7 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
 
 std::vector<std::vector<double>>
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
-    return this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+    return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
 }
 
 std::vector<double>
@@ -197,6 +197,8 @@ DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
             return new LatentDataStrategy(setup);
             
         default:
+            // TODO: Throw a warning, or something here!
+            return new FixedEffectStrategy(setup);
             break;
     }
 }
