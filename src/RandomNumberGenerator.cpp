@@ -29,6 +29,17 @@ RandomNumberGenerator::normal(std::vector<double>& means, std::vector<double>& s
 	return rns;
 }
 
+std::vector<std::vector<double>>
+RandomNumberGenerator::normal(std::vector<double>& means, std::vector<double>& sds, std::vector<int> nobs){
+    std::vector<std::vector<double>> rns;
+    
+    for (int i = 0; i < means.size(); ++i){
+        rns.push_back(normal(means[i], sds[i], nobs[i]));
+    }
+    
+    return rns;
+}
+
 std::vector<double>
 RandomNumberGenerator::mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma) {
 
@@ -94,11 +105,11 @@ double RandomNumberGenerator::uniform(double min, double max){
 //\param c Upper bound
 //\return A value between [a, c)
 
-double RandomNumberGenerator::genSampleSize(double p, double a, double b, double c){
+int RandomNumberGenerator::genSampleSize(double p, double a, double b, double c){
     if (gsl_ran_bernoulli(rng_stream, p)) {
-        return gsl_ran_flat(rng_stream, a, b);
+        return static_cast<int>(gsl_ran_flat(rng_stream, a, b));
     }else{
-        return gsl_ran_flat(rng_stream, b, c);
+        return static_cast<int>(gsl_ran_flat(rng_stream, b, c));
     }
 }
 

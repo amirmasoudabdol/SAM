@@ -1,43 +1,31 @@
 {
   "--debug": true,
-  "--verbose": false,
+  "--verbose": true,
   "--progress": false,
   "--n-sims": 1,
-  "--master-seed": 42,
+  "--master-seed": 0,
   "--save-output": true,
-  "--output-path": "../outputs/",
+  "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
   "--output-prefix": "auto",
   "Journal Parameters" :{
     "--pub-bias": 0.95,
-    "--journal-selection-model": "default",
+    "--journal-selection-model": "SignificantSelection",
     "--max-pubs": 20,
     "--alpha": 0.05
   },
   "Experiment Parameters": {
     "--data-strategy": "FixedModel",
-    "--n-conditions": 2,
+    "--n-conditions": 1,
     "--n-dep-vars": 2,
-    "--n-items": 0,
-    "--n-obs": 25,
-    "--means": [0.1, 0.3, 0.5, 0.7],
-    "--sds": [0.1, 0.1, 0.1, 0.1],
+    "--n-items": 3,
+    "--n-obs": 0,
+    "--means": 0.5,
+    "--sds": 0.01,
     "--is-correlated": false,
-    "--is-multivariate": false,
-    "--cov-const": 0.1,
-    "--cov-matrix": [[1, 0.5, 0.5, 0.5],
-                     [0.5, 1, 0.5, 0.5],
-                     [0.5, 0.5, 1, 0.5],
-                     [0.5, 0.5, 0.5, 1]],
-    "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
-    "--factor-means": [50, 10],
-    "--factor-cov": [[1, 0.5],
-                     [0.5, 1]],
-    "--error-cov": [[1, 0, 0, 0, 0, 0],
-                    [0, 1, 0, 0, 0, 0],
-                    [0, 0, 1, 0, 0, 0],
-                    [0, 0, 0, 1, 0, 0],
-                    [0, 0, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 0, 1]]
+    "--covs": 0.1,
+    "--loadings": 0.7,
+    "--err-sds": 0.01,
+    "--err-covs": 0.001
   },
   "Researcher Parameters": {
     "--is-phacker": false,
@@ -48,7 +36,6 @@
           "size": 3,
           "attempts": 10
         }
-    ],
-    "--p-hacking-config-file": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json"
+    ]
   }
 }

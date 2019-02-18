@@ -74,6 +74,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
                 if (config["--covs"].size() != ng){
                     throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
                 }
+                // DOC: Notify the user that the `sds` will be discarded.
                 true_sigma = config["--covs"].get<std::vector<std::vector<double>>>();
                 
             }else if (config["--covs"].is_number()){
@@ -137,6 +138,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
                 if (config["--covs"].size() != ng){
                     throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
                 }
+                // DOC: Notify the user that the `sds` will be discarded.
                 true_sigma = config["--covs"].get<std::vector<std::vector<double>>>();
                 
             }else if (config["--covs"].is_number()){

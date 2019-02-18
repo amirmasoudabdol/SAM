@@ -135,72 +135,61 @@ void runSimulation(json& simConfig){
     
     output_path_file << simConfig["--output-path"] << "_";
 
-    if (simConfig["--master-seed"] == "random") {
+    if (simConfig["--master-seed"] == 0) {
         srand(time(NULL));
     }else{
         srand(simConfig["--master-seed"]);
     }
-
-    int samplingSeed = rand();
-    simConfig["--sampling-rng-seed"] = samplingSeed;
     
-//    RandomNumberGenerator mainRNGengine(samplingSeed, simConfig["--is-correlated"]);
-//    std::cout << "Main RNG Engine Seed: " << samplingSeed << std::endl;
-    
-    int nobs = simConfig["Experiment Parameters"]["--n-obs"];
     int nobsSeed = rand();
     simConfig["--nobs-seed"] = nobsSeed;
-    
     RandomNumberGenerator nobsGenerator(nobsSeed, false);
-    if (simConfig["--n-obs"] == 0){
-        // FIXME: My variables are hard-coded!
-        nobs = nobsGenerator.genSampleSize(75, 20, 100, 300);
-    }
-        
-//    std::cout << "1\n";
+
+
     ExperimentSetup experimentSetup(simConfig["Experiment Parameters"]);
     
     Journal journal(simConfig["Journal Parameters"]);
     
         // Setting Journal's Selection Strategy
-        // TODO: Perhaps Journal should create this itself!
+    // TODO: Perhaps Journal should create this itself!
         journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
-        std::cout << "Initializing Journal, Done!\n";
+        if (simConfig["--verbose"]) std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-    std::cout << "Initializing Experiment, Done!\n";
+    if (simConfig["--verbose"]) std::cout << "Initializing Experiment, Done!\n";
     
         experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
     
-        std::cout << "Setting Data Model, Done!\n";
+        if (simConfig["--verbose"]) std::cout << "Setting Data Model, Done!\n";
     
     
         // Setting the Test Strategy
         TTest tTest;
         experiment.setTestStrategy(&tTest);
-        std::cout << "Setting the Test Strategy, Done!\n";
+        if (simConfig["--verbose"]) std::cout << "Setting the Test Strategy, Done!\n";
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    std::cout << "Initializing the Researcher, Done!\n";
+    if (simConfig["--verbose"]) std::cout << "Initializing the Researcher, Done!\n";
 
         // Setting the Selection Preference
         researcher.selectionPref = PreRegisteredOutcome;
-        std::cout << "Setting the Selection Preference, Done!\n";
+        if (simConfig["--verbose"]) std::cout << "Setting the Selection Preference, Done!\n";
 
         // Assigning the Journal
         researcher.setJournal(&journal);
-        std::cout << "Assigning the Journal, Done!\n";
+        if (simConfig["--verbose"]) std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
         ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
-        std::cout << "Setting the Decision Strategy, Done!\n";
+        if (simConfig["--verbose"]) std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["Researcher Parameters"]["--is-phacker"];
-    std::cout << "Initializing Hacking Routines, Done!\n";
+
+    if (simConfig["--verbose"]) std::cout << "Initializing Hacking Routines, Done!\n";
     
     output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
 
@@ -224,11 +213,13 @@ void runSimulation(json& simConfig){
                 output_path_file << item["type"] << "_";
             }
         }
+        if (simConfig["--verbose"]) std::cout << "Registering Hacking Methods, Done!\n";
     }
-    std::cout << "Registering Hacking Methods, Done!\n";
+    
     
     // Initiate the csvWriter
-    std::ofstream csvWriter( simConfig["--output-path"].get<std::string>() + simConfig["--output-prefix"].get<std::string>() + ".csv");
+    std::string outputfilename = simConfig["--output-path"].get<std::string>() + simConfig["--output-prefix"].get<std::string>() + ".csv";
+    std::ofstream csvWriter( outputfilename );
     csvWriter << "simid, pid, nobs, yi, sei, statistic, pvalue, side\n";
     
     int nSims = simConfig["--n-sims"];
@@ -237,6 +228,10 @@ void runSimulation(json& simConfig){
     for (int i = 0; i < simConfig["--n-sims"]; i++) {
         
         while (journal.isStillAccepting()) {
+            
+            if (simConfig["Experiment Parameters"]["--n-obs"] == 0){
+                researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
+            }
             
             researcher.rest();
             
@@ -255,8 +250,7 @@ void runSimulation(json& simConfig){
             
             researcher.submitToJournal();
             
-            if (simConfig["--debug"])
-                std::cout << researcher.submissionRecord << "\n";
+
             
             if (simConfig["--progress"])
                 simulationBar.progress(i, nSims);
@@ -264,7 +258,7 @@ void runSimulation(json& simConfig){
             // Initializing a new experiment
             // TODO: The main loop needs some cleanup
             // FIXME: I don't work with the LatentModel! Something with the gsl_vector!
-//            researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
+
             
 //            researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
 
@@ -275,19 +269,26 @@ void runSimulation(json& simConfig){
             for (auto& p : journal.submissionList) {
                 p.simid = i;
                 p.pubid = pid++;
+                
+                if (simConfig["--debug"])
+                    std::cout << p << "\n";
+                
                 csvWriter << p << "\n";
             }
         }
         
         journal.clear();
     }
+
+    if (simConfig["--progress"])
+        simulationBar.finish();
     
     if (simConfig["--save-output"]){
         csvWriter.close();
+        std::cout << "\nSaved to: " << outputfilename << "\n";
     }
     
-    if (simConfig["--progress"])
-        simulationBar.finish();
+
 }
 
 //void testDOCOPT(std::map<std::string, docopt::value> args){

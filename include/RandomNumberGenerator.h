@@ -49,10 +49,11 @@ public:
     double uniform();
     double uniform(double min, double max);
     
-    double genSampleSize(double, double, double, double);
+    int genSampleSize(double, double, double, double);
 
     std::vector<double> normal(double mean, double sd, int n);
     std::vector<std::vector<double> > normal(std::vector<double>& means, std::vector<double>& sds, int n);
+    std::vector<std::vector<double>> normal(std::vector<double>& means, std::vector<double>& sds, std::vector<int> nobs);
 
     std::vector<double> mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma);
     std::vector<std::vector<double> > mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma, int n);

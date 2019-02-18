@@ -1,2 +1,8 @@
 # SAM
-### Science Abstract Model
+
+### Configuration File
+
+| Parameter | Value | Description |
+|:--|:--|:--|
+|  |  |  |
+|  |  |  |
