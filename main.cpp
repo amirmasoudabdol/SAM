@@ -23,26 +23,6 @@
 
 using json = nlohmann::json;
 
-// \cond HIDDEN_SYMBOLS
-// TODO: This works for now but it needs more casting to be a better interface between JSON and DOCOPT
-//namespace nlohmann {
-//    template <>
-//    struct adl_serializer<docopt::value> {
-//        static void to_json(json& j, docopt::value t) {
-//            if (t.isString()) {
-//                j = t.asString();
-//            }else if (t.isBool()){
-//                j = t.asBool();
-//            }else if (t.isLong()){
-//                j = t.asLong();
-//            }
-//        }
-//    };
-//}
-// \endcond
-
-json inputParams;
-
 static const char USAGE[] =
 R"(SAMpp
 
@@ -219,6 +199,12 @@ void runSimulation(json& simConfig){
             
             if (simConfig["Experiment Parameters"]["--n-obs"] == 0){
                 researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
+
+//                 TODO: I think this is just a better way to do this, but I need to redesign the randomizaiton process, maybe
+//                 I can have a method in researcher that can redraw a new nobs, or maybe in the Experiment.
+//                 See also, [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
+//                 researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
+
             }
             
             researcher.rest();
@@ -248,7 +234,6 @@ void runSimulation(json& simConfig){
             // FIXME: I don't work with the LatentModel! Something with the gsl_vector!
 
             
-//            researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
 
         }
         

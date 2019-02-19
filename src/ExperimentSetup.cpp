@@ -131,24 +131,24 @@ ExperimentSetup::ExperimentSetup(json& config) {
             true_sds = std::vector<double>(ng, config["--sds"]);
         }
         
-        if (config["--is-correlated"]){
-            isCorrelated = true;
+        
+        // We assume that it's a correlated study anyway, I need the RandomNumberGenerator to
+        // be able to generate multivariate
+        isCorrelated = true;
+        if (config["--covs"].is_array()){
+            if (config["--covs"].size() != ng){
+                throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
+            }
+            // DOC: Notify the user that the `sds` will be discarded.
+            true_sigma = config["--covs"].get<std::vector<std::vector<double>>>();
             
-            if (config["--covs"].is_array()){
-                if (config["--covs"].size() != ng){
-                    throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
-                }
-                // DOC: Notify the user that the `sds` will be discarded.
-                true_sigma = config["--covs"].get<std::vector<std::vector<double>>>();
-                
-            }else if (config["--covs"].is_number()){
-                // Broadcase the --covs to the a matrix, and replace the diagonal values with
-                // the value already given by --sds.
-                double cov = config["--covs"];
-                for (int g = 0; g < ng; g++) {
-                    true_sigma.push_back(std::vector<double>(ng, cov));
-                    true_sigma[g][g] = true_sds[g];
-                }
+        }else if (config["--covs"].is_number()){
+            // Broadcase the --covs to the a matrix, and replace the diagonal values with
+            // the value already given by --sds.
+            double cov = config["--covs"];
+            for (int g = 0; g < ng; g++) {
+                true_sigma.push_back(std::vector<double>(ng, cov));
+                true_sigma[g][g] = true_sds[g];
             }
         }
         
