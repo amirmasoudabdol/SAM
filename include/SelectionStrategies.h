@@ -53,10 +53,10 @@ public:
 
     bool review(Submission& s);
 
-private:
-    double _alpha;
+// private:
+    double _alpha;      ///< The \f$\alpha\f$ at which the _selection strategy_ decides the significance of a publication
     double _pub_bias;
-    int _side;
+    int _side;          ///< Indicates the _selection stratgy_'s preference toward positive, `1`, or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
     int _seed;
     
     RandomNumberGenerator* mainRngStream;

@@ -13,12 +13,11 @@
  Review the given submission based on its _p_-value and its effect side.
  */
 bool SignigicantSelection::review(Submission &s) {
-    if (s.pvalue < _alpha && s.side == _side){
+    if (s.pvalue < _alpha && (s.side == _side || _side == 0)){
         return true;
-    }else
-        if (mainRngStream->uniform() < _pub_bias) {
-            return true;
-        }
+    }else if (mainRngStream->uniform() < _pub_bias) {
+        return true;
+    }
 
     return false;
 }

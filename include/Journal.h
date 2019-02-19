@@ -41,7 +41,7 @@ private:
     double _pub_bias;
     double _alpha;
 
-    bool _still_accepting;
+    bool _still_accepting = true;
 
 };
 

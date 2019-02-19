@@ -12,7 +12,7 @@
     "--journal-selection-model": "SignificantSelection",
     "--max-pubs": 20,
     "--alpha": 0.05,
-    "--side": 1
+    "--side": 0
   },
   "Experiment Parameters": {
     "--data-strategy": "FixedModel",

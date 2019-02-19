@@ -15,7 +15,7 @@ class Submission {
 public:
     // TODO: I would like to have this as static, but I cannot set it properly.
     // FIXME: This needs to be more flexible and generalized.
-    double alpha = 0.05;
+//    double alpha = 0.05;
     
     int simid = 0;          ///< Simulation ID
     int pubid = 0;          ///< Publication ID
@@ -27,8 +27,14 @@ public:
     double pvalue;          ///< _P_-value of the submitted group
     bool sig = false;       ///< Indicates if the submission is significant or not
     short side = 1;         ///< The side of the observed effect
-//    bool isHacked = false;
+    bool isHacked = false;
 //    std::string hacking_method = "";
+    
+    double tyi;             ///< True mean/effect of the selected submission record
+    
+    // Journal's Parameters
+    double alpha;
+    double pubbias;
 
     Submission() = default;
     
@@ -48,7 +54,10 @@ public:
         // Submission should be self-contained and I shouldn't look into another object
 //        double diff = yi - e.setup.true_means[index];
 //        side = (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
+        tyi = e.setup.true_means[index];
         side = std::copysign(1.0, yi - e.setup.true_means[index]);
+        
+        isHacked = e.isHacked;
     };
     
     ~Submission() = default;

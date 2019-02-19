@@ -11,6 +11,7 @@
 #include "ExperimentSetup.h"
 #include "EffectEstimators.h"
 #include "TestStrategy.h"
+//#include "HackingStrategies.h"
 
 class Experiment {
     
@@ -69,6 +70,11 @@ public:
     void calculateEffects();
 
 
+    // Hacking Meta-data
+    bool isHacked = false;     ///< Indicates if any hacking routine has
+                               ///< been applied on the experiment
+//    std::vector<HackingStrategies> hackingHistory;
+    
     // Randomize
     // void randomizeData();
 

@@ -37,6 +37,7 @@ void Researcher::hack() {
             Experiment copiedExpr = *experiment;
             
             h->perform(&copiedExpr, decisionStrategy);
+            copiedExpr.isHacked = true;
             experimentsList.push_back(copiedExpr);
             
 //            printVector(copiedExpr.means); std::cout <<
