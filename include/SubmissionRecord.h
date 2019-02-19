@@ -5,6 +5,7 @@
 #ifndef SAMPP_SUBMISSIONRECORD_H
 #define SAMPP_SUBMISSIONRECORD_H
 
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <Experiment.h>
@@ -47,7 +48,7 @@ public:
         // Submission should be self-contained and I shouldn't look into another object
 //        double diff = yi - e.setup.true_means[index];
 //        side = (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
-        side = 1;
+        side = std::copysign(1.0, yi - e.setup.true_means[index]);
     };
     
     ~Submission() = default;

@@ -11,7 +11,8 @@
     "--pub-bias": 0.95,
     "--journal-selection-model": "SignificantSelection",
     "--max-pubs": 20,
-    "--alpha": 0.05
+    "--alpha": 0.05,
+    "--side": 1
   },
   "Experiment Parameters": {
     "--data-strategy": "FixedModel",
