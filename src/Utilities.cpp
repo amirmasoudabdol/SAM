@@ -23,17 +23,17 @@
 //     return out;
 // }
 
-void printVector(std::vector<double>& v)
-{
-    
-    if(!v.empty())
-    {
-        std::copy(v.begin(),
-                  --v.end(),
-                  std::ostream_iterator<double>(std::cout, ", "));
-        std::cout << v.back();
-    }
-}
+//void printVector(std::vector<double>& v)
+//{
+//
+//    if(!v.empty())
+//    {
+//        std::copy(v.begin(),
+//                  --v.end(),
+//                  std::ostream_iterator<double>(std::cout, ", "));
+//        std::cout << v.back();
+//    }
+//}
 
 
 
