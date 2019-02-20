@@ -98,6 +98,9 @@ int main(int argc, const char** argv){
 }
 
 void runSimulation(json& simConfig){
+
+    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
+    bool progress = simConfig["Simulation Parameters"]["--progress"];
     
     std::stringstream output_path_file;
     
@@ -121,43 +124,43 @@ void runSimulation(json& simConfig){
         // Setting Journal's Selection Strategy
     // TODO: Perhaps Journal should create this itself!
         journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Initializing Journal, Done!\n";
+        if (verbose) std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-    if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Initializing Experiment, Done!\n";
+    if (verbose) std::cout << "Initializing Experiment, Done!\n";
     
         experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
     
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Setting Data Model, Done!\n";
+        if (verbose) std::cout << "Setting Data Model, Done!\n";
     
     
         // Setting the Test Strategy
         TTest tTest;
         experiment.setTestStrategy(&tTest);
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Setting the Test Strategy, Done!\n";
+        if (verbose) std::cout << "Setting the Test Strategy, Done!\n";
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Initializing the Researcher, Done!\n";
+    if (verbose) std::cout << "Initializing the Researcher, Done!\n";
 
         // Setting the Selection Preference
         researcher.selectionPref = PreRegisteredOutcome;
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Setting the Selection Preference, Done!\n";
+        if (verbose) std::cout << "Setting the Selection Preference, Done!\n";
 
         // Assigning the Journal
         researcher.setJournal(&journal);
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Assigning the Journal, Done!\n";
+        if (verbose) std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
         ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Setting the Decision Strategy, Done!\n";
+        if (verbose) std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["Researcher Parameters"]["--is-phacker"];
 
-    if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Initializing Hacking Routines, Done!\n";
+    if (verbose) std::cout << "Initializing Hacking Routines, Done!\n";
     
     output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
 
@@ -166,22 +169,37 @@ void runSimulation(json& simConfig){
         
         // Overwriting the selection preference, this is technically works as the
         // researcher is performing _Outcome Switching_.
-        if (simConfig["Researcher Parameters"]["--selection-pref"] == "MinPvalue"){
-            researcher.selectionPref = MinPvalue;
-            researcher.decisionStrategy->selectionPref = MinPvalue;
-        } /* else if for other options */
+//        if (simConfig["Researcher Parameters"]["--selection-pref"] == "MinPvalue"){
+//            researcher.selectionPref = MinPvalue;
+//            researcher.decisionStrategy->selectionPref = MinPvalue;
+//        } /* else if for other options */
         
         
         // -------------------------
         // Using the Factory Pattern
         if (!simConfig["Researcher Parameters"]["--p-hacking-methods"].is_null()) {
             for (auto &item : simConfig["Researcher Parameters"]["--p-hacking-methods"]){
-                researcher.hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+
                 
-                output_path_file << item["type"] << "_";
+                if (item["type"] == "Outcome Switching") {
+                    std::cout << "Registering: " << item.dump(4) << "\n";
+                    
+                    // Set Researcher Selection Preference
+                    // TODO: Generalize MEEEEE!
+                    if (item["preference"] == "MinPvalue"){
+                        std::cout << "MinPvalue\n";
+                        researcher.selectionPref = MinPvalue;
+                        researcher.decisionStrategy->selectionPref = MinPvalue;
+                    } /* else if for other options */
+                }else{
+                    std::cout << "Registering: " << item.dump(4) << "\n";
+                    researcher.hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+                }
+                
+//                output_path_file << item["type"] << "_";
             }
         }
-        if (simConfig["Simulation Parameters"]["--verbose"]) std::cout << "Registering Hacking Methods, Done!\n";
+        if (verbose) std::cout << "Registering Hacking Methods, Done!, " << researcher.hackingStrategies.size() << " \n";
     }
     
     
@@ -216,6 +234,16 @@ void runSimulation(json& simConfig){
             
             researcher.experiment->runTest();
             
+            // TODO: This is the issue that I mentioned in [#50](https://github.com/amirmasoudabdol/SAMpp/issues/50)
+            // The problem is that the researcher should have a function that basically run all these function before
+            // start doing anything, even generateData ... should be in a function.
+            // This is all being done because I wasn to leave the decision to the decsionStrategy and be able to
+            // select one submission among many. If I don't do this, then I need to make a distinction between a
+            // hacker making a decision and non-hacker makinga decision.
+            Experiment e = *researcher.experiment;
+            researcher.experimentsList.push_back(e);
+            researcher.submissionsList.push_back(researcher.decisionStrategy->selectOutcome(e));
+            
             if (researcher.isHacker){
                 researcher.hack();
             }
@@ -226,7 +254,7 @@ void runSimulation(json& simConfig){
             
 
             
-            if (simConfig["Simulation Parameters"]["--progress"])
+            if (progress)
                 simulationBar.progress(i, nSims);
             
             // Initializing a new experiment
@@ -253,7 +281,7 @@ void runSimulation(json& simConfig){
         journal.clear();
     }
 
-    if (simConfig["Simulation Parameters"]["--progress"])
+    if (progress)
         simulationBar.finish();
     
     if (simConfig["Simulation Parameters"]["--save-output"]){

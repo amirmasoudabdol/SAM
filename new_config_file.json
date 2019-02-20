@@ -4,7 +4,7 @@
     "--verbose": true,
     "--progress": false,
     "--n-sims": 1,
-    "--master-seed": 0,
+    "--master-seed": 42,
     "--save-output": true,
     "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
     "--output-prefix": "auto"
@@ -31,9 +31,13 @@
     "--err-covs": 0.001
   },
   "Researcher Parameters": {
-    "--is-phacker": false,
+    "--is-phacker": true,
     "--selection-pref": "MinPvalue",
     "--p-hacking-methods": [
+        {
+          "type": "Outcome Switching",
+          "preference": "MinPvalue"
+        },
         {
           "type": "OptionalStopping",
           "size": 3,

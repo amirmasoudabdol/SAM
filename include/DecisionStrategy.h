@@ -33,6 +33,8 @@ public:
     int preRegGroup = 0;            ///< Indicates the pre-registered outcome in the case where the Researcher prefers the PreRegisteredOutcome
     Submission finalSubmission;     ///< This will set to the final submission recrod that the Researcher is satisfied about. At the same time, isStillHacking will set to `false`.
     
+    // TODO: I don't use this at the moment, I basically thought I need it for cases like
+    // MinSigPvalue
     double alpha = 0.05;
     
     virtual Submission selectOutcome(Experiment& experiment) = 0;

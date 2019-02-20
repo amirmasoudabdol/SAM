@@ -43,7 +43,7 @@ public:
     // This probably needs to be a class of itself as well
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
-//    void testHack();
+//    void applyHacks();
     
     ResearcherPreference selectionPref = PreRegisteredOutcome;
 //    void selectOutcome(Experiment& e);

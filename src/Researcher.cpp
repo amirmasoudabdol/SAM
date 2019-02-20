@@ -13,13 +13,14 @@ void Researcher::hack() {
     // Preparing the history ------------------------------
     // With this, I basically save everything, and then later on the decisionStrategy
     // can use it to make the final decision
-    Experiment e = *experiment;
-    experimentsList.push_back(e);
-    submissionsList.push_back(decisionStrategy->selectOutcome(e));
+    // I think I need to set this up somewhere else, not in the hacking procedure
+//    Experiment e = *experiment;
+//    experimentsList.push_back(e);
+//    submissionsList.push_back(decisionStrategy->selectOutcome(e));
     
     Submission sub;
     
-	for (auto &h : hackingStrategies){
+    for (auto &h : hackingStrategies){
         
         if (hackingStyle == onOrig){
             // Just send the pointer
@@ -28,8 +29,8 @@ void Researcher::hack() {
             h->perform(tempExpr, decisionStrategy);
             experimentsList.push_back(*tempExpr);
             
-//            printVector(tempExpr->means); std::cout <<
-//            " :h, res, on orig, means [2]\n";
+            //            printVector(tempExpr->means); std::cout <<
+            //            " :h, res, on orig, means [2]\n";
             sub = decisionStrategy->selectOutcome(*tempExpr);
         }
         else if (hackingStyle == onCopy){
@@ -40,42 +41,48 @@ void Researcher::hack() {
             copiedExpr.isHacked = true;
             experimentsList.push_back(copiedExpr);
             
-//            printVector(copiedExpr.means); std::cout <<
-//            " :h, res, copy, means [2]\n";
+            //            printVector(copiedExpr.means); std::cout <<
+            //            " :h, res, copy, means [2]\n";
             
             sub = decisionStrategy->selectOutcome(copiedExpr);
         }
-
+        
         submissionsList.push_back(sub);
         
         decisionStrategy->verdict(submissionsList, experimentsList);
         
-//        std::cout << decisionStrategy->finalSubmission << "\n";
+        //        std::cout << decisionStrategy->finalSubmission << "\n";
         
         if (!decisionStrategy->isStillHacking){
             break;
         }
         
-//        if (decisionStrategy == "asap"){
-//            if (sub.pvalue < experiment->setup.alpha){
-//                hackedSubmissions.push_back(sub);
-//                return;
-//            }
-//        }
-	}
+        //        if (decisionStrategy == "asap"){
+        //            if (sub.pvalue < experiment->setup.alpha){
+        //                hackedSubmissions.push_back(sub);
+        //                return;
+        //            }
+        //        }
+    }
     
     // Or, I can run all of them, and then decide
 }
 
+//void Researcher::applyHacks(){
+//
+//}
+
 void Researcher::prepareTheSubmission() {
-	if (!isHacker) {
-        // Return the pre-registered outcome, always [0].
-//        submissionRecord = _create_submission_record(0);
-//        submissionRecord = Submission(*experiment, 0);
-        submissionRecord = decisionStrategy->selectOutcome(*experiment);
-	}else{
-        
-        submissionRecord = decisionStrategy->finalSubmission;
+//    if (!isHacker) {
+//        // Return the pre-registered outcome, always [0].
+////        submissionRecord = _create_submission_record(0);
+////        submissionRecord = Submission(*experiment, 0);
+//        submissionRecord = decisionStrategy->selectOutcome(*experiment);
+//    }else{
+    
+    decisionStrategy->verdict(submissionsList, experimentsList);
+
+    submissionRecord = decisionStrategy->finalSubmission;
         
 		// TODO: This needs generalization
 //        submissionRecord = hackedSubmissions[0];
@@ -89,7 +96,7 @@ void Researcher::prepareTheSubmission() {
 //        }else if (decisionStrategy == "all-in"){
 //            // Check for the smallest p-value or largest effect
 //        }
-	}
+//    }
 }
 
 void Researcher::submitToJournal() {
