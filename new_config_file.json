@@ -1,12 +1,14 @@
 {
-  "--debug": true,
-  "--verbose": true,
-  "--progress": false,
-  "--n-sims": 1,
-  "--master-seed": 0,
-  "--save-output": true,
-  "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
-  "--output-prefix": "auto",
+  "Simulation Parameters":{
+    "--debug": true,
+    "--verbose": true,
+    "--progress": false,
+    "--n-sims": 1,
+    "--master-seed": 0,
+    "--save-output": true,
+    "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
+    "--output-prefix": "auto"
+  },
   "Journal Parameters" :{
     "--pub-bias": 0.95,
     "--journal-selection-model": "SignificantSelection",
