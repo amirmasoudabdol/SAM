@@ -24,9 +24,6 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
     
     int selectedOutcome = preRegGroup;
     
-//    std::cout << selectedOutcome << " selectedOutcome\n";
-//    std::cout << experiment.means[0] << " :means, decision\n";
-    
     switch (selectionPref) {
         case PreRegisteredOutcome:
             selectedOutcome = preRegGroup;

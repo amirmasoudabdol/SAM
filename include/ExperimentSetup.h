@@ -59,8 +59,6 @@ public:
     
     ~ExperimentSetup() = default;
 
-    // bool _is_correalted = false;    // If true, then we are expecting a matrix.
-
     void setNObs(int n_obs) {
         std::fill(true_nobs.begin(), true_nobs.end(), n_obs);
     };
@@ -71,20 +69,13 @@ public:
     // Multivariate Experiments
     bool isCorrelated = false;
     double cov = 0;
-//    std::vector<double> true_cov;
     std::vector<std::vector<double>> true_sigma;
     
     // Latent Experiments
-//    bool isFactorModel = false;
     std::vector<double> factorLoadings;                 ///< \f$\lambda\f$
-//    std::vector<double> factorMeans;                    ///< \f$\beta\f$
-//    std::vector<double> factorSds;
-//    std::vector<std::vector<double>> factorCov;         ///<
     std::vector<double> errorSD;
     std::vector<std::vector<double>> errorCov;          ///<
     
-
-//private:
     
 };
 

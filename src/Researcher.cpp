@@ -29,8 +29,6 @@ void Researcher::hack() {
             h->perform(tempExpr, decisionStrategy);
             experimentsList.push_back(*tempExpr);
             
-            //            printVector(tempExpr->means); std::cout <<
-            //            " :h, res, on orig, means [2]\n";
             sub = decisionStrategy->selectOutcome(*tempExpr);
         }
         else if (hackingStyle == onCopy){
@@ -41,36 +39,23 @@ void Researcher::hack() {
             copiedExpr.isHacked = true;
             experimentsList.push_back(copiedExpr);
             
-            //            printVector(copiedExpr.means); std::cout <<
-            //            " :h, res, copy, means [2]\n";
-            
             sub = decisionStrategy->selectOutcome(copiedExpr);
         }
         
         submissionsList.push_back(sub);
         
+        // Checking if the researcher is happy with the current result
         decisionStrategy->verdict(submissionsList, experimentsList);
         
-        //        std::cout << decisionStrategy->finalSubmission << "\n";
-        
+        // If the researcher statisfied, hacking routine will be stopped
         if (!decisionStrategy->isStillHacking){
             break;
         }
         
-        //        if (decisionStrategy == "asap"){
-        //            if (sub.pvalue < experiment->setup.alpha){
-        //                hackedSubmissions.push_back(sub);
-        //                return;
-        //            }
-        //        }
     }
     
     // Or, I can run all of them, and then decide
 }
-
-//void Researcher::applyHacks(){
-//
-//}
 
 void Researcher::prepareTheSubmission() {
 //    if (!isHacker) {
