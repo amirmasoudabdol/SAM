@@ -9,6 +9,10 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
             s.simid << ", " <<
             s.pubid << ", " <<
 //            s.method << ", " <<
+            s.tnobs << ", " <<
+            s.tyi << ", " <<
+            s.tsdi << ", " <<
+            s.tcov << ", " <<
             s.nobs << ", " <<
             s.yi << ", " <<
             s.sei << ", " <<

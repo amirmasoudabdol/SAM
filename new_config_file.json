@@ -40,7 +40,7 @@
         {
           "type": "Optional Stopping",
           "size": 3,
-          "attempts": 10
+          "attempts": 3
         }
     ],
     "--decision-strategy": {

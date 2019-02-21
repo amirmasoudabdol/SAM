@@ -30,7 +30,10 @@ public:
     bool isHacked = false;
 //    std::string hacking_method = "";
     
+    int tnobs;
     double tyi;             ///< True mean/effect of the selected submission record
+    double tsdi;
+    double tcov;
     
     // Journal's Parameters
     double alpha;
@@ -39,8 +42,15 @@ public:
     Submission() = default;
     
     Submission(Experiment& e, int index){
-        nobs = e.setup.nobs;        // TODO: I think this needs to be generalized
-                                    // This needs to be updated, especially if we perform OptionalStopping, then `setup.nobs` is never updated. All statistics are running on measurements.size(), so they are fine, but not this one.
+        
+        // FIXME: This needs to be updated, especially if we perform OptionalStopping, then `setup.nobs` is never updated. All statistics are running on measurements.size(), so they are fine, but not this one.
+        
+        tnobs = e.setup.nobs;               // TODO: This is not good enough either, niether e.setup.true_nobs since I'm using `0` to tell the simulator that I want to randomize the values, and this will only report `0`. See also: [#27](https://github.com/amirmasoudabdol/SAMpp/issues/27) and [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
+        tyi = e.setup.true_means[index];
+        tsdi = e.setup.true_sds[index];
+        tcov = e.setup.cov;         // FIXME: Not generalized again
+        
+        nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         yi = e.effects[index];
         sei = e.ses[index];
         statistic = e.statistics[index];

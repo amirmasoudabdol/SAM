@@ -91,7 +91,7 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
 
-    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
+//    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
     bool progress = simConfig["Simulation Parameters"]["--progress"];
     
     std::stringstream output_path_file;
@@ -189,7 +189,7 @@ void runSimulation(json& simConfig){
     // Initiate the csvWriter
     std::string outputfilename = simConfig["Simulation Parameters"]["--output-path"].get<std::string>() + simConfig["Simulation Parameters"]["--output-prefix"].get<std::string>() + "_sim.csv";
     std::ofstream csvWriter( outputfilename );
-    csvWriter << "simid, pid, nobs, yi, sei, statistic, pvalue, side\n";
+    csvWriter << "simid, pid, tnobs, tyi, tsdi, tcov, nobs, yi, sei, statistic, pvalue, side\n";
     
     int nSims = simConfig["Simulation Parameters"]["--n-sims"];
     
