@@ -65,22 +65,14 @@ R"(SAMpp
 )";
 
 // for convenience
-void testRandom();
-void estherSimulation();
-void estherSimulationTest();
-void testTTest();
-void effectEstimatorTest();
-void dataGenStrategyTest();
 void testRandomClass();
-void testJSON(std::string file);
-void testDOCOPT(std::map<std::string, docopt::value> args);
 void latentStrategyTest();
 
 void runSimulation(json& simConfig);
 
 using json = nlohmann::json;
 
-tqdm simulationBar;
+tqdm progressBar;
 
 int main(int argc, const char** argv){
     
@@ -124,56 +116,49 @@ void runSimulation(json& simConfig){
         // Setting Journal's Selection Strategy
     // TODO: Perhaps Journal should create this itself!
         journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
-        if (verbose) std::cout << "Initializing Journal, Done!\n";
+        // if (verbose) std::cout << "Initializing Journal, Done!\n";
 
     // Initializing Experiment
     Experiment experiment(experimentSetup);
-    if (verbose) std::cout << "Initializing Experiment, Done!\n";
+    // if (verbose) std::cout << "Initializing Experiment, Done!\n";
     
         experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
     
-        if (verbose) std::cout << "Setting Data Model, Done!\n";
+        // if (verbose) std::cout << "Setting Data Model, Done!\n";
     
     
         // Setting the Test Strategy
-        TTest tTest;
-        experiment.setTestStrategy(&tTest);
-        if (verbose) std::cout << "Setting the Test Strategy, Done!\n";
+        experiment.setTestStrategy(TestStrategy::buildTestStrategy(experimentSetup));
+        // TTest tTest;
+        // experiment.setTestStrategy(&tTest);
+        // if (verbose) std::cout << "Setting the Test Strategy, Done!\n";
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    if (verbose) std::cout << "Initializing the Researcher, Done!\n";
+    // if (verbose) std::cout << "Initializing the Researcher, Done!\n";
 
         // Setting the Selection Preference
-        researcher.selectionPref = PreRegisteredOutcome;
-        if (verbose) std::cout << "Setting the Selection Preference, Done!\n";
+        // researcher.selectionPref = PreRegisteredOutcome;
+        // if (verbose) std::cout << "Setting the Selection Preference, Done!\n";
 
         // Assigning the Journal
         researcher.setJournal(&journal);
-        if (verbose) std::cout << "Assigning the Journal, Done!\n";
+        // if (verbose) std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
         ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
         researcher.setDecisionStrategy(&impatientReporter);
-        if (verbose) std::cout << "Setting the Decision Strategy, Done!\n";
+        // if (verbose) std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["Researcher Parameters"]["--is-phacker"];
 
-    if (verbose) std::cout << "Initializing Hacking Routines, Done!\n";
+    // if (verbose) std::cout << "Initializing Hacking Routines, Done!\n";
     
     output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
 
     // Registering Hacking Methods
     if (simConfig["Researcher Parameters"]["--is-phacker"]){
-        
-        // Overwriting the selection preference, this is technically works as the
-        // researcher is performing _Outcome Switching_.
-//        if (simConfig["Researcher Parameters"]["--selection-pref"] == "MinPvalue"){
-//            researcher.selectionPref = MinPvalue;
-//            researcher.decisionStrategy->selectionPref = MinPvalue;
-//        } /* else if for other options */
-        
         
         // -------------------------
         // Using the Factory Pattern
@@ -182,24 +167,22 @@ void runSimulation(json& simConfig){
 
                 
                 if (item["type"] == "Outcome Switching") {
-                    std::cout << "Registering: " << item.dump(4) << "\n";
+                    // std::cout << "Registering: " << item.dump(4) << "\n";
                     
                     // Set Researcher Selection Preference
                     // TODO: Generalize MEEEEE!
-                    if (item["preference"] == "MinPvalue"){
+                    if (item["preference"] == "Min P-value"){
                         std::cout << "MinPvalue\n";
                         researcher.selectionPref = MinPvalue;
                         researcher.decisionStrategy->selectionPref = MinPvalue;
                     } /* else if for other options */
                 }else{
-                    std::cout << "Registering: " << item.dump(4) << "\n";
+                    // std::cout << "Registering: " << item.dump(4) << "\n";
                     researcher.hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
                 }
-                
-//                output_path_file << item["type"] << "_";
             }
         }
-        if (verbose) std::cout << "Registering Hacking Methods, Done!, " << researcher.hackingStrategies.size() << " \n";
+        // if (verbose) std::cout << "Registering Hacking Methods, Done!\n"; 
     }
     
     
@@ -255,7 +238,7 @@ void runSimulation(json& simConfig){
 
             
             if (progress)
-                simulationBar.progress(i, nSims);
+                progressBar.progress(i, nSims);
             
             // Initializing a new experiment
             // TODO: The main loop needs some cleanup
@@ -282,7 +265,7 @@ void runSimulation(json& simConfig){
     }
 
     if (progress)
-        simulationBar.finish();
+        progressBar.finish();
     
     if (simConfig["Simulation Parameters"]["--save-output"]){
         csvWriter.close();
@@ -292,49 +275,6 @@ void runSimulation(json& simConfig){
 
 }
 
-//void testDOCOPT(std::map<std::string, docopt::value> args){
-//    json config;
-//
-//    for(auto const& arg : args) {
-////        if (arg.second.isString())
-//            config[arg.first] = arg.second;
-////        std::cout << arg.first << ": " << arg.second << std::endl;
-//    }
-//
-//    std::cout << config;
-//
-//}
-
-void testJSON(std::string file){
-
-    // TODO: Check if I'm getting a vector or constant, and change accordingly
-
-    std::cout << "\ntestJSON()\n\n";
-
-    json config;
-    std::ifstream configFile(file);
-    configFile >> config;
-
-//    for (auto& item : config){
-//    for (auto item : config.items()){
-//        std::cout << item.key()
-//        << ": " << item.value() << std::endl;
-//    }
-
-    std::cout << config.dump(4);
-
-//    std::vector<std::vector<double> > cov_matrix = config["--cov-matrix"];
-//    for (int i = 0; i < 3; ++i) {
-//        for (int j = 0; j < 3; ++j) {
-//            std::cout << i << ", " << j << ", :" << cov_matrix[i][j] << std::endl;
-//        }
-//    }
-}
-
-void testTTest(){
-    auto ttest_res = oneSampleTTest(15, sqrt(87.5), 13, 12, sqrt(39), 11, true);
-    std::cout << "t: " << ttest_res.first << "p: " << ttest_res.second << std::endl;
-}
 
 
 void testRandomClass(){

@@ -18,3 +18,15 @@ void TTest::run(Experiment* experiment) {
         experiment->pvalues[i] = gsl_ran_tdist_pdf(experiment->statistics[i], experiment->measurements[i].size() - 1);
     }
 }
+
+TestStrategy *TestStrategy::buildTestStrategy(ExperimentSetup& setup){
+    switch (setup.testMethod) {
+        case _tTest:
+            return new TTest();
+            break;
+            
+        default:
+            return new TTest();
+            break;
+    }
+}

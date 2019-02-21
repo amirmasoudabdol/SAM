@@ -18,6 +18,10 @@ enum ExperimentType {
     LatentModel
 };
 
+enum TestMethod {
+    _tTest
+};
+
 
 /**
  \brief Define a class for ExperimentSetup.
@@ -31,6 +35,7 @@ class ExperimentSetup {
 public:
     
     ExperimentType experimentType;
+    TestMethod testMethod;
     
     int nc = 1;     ///< Number of experimental conditions, e.g., treatment 1, treatment 2.
     int nd = 3;     ///< Number of _dependent variables_ in each experimental condition.

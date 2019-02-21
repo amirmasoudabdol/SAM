@@ -11,6 +11,7 @@
 #include <string>
 
 class Experiment;
+class ExperimentSetup;
 
 /**
  \brief Abstract class for defining test strategies.
@@ -23,6 +24,8 @@ class Experiment;
 class TestStrategy {
 
 public:
+    
+    static TestStrategy* buildTestStrategy(ExperimentSetup& setup);
     
     virtual void run(Experiment* experiment) = 0;
 
