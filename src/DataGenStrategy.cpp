@@ -174,19 +174,6 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
     return std::vector<double>();
 }
 
-
-//DataGenStrategy *DataGenStrategy::buildDataStrategy(json& config) {
-//
-//    if (config["--data-strategy"] == "FixedModel"){
-//        int main_rng_stream_seed = rand();
-//
-//    }else{
-//        // config["--data-strategy"] == "LatendModel"
-//
-//    }
-//
-//}
-
 DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
     switch (setup.experimentType) {
         case FixedModel:

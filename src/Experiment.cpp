@@ -56,23 +56,9 @@ void Experiment::calculateStatistics() {
         vars[i] = gsl_stats_variance_m(measurements[i].data(), 1, measurements[i].size(), means[i]);
         ses[i] = sqrt(vars[i] / measurements[i].size());
     }
-    // std::cout << vars[0] << ": v\n";
-
-   // std::cout << "means: ";
-   // for (auto &m : means) {
-   //     std::cout << m << ", ";
-   // }
-   // std::cout << "\n";
     
 }
 
 void Experiment::calculateEffects() {
     effects = means;
 }
-
-
-// This is a tricky business!
-// I don't remember why I have this here!
-// void Experiment::pointTestStrategyToThis() {
-//     testStrategy->updateExperimentPointer(this);
-// }

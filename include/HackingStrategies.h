@@ -70,7 +70,7 @@ public:
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
 
 private:
-    std::string _method = "MinPvalue";
+    std::string _method = "Min P-value";
 };
 
 
@@ -83,7 +83,7 @@ private:
  
  ```
  {
-    "type": "OptionalStopping",
+    "type": "Optional Stopping",
     "size": n,
     "attempts": m
  }
@@ -115,7 +115,7 @@ private:
  
  ```
      {
-     "type": "SDOutlierRemoval",
+     "type": "SD Outlier Removal",
      "sd_multiplier": d
      }
  

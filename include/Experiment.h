@@ -45,7 +45,7 @@ public:
     };
 
     Experiment(ExperimentSetup& e) : setup(e) {
-        // I can do things here, like some of the r/**/esizing
+        // I can do things here, like some of the resizing
         // nobs.resize(e.ng)
 //        testStrategy = nullptr;
 //        dataStrategy = nullptr;

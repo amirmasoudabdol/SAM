@@ -13,14 +13,21 @@
 ```
 {
     "type": "Outcome Switching",
-    "preference": "MinPvalue"
+    "preference": "Min P-value"
 }
 ```
 
 ```
 {
-  "type": "OptionalStopping",
-  "size": 3,
-  "attempts": 10
+	"type": "Optional Stopping",
+	"size": 3,
+	"attempts": 10
+}
+```
+
+```
+{
+	"type": "SD Outlier Removal",
+	"sd_multiplier": 2
 }
 ```

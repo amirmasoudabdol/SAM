@@ -11,7 +11,7 @@
   },
   "Journal Parameters" :{
     "--pub-bias": 0.95,
-    "--journal-selection-model": "SignificantSelection",
+    "--journal-selection-model": "Significant Selection",
     "--max-pubs": 20,
     "--alpha": 0.05,
     "--side": 0
@@ -19,7 +19,7 @@
   "Experiment Parameters": {
     "--data-strategy": "FixedModel",
     "--n-conditions": 1,
-    "--n-dep-vars": 2,
+    "--n-dep-vars": 4,
     "--n-items": 3,
     "--n-obs": 0,
     "--means": 0.5,
@@ -32,17 +32,20 @@
   },
   "Researcher Parameters": {
     "--is-phacker": true,
-    "--selection-pref": "MinPvalue",
     "--p-hacking-methods": [
         {
           "type": "Outcome Switching",
-          "preference": "MinPvalue"
+          "preference": "Min P-value"
         },
         {
-          "type": "OptionalStopping",
+          "type": "Optional Stopping",
           "size": 3,
           "attempts": 10
         }
-    ]
+    ],
+    "--decision-strategy": {
+      "type": "Impatient Decision Maker",
+      "params": 1
+    }
   }
 }

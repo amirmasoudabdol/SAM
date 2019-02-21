@@ -33,7 +33,7 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
 
     long selectedOutcome = 0;
     
-    if (_method == "MinPvalue"){
+    if (_method == "Min P-value"){
         selectedOutcome = std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
 
     }else if (_method == "MaxEffect"){
@@ -119,13 +119,14 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
 
 HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
     std::string type = config["type"];
-    if (type == "OptionalStopping"){
-        return new OptionalStopping(config["size"],           config["attempts"]);
-    }else if (type == "SDOutlierRemoval") {
+    if (type == "Optional Stopping"){
+        return new OptionalStopping(config["size"], config["attempts"]);
+    }else if (type == "SD Outlier Removal") {
         return new SDOutlierRemoval(config["sd_multiplier"]);
-    }else if (type == "GroupPooling") {
+    }else if (type == "Group Pooling") {
         return new GroupPooling("first");
     }else{
+        // This is not ok, this final else should be resolved somehow
         return new OutcomeSwitching("none");
     }
     

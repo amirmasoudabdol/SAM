@@ -21,7 +21,7 @@
   "--output-path": "../outputs/",
   "--output-prefix": "auto",
   "--is-phacker": false,
-  "--selection-pref": "MinPvalue",
+  "--selection-pref": "Min P-value",
   "--hacking-methods-config": "/Users/amabdol/Projects/SAMpp/sample_hacking_methods.json",
   "--factor-loadings": [0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
   "--factor-means": [0, 0],
