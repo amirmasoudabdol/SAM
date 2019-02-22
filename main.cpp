@@ -172,7 +172,7 @@ void runSimulation(json& simConfig){
                     // Set Researcher Selection Preference
                     // TODO: Generalize MEEEEE!
                     if (item["preference"] == "Min P-value"){
-                        std::cout << "MinPvalue\n";
+                        // std::cout << "MinPvalue\n";
                         researcher.selectionPref = MinPvalue;
                         researcher.decisionStrategy->selectionPref = MinPvalue;
                     } /* else if for other options */

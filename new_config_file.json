@@ -3,7 +3,7 @@
     "--debug": true,
     "--verbose": true,
     "--progress": false,
-    "--n-sims": 1,
+    "--n-sims": 10,
     "--master-seed": 42,
     "--save-output": true,
     "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
