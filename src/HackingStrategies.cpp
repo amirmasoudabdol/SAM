@@ -79,7 +79,8 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         
         tmpSub = decisionStrategy->_select_Outcome(*experiment);
         
-        if (tmpSub.isSig()) break;
+        if (tmpSub.isSig())
+            break;
         
     }
     
@@ -114,9 +115,57 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
+    
+    // Extreme
+//    removeOutliers(1, _max_attempts, _max_attempts, experiment);
+    
+    // Recursive
+//    removeOutliers(_num, _max_attempts, _max_attempts, experiment);
+    
+    // Recursive Attempts
+//    removeOutliers(_num, _attempts, _max_attempts, experiment);
+    
+}
+
+void SDOutlierRemoval::removeOutliers(int n, int t, int m, Experiment* experiment) {
+    for (auto &d : _multipliers){
+        for (int i = 0, gi = 0; i < t && i < m; i++) {
+            for (auto &g : experiment->measurements) {
+                
+                auto outliers = std::remove_if(g.begin(),
+                                               g.end(),
+                                               [experiment, gi, d](double v){
+                                                   return
+                                                   (v < experiment->means[gi] - d * sqrt(experiment->vars[gi]))
+                                                   ||
+                                                   (v > experiment->means[gi] + d * sqrt(experiment->vars[gi]));
+                                               }
+                                               );
+                if (outliers != g.end())
+                    break;
+                
+                g.erase(outliers,
+                        g.end()
+                        );
+                
+                gi++;
+            }
+            
+        }
+        // Update everything and ask for verdict
+    }
 }
 
 
+
+/**
+ A Factory method for building hacking strategies
+ 
+ \sa README.md
+
+ @param config A JSON object defining a hacking strategy, and its parameters
+ @return Pointer to a HackingStrategy
+ */
 HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
     std::string type = config["type"];
     if (type == "Optional Stopping"){

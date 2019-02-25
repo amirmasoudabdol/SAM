@@ -125,11 +125,29 @@ class SDOutlierRemoval : public HackingStrategy {
 public:
 
     SDOutlierRemoval(double sd_multiplier) : _sd_multiplier(sd_multiplier) {};
+    SDOutlierRemoval(std::string mode,
+                     int num,
+                     int attempts,
+                     std::vector<double> multipliers) {
+        _mode = mode;
+        _num = num;
+        _attempts = attempts;
+        _multipliers = multipliers;
+    };
+    
 
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
     
 private:
+    std::string _mode = "Recursive Attempts";
+    int _num = 3;
+    int _attempts = 3;
+    int _max_attempts = 100;
+    std::vector<double> _multipliers;
+    
+    void removeOutliers(int n, int t, int m, Experiment* experiment);
+    
     double _sd_multiplier;      ///< Specifies the multiplier threshold for removing the outliers
 
 };
