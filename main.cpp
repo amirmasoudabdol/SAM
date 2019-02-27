@@ -94,9 +94,9 @@ void runSimulation(json& simConfig){
 //    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
     bool progress = simConfig["Simulation Parameters"]["--progress"];
     
-    std::stringstream output_path_file;
-    
-    output_path_file << simConfig["Simulation Parameters"]["--output-path"] << "_";
+//    std::stringstream output_path_file;
+//
+//    output_path_file << simConfig["Simulation Parameters"]["--output-path"] << "_";
 
     if (simConfig["Simulation Parameters"]["--master-seed"] == 0) {
         srand(time(NULL));
@@ -155,7 +155,7 @@ void runSimulation(json& simConfig){
 
     // if (verbose) std::cout << "Initializing Hacking Routines, Done!\n";
     
-    output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
+//    output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
 
     // Registering Hacking Methods
     if (simConfig["Researcher Parameters"]["--is-phacker"]){

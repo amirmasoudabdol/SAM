@@ -1,10 +1,11 @@
 # SAM
 
+## Simulation Setup
+
 ### Configuration File
 
-|  **Simulation Parameters** | | |
-| Parameter | Value | Description |
-|:--|:--:|:--|
+| **Simulation Parameters**<br>	Parameter | <br>Value | <br>Description |
+|:--|:--|:--|
 | `--debug`  | `bool` | Indicates if SAMpp is running in debug mode. |
 | `--verbose` | `bool` | Cause SAM to be verbose, announcing the execution of different procedures. |
 | `--progress` | `bool` | Shows the progress bar. |
@@ -13,34 +14,36 @@
 | `--output-path` | `string` | A path to save the output files |
 | `--output-prefix` | `string` | A prefix to be added to output filenames'. All output files will end with `_sim.csv` |
 | **Experiment Parameters** | | |
-| `--data-strategy`| | |
-| `--n-conditions`| | |
-| `--n-dep-vars`| | |
-| `--n-items`| | |
-| `--n-obs`| | |
-| `--means`| | |
-| `--sds`| | |
-| `--is-correlated`| | |
-| `--covs`| | |
-| `--loadings`| | |
+| `--data-strategy`| `string` | See also, DataStrategy.md |
+| `--n-conditions`| \f$n_c\f$, `int` | Number of treatment conditions |
+| `--n-dep-vars`| \f$n_d\f$, `int` | Number of dependent variables |
+| `--n-items`| \f$n_i\f$, `int` | Number of items. Only applicable for Latent Model. |
+| `--n-obs`| nobs, `int` | Number of observation per each group |
+| `--means`| mu, `double` or `array` | Mean of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `mu`. If an `array` is given, `mu[i]` will be used for group `i`.  |
+| `--sds`| sd, `double` or `array`  | Standard deviation of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `sd`. If an `array` is given, `sd[I]` will be used for group `i`. |
+| `--is-correlated`| `bool` | Indicates whether dependent variables are correlated or not. |
+| `--covs`| cov, `double` or `2d array` | The covariance coefficient between each group. If a `double` is provided, it'll be broadcasted to a matrix of  `nc * nd` by `nc * nd` with `cov` for every `i` and `j`, therefore all groups will have the same covariance. If a `2d array` is given, `cov[I][j]` will indicate the covariance coefficient between group `i` and `j`.<br> **Note:** If both `sd` and `cov` are scalar values, diagonal elements of `cov` matrix will be replaced by `sd` for each `i`. |
+| `--loadings`|  | |
 | `--err-sds`| | |
 | `--err-covs`| | |
 | **Researcher Parameters** | | |
-| `--is-phacker` | | |
-| `--p-hacking-methods` | | |
+| `--is-phacker` | `bool` | Whether the Researcher is a hacker or not, if `true`, listed methods will be applied on the dataset. |
+| `--p-hacking-methods` | `list` of `dict` | A list of `dict` each indicating a Hacking Method with its parameters. |
 | **Journal Parameters** | | |
-| `--pub-bias` | | |
-| `--journal-selection-model` | | |
-| `--max-pubs` | | |
-| `--alpha` | | |
-| `--side` | | |
+| `--pub-bias` | `double` | Publication bias rate. |
+| `--journal-selection-model` | `string` | See also, Selection Model |
+| `--max-pubs` | `double` | Maximum publications that is going to be accepted by a Journal. |
+| `--alpha` | \f$\alpha\f$, `double` | Alpha of the significant testing |
+| `--side` | `int` | Indicates journal's preference regarding the effect size. Acceptance of Positive/Negative/Neutral results will be indicated by 1, -1, and 0, respectively. |
 
 
 ### QRP Methods
 
-SAM provides a few common QRP methods out of the box. Some of the methods can be configured
+While SAM provides an interface to implement your own QRP algorithms, it will provide a few methods out of the box.
 
 #### Outcome Switching
+
+Outcome switching is the act of reporting a different outcome variable instead of the *pre-registered outcome*. By default, the first group is considered a pre-registered group, and its the outcome that is going to be chosen and reported to the Journal. However, *Researcher's preference* for reporting the pre-registered outcome can be overwritten by adding a _Outcome Switching_ method to the list of hacking methods.
 
 ```
 {
@@ -48,6 +51,15 @@ SAM provides a few common QRP methods out of the box. Some of the methods can be
     "preference": "Min P-value"
 }
 ```
+
+| Parameters | Values | Descriptions  |
+|:--|:--|:--|
+| `preference` | "Pre-registered Outcome" | The Researcher will only choose and report the pre-registered outcome to the Journal. |
+|  | "Min P-value" | The outcome with minimum *p*-value will be observed and reported to the Journal.  |
+|  | "Max Effect" | The outcome with maximum effect size is going to be observed and reported to the Journal. |
+|  | "Max Effect, Min P-value" | The outcome with maximum effect and minimum p-value will be observed and reported to the Journal. |
+
+
 
 #### Optional Stopping
 
@@ -60,16 +72,19 @@ Optional stopping is the practice of adding new observation to the dataset until
 	"num": n,
 	"attempts": t,
 	"max attempts": m,
+	"level": "dv"
 }
 ```
 
-| Parameters | Value | Description |
+| **Parameters** | **Value** | **Description** |
 |:--|:--|:--|
 | `mode` | "Extreme" | In each attempt, the algorithm adds ***n = 1*** observation to the dataset until it achieves significance. Both `attempts` and `num`  will be ignored in this mode. The process will stop after `max attempts` regardless of achieving significant.  |
-| | "Recursive" _(Default)_ | In _t_ attempts, the algorithm adds _n_ observations to the dataset until it achieves significance. |
+| | "Recursive" (*Default*) | In *t* attempts, the algorithm adds *n* observations to the dataset until it achieves significance. |
 | `num` | _n_, `int`  | Number of observations to be added on each attempt. |
 | `attempts` | _t_, `int` | Number of attempts before stopping the process. |
 | `max attempts` | m, `int`  | Maximum number of attempts |
+| `level` | "item" | Adding new value to items in the underlying SEM. <br>**Note:** Only applicable in Latent Model. |
+|  | "dvs" | Adding new values to dependent variables.  |
 
 #### Outlier Removal
 
@@ -82,19 +97,26 @@ Removing outliers can be done in several different ways. In the simplest case, a
 	"mode": "Extreme",     
 	"num": n,
 	"attempts": t,
-	"multipliers": [...]
+	"multipliers": [...],
+	"level": "dv",
 }
 ```
 
-| Parameters | Value | Details |
+| **Parameters** | **Value** | **Details** |
 |:--|:--|:--|
 | `mode` | "Extreme" | A researcher will remove **_n = 1_** outlier in each trial until he achieves significance. If more than one multiplier is provided, the process starts with the largest multiplier and continues recursively until there is no item can be removed from the dataset using the smallest multiplier. <br>**Note**: In this case, `num` will be ignored. |
 | | "Recursive" | At each round, the researcher will remove _n_ outliers based on the given multipliers. He will advance toward smaller multipliers when no item can be removed using the larger values. In this case, `attempts` will be ignored. |
-| | "Recursive Attempts" _(Default)_ | The algorithm performs _t_ attempts to remove _n_ outliers from a dataset based on given multipliers. The algorithm will advance if there is no item left to be removed at _i < n_ attempts, or after _n_ attempts. |
+| | "Recursive Attempts" (*Default*) | The algorithm performs *t* attempts to remove *n* outliers from a dataset based on given multipliers. The algorithm will advance if there is no item left to be removed at *i < n* attempts, or after *n* attempts. |
 | `num` | *n*, `int` | Number of items to be removed at each attempt |
 | `attempts` | _t_, `int` | Number of attempts to remove outliers for each multiplier |
 | `multipliers` | `list` | A list of multipliers to be used. |
+| `level` | "dv" | Removing outliers at dependent variable level.|
+|  | "item" | Removing outliers at the item level, only applicable under Latent Model configuration. |
 
 
 #### Group Pooling
+
+
+
+## Outputs
 
