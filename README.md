@@ -2,6 +2,8 @@
 
 ## Simulation Setup
 
+In order to setup a simulation, SAM needs to know the specific representation of each of its components. All the necessary parameters can be listed in a JSON file and provided to SAM via the `--config` parameters of the CLI, e.g. `./SAM --config=simulation_parameters.json`
+
 ### Configuration File
 
 | **Simulation Parameters**<br>	Parameter | <br>Value | <br>Description |
