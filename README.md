@@ -6,7 +6,8 @@ In order to setup a simulation, SAM needs to know the specific representation of
 
 ### Configuration File
 
-| **Simulation Parameters**<br>	Parameter | <br>Value | <br>Description |
+| **Simulation Parameters** | | |
+| Parameter | <br>Value | <br>Description |
 |:--|:--|:--|
 | `--debug`  | `bool` | Indicates if SAMpp is running in debug mode. |
 | `--verbose` | `bool` | Cause SAM to be verbose, announcing the execution of different procedures. |
