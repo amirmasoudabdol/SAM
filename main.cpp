@@ -103,57 +103,24 @@ void runSimulation(json& simConfig){
     int nobsSeed = rand();
     simConfig["Simulation Parameters"]["--nobs-seed"] = nobsSeed;
     RandomNumberGenerator nobsGenerator(nobsSeed, false);
-
-
     
     Journal journal(simConfig["Journal Parameters"]);
     
-        // Setting Journal's Selection Strategy
-    // TODO: Perhaps Journal should create this itself!
-        // journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
-        // if (verbose) std::cout << "Initializing Journal, Done!\n";
-
-    
-    // ExperimentSetup experimentSetup(simConfig["Experiment Parameters"]);
-    
-    // // Initializing Experiment
-    // Experiment experiment(experimentSetup);
-    // // if (verbose) std::cout << "Initializing Experiment, Done!\n";
-    
-    //     experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
-    
-    //     // if (verbose) std::cout << "Setting Data Model, Done!\n";
-    
-    
-    //     // Setting the Test Strategy
-    //     experiment.setTestStrategy(TestStrategy::buildTestStrategy(experimentSetup));
-    //     // TTest tTest;
-    //     // experiment.setTestStrategy(&tTest);
-    //     // if (verbose) std::cout << "Setting the Test Strategy, Done!\n";
     Experiment experiment(simConfig);
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
-    // if (verbose) std::cout << "Initializing the Researcher, Done!\n";
-
-        // Setting the Selection Preference
-        // researcher.selectionPref = PreRegisteredOutcome;
-        // if (verbose) std::cout << "Setting the Selection Preference, Done!\n";
 
         // Assigning the Journal
         researcher.setJournal(&journal);
-        // if (verbose) std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
         researcher.setDecisionStrategy(DecisionStrategy::buildDecisionStrategy(simConfig["Researcher Parameters"]["--decision-strategy"]));
-        // ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
-        // researcher.setDecisionStrategy(&impatientReporter);
-        // if (verbose) std::cout << "Setting the Decision Strategy, Done!\n";
+
 
     // Initializing Hacking Routines
     researcher.isHacker = simConfig["Researcher Parameters"]["--is-phacker"];
 
-    // if (verbose) std::cout << "Initializing Hacking Routines, Done!\n";
     
     // Registering Hacking Methods
     if (simConfig["Researcher Parameters"]["--is-phacker"]){
@@ -205,16 +172,7 @@ void runSimulation(json& simConfig){
         
         while (journal.isStillAccepting()) {
             
-//             if (simConfig["Experiment Parameters"]["--n-obs"] == 0){
-//                 researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
-
-// //                 TODO: I think this is just a better way to do this, but I need to redesign the randomizaiton process, maybe
-// //                 I can have a method in researcher that can redraw a new nobs, or maybe in the Experiment.
-// //                 See also, [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
-// //                 researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
-
-//             }
-            
+            // TODO: randomizeSetup might be better
             researcher.experiment->randomize();
 
             researcher.rest();
