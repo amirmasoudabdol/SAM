@@ -152,12 +152,12 @@ void runSimulation(json& simConfig){
     
 //    Researcher::Builder researcherBuilder;
 //    researcherBuilder.setConfig(simConfig)
-//                        .makeExperiment()
-//                        .makeJournal()
-//                        .makeDecisionStrategy()
-//                        .makeHackingStrategies();
-    
-//    researcher = researcherBuilder.build();
+//                     .makeExperiment()
+//                     .makeJournal()
+//                     .makeDecisionStrategy()
+//                     .makeHackingStrategies();
+//    
+//   researcher = researcherBuilder.build();
     
     
     // Initiate the csvWriter

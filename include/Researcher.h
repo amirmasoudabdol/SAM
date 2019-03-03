@@ -13,6 +13,10 @@
 #include "Journal.h"
 #include "DecisionStrategy.h"
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 enum HackingStyle {
     onOrig,
     onCopy
@@ -21,6 +25,8 @@ enum HackingStyle {
 class Researcher {
 
 public:
+
+    class Builder;
 
     Experiment* experiment;
 
@@ -84,6 +90,79 @@ private:
 	int _selected_outcome_inx = 0;
 	Submission _create_submission_record(int inx);
 
+};
+
+
+class Researcher::Builder {
+private:
+    json _config;
+    
+
+    ExperimentSetup* _experiment_setup;
+    Experiment* _experiment;
+    Journal* _journal;
+    
+    bool _isHacker;
+    std::vector<HackingStrategy*> _hackingStrategies;
+
+    DecisionStrategy* _decisionStrategy;
+
+
+
+public:
+
+    Builder() = default;
+
+    Builder& setConfig(json& config) {
+        this->_config = config;
+        return *this;
+    };
+    
+    Builder& makeExperimentSetup();
+    
+    Builder& makeExperiment() {
+        this->_experiment = new Experiment(_config);
+        return *this;
+    };
+    
+    Builder& makeJournal() {
+        this->_journal = new Journal(_config["Journal Parameters"]);
+        return *this;
+    };
+    
+    Builder& makeDecisionStrategy() {
+        this->_decisionStrategy = DecisionStrategy::buildDecisionStrategy(_config["Researcher Parameters"]["--decision-strategy"]);
+        return *this;
+    };
+    
+    Builder& isHacker() {
+        this->_isHacker = true;
+        return *this;
+    }
+    
+    Builder& makeHackingStrategies(){
+        for (auto &item : _config["Researcher Parameters"]["--p-hacking-methods"]) {
+            this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+        }
+        return *this;
+    };
+
+
+    Builder& setExperimentSetup(ExperimentSetup);
+    Builder& setExperiment(Experiment);
+    Builder& setJournal(Journal j){
+        this->_journal = &j;
+        return *this;
+    };
+    Builder& setDecisionStrategy(DecisionStrategy);
+    Builder& setHackingStrategy(HackingStrategy);
+    Builder& setHackingStrategy(std::vector<HackingStrategy*>);
+    
+    Builder& chooseHackingStrategies(std::vector<HackingStrategy>);
+
+    Researcher build() {
+        return Researcher(_experiment, _journal, _decisionStrategy, _hackingStrategies);
+    };
 };
 
 #endif //SAMPP_RESEARCHER_H
