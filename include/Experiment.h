@@ -43,7 +43,9 @@ public:
         // TODO: Use shared_ptr<> to make sure that I don't have
         // to do cleanup
     };
-
+    
+    Experiment(json& config);
+    
     Experiment(ExperimentSetup& e) : setup(e) {
         // I can do things here, like some of the resizing
         // nobs.resize(e.ng)
@@ -68,6 +70,8 @@ public:
     void generateData();
     void calculateStatistics();
     void calculateEffects();
+    
+    void randomize();
 
 
     // Hacking Meta-data

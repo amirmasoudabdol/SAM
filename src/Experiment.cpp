@@ -62,3 +62,21 @@ void Experiment::calculateStatistics() {
 void Experiment::calculateEffects() {
     effects = means;
 }
+
+
+Experiment::Experiment(json &config) { 
+    // TODO: This should initialize everything, also set TestStrategy, ...
+    this->setup = ExperimentSetup(config["Experiment Parameters"]);
+
+    this->dataStrategy = DataGenStrategy::buildDataStrategy(setup);
+    
+    this->testStrategy = TestStrategy::buildTestStrategy(setup);
+    
+}
+
+
+void Experiment::randomize() {
+    if (setup.isNRandomized) {
+        setup.randomize_nObs();
+    }
+}

@@ -36,15 +36,26 @@ public:
 
     Submission submissionRecord;
 
+    Researcher(json& config);
+
     Researcher(Experiment* e) {
         experiment = e;
+    };
+    
+    Researcher(Experiment* e, Journal* j, DecisionStrategy* ds, std::vector<HackingStrategy*> hs) {
+        experiment = e;
+        journal = j;
+        decisionStrategy = ds;
+        hackingStrategies = hs;
     };
 
     // This probably needs to be a class of itself as well
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
+
+    void research();
     
-    ResearcherPreference selectionPref = PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
+    ResearcherPreference selectionPref = ResearcherPreference::PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
     
     // std::string decisionStrategy = "asap";
     DecisionStrategy* decisionStrategy;

@@ -91,12 +91,8 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
 
-//    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
+    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
     bool progress = simConfig["Simulation Parameters"]["--progress"];
-    
-//    std::stringstream output_path_file;
-//
-//    output_path_file << simConfig["Simulation Parameters"]["--output-path"] << "_";
 
     if (simConfig["Simulation Parameters"]["--master-seed"] == 0) {
         srand(time(NULL));
@@ -109,29 +105,32 @@ void runSimulation(json& simConfig){
     RandomNumberGenerator nobsGenerator(nobsSeed, false);
 
 
-    ExperimentSetup experimentSetup(simConfig["Experiment Parameters"]);
     
     Journal journal(simConfig["Journal Parameters"]);
     
         // Setting Journal's Selection Strategy
     // TODO: Perhaps Journal should create this itself!
-        journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
+        // journal.setSelectionStrategy(SelectionStrategy::buildSelectionStrategy(simConfig["Journal Parameters"]));
         // if (verbose) std::cout << "Initializing Journal, Done!\n";
 
-    // Initializing Experiment
-    Experiment experiment(experimentSetup);
-    // if (verbose) std::cout << "Initializing Experiment, Done!\n";
     
-        experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
+    // ExperimentSetup experimentSetup(simConfig["Experiment Parameters"]);
     
-        // if (verbose) std::cout << "Setting Data Model, Done!\n";
+    // // Initializing Experiment
+    // Experiment experiment(experimentSetup);
+    // // if (verbose) std::cout << "Initializing Experiment, Done!\n";
+    
+    //     experiment.setDataStrategy(DataGenStrategy::buildDataStrategy(experimentSetup));
+    
+    //     // if (verbose) std::cout << "Setting Data Model, Done!\n";
     
     
-        // Setting the Test Strategy
-        experiment.setTestStrategy(TestStrategy::buildTestStrategy(experimentSetup));
-        // TTest tTest;
-        // experiment.setTestStrategy(&tTest);
-        // if (verbose) std::cout << "Setting the Test Strategy, Done!\n";
+    //     // Setting the Test Strategy
+    //     experiment.setTestStrategy(TestStrategy::buildTestStrategy(experimentSetup));
+    //     // TTest tTest;
+    //     // experiment.setTestStrategy(&tTest);
+    //     // if (verbose) std::cout << "Setting the Test Strategy, Done!\n";
+    Experiment experiment(simConfig);
 
     // Initializing the Researcher
     Researcher researcher(&experiment);
@@ -146,8 +145,9 @@ void runSimulation(json& simConfig){
         // if (verbose) std::cout << "Assigning the Journal, Done!\n";
 
         // Setting the Decision Strategy
-        ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
-        researcher.setDecisionStrategy(&impatientReporter);
+        researcher.setDecisionStrategy(DecisionStrategy::buildDecisionStrategy(simConfig["Researcher Parameters"]["--decision-strategy"]));
+        // ImpatientDecisionMaker impatientReporter(0, simConfig["Journal Parameters"]["--alpha"], researcher.selectionPref);
+        // researcher.setDecisionStrategy(&impatientReporter);
         // if (verbose) std::cout << "Setting the Decision Strategy, Done!\n";
 
     // Initializing Hacking Routines
@@ -155,8 +155,6 @@ void runSimulation(json& simConfig){
 
     // if (verbose) std::cout << "Initializing Hacking Routines, Done!\n";
     
-//    output_path_file << simConfig["Researcher Parameters"]["--is-phacker"] << "_";
-
     // Registering Hacking Methods
     if (simConfig["Researcher Parameters"]["--is-phacker"]){
         
@@ -173,8 +171,8 @@ void runSimulation(json& simConfig){
                     // TODO: Generalize MEEEEE!
                     if (item["preference"] == "Min P-value"){
                         // std::cout << "MinPvalue\n";
-                        researcher.selectionPref = MinPvalue;
-                        researcher.decisionStrategy->selectionPref = MinPvalue;
+                        researcher.selectionPref = ResearcherPreference::MinPvalue;
+                        researcher.decisionStrategy->selectionPref = ResearcherPreference::MinPvalue;
                     } /* else if for other options */
                 }else{
                     // std::cout << "Registering: " << item.dump(4) << "\n";
@@ -184,6 +182,15 @@ void runSimulation(json& simConfig){
         }
         // if (verbose) std::cout << "Registering Hacking Methods, Done!\n"; 
     }
+    
+//    Researcher::Builder researcherBuilder;
+//    researcherBuilder.setConfig(simConfig)
+//                        .makeExperiment()
+//                        .makeJournal()
+//                        .makeDecisionStrategy()
+//                        .makeHackingStrategies();
+    
+//    researcher = researcherBuilder.build();
     
     
     // Initiate the csvWriter
@@ -198,16 +205,18 @@ void runSimulation(json& simConfig){
         
         while (journal.isStillAccepting()) {
             
-            if (simConfig["Experiment Parameters"]["--n-obs"] == 0){
-                researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
+//             if (simConfig["Experiment Parameters"]["--n-obs"] == 0){
+//                 researcher.experiment->setup.nobs = nobsGenerator.genSampleSize(.75, 20, 100, 300);
 
-//                 TODO: I think this is just a better way to do this, but I need to redesign the randomizaiton process, maybe
-//                 I can have a method in researcher that can redraw a new nobs, or maybe in the Experiment.
-//                 See also, [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
-//                 researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
+// //                 TODO: I think this is just a better way to do this, but I need to redesign the randomizaiton process, maybe
+// //                 I can have a method in researcher that can redraw a new nobs, or maybe in the Experiment.
+// //                 See also, [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
+// //                 researcher.experiment->setup.setNObs(nobsGenerator.genSampleSize(.75, 20, 100, 300));
 
-            }
+//             }
             
+            researcher.experiment->randomize();
+
             researcher.rest();
             
             researcher.experiment->allocateResources();
