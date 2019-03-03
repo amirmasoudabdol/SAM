@@ -67,13 +67,8 @@ public:
     // the `finalDecision` can be used to travese between all other submisions, and
     // pick the ultimate best. Having two decision strategy allow for more detail
     // implementation.
-
-    
-    void calculateEffect();
-
 	
     // This could be renamed to something like, selectThePreferedSubmission()
-    void selectOutcome();
     void prepareTheSubmission();
     void submitToJournal();
 

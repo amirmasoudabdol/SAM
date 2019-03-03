@@ -36,9 +36,6 @@ public:
     std::vector<double> latent_variances;
     std::vector<std::vector<double>> latent_cov_matrix;
 
-    // Need a copy constructor
-    // Need a move constructor
-//    Experiment();
     ~Experiment() {
         // TODO: Use shared_ptr<> to make sure that I don't have
         // to do cleanup
@@ -46,19 +43,10 @@ public:
     
     Experiment(json& config);
     
-    Experiment(ExperimentSetup& e) : setup(e) {
-        // I can do things here, like some of the resizing
-        // nobs.resize(e.ng)
-//        testStrategy = nullptr;
-//        dataStrategy = nullptr;
-    };
-//    Experiment(ExperimentSetup, DataGenStrategy);
-//    Experiment(ExperimentSetup setup) : { experiment_setup(setup) }
+    Experiment(ExperimentSetup& e) : setup(e) { };
 
     TestStrategy* testStrategy;
     void setTestStrategy(TestStrategy* t);
-    // I'm not even sure if this is necessary or not, I need to run some tests
-    void pointTestStrategyToThis();
     void runTest();
 
     DataGenStrategy* dataStrategy;
@@ -79,15 +67,6 @@ public:
                                ///< been applied on the experiment
 //    std::vector<HackingStrategies> hackingHistory;
     
-    // Randomize
-    // void randomizeData();
-
-    // std::vector<std::vector<double>> setMeasurements();
-    // std::vector<std::vector<double>> getMeasurements();
-
-     // void setDataStrategy(std::string strategy);
-    // void genData();
-    // void genDataFor(int gid, int dvid, int n);
 
     // I actually don't need to write a copy instructor,
     // because I don't mind if pointers are pointing to the old testStrategy,

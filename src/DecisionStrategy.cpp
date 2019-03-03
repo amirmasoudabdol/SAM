@@ -9,12 +9,12 @@ std::ostream& operator<<(std::ostream& os, ResearcherPreference rp)
 {
     switch(rp)
     {
-        case PreRegisteredOutcome : os << "PreRegistered Outcome";  break;
-        case MinSigPvalue : os << "Minimum Significant Pvalue"; break;
-        case MinPvalue : os << "Minimum Pvalue";  break;
-        case MaxSigEffect : os << "Maximum Significant Effect"; break;
-        case MaxEffect : os << "Maximum Effect"; break;
-        case MinPvalueMaxEffect : os << "Maximum Effect with Min Pvalue"; break;
+        case ResearcherPreference::PreRegisteredOutcome : os << "PreRegistered Outcome";  break;
+        case ResearcherPreference::MinSigPvalue : os << "Minimum Significant Pvalue"; break;
+        case ResearcherPreference::MinPvalue : os << "Minimum Pvalue";  break;
+        case ResearcherPreference::MaxSigEffect : os << "Maximum Significant Effect"; break;
+        case ResearcherPreference::MaxEffect : os << "Maximum Effect"; break;
+        case ResearcherPreference::MinPvalueMaxEffect : os << "Maximum Effect with Min Pvalue"; break;
         default    : os.setstate(std::ios_base::failbit);
     }
     return os;
