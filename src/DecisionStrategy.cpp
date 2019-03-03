@@ -25,27 +25,27 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
     int selectedOutcome = preRegGroup;
     
     switch (selectionPref) {
-        case PreRegisteredOutcome:
+        case ResearcherPreference::PreRegisteredOutcome:
             selectedOutcome = preRegGroup;
             break;
             
-        case MinSigPvalue:
+        case ResearcherPreference::MinSigPvalue:
             
             break;
             
-        case MinPvalue:
+        case ResearcherPreference::MinPvalue:
             selectedOutcome = std::distance(experiment.pvalues.begin(), std::min_element(experiment.pvalues.begin(), experiment.pvalues.end()));
             break;
             
-        case MaxSigEffect:
+        case ResearcherPreference::MaxSigEffect:
             
             break;
             
-        case MaxEffect:
+        case ResearcherPreference::MaxEffect:
             selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
             break;
             
-        case MinPvalueMaxEffect:
+        case ResearcherPreference::MinPvalueMaxEffect:
             
             break;
             
@@ -53,3 +53,11 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
     
     return Submission(experiment, selectedOutcome);
 }
+
+DecisionStrategy *DecisionStrategy::buildDecisionStrategy(json &config) {
+    // TODO: Fix me
+//    if (config["type"] == "Impatient Decision Maker"){
+    return new ImpatientDecisionMaker(0, config["alpha"], ResearcherPreference::MinPvalue);
+//    }
+}
+

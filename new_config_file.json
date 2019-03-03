@@ -3,7 +3,7 @@
     "--debug": true,
     "--verbose": true,
     "--progress": false,
-    "--n-sims": 10,
+    "--n-sims": 5,
     "--master-seed": 42,
     "--save-output": true,
     "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
@@ -17,6 +17,7 @@
     "--side": 0
   },
   "Experiment Parameters": {
+    "--meta-seed": 42,
     "--data-strategy": "FixedModel",
     "--n-conditions": 1,
     "--n-dep-vars": 4,
@@ -45,7 +46,9 @@
     ],
     "--decision-strategy": {
       "type": "Impatient Decision Maker",
-      "params": 1
+      "params": 1,
+      "alpha": 0.5,
+      "preference": "Min P-value"
     }
   }
 }

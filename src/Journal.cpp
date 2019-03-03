@@ -11,6 +11,8 @@ Journal::Journal(json& config){
     _alpha = config["--alpha"];
     
     // This can even initialize and set the SelectionStrategy
+    
+    this->selectionStrategy = SelectionStrategy::buildSelectionStrategy(config);
 }
 
 void Journal::setSelectionStrategy(SelectionStrategy *s) {
