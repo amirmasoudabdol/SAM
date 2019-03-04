@@ -19,6 +19,16 @@ enum class ResearcherPreference {
     MinPvalueMaxEffect
 };
 
+const std::map<std::string, ResearcherPreference>
+stringToResearcherPreference = {
+    {"Pre-registered Outcome", ResearcherPreference::PreRegisteredOutcome},
+    {"Min Sig P-value", ResearcherPreference::MinSigPvalue},
+    {"Min P-value", ResearcherPreference::MinPvalue},
+    {"Max Sig Effect", ResearcherPreference::MaxSigEffect},
+    {"Max Effect", ResearcherPreference::MaxEffect},
+    {"Min P-value, Max Effect", ResearcherPreference::MinPvalueMaxEffect}
+};
+
 /**
  \brief Abstract class for different decision strategies.
  

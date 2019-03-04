@@ -20,7 +20,12 @@ enum class HackingMethod {
     OptionalStopping,
     OutlierRemoval
 };
-
+const std::map<std::string, HackingMethod>
+stringToHackingMethod = {
+    {"Outcome Switching", HackingMethod::OutcomeSwitching},
+    {"Optional Stopping", HackingMethod::OptionalStopping},
+    {"SD Outlier Removal", HackingMethod::OutlierRemoval}
+};
 
 /**
  \brief Abstract class for Hacking Strategies

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <iostream>
+#include <map>
 
 #include "RandomNumberGenerator.h"
 
@@ -21,6 +22,12 @@ enum class ExperimentType {
 
 enum class TestMethod {
     TTest
+};
+
+const std::map<std::string, ExperimentType>
+stringToExperimentType = {
+    {"Linear Model", ExperimentType::LinearModel},
+    {"Latent Model", ExperimentType::LatentModel}
 };
 
 
