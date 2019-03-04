@@ -11,17 +11,22 @@
 #include "ExperimentSetup.h"
 #include "EffectEstimators.h"
 #include "TestStrategy.h"
-//#include "HackingStrategies.h"
 
+/**
+ \brief Experiment class declaration
+ 
+ */
 class Experiment {
     
-    // TODO: This is starting to look like that it needs to be an Abstract
-    // There is a lot of different between different Experiments.
+    // This could be an abstract class. The abstract will define the body of
+    // an experiment while subclasses customize it for different type of experiments.
+    // This can be used to save space because I can only define relevant variables
+    // for each type of experiment
 
 public:
     ExperimentSetup setup;
 
-//    std::vector<int> nobs;
+    std::vector<int> nobs;
     std::vector<std::vector<double>> measurements;
     std::vector<double> means;
     std::vector<double> vars;
@@ -67,14 +72,6 @@ public:
                                ///< been applied on the experiment
 //    std::vector<HackingStrategies> hackingHistory;
     
-
-    // I actually don't need to write a copy instructor,
-    // because I don't mind if pointers are pointing to the old testStrategy,
-    // and dataStrategy, that's fine.
-    // TODO: However, I need to make sure that the testStrategy points to the new
-    // copy of the Experiment. The `updateExperimentPointer()` and `pointTestStrategyToThis()`
-    // will take care of this, but maybe I can have them inside the copy and = to
-    // comply with RAII.
     
 //    Experiment(const Experiment& other){
 //

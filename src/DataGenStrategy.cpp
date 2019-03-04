@@ -13,8 +13,9 @@
 void LinearModelStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
     if (!experiment->setup.isCorrelated){
-        experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.nobs);
+        experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.true_nobs);
     }else{
+        // TODO: Replace setup.nobs with setup.true_nobs
         experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, experiment->setup.nobs);
     }
 }

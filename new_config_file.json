@@ -19,7 +19,7 @@
   "Experiment Parameters": {
     "--meta-seed": 42,
     "--data-strategy": "Linear Model",
-    "--n-conditions": 1,
+    "--n-conditions": 2,
     "--n-dep-vars": 4,
     "--n-items": 3,
     "--n-obs": 0,
@@ -40,7 +40,7 @@
         },
         {
           "type": "Optional Stopping",
-          "size": 10,
+          "size": 1,
           "attempts": 3
         }
     ],

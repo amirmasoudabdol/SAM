@@ -89,7 +89,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     // I can drop this and only check if `cov == 0` and assume that the user wants
     // to run a correlated model
-// I need to change the if here
+    // TODO: I need to change the if here
     if (config["--is-correlated"] || experimentType == ExperimentType::LatentModel) {
         isCorrelated = true;
         
@@ -112,9 +112,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
             throw std::invalid_argument("--covs is invalid or not provided.");
         }
     }
-
-// }
-// 
 
     // Factor Loading ...
     // CHECK: I think there are `ni` of these
