@@ -42,8 +42,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
         }
         if (static_cast<int>(config["--n-obs"]) == 0){
             isNRandomized = true;
-//            nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
-//            std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+            nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+            std::fill(true_nobs.begin(), true_nobs.end(), nobs);
         }
         
         if (config["--means"].is_array()){
@@ -110,6 +110,11 @@ ExperimentSetup::ExperimentSetup(json& config) {
         }else if (config["--n-obs"].is_number()){
             // Broadcase the given --n-obs to a vector of length `ng`
             true_nobs = std::vector<int>(ng, config["--n-obs"]);
+        }
+        if (static_cast<int>(config["--n-obs"]) == 0){
+            isNRandomized = true;
+            nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+            std::fill(true_nobs.begin(), true_nobs.end(), nobs);
         }
         
         if (config["--means"].is_array()){
@@ -199,5 +204,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
 
 void ExperimentSetup::randomize_nObs() {
     nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+    std::fill(true_nobs.begin(), true_nobs.end(), nobs);
 }
 
