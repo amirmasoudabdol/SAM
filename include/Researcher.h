@@ -48,12 +48,17 @@ public:
         experiment = e;
     };
     
-    Researcher(Experiment* e, Journal* j, DecisionStrategy* ds, std::vector<HackingStrategy*> hs) {
-        experiment = e;
-        journal = j;
-        decisionStrategy = ds;
-        hackingStrategies = hs;
-    };
+    Researcher(Experiment* e,
+                    Journal* j,
+                    DecisionStrategy* ds,
+                    std::vector<HackingStrategy*> hs,
+                    bool ish) :
+    experiment(e),
+    journal(j),
+    decisionStrategy(ds),
+    hackingStrategies(hs),
+    isHacker(ish)
+    { };
 
     // This probably needs to be a class of itself as well
     void registerAHackingStrategy(HackingStrategy* h);
@@ -136,13 +141,16 @@ public:
     };
     
     Builder& isHacker() {
-        this->_isHacker = true;
+        this->_isHacker = _config["Researcher Parameters"]["--is-phacker"];
         return *this;
     }
     
     Builder& makeHackingStrategies(){
-        for (auto &item : _config["Researcher Parameters"]["--p-hacking-methods"]) {
-            this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+        this->isHacker();
+        if (this->_isHacker){
+            for (auto &item : _config["Researcher Parameters"]["--p-hacking-methods"]) {
+                this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+            }
         }
         return *this;
     };
