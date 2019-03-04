@@ -100,67 +100,18 @@ void runSimulation(json& simConfig){
         srand(simConfig["Simulation Parameters"]["--master-seed"]);
     }
     
-    int nobsSeed = rand();
-    simConfig["Simulation Parameters"]["--nobs-seed"] = nobsSeed;
-    RandomNumberGenerator nobsGenerator(nobsSeed, false);
+    Researcher::Builder researcherBuilder;
+    researcherBuilder.setConfig(simConfig)
+                     .makeExperiment()
+                     .makeJournal()
+                     .makeDecisionStrategy()
+                     .makeHackingStrategies();
     
-    Journal journal(simConfig["Journal Parameters"]);
-    
-    Experiment experiment(simConfig);
-
-    // Initializing the Researcher
-    Researcher researcher(&experiment);
-
-        // Assigning the Journal
-        researcher.setJournal(&journal);
-
-        // Setting the Decision Strategy
-        researcher.setDecisionStrategy(DecisionStrategy::buildDecisionStrategy(simConfig["Researcher Parameters"]["--decision-strategy"]));
-
-
-    // Initializing Hacking Routines
-    researcher.isHacker = simConfig["Researcher Parameters"]["--is-phacker"];
-
-    
-    // Registering Hacking Methods
-    if (simConfig["Researcher Parameters"]["--is-phacker"]){
-        
-        // -------------------------
-        // Using the Factory Pattern
-        if (!simConfig["Researcher Parameters"]["--p-hacking-methods"].is_null()) {
-            for (auto &item : simConfig["Researcher Parameters"]["--p-hacking-methods"]){
-
-                
-                if (item["type"] == "Outcome Switching") {
-                    // std::cout << "Registering: " << item.dump(4) << "\n";
-                    
-                    // Set Researcher Selection Preference
-                    // TODO: Generalize MEEEEE!
-                    if (item["preference"] == "Min P-value"){
-                        // std::cout << "MinPvalue\n";
-                        researcher.selectionPref = ResearcherPreference::MinPvalue;
-                        researcher.decisionStrategy->selectionPref = ResearcherPreference::MinPvalue;
-                    } /* else if for other options */
-                }else{
-                    // std::cout << "Registering: " << item.dump(4) << "\n";
-                    researcher.hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
-                }
-            }
-        }
-        // if (verbose) std::cout << "Registering Hacking Methods, Done!\n"; 
-    }
-    
-//    Researcher::Builder researcherBuilder;
-//    researcherBuilder.setConfig(simConfig)
-//                     .makeExperiment()
-//                     .makeJournal()
-//                     .makeDecisionStrategy()
-//                     .makeHackingStrategies();
-//    
-//   researcher = researcherBuilder.build();
+    Researcher researcher = researcherBuilder.build();
     
     
     // Initiate the csvWriter
+    // I need an interface for this
     std::string outputfilename = simConfig["Simulation Parameters"]["--output-path"].get<std::string>() + simConfig["Simulation Parameters"]["--output-prefix"].get<std::string>() + "_sim.csv";
     std::ofstream csvWriter( outputfilename );
     csvWriter << "simid, pid, tnobs, tyi, tsdi, tcov, nobs, yi, sei, statistic, pvalue, side\n";
@@ -170,7 +121,7 @@ void runSimulation(json& simConfig){
     std::cout << std::endl;
     for (int i = 0; i < simConfig["Simulation Parameters"]["--n-sims"]; i++) {
         
-        while (journal.isStillAccepting()) {
+        while (researcher.journal->isStillAccepting()) {
             
             // TODO: randomizeSetup might be better
             researcher.experiment->randomize();
@@ -202,22 +153,14 @@ void runSimulation(json& simConfig){
             
             researcher.submitToJournal();
             
-
-            
             if (progress)
                 progressBar.progress(i, nSims);
-            
-            // Initializing a new experiment
-            // TODO: The main loop needs some cleanup
-            // FIXME: I don't work with the LatentModel! Something with the gsl_vector!
-
-            
 
         }
         
         if (simConfig["Simulation Parameters"]["--save-output"]){
             int pid = 0;
-            for (auto& p : journal.submissionList) {
+            for (auto& p : researcher.journal->submissionList) {
                 p.simid = i;
                 p.pubid = pid++;
                 
@@ -228,7 +171,7 @@ void runSimulation(json& simConfig){
             }
         }
         
-        journal.clear();
+        researcher.journal->clear();
     }
 
     if (progress)
