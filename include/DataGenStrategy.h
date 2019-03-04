@@ -43,11 +43,11 @@ public:
  The fixed-effect data strategy will produce data from a fixed-effect
  model with the given \f$\mu\f$ and \f$sigma\f$.
  */
-class FixedEffectStrategy : public DataGenStrategy {
+class LinearModelStrategy : public DataGenStrategy {
 
 public:
     
-    FixedEffectStrategy(ExperimentSetup& setup) {
+    LinearModelStrategy(ExperimentSetup& setup) {
         _main_seed = rand();
         _sec_seed = rand();
         

@@ -8,13 +8,14 @@
 #include <vector>
 #include <iostream>
 
+#include "RandomNumberGenerator.h"
+
 #include "nlohmann/json.hpp"
 
 using json = nlohmann::json;
 
 enum ExperimentType {
-    FixedModel,
-    RandomModel,
+    LinearModel,
     LatentModel
 };
 
@@ -30,6 +31,9 @@ enum TestMethod {
  the data needed for the Experiment.
  */
 class ExperimentSetup {
+    
+private:
+    RandomNumberGenerator *RNGEngine;
 
 
 public:
@@ -44,7 +48,8 @@ public:
                     ///< Always calculated as \f$n_g = n_c * n_d\f$, unless the simulation contains latent variables, \f$n_g = n_c * n_d * n_i\f$
     int nrows;
     int nobs;       ///< Number of observations in each group
-
+    bool isNRandomized = false;
+    
     double alpha = 0.05;
 //    std::vector<std::string> group_names;
 //    std::vector<std::string> dv_names;
@@ -65,6 +70,8 @@ public:
     void setNObs(std::vector<int>& n_obs_v) {
         true_nobs = n_obs_v;
     }
+    
+    void randomize_nObs();
 
     // Multivariate Experiments
     bool isCorrelated = false;

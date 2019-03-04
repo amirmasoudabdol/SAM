@@ -10,7 +10,7 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 {
     switch(et)
     {
-        case FixedModel   : os << "Fixed Model";    break;
+        case LinearModel   : os << "Fixed Model";    break;
         case RandomModel      : os << "Random Model"; break;
         case LatentModel     : os << "Latent Model";  break;
         default    : os.setstate(std::ios_base::failbit);
@@ -26,8 +26,10 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 
 ExperimentSetup::ExperimentSetup(json& config) {
     
+    RNGEngine = new RandomNumberGenerator(config["--meta-seed"], true);
+    
     if (config["--data-strategy"] == "FixedModel"){
-         experimentType = FixedModel;
+         experimentType = LinearModel;
         
         nc = config["--n-conditions"];
         nd = config["--n-dep-vars"];
@@ -43,6 +45,11 @@ ExperimentSetup::ExperimentSetup(json& config) {
         }else if (config["--n-obs"].is_number()){
             // Broadcase the given --n-obs to a vector of length `ng`
             true_nobs = std::vector<int>(ng, config["--n-obs"]);
+        }
+        if (static_cast<int>(config["--n-obs"]) == 0){
+            isNRandomized = true;
+//            nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+//            std::fill(true_nobs.begin(), true_nobs.end(), nobs);
         }
         
         if (config["--means"].is_array()){
@@ -195,3 +202,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }
     
 }
+
+void ExperimentSetup::randomize_nObs() {
+    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+}
+

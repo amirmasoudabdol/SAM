@@ -10,7 +10,7 @@
 #include "Experiment.h"
 
 
-void FixedEffectStrategy::genData(Experiment* experiment)  {
+void LinearModelStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
     if (!experiment->setup.isCorrelated){
         experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.nobs);
@@ -20,7 +20,7 @@ void FixedEffectStrategy::genData(Experiment* experiment)  {
 }
 
 std::vector<std::vector<double>>
-FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
+LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
     if (!experiment->setup.isCorrelated){
         return this->secRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
@@ -30,7 +30,7 @@ FixedEffectStrategy::genNewObservationsForAllGroups(Experiment* experiment, int 
 }
 
 std::vector<double>
-FixedEffectStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
+LinearModelStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
 
     return std::vector<double>();
 }
@@ -176,8 +176,8 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
 
 DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
     switch (setup.experimentType) {
-        case FixedModel:
-            return new FixedEffectStrategy(setup);
+        case LinearModel:
+            return new LinearModelStrategy(setup);
             break;
 
         case LatentModel:
@@ -185,7 +185,7 @@ DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
             
         default:
             // TODO: Throw a warning, or something here!
-            return new FixedEffectStrategy(setup);
+            return new LinearModelStrategy(setup);
             break;
     }
 }
