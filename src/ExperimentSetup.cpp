@@ -10,25 +10,20 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 {
     switch(et)
     {
-        case ExperimentType::LinearModel   : os << "Fixed Model";    break;
-        case ExperimentType::LatentModel     : os << "Latent Model";  break;
+        case ExperimentType::LinearModel   : os << "Fixed Model" ;  break;
+        case ExperimentType::LatentModel   : os << "Latent Model";  break;
         default    : os.setstate(std::ios_base::failbit);
     }
     return os;
 }
-
-//ExperimentSetup::ExperimentSetup(int n_conditions, int n_dvs, int n_obs, std::vector<double> means, std::vector<double> vars)
-//        : nc(n_conditions), nd(n_dvs), nobs(n_obs), true_means(means), true_vars(vars) {
-//    ng = nc * nd;
-//}
 
 
 ExperimentSetup::ExperimentSetup(json& config) {
     
     RNGEngine = new RandomNumberGenerator(config["--meta-seed"], true);
     
-    if (config["--data-strategy"] == "FixedModel"){
-         experimentType = ExperimentType::LinearModel;
+    if (config["--data-strategy"] == "Linear Model"){
+        experimentType = stringToExperimentType.find(config["--data-strategy"])->second;
         
         nc = config["--n-conditions"];
         nd = config["--n-dep-vars"];
@@ -97,8 +92,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }
 
     if (config["--data-strategy"] == "LatentModel") {
-        experimentType = ExperimentType::LatentModel;
-        
+        experimentType = stringToExperimentType.find(config["--data-strategy"])->second;
+
         nc = config["--n-conditions"];
         nd = config["--n-dep-vars"];
         ni = config["--n-items"];
