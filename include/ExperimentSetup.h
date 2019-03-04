@@ -14,13 +14,13 @@
 
 using json = nlohmann::json;
 
-enum ExperimentType {
+enum class ExperimentType {
     LinearModel,
     LatentModel
 };
 
-enum TestMethod {
-    _tTest
+enum class TestMethod {
+    TTest
 };
 
 

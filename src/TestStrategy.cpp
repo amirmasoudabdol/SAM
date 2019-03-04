@@ -21,7 +21,7 @@ void TTest::run(Experiment* experiment) {
 
 TestStrategy *TestStrategy::buildTestStrategy(ExperimentSetup& setup){
     switch (setup.testMethod) {
-        case _tTest:
+        case TestMethod::TTest:
             return new TTest();
             break;
             

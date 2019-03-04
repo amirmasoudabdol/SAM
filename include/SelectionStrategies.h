@@ -12,7 +12,7 @@
 
 using json = nlohmann::json;
 
-enum SelectionType {
+enum class SelectionType {
     signigicantSelection,
 };
 

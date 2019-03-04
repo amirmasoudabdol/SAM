@@ -16,9 +16,9 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)
     {
-        case _OutcomeSwitching   : os << "Outcome Switching";    break;
-        case _OptionalStopping   : os << "Optional Stopping"; break;
-        case _OutlierRemoval     : os << "Outlier Removal";  break;
+        case HackingMethod::OutcomeSwitching   : os << "Outcome Switching";    break;
+        case HackingMethod::OptionalStopping   : os << "Optional Stopping"; break;
+        case HackingMethod::OutlierRemoval     : os << "Outlier Removal";  break;
         default    : os.setstate(std::ios_base::failbit);
     }
     return os;

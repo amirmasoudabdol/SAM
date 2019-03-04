@@ -15,10 +15,10 @@
 
 using json = nlohmann::json;
 
-enum HackingMethod {
-    _OutcomeSwitching,
-    _OptionalStopping,
-    _OutlierRemoval
+enum class HackingMethod {
+    OutcomeSwitching,
+    OptionalStopping,
+    OutlierRemoval
 };
 
 

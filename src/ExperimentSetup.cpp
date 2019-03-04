@@ -10,9 +10,8 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 {
     switch(et)
     {
-        case LinearModel   : os << "Fixed Model";    break;
-        case RandomModel      : os << "Random Model"; break;
-        case LatentModel     : os << "Latent Model";  break;
+        case ExperimentType::LinearModel   : os << "Fixed Model";    break;
+        case ExperimentType::LatentModel     : os << "Latent Model";  break;
         default    : os.setstate(std::ios_base::failbit);
     }
     return os;
@@ -29,7 +28,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     RNGEngine = new RandomNumberGenerator(config["--meta-seed"], true);
     
     if (config["--data-strategy"] == "FixedModel"){
-         experimentType = LinearModel;
+         experimentType = ExperimentType::LinearModel;
         
         nc = config["--n-conditions"];
         nd = config["--n-dep-vars"];
@@ -98,7 +97,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }
 
     if (config["--data-strategy"] == "LatentModel") {
-        experimentType = LatentModel;
+        experimentType = ExperimentType::LatentModel;
         
         nc = config["--n-conditions"];
         nd = config["--n-dep-vars"];

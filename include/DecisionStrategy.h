@@ -10,7 +10,7 @@
 #include "SubmissionRecord.h"
 #include "Experiment.h"
 
-enum ResearcherPreference {
+enum class ResearcherPreference {
     PreRegisteredOutcome,
     MinSigPvalue,
     MinPvalue,

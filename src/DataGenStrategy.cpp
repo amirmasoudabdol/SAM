@@ -176,11 +176,11 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
 
 DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
     switch (setup.experimentType) {
-        case LinearModel:
+        case ExperimentType::LinearModel:
             return new LinearModelStrategy(setup);
             break;
 
-        case LatentModel:
+        case ExperimentType::LatentModel:
             return new LatentDataStrategy(setup);
             
         default:
