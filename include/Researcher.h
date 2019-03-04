@@ -29,14 +29,15 @@ public:
     class Builder;
 
     Experiment* experiment;
-
 	Journal* journal;
-
+    DecisionStrategy* decisionStrategy;
+    std::vector<HackingStrategy*> hackingStrategies;
+    bool isHacker = false;
 //    TestStrategies* testStrategy;
     
-    bool isHacker = false;
+    
     HackingStyle hackingStyle = onCopy;
-    std::vector<HackingStrategy*> hackingStrategies;
+    
 	std::vector<Experiment> experimentsList;
 	std::vector<Submission> submissionsList;
 
@@ -64,12 +65,14 @@ public:
     void registerAHackingStrategy(HackingStrategy* h);
     void hack();
 
-    void research();
+    void prepareResearch();
+    void performResearch();
+    void publishResearch();
     
     ResearcherPreference selectionPref = ResearcherPreference::PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
     
     // std::string decisionStrategy = "asap";
-    DecisionStrategy* decisionStrategy;
+    
     void setDecisionStrategy(DecisionStrategy* d);
     
 //    DecisionStrategy* finalDecision;
@@ -169,7 +172,7 @@ public:
     Builder& chooseHackingStrategies(std::vector<HackingStrategy>);
 
     Researcher build() {
-        return Researcher(_experiment, _journal, _decisionStrategy, _hackingStrategies);
+        return Researcher(_experiment, _journal, _decisionStrategy, _hackingStrategies, _isHacker);
     };
 };
 

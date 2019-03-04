@@ -93,6 +93,8 @@ void runSimulation(json& simConfig){
 
     bool verbose = simConfig["Simulation Parameters"]["--verbose"];
     bool progress = simConfig["Simulation Parameters"]["--progress"];
+    bool debug = simConfig["Simulation Parameters"]["--debug"];
+    bool output = simConfig["Simulation Parameters"]["--save-output"];
 
     if (simConfig["Simulation Parameters"]["--master-seed"] == 0) {
         srand(time(NULL));
@@ -122,53 +124,21 @@ void runSimulation(json& simConfig){
     for (int i = 0; i < simConfig["Simulation Parameters"]["--n-sims"]; i++) {
         
         while (researcher.journal->isStillAccepting()) {
-            
-            // TODO: randomizeSetup might be better
-            researcher.experiment->randomize();
 
-            researcher.rest();
+            researcher.prepareResearch();
             
-            researcher.experiment->allocateResources();
-            researcher.experiment->generateData();
-            researcher.experiment->calculateStatistics();
-            researcher.experiment->calculateEffects();
+            researcher.performResearch();
             
-            researcher.experiment->runTest();
+            researcher.publishResearch();
             
-            // TODO: This is the issue that I mentioned in [#50](https://github.com/amirmasoudabdol/SAMpp/issues/50)
-            // The problem is that the researcher should have a function that basically run all these function before
-            // start doing anything, even generateData ... should be in a function.
-            // This is all being done because I wasn to leave the decision to the decsionStrategy and be able to
-            // select one submission among many. If I don't do this, then I need to make a distinction between a
-            // hacker making a decision and non-hacker makinga decision.
-            Experiment e = *researcher.experiment;
-            researcher.experimentsList.push_back(e);
-            researcher.submissionsList.push_back(researcher.decisionStrategy->selectOutcome(e));
-            
-            if (researcher.isHacker){
-                researcher.hack();
-            }
-            
-            researcher.prepareTheSubmission();
-            
-            researcher.submitToJournal();
             
             if (progress)
                 progressBar.progress(i, nSims);
 
         }
         
-        if (simConfig["Simulation Parameters"]["--save-output"]){
-            int pid = 0;
-            for (auto& p : researcher.journal->submissionList) {
-                p.simid = i;
-                p.pubid = pid++;
-                
-                if (simConfig["Simulation Parameters"]["--debug"])
-                    std::cout << p << "\n";
-                
-                csvWriter << p << "\n";
-            }
+        if (output){
+            researcher.journal->saveSubmissions(i, csvWriter);
         }
         
         researcher.journal->clear();
@@ -177,7 +147,7 @@ void runSimulation(json& simConfig){
     if (progress)
         progressBar.finish();
     
-    if (simConfig["Simulation Parameters"]["--save-output"]){
+    if (output){
         csvWriter.close();
         std::cout << "\nSaved to: " << outputfilename << "\n";
     }

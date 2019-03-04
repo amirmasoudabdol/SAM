@@ -6,6 +6,7 @@
 #define SAMPP_JOURNAL_H
 
 #include <vector>
+#include <fstream>
 
 #include "SelectionStrategies.h"
 #include "SubmissionRecord.h"
@@ -35,6 +36,8 @@ public:
     bool isStillAccepting(){
         return _still_accepting;
     }
+
+    void saveSubmissions(int simid, std::ofstream& writer);
 
 private:
     double _max_pubs;

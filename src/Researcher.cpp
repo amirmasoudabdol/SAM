@@ -106,3 +106,72 @@ void Researcher::setDecisionStrategy(DecisionStrategy* d) {
 }
 
 
+/**
+ * \brief      Prepares the research by cleaning up the memeory, 
+ * randomizing the ExperimentSetup parameters, allocating data and 
+ * finally generating the data using the DataGenStrategy
+ */
+void Researcher::prepareResearch() {
+    
+    // Cleanup if necessary
+    this->experimentsList.clear();
+    this->submissionsList.clear();
+    
+    // Randomize if necessary
+    // TODO: I need to handle this better because nobs is being assigned in the
+    // ExperimentSetup before this as well, when reading other parameteres.
+    if (this->experiment->setup.isNRandomized){
+        this->experiment->randomize();
+    }
+    
+    // Allocating memory
+    this->experiment->initResources();
+    
+    // Generating data using the dataStrategy
+    this->experiment->generateData();
+}
+
+/**
+ * \brief      Performs the research by calculating the statistics, calculating the effects,
+ * and running the test. In the case where the researcher is a hacker, the researcher will 
+ * apply the hacking methods on the `experiment`.
+ */
+void Researcher::performResearch(){
+    
+    // hack 1
+    
+    this->experiment->calculateStatistics();
+    
+    this->experiment->calculateEffects();
+    
+    // hack 2
+    
+    this->experiment->runTest();
+    
+    // See #50
+    Experiment e = *this->experiment;
+    this->experimentsList.push_back(e);
+    this->submissionsList.push_back(this->decisionStrategy->selectOutcome(e));
+    
+    // I think I need to make a decision here whether the result is signficant or not,
+    // or it complies with researcher's preference, if not then, I should hack
+    
+    if (this->isHacker){
+        this->hack();
+    }
+}
+
+/**
+ * \brief      Prepares the submission record by asking the `decisionStrategy` to pick
+ * his prefered submission record from the list of available submission, `submissionsList`.
+ * AFter than, it'll submit the submission record to the selected `journal`.
+ */
+void Researcher::publishResearch(){
+    
+    // hack 3
+    
+    this->prepareTheSubmission();
+    
+    this->submitToJournal();
+    
+}

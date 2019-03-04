@@ -58,3 +58,18 @@ void Journal::clear() {
     _still_accepting = true;
     // std::cout << submissionList.size() << "<<" << "max_pubs: " << _max_pubs;
 }
+
+void Journal::saveSubmissions(int simid, std::ofstream& writer) {
+    int i = 0;
+    for (auto& p : submissionList) {
+        p.simid = simid;
+        p.pubid = i++;
+        
+        // TODO: I need a global DEBUG variable
+        if (true)
+            std::cout << p << "\n";
+        
+        writer << p << "\n";
+    }
+}
+

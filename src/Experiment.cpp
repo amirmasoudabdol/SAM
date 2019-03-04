@@ -29,13 +29,13 @@ void Experiment::runTest(){
 }
 
 void Experiment::initExperiment() {
-    allocateResources();
+    initResources();
     generateData();
     calculateStatistics();
     calculateEffects();
 }
 
-void Experiment::allocateResources() {
+void Experiment::initResources() {
     // std::cout << "alloc, ng is :" << setup.ng;
     // TODO: There is an issue with the allocation;
     // TODO: I either need to initiate or push_back
