@@ -5,9 +5,11 @@
 #ifndef SAMPP_EXPERIMENTSETUP_H
 #define SAMPP_EXPERIMENTSETUP_H
 
+#include <map>
 #include <vector>
 #include <iostream>
-#include <map>
+
+#include <armadillo>
 
 #include "RandomNumberGenerator.h"
 
