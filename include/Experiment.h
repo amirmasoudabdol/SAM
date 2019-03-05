@@ -6,6 +6,7 @@
 #define SAMPP_EXPERIMENT_H
 
 #include <vector>
+#include <armadillo>
 
 #include "DataGenStrategy.h"
 #include "ExperimentSetup.h"
@@ -26,20 +27,21 @@ class Experiment {
 public:
     ExperimentSetup setup;
 
-    std::vector<int> nobs;
-    std::vector<std::vector<double>> measurements;
-    std::vector<double> means;
-    std::vector<double> vars;
-    std::vector<double> ses;
-    std::vector<double> statistics;
-    std::vector<double> pvalues;
-    std::vector<double> effects;
+    arma::Row<int> nobs;
+    arma::Row<double> means;
+    arma::Row<double> vars;
+    arma::Row<double> ses;
+    arma::Row<double> statistics;
+    arma::Row<double> pvalues;
+    arma::Row<double> effects;
+    
+    std::vector<arma::Row<double> > measurements;
     
     bool latentDesign = false;
-    std::vector<std::vector<double> > items;
-    std::vector<double> latent_means;
-    std::vector<double> latent_variances;
-    std::vector<std::vector<double>> latent_cov_matrix;
+    std::vector<arma::Row<double> > items;
+    arma::Row<double> latent_means;
+    arma::Row<double> latent_variances;
+//    std::vector<std::vector<double>> latent_cov_matrix;
 
     ~Experiment() {
         // TODO: Use shared_ptr<> to make sure that I don't have

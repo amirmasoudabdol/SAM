@@ -63,9 +63,9 @@ public:
 //    std::vector<std::string> group_names;
 //    std::vector<std::string> dv_names;
 
-    std::vector<int>    true_nobs;
-    std::vector<double> true_means;
-    std::vector<double> true_sds;
+    arma::Row<int>    true_nobs;
+    arma::Row<double> true_means;
+    arma::Row<double> true_sds;
     
     ExperimentSetup() = default;
     
@@ -85,12 +85,12 @@ public:
     // Multivariate Experiments
     bool isCorrelated = false;
     double cov = 0;
-    std::vector<std::vector<double>> true_sigma;
+    arma::Mat<double> true_sigma;
     
     // Latent Experiments
-    std::vector<double> factorLoadings;                 ///< \f$\lambda\f$
-    std::vector<double> errorSD;
-    std::vector<std::vector<double>> errorCov;          ///<
+    arma::Row<double> factorLoadings;                 ///< \f$\lambda\f$
+    arma::Row<double> errorSD;
+    arma::Mat<double> errorCov;          ///<
     
     
 };

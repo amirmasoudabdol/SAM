@@ -156,30 +156,30 @@ void runSimulation(json& simConfig){
 }
 
 
-
-void testRandomClass(){
-    std::cout << std::endl;
-    RandomNumberGenerator rngEngine(42, true);
-
-    std::vector<double> means = {10, 20, 30};
-    std::vector<std::vector<double >> sds = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
-
-    auto mvnormrng = rngEngine.mvnorm(means, sds);
-    auto rng = rngEngine.mvnorm(means, sds, 100);
-
-    for (auto &row : rng){
-        std::cout << "mean: " << mean(row);
-        std::cout << std::endl;
-    }
-
-    
-    gsl_vector* mu = gsl_vector_alloc(3);
-    mu->data = means.data();
-    gsl_matrix* sigma = gsl_matrix_alloc(3, 3);
-    gsl_matrix_set_all(sigma, 1);
-    
-    gsl_matrix* mvnorm_rans = gsl_matrix_alloc(3, 50);
-    
-    rngEngine.mvnorm_n(mu, sigma, mvnorm_rans);
-
-}
+//
+//void testRandomClass(){
+//    std::cout << std::endl;
+//    RandomNumberGenerator rngEngine(42, true);
+//
+//    std::vector<double> means = {10, 20, 30};
+//    std::vector<std::vector<double >> sds = {{1, .5, 0}, {.5, 1, 0}, {0, 0, 1}};
+//
+//    auto mvnormrng = rngEngine.mvnorm(means, sds);
+//    auto rng = rngEngine.mvnorm(means, sds, 100);
+//
+//    for (auto &row : rng){
+//        std::cout << "mean: " << mean(row);
+//        std::cout << std::endl;
+//    }
+//
+//
+//    gsl_vector* mu = gsl_vector_alloc(3);
+//    mu->data = means.data();
+//    gsl_matrix* sigma = gsl_matrix_alloc(3, 3);
+//    gsl_matrix_set_all(sigma, 1);
+//
+//    gsl_matrix* mvnorm_rans = gsl_matrix_alloc(3, 50);
+//
+//    rngEngine.mvnorm_n(mu, sigma, mvnorm_rans);
+//
+//}

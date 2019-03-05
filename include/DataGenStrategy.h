@@ -6,6 +6,7 @@
 #define SAMPP_DATAGENSTRATEGY_H
 
 #include <vector>
+#include <armadillo>
 
 #include "ExperimentSetup.h"
 #include "RandomNumberGenerator.h"
@@ -33,8 +34,8 @@ public:
     static DataGenStrategy* buildDataStrategy(ExperimentSetup& setup);
     
     virtual void genData(Experiment* experiment) = 0;
-    virtual std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
-    virtual std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
+    virtual std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
+    virtual arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
     
     
 };
@@ -56,8 +57,8 @@ public:
     };
     
     void genData(Experiment* experiment);
-    std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
-    std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+    std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+    arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
     
 private:
     int _main_seed;
@@ -84,8 +85,8 @@ public:
     }
     
     void genData(Experiment* experiment);
-    std::vector<std::vector<double>> genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
-    std::vector<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+    std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+    arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
     
 private:
     int _main_seed;

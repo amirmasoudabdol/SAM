@@ -13,27 +13,38 @@
 void LinearModelStrategy::genData(Experiment* experiment)  {
     // TODO: This can actually call `genNewObservationForAllGroups`
     if (!experiment->setup.isCorrelated){
-        experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, experiment->setup.true_nobs);
-    }else{
+        experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means,
+                                                               experiment->setup.true_sds,
+                                                               experiment->setup.true_nobs);
+    }
+    // FIXME: Commented during the migration
+    // TESTME!
+    else{
         // TODO: Replace setup.nobs with setup.true_nobs
-        experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, experiment->setup.nobs);
+        experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means,
+                                                               experiment->setup.true_sigma,
+                                                               experiment->setup.true_nobs);
+        
     }
 }
 
-std::vector<std::vector<double>>
+std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
     if (!experiment->setup.isCorrelated){
         return this->secRngStream->normal(experiment->setup.true_means, experiment->setup.true_sds, n_new_obs);
-    }else{
+    }
+    // FIXME: Commented during the migration
+    // TESTME!
+    else{
         return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
     }
 }
 
-std::vector<double>
+arma::Row<double>
 LinearModelStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
 
-    return std::vector<double>();
+    return arma::Row<double>();
 }
 
 
@@ -50,129 +61,136 @@ LinearModelStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_
  */
 void LatentDataStrategy::genData(Experiment* experiment)  {
 
-    int ni = experiment->setup.ni;
-    int nc = experiment->setup.nc;
-    int nd = experiment->setup.nd;
-    int ng = experiment->setup.ng;                  // nc * nd
-    int nrows = experiment->setup.nrows;            // nc * nd * ni
-    
-    int nobs = experiment->setup.nobs;
-    
-    // This is correct, you have one a for each item.
-    gsl_vector* lambda = gsl_vector_alloc(ni);
-    lambda->data = experiment->setup.factorLoadings.data();
-    
-    // DV ---------------------------------------------
-    // Mean of each dv
-    gsl_vector* dvMeans = gsl_vector_calloc(ng);
-    dvMeans->data = experiment->setup.true_means.data();
-    
-    gsl_matrix* dvSigma = gsl_matrix_alloc(ng, ng);
-    dvSigma->data = flatten(experiment->setup.true_sigma).data();
-    // ------------------------------------------------
-    
-    gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
-    
-    // Generating factor values
-    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
-    
-    gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
-    
-    gsl_matrix* allErrorsSigma = gsl_matrix_calloc(nrows, nrows);
-    allErrorsSigma->data = flatten(experiment->setup.errorCov).data();
-    
-    gsl_matrix* allErrors = gsl_matrix_calloc(nrows, nobs);
-    
-    // Generating errors
-    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
-    
-    gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
-    
-    int row = 0;
-    int col = 0;
-    
-    for (int c = 0; c < nc; c++) {
-
-        for (int d = 0 ; d < nd; d++) {
-            row = c * nd + d;
-            for (int n = 0; n < nobs; n++){
-                col = n;
-                for (int i = 0; i < ni; i++) {
-                    gsl_matrix_set(allScores, row * ni + i, col,
-                                       gsl_vector_get(dvMeans, d) +
-                                       gsl_matrix_get(factorScores, d, col) * gsl_vector_get(lambda, i) +
-                                       gsl_matrix_get(allErrors, row * ni + i, col)
-                                   );
-                    
-                    // I can compute mean of each row (of items) here and put it into `measurements` if necessary
-                    // item[i][j] = 
-                }
-            }
-        }
-    }
-    
-    gsl_vector* scoreRow = gsl_vector_alloc(nobs);
-    for (int r = 0; r < nrows; r++) {
-        gsl_matrix_get_row(scoreRow, allScores, r);
-        experiment->items.push_back(std::vector<double>(scoreRow->data, scoreRow->data + scoreRow->size));
-    }
-    
-//    gsl_vector* itemMeans = gsl_vector_calloc(nrows);
-//    gsl_vector* tmpRow = gsl_vector_alloc(nobs);
-//    for (int r = 0; r < nrows; r++) {
-//        gsl_matrix_get_row(tmpRow, allScores, r);
-//        gsl_vector_set(itemMeans, r, gsl_stats_mean(tmpRow->data, 1, nobs));
-////        std::cout << gsl_vector_get(itemMeans, n) << std::endl;
+//    int ni = experiment->setup.ni;
+//    int nc = experiment->setup.nc;
+//    int nd = experiment->setup.nd;
+//    int ng = experiment->setup.ng;                  // nc * nd
+//    int nrows = experiment->setup.nrows;            // nc * nd * ni
+//
+//    int nobs = experiment->setup.nobs;
+//
+//    // This is correct, you have one a for each item.
+//    gsl_vector* lambda = gsl_vector_alloc(ni);
+//    // FIXME: Commented during the migration
+////    lambda->data = experiment->setup.factorLoadings.data();
+//
+//    // DV ---------------------------------------------
+//    // Mean of each dv
+//    gsl_vector* dvMeans = gsl_vector_calloc(ng);
+//    // FIXME: Commented during the migration
+////    dvMeans->data = experiment->setup.true_means.data();
+//
+//    gsl_matrix* dvSigma = gsl_matrix_alloc(ng, ng);
+//    // FIXME: Commented during the migration
+////    dvSigma->data = flatten(experiment->setup.true_sigma).data();
+//    // ------------------------------------------------
+//
+//    gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
+//
+//    // Generating factor values
+//    // FIXME: Commented during the migration
+////    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
+//
+//    gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
+//
+//    gsl_matrix* allErrorsSigma = gsl_matrix_calloc(nrows, nrows);
+//    // FIXME: Commented during the migration
+////    allErrorsSigma->data = flatten(experiment->setup.errorCov).data();
+//
+//    gsl_matrix* allErrors = gsl_matrix_calloc(nrows, nobs);
+//
+//    // Generating errors
+//    // FIXME: Commented during the migration
+////    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
+//
+//    gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
+//
+//    int row = 0;
+//    int col = 0;
+//
+//    for (int c = 0; c < nc; c++) {
+//
+//        for (int d = 0 ; d < nd; d++) {
+//            row = c * nd + d;
+//            for (int n = 0; n < nobs; n++){
+//                col = n;
+//                for (int i = 0; i < ni; i++) {
+//                    gsl_matrix_set(allScores, row * ni + i, col,
+//                                       gsl_vector_get(dvMeans, d) +
+//                                       gsl_matrix_get(factorScores, d, col) * gsl_vector_get(lambda, i) +
+//                                       gsl_matrix_get(allErrors, row * ni + i, col)
+//                                   );
+//
+//                    // I can compute mean of each row (of items) here and put it into `measurements` if necessary
+//                    // item[i][j] =
+//                }
+//            }
+//        }
 //    }
-
-    for (int g = 0; g < ng; g++) {
-        experiment->measurements.push_back(std::vector<double>(nobs));
-    }
-    
-    int rowOffset = 0;
-    gsl_vector* v = gsl_vector_alloc(nrows);
-        
-    for (int n = 0; n < nobs; n++) {
-        gsl_matrix_get_col(v, allScores, n);
-            
-        for (int c = 0; c < nc; c++) {
-                
-            for (int d = 0; d < nd; d++) {
-                rowOffset = c * nd + d;
-            
-                gsl_vector_view vsub = gsl_vector_subvector(v, rowOffset * ni, ni);
-                
-                experiment->measurements[c * nd + d][n] = gsl_stats_mean(vsub.vector.data, 1, ni);
-                            
-            }
-        }
-        
-    }
-
-    gsl_vector_free(lambda);
-    gsl_vector_free(dvMeans);
-    gsl_vector_free(allErrorMeans);
-    gsl_vector_free(scoreRow);
-    gsl_vector_free(v);
-
-    gsl_matrix_free(dvSigma);
-    gsl_matrix_free(factorScores);
-    gsl_matrix_free(allErrorsSigma);
-    gsl_matrix_free(allErrors);
-    gsl_matrix_free(allScores);
+//
+//    gsl_vector* scoreRow = gsl_vector_alloc(nobs);
+//    for (int r = 0; r < nrows; r++) {
+//        gsl_matrix_get_row(scoreRow, allScores, r);
+//        experiment->items.push_back(std::vector<double>(scoreRow->data, scoreRow->data + scoreRow->size));
+//    }
+//
+////    gsl_vector* itemMeans = gsl_vector_calloc(nrows);
+////    gsl_vector* tmpRow = gsl_vector_alloc(nobs);
+////    for (int r = 0; r < nrows; r++) {
+////        gsl_matrix_get_row(tmpRow, allScores, r);
+////        gsl_vector_set(itemMeans, r, gsl_stats_mean(tmpRow->data, 1, nobs));
+//////        std::cout << gsl_vector_get(itemMeans, n) << std::endl;
+////    }
+//
+//    for (int g = 0; g < ng; g++) {
+//        experiment->measurements.push_back(std::vector<double>(nobs));
+//    }
+//
+//    int rowOffset = 0;
+//    gsl_vector* v = gsl_vector_alloc(nrows);
+//
+//    for (int n = 0; n < nobs; n++) {
+//        gsl_matrix_get_col(v, allScores, n);
+//
+//        for (int c = 0; c < nc; c++) {
+//
+//            for (int d = 0; d < nd; d++) {
+//                rowOffset = c * nd + d;
+//
+//                gsl_vector_view vsub = gsl_vector_subvector(v, rowOffset * ni, ni);
+//
+//                experiment->measurements[c * nd + d][n] = gsl_stats_mean(vsub.vector.data, 1, ni);
+//
+//            }
+//        }
+//
+//    }
+//
+//    gsl_vector_free(lambda);
+//    gsl_vector_free(dvMeans);
+//    gsl_vector_free(allErrorMeans);
+//    gsl_vector_free(scoreRow);
+//    gsl_vector_free(v);
+//
+//    gsl_matrix_free(dvSigma);
+//    gsl_matrix_free(factorScores);
+//    gsl_matrix_free(allErrorsSigma);
+//    gsl_matrix_free(allErrors);
+//    gsl_matrix_free(allScores);
     
     // return meaurements;
 }
 
-std::vector<std::vector<double>>
+std::vector<arma::Row<double> >
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
-    return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+    // FIXME: Commented during the migration
+//    return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
 }
 
-std::vector<double>
+arma::Row<double>
 LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
     
-    return std::vector<double>();
+    return arma::Row<double>();
 }
 
 DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){

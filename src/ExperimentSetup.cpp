@@ -3,6 +3,7 @@
 //
 
 #include <stdexcept>
+#include <armadillo>
 
 #include "ExperimentSetup.h"
 
@@ -98,20 +99,28 @@ ExperimentSetup::ExperimentSetup(json& config) {
                 throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
             }
             // DOC: Notify the user that the `sds` will be discarded.
-            true_sigma = config["--covs"].get<std::vector<std::vector<double>>>();
+            auto sigma = config["--covs"].get<std::vector<std::vector<double>>>();
+            for (int i = 0; i < sigma.size(); i++) {
+                true_sigma.row(i) = arma::rowvec(sigma[i]);
+            }
+            
             
         }else if (config["--covs"].is_number()){
             // Broadcase the --covs to the a matrix, and replace the diagonal values with
             // the value already given by --sds.
             double cov = config["--covs"];
-            for (int g = 0; g < ng; g++) {
-                true_sigma.push_back(std::vector<double>(ng, cov));
-                true_sigma[g][g] = true_sds[g];
-            }
+//            for (int g = 0; g < ng; g++) {
+//                true_sigma.push_back(std::vector<double>(ng, cov));
+//                true_sigma[g][g] = true_sds[g];
+//            }
+            true_sigma.zeros(ng, ng);
+            true_sigma.fill(cov);
+            true_sigma.diag() = true_sds;
         }else{
             throw std::invalid_argument("--covs is invalid or not provided.");
         }
     }
+    std::cout << true_sigma << std::endl;
 
     // Factor Loading ...
     // CHECK: I think there are `ni` of these
@@ -139,25 +148,33 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else{
         throw std::invalid_argument("--err-sds is invalid or not provided.");
     }
+    std::cout << errorSD << std::endl;
     
     // Error's Covariant Matrix
     if (config["--err-covs"].is_array()){
         if (config["--err-covs"].size() != nrows){
             throw std::invalid_argument( "Size of --err-covs does not match the size of the experiment.");
         }
-        errorCov = config["--err-covs"].get<std::vector<std::vector<double>>>();
+        auto covs = config["--err-covs"].get<std::vector<std::vector<double>>>();
+        for (int i = 0; i < covs.size(); i++) {
+            errorCov.row(i) = arma::rowvec(covs[i]);
+        }
         
     }else if (config["--err-covs"].is_number()){
         // Broadcase the --err-covs to the a matrix, and replace the diagonal values with
         // the value already given by --sds.
         double cov = config["--err-covs"];
-        for (int r = 0; r < nrows; r++) {
-            errorCov.push_back(std::vector<double>(nrows, cov));
-            errorCov[r][r] = errorSD[r];
-        }
+//        for (int r = 0; r < nrows; r++) {
+//            errorCov.push_back(std::vector<double>(nrows, cov));
+//            errorCov[r][r] = errorSD[r];
+//        }
+        errorCov.zeros(nrows, nrows);
+        errorCov.fill(cov);
+        errorCov.diag() = errorSD;
     }else{
         throw std::invalid_argument("--err-covs is invalid or not provided.");
     }
+    std::cout << errorCov << std::endl;
     
 }
 

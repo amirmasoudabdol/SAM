@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <armadillo>
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
 #include "Utilities.h"
@@ -52,14 +53,34 @@ public:
     
     int genSampleSize(double, double, double, double);
 
-    std::vector<double> normal(double mean, double sd, int n);
-    std::vector<std::vector<double> > normal(std::vector<double>& means, std::vector<double>& sds, int n);
-    std::vector<std::vector<double>> normal(std::vector<double>& means, std::vector<double>& sds, std::vector<int> nobs);
-
-    std::vector<double> mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma);
-    std::vector<std::vector<double> > mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma, int n);
+    // std::vector<double> normal(double mean, double sd, int n);
+    // std::vector<std::vector<double> > normal(std::vector<double>& means, std::vector<double>& sds, int n);
+    // std::vector<std::vector<double>> normal(std::vector<double>& means, std::vector<double>& sds, std::vector<int> nobs);
     
-    void mvnorm_n(gsl_vector* means, gsl_matrix* sigma, gsl_matrix* ran_values);
+    // arma
+    arma::Row<double>
+    normal(const double &mean, const double &sd, const double &n);
+
+    // arma
+    std::vector<arma::Row<double> >
+    normal(arma::Row<double>& means, arma::Row<double>& sds, int n);
+    std::vector<arma::Row<double> >
+    normal(arma::Row<double>& means, arma::Row<double>& sds, arma::Row<int> nobs);
+
+    // std::vector<double> mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma);
+    // std::vector<std::vector<double> > mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma, int n);
+
+    // arma
+//    std::vector<double>
+//    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma);
+//    std::vector<std::vector<double> >
+//    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma, int n);
+    std::vector<arma::Row<double> >
+    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma, int n);
+    std::vector<arma::Row<double> >
+    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma, arma::Row<int>& nobs);
+    
+    // void mvnorm_n(gsl_vector* means, gsl_matrix* sigma, gsl_matrix* ran_values);
 
     void allocGSLContainers() {
         // TODO: I get the idea here but I think it's terrible, I need to change it!

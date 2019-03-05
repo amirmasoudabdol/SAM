@@ -19,14 +19,14 @@
   "Experiment Parameters": {
     "--meta-seed": 42,
     "--data-strategy": "Linear Model",
-    "--n-conditions": 2,
-    "--n-dep-vars": 4,
+    "--n-conditions": 1,
+    "--n-dep-vars": 2,
     "--n-items": 3,
     "--n-obs": 0,
     "--means": 0.5,
-    "--sds": 0.01,
-    "--is-correlated": false,
-    "--covs": 0.1,
+    "--sds": 0.1,
+    "--is-correlated": true,
+    "--covs": 0.01,
     "--loadings": 0.7,
     "--err-sds": 0.01,
     "--err-covs": 0.001
@@ -39,9 +39,8 @@
           "preference": "Min P-value"
         },
         {
-          "type": "Optional Stopping",
-          "size": 1,
-          "attempts": 3
+          "type": "SD Outlier Removal",
+          "sd_multiplier": 1
         }
     ],
     "--decision-strategy": {

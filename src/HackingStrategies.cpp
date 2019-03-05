@@ -8,6 +8,7 @@
 #include <DecisionStrategy.h>
 
 #include <vector>
+#include <armadillo>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
@@ -59,31 +60,31 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         _n_new_obs = experiment->setup.nobs / 3;
     }
     
+    // FIXME: Commented during the migration
+    // IMPROVE ME!
     for (int t = 0; t < _n_trials; t++) {
-        
-//        if (experiment->setup.isMultivariate){
-//            // I can move this check to the dataStrategy and basically set it as Static when I'm initiating the class!
-//        }else{
+
             auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(experiment, _n_new_obs);
             for (int i = 0; i < experiment->setup.ng; ++i) {
-                experiment->measurements[i].insert(experiment->measurements[i].begin(),
-                                                    newObs[i].begin(),
-                                                    newObs[i].end());
+//                experiment->measurements[i].insert(experiment->measurements[i].begin(),
+//                                                    newObs[i].begin(),
+//                                                    newObs[i].end());
+                // IMPROVE ME: Maybe I want to use join instead.
+                experiment->measurements[i].insert_cols(experiment->measurements.size(), newObs[i]);
             }
-//        }
 
         // Recalculate the experiment
         experiment->calculateStatistics();
         experiment->calculateEffects();
         experiment->runTest();
-        
+
         tmpSub = decisionStrategy->_select_Outcome(*experiment);
-        
+
         if (tmpSub.isSig())
             break;
-        
+
     }
-    
+
 }
 
 
@@ -97,17 +98,28 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
+    // FIXME: Commented during the migration
     int gi = 0;     // Only to access the means, vars
     for (auto &g : experiment->measurements) {
+
+//        g.erase(std::remove_if(g.begin(),
+//                               g.end(),
+//                               [this, experiment, gi](double v){ return (v < experiment->means[gi] - this->_sd_multiplier * sqrt(experiment->vars[gi]))
+//                                                                        ||
+//                                                                        (v > experiment->means[gi] + this->_sd_multiplier * sqrt(experiment->vars[gi])); }),
+//                g.end()
+//                );
         
-        g.erase(std::remove_if(g.begin(),
-                               g.end(),
-                               [this, experiment, gi](double v){ return (v < experiment->means[gi] - this->_sd_multiplier * sqrt(experiment->vars[gi]))
-                                                                        ||
-                                                                        (v > experiment->means[gi] + this->_sd_multiplier * sqrt(experiment->vars[gi])); }),
-                g.end()
-                );
-        
+        // IMPROVE ME!
+        arma::uvec inx = arma::find(
+                              (g < experiment->means[gi] - this->_sd_multiplier * sqrt(experiment->vars[gi]))
+                              ||
+                              (g > experiment->means[gi] + this->_sd_multiplier * sqrt(experiment->vars[gi]))
+                              );
+        for (int i = 0 ; i < inx.size(); i++) {
+            g.shed_col(i);
+        }
+
         gi++;
     }
     
@@ -127,34 +139,36 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     
 }
 
-void SDOutlierRemoval::removeOutliers(int n, int t, int m, Experiment* experiment) {
-    for (auto &d : _multipliers){
-        for (int i = 0, gi = 0; i < t && i < m; i++) {
-            for (auto &g : experiment->measurements) {
-                
-                auto outliers = std::remove_if(g.begin(),
-                                               g.end(),
-                                               [experiment, gi, d](double v){
-                                                   return
-                                                   (v < experiment->means[gi] - d * sqrt(experiment->vars[gi]))
-                                                   ||
-                                                   (v > experiment->means[gi] + d * sqrt(experiment->vars[gi]));
-                                               }
-                                               );
-                if (outliers != g.end())
-                    break;
-                
-                g.erase(outliers,
-                        g.end()
-                        );
-                
-                gi++;
-            }
-            
-        }
-        // Update everything and ask for verdict
-    }
-}
+
+// FIXME: Commented during the migration
+//void SDOutlierRemoval::removeOutliers(int n, int t, int m, Experiment* experiment) {
+//    for (auto &d : _multipliers){
+//        for (int i = 0, gi = 0; i < t && i < m; i++) {
+//            for (auto &g : experiment->measurements) {
+//
+//                auto outliers = std::remove_if(g.begin(),
+//                                               g.end(),
+//                                               [experiment, gi, d](double v){
+//                                                   return
+//                                                   (v < experiment->means[gi] - d * sqrt(experiment->vars[gi]))
+//                                                   ||
+//                                                   (v > experiment->means[gi] + d * sqrt(experiment->vars[gi]));
+//                                               }
+//                                               );
+//                if (outliers != g.end())
+//                    break;
+//
+//                g.erase(outliers,
+//                        g.end()
+//                        );
+//
+//                gi++;
+//            }
+//
+//        }
+//        // Update everything and ask for verdict
+//    }
+//}
 
 
 
