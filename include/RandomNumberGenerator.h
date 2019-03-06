@@ -19,6 +19,8 @@ public:
 
     RandomNumberGenerator(int seed, bool is_correlated) :
         _seed(seed), _is_correlated(is_correlated) {
+
+        // TODO: Need to adopt this to arma setup
             
         gsl_rng_env_setup();
         T = gsl_rng_default;
@@ -49,13 +51,9 @@ public:
     };
 
     double uniform();
-    double uniform(double min, double max);
+    double uniform(const double &min, const double &max);
     
-    int genSampleSize(double, double, double, double);
-
-    // std::vector<double> normal(double mean, double sd, int n);
-    // std::vector<std::vector<double> > normal(std::vector<double>& means, std::vector<double>& sds, int n);
-    // std::vector<std::vector<double>> normal(std::vector<double>& means, std::vector<double>& sds, std::vector<int> nobs);
+    int genSampleSize(const double &, const double &, const double &, const double &);
     
     // arma
     arma::Row<double>
@@ -63,25 +61,16 @@ public:
 
     // arma
     std::vector<arma::Row<double> >
-    normal(arma::Row<double>& means, arma::Row<double>& sds, int n);
+    normal(const arma::Row<double> &means, const arma::Row<double> &sds, const int &n);
     std::vector<arma::Row<double> >
-    normal(arma::Row<double>& means, arma::Row<double>& sds, arma::Row<int> nobs);
-
-    // std::vector<double> mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma);
-    // std::vector<std::vector<double> > mvnorm(std::vector<double>& means, std::vector<std::vector<double> >& sigma, int n);
+    normal(const arma::Row<double> &means, const arma::Row<double> &sds, const arma::Row<int> &nobs);
 
     // arma
-//    std::vector<double>
-//    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma);
-//    std::vector<std::vector<double> >
-//    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma, int n);
     std::vector<arma::Row<double> >
-    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma, int n);
+    mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int &n);
     std::vector<arma::Row<double> >
-    mvnorm(arma::Row<double>& means, arma::Mat<double>& sigma, arma::Row<int>& nobs);
+    mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs);
     
-    // void mvnorm_n(gsl_vector* means, gsl_matrix* sigma, gsl_matrix* ran_values);
-
     void allocGSLContainers() {
         // TODO: I get the idea here but I think it's terrible, I need to change it!
         _mu = gsl_vector_alloc(_size);
@@ -97,7 +86,6 @@ private:
     gsl_vector *_mu;
     gsl_matrix *_sigma;
     gsl_vector *_mvnorm_row;
-//    gsl_matrix *_mvnorm_nrows_ncols;
 
     const gsl_rng_type *T;
     gsl_rng *rng_stream;

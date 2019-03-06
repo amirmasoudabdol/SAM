@@ -59,15 +59,17 @@ LinearModelStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_
  TODO: Link to the illustration that explain the model
 
  */
-void LatentDataStrategy::genData(Experiment* experiment)  {
+void LatentDataStrategy::genData(Experiment *experiment)  {
 
-//    int ni = experiment->setup.ni;
-//    int nc = experiment->setup.nc;
-//    int nd = experiment->setup.nd;
-//    int ng = experiment->setup.ng;                  // nc * nd
-//    int nrows = experiment->setup.nrows;            // nc * nd * ni
-//
-//    int nobs = experiment->setup.nobs;
+   int ni = experiment->setup.ni;
+   int nc = experiment->setup.nc;
+   int nd = experiment->setup.nd;
+   int ng = experiment->setup.ng;                  // nc * nd
+   int nrows = experiment->setup.nrows;            // nc * nd * ni
+
+
+   // TODO: Check Me!
+   int nobs = experiment->setup.true_nobs.max();
 //
 //    // This is correct, you have one a for each item.
 //    gsl_vector* lambda = gsl_vector_alloc(ni);
@@ -90,6 +92,11 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
 //    // Generating factor values
 //    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
+
+   auto factorScores = this->mainRngStream->mvnorm(experiment->setup.true_means, 
+                                                   experiment->setup.true_sigma, 
+                                                   experiment->setup.true_nobs);
+
 //
 //    gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
 //
@@ -102,8 +109,23 @@ void LatentDataStrategy::genData(Experiment* experiment)  {
 //    // Generating errors
 //    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
+
+   auto allErrors = this->mainRngStream->mvnorm(experiment->setup.errorMeans,
+                                                experiment->setup.errorCov,
+                                                nrows);
+
+
+
 //
 //    gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
+
+   arma::Mat<double> allScores(nrows, nobs);
+
+   // allScores = experiment->setup.true_means.t() + 
+
+   //                              experiment->setup.loadings.t() + 
+   //                              allErrors
+
 //
 //    int row = 0;
 //    int col = 0;
