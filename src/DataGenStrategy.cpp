@@ -11,34 +11,15 @@
 
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
-    // TODO: This can actually call `genNewObservationForAllGroups`
-//    if (!experiment->setup.isCorrelated){
-//        experiment->measurements = this->mainRngStream->normal(experiment->setup.true_means,
-//                                                               experiment->setup.true_vars,
-//                                                               experiment->setup.true_nobs);
-//    }
-    // FIXME: Commented during the migration
-    // TESTME!
-//    else{
-        // TODO: Replace setup.nobs with setup.true_nobs
-        experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means,
-                                                               experiment->setup.true_sigma,
-                                                               experiment->setup.true_nobs);
-        
-//    }
+    experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means,
+                                                           experiment->setup.true_sigma,
+                                                           experiment->setup.true_nobs);
 }
 
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
-    // I can technically add the data here, or let the hacking method decide if he is happy and wants to add them or not
-//    if (!experiment->setup.isCorrelated){
-//        return this->secRngStream->normal(experiment->setup.true_means, experiment->setup.true_vars, n_new_obs);
-//    }
-    // FIXME: Commented during the migration
-    // TESTME!
-//    else{
-        return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
-//    }
+    
+    return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
 }
 
 arma::Row<double>

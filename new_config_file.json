@@ -24,8 +24,8 @@
     "--n-items": 3,
     "--n-obs": 0,
     "--means": 0.5,
-    "--vars": 0.001,
-    "--covs": 0.00,
+    "--vars": 0.01,
+    "--covs": 0.0001,
     "--loadings": 0.7,
     "--err-vars": 0.01,
     "--err-covs": 0.001
