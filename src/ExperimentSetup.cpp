@@ -28,7 +28,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
         // --meta-seed is a number
         metaSeed = config["--meta-seed"];
     }
-    RNGEngine = new RandomNumberGenerator(metaSeed, false);
+    RNGEngine = new RandomNumberGenerator(metaSeed);
     
         
     if (config["--data-strategy"].is_null()){
@@ -37,9 +37,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
         throw std::invalid_argument("Unrecognized \"--data-strategy\". See README.md.");
     }
     experimentType = stringToExperimentType.find(config["--data-strategy"])->second;
-
-    if (experimentType == ExperimentType::LatentModel)
-        isCorrelated = true;
     
     nc = config["--n-conditions"];
     nd = config["--n-dep-vars"];

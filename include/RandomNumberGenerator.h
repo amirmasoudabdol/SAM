@@ -23,10 +23,13 @@ public:
     std::bernoulli_distribution bernoulliDist;
     std::uniform_real_distribution<double> uniformDist;
 
-    RandomNumberGenerator(int seed, bool is_correlated) :
-        _seed(seed), _is_correlated(is_correlated)
+    RandomNumberGenerator(int seed) :
+        _seed(seed)
     {
         gen = std::mt19937(rd());
+        gen.seed(_seed);
+        
+        arma::arma_rng::set_seed(_seed);
             
     };
     
@@ -64,7 +67,7 @@ public:
 private:
     int _seed;
     
-    bool _is_correlated;
+//    bool _is_correlated;
 };
 
 #endif //SAMPP_RANDOMNUMBERGENERATOR_H

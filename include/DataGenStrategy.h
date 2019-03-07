@@ -52,8 +52,8 @@ public:
         _main_seed = rand();
         _sec_seed = rand();
         
-        mainRngStream = new RandomNumberGenerator(_main_seed, setup.isCorrelated);
-        secRngStream = new RandomNumberGenerator(_sec_seed, setup.isCorrelated);
+        mainRngStream = new RandomNumberGenerator(_main_seed);
+        secRngStream = new RandomNumberGenerator(_sec_seed);
     };
     
     void genData(Experiment* experiment);
@@ -80,8 +80,8 @@ public:
         _main_seed = rand();
         _sec_seed = rand();
         
-        mainRngStream = new RandomNumberGenerator(_main_seed, setup.isCorrelated);
-        secRngStream = new RandomNumberGenerator(_sec_seed, setup.isCorrelated);
+        mainRngStream = new RandomNumberGenerator(_main_seed);
+        secRngStream = new RandomNumberGenerator(_sec_seed);
     }
     
     void genData(Experiment* experiment);
