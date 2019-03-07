@@ -58,11 +58,12 @@ void Experiment::calculateStatistics() {
     // }
 
     for (int i = 0; i < setup.ng; ++i) {
-        means[i] = mean(arma::rowvec(measurements[i]));
+        means[i] = mean(measurements[i]);
 //        vars[i] = gsl_stats_variance_m(measurements[i].data(), 1, measurements[i].size(), means[i]);
-        vars[i] = var(arma::rowvec(measurements[i]));
+        vars[i] = var(measurements[i]);
         ses[i] = sqrt(vars[i] / measurements[i].size());
     }
+    
     
 }
 

@@ -11,7 +11,7 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
 //            s.method << ", " <<
             s.tnobs << ", " <<
             s.tyi << ", " <<
-            s.tsdi << ", " <<
+            s.tvi << ", " <<
             s.tcov << ", " <<
             s.nobs << ", " <<
             s.yi << ", " <<

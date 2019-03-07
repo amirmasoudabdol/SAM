@@ -46,17 +46,15 @@ public:
     
     int genSampleSize(const double &, const double &, const double &, const double &);
     
-    // arma
+    // normal distribution
     arma::Row<double>
-    normal(const double &mean, const double &sd, const double &n);
-
-    // arma
+    normal(const double &mean, const double &var, const double &n);
     std::vector<arma::Row<double> >
-    normal(const arma::Row<double> &means, const arma::Row<double> &sds, const int &n);
+    normal(const arma::Row<double> &means, const arma::Row<double> &vars, const int &n);
     std::vector<arma::Row<double> >
-    normal(const arma::Row<double> &means, const arma::Row<double> &sds, const arma::Row<int> &nobs);
+    normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs);
 
-    // arma
+    // multivariate normal distribution
     std::vector<arma::Row<double> >
     mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int &n);
     std::vector<arma::Row<double> >

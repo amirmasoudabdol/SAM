@@ -65,7 +65,7 @@ public:
 
     arma::Row<int>    true_nobs;
     arma::Row<double> true_means;
-    arma::Row<double> true_sds;
+    arma::Row<double> true_vars;
     
     ExperimentSetup() = default;
     
@@ -83,13 +83,14 @@ public:
     void randomize_nObs();
 
     // Multivariate Experiments
-    bool isCorrelated = false;
+//    bool isCorrelated = false;
     double cov = 0;
     arma::Mat<double> true_sigma;
     
     // Latent Experiments
     arma::Row<double> factorLoadings;                 ///< \f$\lambda\f$
-    arma::Row<double> errorSD;
+    arma::Row<double> errorMeans;
+    arma::Row<double> errorVars;
     arma::Mat<double> errorCov;          ///<
     
     

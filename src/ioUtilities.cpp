@@ -43,24 +43,24 @@ void validateAndPrepareJSON(json& config){
         config["--means-vector"] = means;
     }
     
-    if (config["--sds"].is_array()){
-        if (config["--sds"].size() != ng){
+    if (config["--vars"].is_array()){
+        if (config["--vars"].size() != ng){
             // Return an error
         }
-    }else if (config["--sds"].is_number()){
+    }else if (config["--vars"].is_number()){
         std::vector<double> sds(ng);
-        std::fill(sds.begin(), sds.end(), config["--sds"].get<double>());
-        config["--sds-vector"] = sds;
+        std::fill(sds.begin(), sds.end(), config["--vars"].get<double>());
+        config["--vars-vector"] = sds;
     }
     
     if (config["--cov"].is_array()){
-        if (config["--sds"].size() != ng){
+        if (config["--vars"].size() != ng){
             // Return an error
         }
-    }else if (config["--sds"].is_number()){
+    }else if (config["--vars"].is_number()){
         std::vector<double> sds(ng);
-        std::fill(sds.begin(), sds.end(), config["--sds"].get<double>());
-        config["--sds-vector"] = sds;
+        std::fill(sds.begin(), sds.end(), config["--vars"].get<double>());
+        config["--vars-vector"] = sds;
     }
     
     

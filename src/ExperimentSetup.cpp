@@ -76,24 +76,25 @@ ExperimentSetup::ExperimentSetup(json& config) {
         throw std::invalid_argument("--means is invalid or not provided.");
     }
     
-    if (config["--sds"].is_array()){
-        if (config["--sds"].size() != ng){
-            throw std::invalid_argument( "Size of --sds does not match the size of the experiment.");
+    if (config["--vars"].is_array()){
+        if (config["--vars"].size() != ng){
+            throw std::invalid_argument( "Size of --vars does not match the size of the experiment.");
         }
-        true_sds = config["--sds"].get<std::vector<double>>();
-    }else if (config["--sds"].is_number()){
-        // Broadcast the given --sds to a vector of length `ng`
-        true_sds = std::vector<double>(ng, config["--sds"]);
+        true_vars = config["--vars"].get<std::vector<double>>();
+    }else if (config["--vars"].is_number()){
+        // Broadcast the given --vars to a vector of length `ng`
+        true_vars = std::vector<double>(ng, config["--vars"]);
     }else{
-        throw std::invalid_argument("--sds is invalid or not provided.");
+        throw std::invalid_argument("--vars is invalid or not provided.");
     }
+    std::cout << true_vars;
     
     // I can drop this and only check if `cov == 0` and assume that the user wants
     // to run a correlated model
     // TODO: I need to change the if here
-    if (config["--is-correlated"] || experimentType == ExperimentType::LatentModel) {
-        isCorrelated = true;
-        
+//    if (config["--is-correlated"]) {
+//        isCorrelated = true;
+    
         if (config["--covs"].is_array()){
             if (config["--covs"].size() != ng){
                 throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
@@ -107,23 +108,24 @@ ExperimentSetup::ExperimentSetup(json& config) {
             
         }else if (config["--covs"].is_number()){
             // Broadcase the --covs to the a matrix, and replace the diagonal values with
-            // the value already given by --sds.
+            // the value already given by --vars.
             double cov = config["--covs"];
 //            for (int g = 0; g < ng; g++) {
 //                true_sigma.push_back(std::vector<double>(ng, cov));
-//                true_sigma[g][g] = true_sds[g];
+//                true_sigma[g][g] = true_vars[g];
 //            }
             true_sigma.zeros(ng, ng);
             true_sigma.fill(cov);
-            true_sigma.diag() = true_sds;
+            true_sigma.diag() = true_vars;
         }else{
             throw std::invalid_argument("--covs is invalid or not provided.");
         }
-    }
+//    }
     std::cout << true_sigma << std::endl;
 
     // Factor Loading ...
-    // CHECK: I think there are `ni` of these
+    // CHECK: I think there are `ni` of these,
+    // CHECK: I think they should be `nrows`
     if (config["--loadings"].is_array()){
         if (config["--loadings"].size() != ni){
             throw std::invalid_argument( "Size of --loadings does not match the size of the experiment.");
@@ -136,19 +138,23 @@ ExperimentSetup::ExperimentSetup(json& config) {
         throw std::invalid_argument("--loadings is invalid or not provided.");
     }
     
+    // TODO: Maybe add me to the config file
+    errorMeans.resize(nrows);
+    errorMeans.fill(0);
+    
     // Error's Standard Deviations
-    if (config["--err-sds"].is_array()){
-        if (config["--err-sds"].size() != nrows){
-            throw std::invalid_argument( "Size of --err-sds does not match the size of the experiment.");
+    if (config["--err-vars"].is_array()){
+        if (config["--err-vars"].size() != nrows){
+            throw std::invalid_argument( "Size of --err-vars does not match the size of the experiment.");
         }
-        errorSD = config["--err-sds"].get<std::vector<double>>();
-    }else if (config["--err-sds"].is_number()){
-        // Broadcast the given --err-sds to a vector of length `nrows`
-        errorSD = std::vector<double>(nrows, config["--err-sds"]);
+        errorVars = config["--err-vars"].get<std::vector<double>>();
+    }else if (config["--err-vars"].is_number()){
+        // Broadcast the given --err-vars to a vector of length `nrows`
+        errorVars = std::vector<double>(nrows, config["--err-vars"]);
     }else{
-        throw std::invalid_argument("--err-sds is invalid or not provided.");
+        throw std::invalid_argument("--err-vars is invalid or not provided.");
     }
-    std::cout << errorSD << std::endl;
+    // std::cout << errorVars << std::endl;
     
     // Error's Covariant Matrix
     if (config["--err-covs"].is_array()){
@@ -162,19 +168,19 @@ ExperimentSetup::ExperimentSetup(json& config) {
         
     }else if (config["--err-covs"].is_number()){
         // Broadcase the --err-covs to the a matrix, and replace the diagonal values with
-        // the value already given by --sds.
+        // the value already given by --vars.
         double cov = config["--err-covs"];
 //        for (int r = 0; r < nrows; r++) {
 //            errorCov.push_back(std::vector<double>(nrows, cov));
-//            errorCov[r][r] = errorSD[r];
+//            errorCov[r][r] = errorVars[r];
 //        }
         errorCov.zeros(nrows, nrows);
         errorCov.fill(cov);
-        errorCov.diag() = errorSD;
+        errorCov.diag() = errorVars;
     }else{
         throw std::invalid_argument("--err-covs is invalid or not provided.");
     }
-    std::cout << errorCov << std::endl;
+    // std::cout << errorCov << std::endl;
     
 }
 

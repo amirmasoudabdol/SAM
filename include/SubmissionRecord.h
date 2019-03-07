@@ -32,7 +32,7 @@ public:
     
     int tnobs;
     double tyi;             ///< True mean/effect of the selected submission record
-    double tsdi;
+    double tvi;
     double tcov;
     
     // Journal's Parameters
@@ -47,7 +47,7 @@ public:
         
         tnobs = e.setup.true_nobs[index];               // TODO: This is not good enough either, niether e.setup.true_nobs since I'm using `0` to tell the simulator that I want to randomize the values, and this will only report `0`. See also: [#27](https://github.com/amirmasoudabdol/SAMpp/issues/27) and [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
         tyi = e.setup.true_means[index];
-        tsdi = e.setup.true_sds[index];
+        tvi = e.setup.true_vars[index];
         tcov = e.setup.cov;         // FIXME: Not generalized again
         
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized

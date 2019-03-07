@@ -13,39 +13,36 @@
 
 
 arma::Row<double>
-RandomNumberGenerator::normal(const double &mean, const double &sd, const double &n){
-    return sd * arma::randn<arma::Row<double>>(n) + mean;
+RandomNumberGenerator::normal(const double &mean, const double &var, const double &n){
+    return var * arma::randn<arma::Row<double>>(n) + mean;
 }
 
-// arma
 std::vector<arma::Row<double> >
-RandomNumberGenerator::normal(const arma::Row<double>& means, const arma::Row<double>& sds, const int &n) {
+RandomNumberGenerator::normal(const arma::Row<double>& means, const arma::Row<double>& vars, const int &n) {
 
     std::vector<arma::Row<double>> rns;
 
     for (int i = 0; i < means.size(); ++i){
-        rns.push_back(normal(means[i], sds[i], n));
+        rns.push_back(normal(means[i], vars[i], n));
     }
 
     return rns;
 }
 
-// arma 
 std::vector<arma::Row<double>>
-RandomNumberGenerator::normal(const arma::Row<double> &means, const arma::Row<double> &sds, const arma::Row<int> &nobs){
+RandomNumberGenerator::normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs){
     std::vector<arma::Row<double>> rns;
     
     // TODO: Replace the for loop with a stl algorithm
     for (int i = 0; i < means.size(); ++i){
 //        rns[i] = arma::randn(nobs[i]);
         // rns.push_back(sds[i] * arma::randn<arma::Row<double>>(nobs[i]) + means[i]);
-        rns.push_back(normal(means[i], sds[i], nobs[i]));
+        rns.push_back(normal(means[i], vars[i], nobs[i]));
     }
     
     return rns;
 }
 
-// arma
 std::vector<arma::Row<double> >
 RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int &n){
     arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, n);
@@ -58,7 +55,6 @@ RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<do
     return rans;
 }
 
-// arma
 std::vector<arma::Row<double> >
 RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs){
     
@@ -74,10 +70,6 @@ RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<do
 }
 
 double RandomNumberGenerator::uniform() {
-//    return gsl_ran_flat(rng_stream, 0, 1);
-//    return arma::randu();
-    
-//    return uniformDist(gen);
     return uniform(0, 1);
 }
 
