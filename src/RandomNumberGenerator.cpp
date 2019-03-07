@@ -74,11 +74,16 @@ RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<do
 }
 
 double RandomNumberGenerator::uniform() {
-    return gsl_ran_flat(rng_stream, 0, 1);
+//    return gsl_ran_flat(rng_stream, 0, 1);
+//    return arma::randu();
+    
+//    return uniformDist(gen);
+    return uniform(0, 1);
 }
 
 double RandomNumberGenerator::uniform(const double &min, const double &max){
-    return gsl_ran_flat(rng_stream, min, max);
+    uniformDist.param(std::uniform_real_distribution<double>::param_type(min, max));
+    return uniformDist(gen);
 }
 
 
@@ -95,9 +100,10 @@ double RandomNumberGenerator::uniform(const double &min, const double &max){
 //\return A value between [a, c)
 
 int RandomNumberGenerator::genSampleSize(const double &p, const double &a, const double &b, const double &c){
-    if (gsl_ran_bernoulli(rng_stream, p)) {
-        return static_cast<int>(gsl_ran_flat(rng_stream, a, b));
+    bernoulliDist.param(std::bernoulli_distribution::param_type(p));
+    if (bernoulliDist(gen)) {
+        return uniform(a, b);
     }else{
-        return static_cast<int>(gsl_ran_flat(rng_stream, b, c));
+        return uniform(b, c);
     }
 }

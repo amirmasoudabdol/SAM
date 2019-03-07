@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <armadillo>
+#include <random>
 #include "gsl/gsl_rng.h"
 #include "gsl/gsl_randist.h"
 #include "Utilities.h"
@@ -16,31 +17,21 @@
 class RandomNumberGenerator {
 
 public:
+    
+    std::random_device rd;
+    std::mt19937 gen;
+    std::bernoulli_distribution bernoulliDist;
+    std::uniform_real_distribution<double> uniformDist;
 
     RandomNumberGenerator(int seed, bool is_correlated) :
-        _seed(seed), _is_correlated(is_correlated) {
-
-        // TODO: Need to adopt this to arma setup
+        _seed(seed), _is_correlated(is_correlated)
+    {
+        gen = std::mt19937(rd());
             
-        gsl_rng_env_setup();
-        T = gsl_rng_default;
-        rng_stream = gsl_rng_alloc(T);
-        if (seed != -1)
-            gsl_rng_set(rng_stream, _seed);
-        else
-            // TODO: This is not a good idea, since `gsl_rng_default_seed` is always 0!
-            gsl_rng_set(rng_stream, gsl_rng_default_seed);
     };
     
     ~RandomNumberGenerator() {
 
-        // I think I'm surely missing stuff here!
-        if (_is_correlated && _is_gsl_containers_initialized){
-            gsl_rng_free(rng_stream);
-            gsl_vector_free(_mu);
-            gsl_matrix_free(_sigma);
-            gsl_vector_free(_mvnorm_row);
-        }
     };
 
     void setSeed(int seed) {
@@ -71,27 +62,11 @@ public:
     std::vector<arma::Row<double> >
     mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs);
     
-    void allocGSLContainers() {
-        // TODO: I get the idea here but I think it's terrible, I need to change it!
-        _mu = gsl_vector_alloc(_size);
-        _sigma = gsl_matrix_alloc(_size, _size);
-        _mvnorm_row = gsl_vector_alloc(_size);
-
-        _is_gsl_containers_initialized = true;
-    };
-
 
 private:
-    int _size = 0;
-    gsl_vector *_mu;
-    gsl_matrix *_sigma;
-    gsl_vector *_mvnorm_row;
-
-    const gsl_rng_type *T;
-    gsl_rng *rng_stream;
     int _seed;
+    
     bool _is_correlated;
-    bool _is_gsl_containers_initialized = false;
 };
 
 #endif //SAMPP_RANDOMNUMBERGENERATOR_H
