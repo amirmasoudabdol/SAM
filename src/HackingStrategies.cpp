@@ -55,37 +55,36 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
     
     Submission tmpSub;
     
-    // If `_n_new_obs` is not specified
-    if (_n_new_obs == 0){
-        _n_new_obs = experiment->setup.nobs / 3;
-    }
-    
-    // FIXME: Commented during the migration
-    // IMPROVE ME!
-    for (int t = 0; t < _n_trials; t++) {
-
-            auto newObs = experiment->dataStrategy->genNewObservationsForAllGroups(experiment, _n_new_obs);
-            for (int i = 0; i < experiment->setup.ng; ++i) {
-//                experiment->measurements[i].insert(experiment->measurements[i].begin(),
-//                                                    newObs[i].begin(),
-//                                                    newObs[i].end());
-                // IMPROVE ME: Maybe I want to use join instead.
-                experiment->measurements[i].insert_cols(experiment->measurements.size(), newObs[i]);
-            }
-
-        // Recalculate the experiment
+    for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
+        addObservations(experiment, _num);
+        
+        // TODO: This can still be done nicer
         experiment->calculateStatistics();
         experiment->calculateEffects();
         experiment->runTest();
-
+        
         tmpSub = decisionStrategy->_select_Outcome(*experiment);
-
+        
         if (tmpSub.isSig())
             break;
-
     }
+    
+    
 
 }
+
+void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
+    auto new_observations = experiment->dataStrategy->genNewObservationsForAllGroups(experiment, n);
+    
+    int i = 0;
+    std::for_each(experiment->measurements.begin(), experiment->measurements.end(),
+                  [&new_observations, &i](arma::Row<double> &row) {
+                      row.insert_cols(row.size(), new_observations[i++]);
+                  });
+    
+    
+}
+
 
 
 
@@ -183,7 +182,12 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
 HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
     std::string type = config["type"];
     if (type == "Optional Stopping"){
-        return new OptionalStopping(config["size"], config["attempts"]);
+        return new OptionalStopping(config["mode"],
+                                    config["level"],
+                                    config["num"],
+                                    config["n_attempts"],
+                                    config["max_attempts"]);
+
     }else if (type == "SD Outlier Removal") {
         return new SDOutlierRemoval(config["sd_multiplier"]);
     }else if (type == "Group Pooling") {
@@ -199,3 +203,4 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
 }
+

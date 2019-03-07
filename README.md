@@ -36,11 +36,11 @@ A configuration file consists of 4 parts, each specifying parameters for differe
 | `--n-items`| \f$n_i\f$, `int` | Number of items. Only applicable for Latent Model. |
 | `--n-obs`| nobs, `int` | Number of observation per each group |
 | `--means`| mu, `double` or `array` | Mean of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `mu`. If an `array` is given, `mu[i]` will be used for group `i`.  |
-| `--sds`| sd, `double` or `array`  | Standard deviation of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `sd`. If an `array` is given, `sd[I]` will be used for group `i`. |
+| `--vars`| sd, `double` or `array`  | Variance of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `sd`. If an `array` is given, `sd[I]` will be used for group `i`. |
 | `--is-correlated`| `bool` | Indicates whether dependent variables are correlated or not. |
 | `--covs`| cov, `double` or `2d array` | The covariance coefficient between each group. If a `double` is provided, it'll be broadcasted to a matrix of  `nc * nd` by `nc * nd` with `cov` for every `i` and `j`, therefore all groups will have the same covariance. If a `2d array` is given, `cov[I][j]` will indicate the covariance coefficient between group `i` and `j`.<br> **Note:** If both `sd` and `cov` are scalar values, diagonal elements of `cov` matrix will be replaced by `sd` for each `i`. |
 | `--loadings`|  | |
-| `--err-sds`| | |
+| `--err-vars`| | |
 | `--err-covs`| | |
 | **Researcher Parameters** | | |
 | `--is-phacker` | `bool` | Whether the Researcher is a hacker or not, if `true`, listed methods will be applied on the dataset. |

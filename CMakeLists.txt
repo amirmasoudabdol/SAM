@@ -14,6 +14,7 @@ find_package(LAPACK)
 find_package(BLAS)
 
 include_directories(include)
+include_directories(${MLPACK_SRCS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 file(GLOB SOURCES "src/*.cpp")
 

@@ -31,15 +31,19 @@
     "--err-covs": 0.001
   },
   "Researcher Parameters": {
-    "--is-phacker": false,
+    "--is-phacker": true,
     "--p-hacking-methods": [
         {
           "type": "Outcome Switching",
           "preference": "Min P-value"
         },
         {
-          "type": "SD Outlier Removal",
-          "sd_multiplier": 1
+          "type": "Optional Stopping",
+          "mode": "Recursive",
+          "level": "dv",
+          "num": 100,
+          "n_attempts": 5,
+          "max_attempts": 10
         }
     ],
     "--decision-strategy": {

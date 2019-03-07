@@ -65,6 +65,8 @@ public:
     void generateData();
     void calculateStatistics();
     void calculateEffects();
+
+    void recalculateEverything();
     
     void randomize();
 

@@ -143,9 +143,7 @@ void Researcher::performResearch(){
     this->experiment->calculateStatistics();
     
     this->experiment->calculateEffects();
-    
-    // hack 2
-    
+        
     this->experiment->runTest();
     
     // See #50

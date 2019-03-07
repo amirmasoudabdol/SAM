@@ -98,17 +98,29 @@ private:
 class OptionalStopping : public HackingStrategy {
 public:
 
-    OptionalStopping(int n_new_obs, int n_trials) :
-        _n_new_obs(n_new_obs), _n_trials(n_trials) {
-        // selectedOutcome = 3;
+    OptionalStopping(std::string mode, std::string level, int num, int n_attempts, int max_attempts) :
+        _mode(mode),
+        _level(level),
+        _num(num),
+        _n_attempts(n_attempts),
+        _max_attempts(max_attempts)
+    {
+        if (mode == "Extreme"){
+            _num = 1;
+            _n_attempts = _max_attempts;
+        }
     };
 
-    // int selectedOutcome;
-    // Submission hackedSubmission;
-    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+    void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
 
 private:
-    int _n_new_obs, _n_trials;
+    std::string _mode = "Recursive";
+    std::string _level = "dv";
+    int _num;
+    int _n_attempts;
+    int _max_attempts = 10;
+    
+    void addObservations(Experiment *experiment, const int &n);
 
 };
 
