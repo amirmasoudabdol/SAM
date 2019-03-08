@@ -169,7 +169,7 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
     //    }
     //    else{
     // Alternative "REJECTED"
-    sig = false;
+    //    sig = false;
     //    }
     
     if (side == TestSide::OneSide){
