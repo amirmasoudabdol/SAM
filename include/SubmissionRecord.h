@@ -20,6 +20,7 @@ public:
     int simid = 0;          ///< Simulation ID
     int pubid = 0;          ///< Publication ID
 //    std::string method;
+    int inx;
     int nobs;               ///< Number of observation in submitted group
     double yi;              ///< Effect size of the submitted group
     double sei;             ///< Standard error of the submitted group
@@ -36,12 +37,12 @@ public:
     double tcov;
     
     // Journal's Parameters
-    double alpha;
+    double alpha = 0.05;         // FIXME: I'm hardcoded, this is a tricky problem, remember all the debuggin. I
     double pubbias;
 
     Submission() = default;
     
-    Submission(Experiment& e, int index){
+    Submission(Experiment& e, const int &index){
         
         // FIXME: This needs to be updated, especially if we perform OptionalStopping, then `setup.nobs` is never updated. All statistics are running on measurements.size(), so they are fine, but not this one.
         
@@ -50,13 +51,14 @@ public:
         tvi = e.setup.true_vars[index];
         tcov = e.setup.cov;         // FIXME: Not generalized again
         
+        inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         yi = e.effects[index];
         sei = e.ses[index];
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
         
-        sig = pvalue < alpha;
+        sig = (pvalue < alpha);
         
         // CHECK: This will cause problem if I do GroupPooling!
         // BUG: This is also a problem if I'm working with the LatentModel because I'm

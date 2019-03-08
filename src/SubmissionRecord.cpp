@@ -13,6 +13,7 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
             s.tyi << ", " <<
             s.tvi << ", " <<
             s.tcov << ", " <<
+            s.inx << ", " <<
             s.nobs << ", " <<
             s.yi << ", " <<
             s.sei << ", " <<
