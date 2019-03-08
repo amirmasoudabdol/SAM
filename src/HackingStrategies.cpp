@@ -12,6 +12,7 @@
 #include <iostream>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 
 std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
@@ -32,15 +33,15 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
  */
 void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
 
-    long selectedOutcome = 0;
+    // long selectedOutcome = 0;
     
-    if (_method == "Min P-value"){
-        selectedOutcome = std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
+    // if (_method == "Min P-value"){
+    //     selectedOutcome = std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
 
-    }else if (_method == "MaxEffect"){
-        selectedOutcome = std::distance(experiment->effects.begin(), std::max_element(experiment->effects.begin(), experiment->effects.end()));
+    // }else if (_method == "MaxEffect"){
+    //     selectedOutcome = std::distance(experiment->effects.begin(), std::max_element(experiment->effects.begin(), experiment->effects.end()));
 
-    }
+    // }
     
 }
 
@@ -56,6 +57,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
     Submission tmpSub;
     
     for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
+        
         addObservations(experiment, _num);
         
         // TODO: This can still be done nicer
@@ -63,10 +65,10 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         experiment->calculateEffects();
         experiment->runTest();
         
-        tmpSub = decisionStrategy->_select_Outcome(*experiment);
+        tmpSub = decisionStrategy->selectOutcome(*experiment);
         
         if (tmpSub.isSig())
-            break;
+            return;
     }
     
     
@@ -97,77 +99,75 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
-    // FIXME: Commented during the migration
-    int gi = 0;     // Only to access the means, vars
-    for (auto &g : experiment->measurements) {
-
-//        g.erase(std::remove_if(g.begin(),
-//                               g.end(),
-//                               [this, experiment, gi](double v){ return (v < experiment->means[gi] - this->_sd_multiplier * sqrt(experiment->vars[gi]))
-//                                                                        ||
-//                                                                        (v > experiment->means[gi] + this->_sd_multiplier * sqrt(experiment->vars[gi])); }),
-//                g.end()
-//                );
+    Submission tmpSub;
+    int res;
+    
+    for (auto &d : _multipliers) {
         
-        // IMPROVE ME!
-        arma::uvec inx = arma::find(
-                              (g < experiment->means[gi] - this->_sd_multiplier * sqrt(experiment->vars[gi]))
-                              ||
-                              (g > experiment->means[gi] + this->_sd_multiplier * sqrt(experiment->vars[gi]))
-                              );
-        for (int i = 0 ; i < inx.size(); i++) {
-            g.shed_col(i);
+        for (int t = 0; t < _n_attempts &&
+                        t < _max_attempts &&
+                        res != 1
+                        ; t++) {
+            
+            res = removeOutliers(experiment, _num, d);
+            
+            experiment->calculateStatistics();
+            experiment->calculateEffects();
+            experiment->runTest();
+            
+            tmpSub = decisionStrategy->selectOutcome(*experiment);
+            
+            std::cout << tmpSub.pvalue << ", " <<  t << "\n" ;
+            
+            if (tmpSub.isSig())
+                return;
+            
         }
-
-        gi++;
     }
-    
-    // Recalculate the experiment
-    experiment->calculateStatistics();
-    experiment->calculateEffects();
-    experiment->runTest();
-    
-    // Extreme
-//    removeOutliers(1, _max_attempts, _max_attempts, experiment);
-    
-    // Recursive
-//    removeOutliers(_num, _max_attempts, _max_attempts, experiment);
-    
-    // Recursive Attempts
-//    removeOutliers(_num, _attempts, _max_attempts, experiment);
+    std::cout << std::endl;
     
 }
 
 
 // FIXME: Commented during the migration
-//void SDOutlierRemoval::removeOutliers(int n, int t, int m, Experiment* experiment) {
-//    for (auto &d : _multipliers){
-//        for (int i = 0, gi = 0; i < t && i < m; i++) {
-//            for (auto &g : experiment->measurements) {
-//
-//                auto outliers = std::remove_if(g.begin(),
-//                                               g.end(),
-//                                               [experiment, gi, d](double v){
-//                                                   return
-//                                                   (v < experiment->means[gi] - d * sqrt(experiment->vars[gi]))
-//                                                   ||
-//                                                   (v > experiment->means[gi] + d * sqrt(experiment->vars[gi]));
-//                                               }
-//                                               );
-//                if (outliers != g.end())
-//                    break;
-//
-//                g.erase(outliers,
-//                        g.end()
-//                        );
-//
-//                gi++;
-//            }
-//
-//        }
-//        // Update everything and ask for verdict
-//    }
-//}
+int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const int &d) {
+    int g = 0;     // Only to access the means, vars
+    
+    int res = 0;
+    
+    for (auto &row : experiment->measurements) {
+        
+        // At least one row has less than `_min_observations`
+        if (row.size() <= _min_observations)
+            res = 1;
+            
+        
+        // This trick makes finding the largest outlier easier. I'll see if I can find a better way
+        if (_order == "max first")
+            row = sort(row);
+
+        // Finding the outliers
+        arma::uvec inx = arma::find(row < (experiment->means[g] - d * sqrt(experiment->vars[g]))
+                                    ||
+                                    row > (experiment->means[g] + d * sqrt(experiment->vars[g])));
+        
+
+        for (int i = inx.size() - 1;
+             i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > _min_observations ;
+             i--)
+        {
+            row.shed_col(inx[i]);
+            
+            // Shifting the index back
+            inx = inx - 1;
+        }
+        
+        g++;
+    }
+    
+    // Success Code
+    return res;
+}
 
 
 
@@ -189,7 +189,15 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
                                     config["max_attempts"]);
 
     }else if (type == "SD Outlier Removal") {
-        return new SDOutlierRemoval(config["sd_multiplier"]);
+        return new SDOutlierRemoval(config["mode"],
+                                    config["level"],
+                                    config["order"],
+                                    config["num"],
+                                    config["n_attempts"],
+                                    config["max_attempts"],
+                                    config["min_observations"],
+                                    config["multipliers"]);
+
     }else if (type == "Group Pooling") {
         return new GroupPooling("first");
     }else{

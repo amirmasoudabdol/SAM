@@ -3,7 +3,7 @@
     "--debug": true,
     "--verbose": true,
     "--progress": false,
-    "--n-sims": 5,
+    "--n-sims": 3,
     "--master-seed": 42,
     "--save-output": true,
     "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
@@ -22,10 +22,10 @@
     "--n-conditions": 1,
     "--n-dep-vars": 3,
     "--n-items": 3,
-    "--n-obs": 0,
-    "--means": 0.5,
-    "--vars": 0.01,
-    "--covs": 0.0001,
+    "--n-obs": 25,
+    "--means": 0.1,
+    "--vars": 0.1,
+    "--covs": 0.00,
     "--loadings": 0.7,
     "--err-vars": 0.01,
     "--err-covs": 0.001
@@ -38,12 +38,16 @@
           "preference": "Min P-value"
         },
         {
-          "type": "Optional Stopping",
+          "type": "SD Outlier Removal",
           "mode": "Recursive",
           "level": "dv",
-          "num": 100,
-          "n_attempts": 5,
-          "max_attempts": 10
+          "order": "max first",
+          "method": "One by One",
+          "num": 2,
+          "n_attempts": 4,
+          "max_attempts": 10,
+          "min_observations": 20,
+          "multipliers": [1]
         }
     ],
     "--decision-strategy": {

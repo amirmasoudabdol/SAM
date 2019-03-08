@@ -110,11 +110,12 @@ Removing outliers can be done in several different ways. In the simplest case, a
 ```
 {
 	"type": "SD Outlier Removal",
-	"mode": "Extreme",     
+	"mode": "Extreme",  
+	"level": "dv",   
 	"num": n,
-	"attempts": t,
-	"multipliers": [...],
-	"level": "dv",
+	"n_attempts": t,
+	"max_attempts": m,
+	"multipliers": [...]
 }
 ```
 
@@ -128,6 +129,7 @@ Removing outliers can be done in several different ways. In the simplest case, a
 | `multipliers` | `list` | A list of multipliers to be used. |
 | `level` | "dv" | Removing outliers at dependent variable level.|
 |  | "item" | Removing outliers at the item level, only applicable under Latent Model configuration. |
+| `order` | max first, random |  |
 
 
 #### Group Pooling

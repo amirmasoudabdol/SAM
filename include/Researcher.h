@@ -115,6 +115,7 @@ private:
 
     DecisionStrategy* _decisionStrategy;
 
+    ResearcherPreference _researcherPreference;
 
 
 public:
@@ -152,13 +153,23 @@ public:
         this->isHacker();
         if (this->_isHacker){
             for (auto &item : _config["Researcher Parameters"]["--p-hacking-methods"]) {
-                this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+                if (item["type"] == "Outcome Switching"){
+                    this->setResearcherPreference(stringToResearcherPreference.find(item["preference"])->second);
+                }else{
+                    this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
+                }
             }
         }
         return *this;
     };
 
 
+    Builder& setResearcherPreference(ResearcherPreference pref){
+        // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
+        this->_researcherPreference = pref;
+        return *this;
+    };
+    
     Builder& setExperimentSetup(ExperimentSetup);
     Builder& setExperiment(Experiment);
     Builder& setJournal(Journal j){

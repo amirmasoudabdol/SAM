@@ -141,15 +141,26 @@ private:
 class SDOutlierRemoval : public HackingStrategy {
 public:
 
-    SDOutlierRemoval(double sd_multiplier) : _sd_multiplier(sd_multiplier) {};
-    SDOutlierRemoval(std::string mode,
-                     int num,
-                     int attempts,
-                     std::vector<double> multipliers) {
-        _mode = mode;
-        _num = num;
-        _attempts = attempts;
-        _multipliers = multipliers;
+    SDOutlierRemoval(std::string mode, std::string level, std::string order, int num, int n_attempts, int max_attempts, int min_observations, std::vector<double> multipliers) :
+        _mode(mode),
+        _level(level),
+        _order(order),
+        _num(num),
+        _n_attempts(n_attempts),
+        _max_attempts(max_attempts),
+        _min_observations(min_observations),
+        _multipliers(multipliers)
+    {
+        
+        if (_mode == "Extreme") {
+            _num = 1;
+            _n_attempts = _MAX_ITERS;
+            _max_attempts = _MAX_ITERS;
+        }else if (_mode == "Recursive"){
+            _n_attempts = _MAX_ITERS;
+            _max_attempts = _MAX_ITERS;
+        }
+        
     };
     
 
@@ -158,14 +169,19 @@ public:
     
 private:
     std::string _mode = "Recursive Attempts";
-    int _num = 3;
-    int _attempts = 3;
-    int _max_attempts = 100;
+    std::string _level = "dv";
+    std::string _order = "max first";
+    int _num;
+    int _n_attempts;
+    int _max_attempts;
+    int _min_observations;
     std::vector<double> _multipliers;
     
-    void removeOutliers(int n, int t, int m, Experiment* experiment);
+    int _MAX_ITERS = 100;
     
-    double _sd_multiplier;      ///< Specifies the multiplier threshold for removing the outliers
+    int removeOutliers(Experiment *experiment, const int &n, const int &d);
+    
+//    double _sd_multiplier;      ///< Specifies the multiplier threshold for removing the outliers
 
 };
 

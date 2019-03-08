@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <armadillo>
 #include "Utilities.h"
-#include "gsl/gsl_statistics.h"
+// #include "gsl/gsl_statistics.h"
 
 void Experiment::generateData() {
     dataStrategy->genData(this);
@@ -50,17 +50,10 @@ void Experiment::initResources() {
 }
 
 void Experiment::calculateStatistics() {
-    // TODO: This needs to be change! I need to do the init/de-init better.
-//    means.clear();
-    // std::transform(measurements.begin(), measurements.end(), std::back_inserter(means), mean);
-    // for (auto &v : measurements){
-    //     means
-    // }
-
+    
     for (int i = 0; i < setup.ng; ++i) {
-        means[i] = mean(measurements[i]);
-//        vars[i] = gsl_stats_variance_m(measurements[i].data(), 1, measurements[i].size(), means[i]);
-        vars[i] = var(measurements[i]);
+        means[i] = arma::mean(measurements[i]);
+        vars[i] = arma::var(measurements[i]);
         ses[i] = sqrt(vars[i] / measurements[i].size());
     }
     
@@ -74,11 +67,11 @@ void Experiment::calculateEffects() {
 
 void Experiment::recalculateEverything() {
 
-    experiment->calculateStatistics();
+    this->calculateStatistics();
     
-    experiment->calculateEffects();
+    this->calculateEffects();
         
-    experiment->runTest();
+    this->runTest();
     
 }
 

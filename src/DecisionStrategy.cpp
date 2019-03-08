@@ -49,15 +49,22 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
             
             break;
             
+        default:
+            selectedOutcome = 0;
+            break;
     }
     
-    return Submission(experiment, selectedOutcome);
+    Submission tmpSub(experiment, selectedOutcome);
+    
+    return tmpSub;
 }
 
 DecisionStrategy *DecisionStrategy::buildDecisionStrategy(json &config) {
-    // TODO: Fix me
+    // TODO: Expand
 //    if (config["type"] == "Impatient Decision Maker"){
-    return new ImpatientDecisionMaker(0, config["alpha"], ResearcherPreference::MinPvalue);
+    return new ImpatientDecisionMaker(0,
+                                      config["alpha"],
+                                      stringToResearcherPreference.find(config["preference"])->second);
 //    }
 }
 
