@@ -100,7 +100,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
     Submission tmpSub;
-    int res;
+    int res = 0;
     
     for (auto &d : _multipliers) {
         
@@ -117,7 +117,7 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             
             tmpSub = decisionStrategy->selectOutcome(*experiment);
             
-            std::cout << tmpSub.pvalue << ", " <<  t << "\n" ;
+//            std::cout << tmpSub.pvalue << ", " <<  t << "\n" ;
             
             if (tmpSub.isSig())
                 return;
@@ -129,7 +129,6 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
 }
 
 
-// FIXME: Commented during the migration
 int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const int &d) {
     int g = 0;     // Only to access the means, vars
     

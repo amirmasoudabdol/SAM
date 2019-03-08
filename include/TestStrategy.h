@@ -10,6 +10,24 @@
 #include <iostream>
 #include <string>
 
+enum class TestSide {
+    OneSide,
+    TwoSide
+};
+
+struct TestResult {
+    double statistic = 0;
+    double pvalue = 0;
+    int side = 0;
+    bool sig = 0;
+    
+    TestResult(double statistic, double pvalue, int side, double sig) :
+    statistic(statistic), pvalue(pvalue), side(side), sig(sig) {};
+    
+    
+};
+
+
 class Experiment;
 class ExperimentSetup;
 
@@ -50,5 +68,21 @@ public:
     
 };
 
+
+// Stats Utility
+
+int single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide side);
+
+std::pair<double, double>
+confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestSide side);
+
+TestResult
+single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestSide side);
+
+TestResult
+two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestSide side);
+
+TestResult
+two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestSide side);
 
 #endif //SAMPP_TESTSTRATEGIES_H

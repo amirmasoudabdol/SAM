@@ -4,6 +4,10 @@
 
 #include <Journal.h>
 #include <iostream>
+#include <iomanip>
+
+//using std::setprecision;
+
 
 Journal::Journal(json& config){
     _max_pubs = config["--max-pubs"];
@@ -60,6 +64,7 @@ void Journal::clear() {
 }
 
 void Journal::saveSubmissions(int simid, std::ofstream& writer) {
+    
     int i = 0;
     for (auto& p : submissionList) {
         p.simid = simid;
@@ -67,6 +72,7 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
         
         // TODO: I need a global DEBUG variable
         if (true)
+            std::cout << std::setprecision(8);
             std::cout << p << "\n";
         
         writer << p << "\n";
