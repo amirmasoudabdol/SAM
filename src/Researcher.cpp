@@ -58,30 +58,11 @@ void Researcher::hack() {
 }
 
 void Researcher::prepareTheSubmission() {
-//    if (!isHacker) {
-//        // Return the pre-registered outcome, always [0].
-////        submissionRecord = _create_submission_record(0);
-////        submissionRecord = Submission(*experiment, 0);
-//        submissionRecord = decisionStrategy->selectOutcome(*experiment);
-//    }else{
     
     decisionStrategy->verdict(submissionsList, experimentsList);
 
     submissionRecord = decisionStrategy->finalSubmission;
-        
-		// TODO: This needs generalization
-//        submissionRecord = hackedSubmissions[0];
-//        if (decisionStrategy == "asap"){
-//            if (hackedSubmissions.size() != 0){
-//                submissionRecord = submissionsList.back();
-//        submissionRecord = decisionStrategy->selectBetweenSubmission(submissionsList);
-//            }else{
-//                submissionRecord = _create_submission_record(_selected_outcome_inx);
-//            }
-//        }else if (decisionStrategy == "all-in"){
-//            // Check for the smallest p-value or largest effect
-//        }
-//    }
+
 }
 
 void Researcher::submitToJournal() {
