@@ -13,9 +13,9 @@
 void TTest::run(Experiment* experiment) {
     
     for (int i = 0; i < experiment->setup.ng; ++i) {
-        experiment->statistics[i] = experiment->vars[i] / experiment->ses[i];
+        experiment->statistics[i] = experiment->means[i] / experiment->ses[i];
         
-        experiment->pvalues[i] = gsl_ran_tdist_pdf(experiment->statistics[i], experiment->measurements[i].size() - 1);
+        experiment->pvalues[i] = gsl_ran_tdist_pdf(experiment->statistics[i], experiment->measurements[i].size() - 1.);
     }
 }
 
