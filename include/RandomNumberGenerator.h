@@ -66,8 +66,6 @@ public:
 
 private:
     int _seed;
-    
-//    bool _is_correlated;
 };
 
 #endif //SAMPP_RANDOMNUMBERGENERATOR_H

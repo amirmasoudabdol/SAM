@@ -33,8 +33,6 @@ public:
     DecisionStrategy* decisionStrategy;
     std::vector<HackingStrategy*> hackingStrategies;
     bool isHacker = false;
-//    TestStrategies* testStrategy;
-    
     
     HackingStyle hackingStyle = onCopy;
     
@@ -87,9 +85,6 @@ public:
     void submitToJournal();
 
 	void setJournal(Journal* j);
-
-	// Reset the researcher state!
-	void rest();
 
 
 private:

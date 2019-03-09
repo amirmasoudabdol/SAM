@@ -6,8 +6,6 @@
 #include <iostream>
 #include <iomanip>
 
-//using std::setprecision;
-
 
 Journal::Journal(json& config){
     _max_pubs = config["--max-pubs"];

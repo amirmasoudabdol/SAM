@@ -77,10 +77,6 @@ void Researcher::registerAHackingStrategy(HackingStrategy *h) {
 	hackingStrategies.push_back(h);
 }
 
-void Researcher::rest() {
-    experimentsList.clear();
-    submissionsList.clear();
-}
 
 void Researcher::setDecisionStrategy(DecisionStrategy* d) {
     decisionStrategy = d;

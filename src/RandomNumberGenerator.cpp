@@ -9,9 +9,6 @@
 #include <RandomNumberGenerator.h>
 #include "Utilities.h"
 
-#include "gsl/gsl_rng.h"
-
-
 arma::Row<double>
 RandomNumberGenerator::normal(const double &mean, const double &var, const double &n){
     return var * arma::randn<arma::Row<double>>(n) + mean;

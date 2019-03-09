@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <armadillo>
 #include "Utilities.h"
-// #include "gsl/gsl_statistics.h"
 
 void Experiment::generateData() {
     dataStrategy->genData(this);
