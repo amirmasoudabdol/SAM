@@ -61,8 +61,6 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
     
-//    Submission tmpSub;
-    
     for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
         
         addObservations(experiment, _num);
@@ -71,11 +69,6 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         experiment->calculateStatistics();
         experiment->calculateEffects();
         experiment->runTest();
-        
-//        tmpSub = decisionStrategy->selectOutcome(*experiment);
-//
-//        if (tmpSub.isSig())
-//            return;
         
         if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking))
             return;
@@ -108,8 +101,6 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
  dataset.
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
-    
-//    Submission tmpSub;
     int res = 0;
     
     for (auto &d : _multipliers) {
@@ -125,12 +116,6 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             experiment->calculateEffects();
             experiment->runTest();
             
-//            tmpSub = decisionStrategy->selectOutcome(*experiment);
-//
-////            std::cout << tmpSub.pvalue << ", " <<  t << "\n" ;
-//
-//            if (tmpSub.isSig())
-//                return;
             
             if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking))
                 return ;

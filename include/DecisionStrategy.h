@@ -86,8 +86,6 @@ public:
     
     virtual bool verdict(Experiment&, DecisionStage) = 0;
     
-    //    virtual void finalDecision();
-    
     Submission _select_Outcome(Experiment&);
 };
 

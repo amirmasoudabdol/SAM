@@ -56,17 +56,17 @@ void Researcher::hack() {
     // Or, I can run all of them, and then decide
 }
 
-void Researcher::prepareTheSubmission() {
+// void Researcher::prepareTheSubmission() {
     
     // decisionStrategy->verdict(submissionsList, experimentsList);
 
-    submissionRecord = decisionStrategy->finalSubmission;
+    // submissionRecord = decisionStrategy->finalSubmission;
 
-}
+// }
 
-void Researcher::submitToJournal() {
-	journal->review(submissionRecord);
-}
+// void Researcher::submitToJournal() {
+//	journal->review(submissionRecord);
+// }
 
 void Researcher::setJournal(Journal* j) {
 	journal = j;
@@ -117,17 +117,10 @@ void Researcher::performResearch(){
     this->experiment->calculateEffects();
         
     this->experiment->runTest();
-    
-    // See #50
-    // Experiment e = *this->experiment;
-    // this->experimentsList.push_back(e);
-    // this->submissionsList.push_back(this->decisionStrategy->selectOutcome(e));
 
+    // 
     bool isPublishable = this->decisionStrategy->verdict(*this->experiment,
                                                          DecisionStage::Initial);
-    
-    // I think I need to make a decision here whether the result is signficant or not,
-    // or it complies with researcher's preference, if not then, I should hack
     
     if (this->isHacker && !isPublishable){
         this->hack();
@@ -147,9 +140,5 @@ void Researcher::publishResearch(){
                                     DecisionStage::Final);
 
     this->journal->review(this->decisionStrategy->finalSubmission);
-   
-    // this->prepareTheSubmission();
-    
-    // this->submitToJournal();
     
 }

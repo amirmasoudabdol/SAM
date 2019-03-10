@@ -39,16 +39,13 @@ void Journal::accept(Submission s) {
     // FIXME: The conflict between the decison strategy and Journal shows itself here as well.
     // Should I update them here or during the decision making. 
     // See also: [#50](https://github.com/amirmasoudabdol/SAMpp/issues/50)
-//    s.alpha = _alpha;
-//    s.pubbias = _pub_bias;
 
     submissionList.push_back(s);
 
-    // std::cout << submissionList.size();
     if (submissionList.size() == _max_pubs){
         _still_accepting = false;
     }
-    // std::cout << s.pvalue << ": p\n";
+    
 }
 
 void Journal::reject(Submission &s) {
@@ -58,7 +55,6 @@ void Journal::reject(Submission &s) {
 void Journal::clear() {
     submissionList.clear();
     _still_accepting = true;
-    // std::cout << submissionList.size() << "<<" << "max_pubs: " << _max_pubs;
 }
 
 void Journal::saveSubmissions(int simid, std::ofstream& writer) {
