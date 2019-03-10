@@ -9,6 +9,12 @@
 #include <memory>
 #include <iostream>
 #include <string>
+#include <map>
+#include <string>
+
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 enum class TestSide {
     OneSide,
@@ -43,7 +49,7 @@ class TestStrategy {
 
 public:
     
-    static TestStrategy* buildTestStrategy(ExperimentSetup& setup);
+    static TestStrategy* buildTestStrategy(json &config);
     
     virtual void run(Experiment* experiment) = 0;
 
@@ -61,8 +67,16 @@ public:
  */
 class TTest : public TestStrategy {
     
+private:
+    TestSide _side;
+    double _alpha;
+    
 public:
     TTest() = default;
+    
+    TTest(TestSide side, double alpha) :
+        _side(side), _alpha(alpha)
+    {};
     
     void run(Experiment* experiment);
     

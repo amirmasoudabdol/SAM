@@ -20,6 +20,12 @@ using std::setw;
 using std::setprecision;
 using namespace std;
 
+std::map<std::string, TestSide>
+stringToTestSide = {
+    {"One Side", TestSide::OneSide},
+    {"Two Side", TestSide::TwoSide}
+};
+
 void TTest::run(Experiment* experiment) {
     
     for (int i = 0; i < experiment->setup.ng; ++i) {
@@ -31,23 +37,22 @@ void TTest::run(Experiment* experiment) {
                                               experiment->means[i],
                                               sqrt(experiment->vars[i]),
                                               experiment->measurements[i].size(),
-                                              0.05,
-                                              TestSide::OneSide);
+                                              this->_alpha,
+                                              this->_side);
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
     }
 }
 
-TestStrategy *TestStrategy::buildTestStrategy(ExperimentSetup& setup){
-    switch (setup.testMethod) {
-        case TestMethod::TTest:
-            return new TTest();
-            break;
-            
-        default:
-            return new TTest();
-            break;
+TestStrategy *TestStrategy::buildTestStrategy(json &config){
+    
+    if (config["type"] == "TTest"){
+        return new TTest(stringToTestSide.find(config["side"])->second,
+                         config["alpha"]);
     }
+    
+    return new TTest(TestSide::TwoSide, 0.05);
+    
 }
 
 

@@ -31,7 +31,8 @@
     "--err-covs": 0.001,
     "--test-strategy": {
       "type": "TTest",
-      "side": "two-side"
+      "side": "Two Side",
+      "alpha": 0.05
     }
   },
   "Researcher Parameters": {
