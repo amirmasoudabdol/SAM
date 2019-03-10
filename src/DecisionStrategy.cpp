@@ -5,17 +5,31 @@
 #include "DecisionStrategy.h"
 
 
-std::ostream& operator<<(std::ostream& os, ResearcherPreference rp)
+std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
 {
-    switch(rp)
+    switch(dp)
     {
-        case ResearcherPreference::PreRegisteredOutcome : os << "PreRegistered Outcome";  break;
-        case ResearcherPreference::MinSigPvalue : os << "Minimum Significant Pvalue"; break;
-        case ResearcherPreference::MinPvalue : os << "Minimum Pvalue";  break;
-        case ResearcherPreference::MaxSigEffect : os << "Maximum Significant Effect"; break;
-        case ResearcherPreference::MaxEffect : os << "Maximum Effect"; break;
-        case ResearcherPreference::MinPvalueMaxEffect : os << "Maximum Effect with Min Pvalue"; break;
-        default    : os.setstate(std::ios_base::failbit);
+        case DecisionPreference::PreRegisteredOutcome:
+            os << "PreRegistered Outcome";
+            break;
+        case DecisionPreference::MinSigPvalue:
+            os << "Minimum Significant Pvalue";
+            break;
+        case DecisionPreference::MinPvalue:
+            os << "Minimum Pvalue";
+            break;
+        case DecisionPreference::MaxSigEffect:
+            os << "Maximum Significant Effect";
+            break;
+        case DecisionPreference::MaxEffect:
+            os << "Maximum Effect";
+            break;
+        case DecisionPreference::MinPvalueMaxEffect:
+            os << "Maximum Effect with Min Pvalue";
+            break;
+        default:
+            // CHECKME: What's this?
+            os.setstate(std::ios_base::failbit);
     }
     return os;
 }
@@ -25,27 +39,27 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
     int selectedOutcome = preRegGroup;
     
     switch (selectionPref) {
-        case ResearcherPreference::PreRegisteredOutcome:
+        case DecisionPreference::PreRegisteredOutcome:
             selectedOutcome = preRegGroup;
             break;
             
-        case ResearcherPreference::MinSigPvalue:
+        case DecisionPreference::MinSigPvalue:
             
             break;
             
-        case ResearcherPreference::MinPvalue:
+        case DecisionPreference::MinPvalue:
             selectedOutcome = std::distance(experiment.pvalues.begin(), std::min_element(experiment.pvalues.begin(), experiment.pvalues.end()));
             break;
             
-        case ResearcherPreference::MaxSigEffect:
+        case DecisionPreference::MaxSigEffect:
             
             break;
             
-        case ResearcherPreference::MaxEffect:
+        case DecisionPreference::MaxEffect:
             selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
             break;
             
-        case ResearcherPreference::MinPvalueMaxEffect:
+        case DecisionPreference::MinPvalueMaxEffect:
             
             break;
             
@@ -62,9 +76,7 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
 DecisionStrategy *DecisionStrategy::buildDecisionStrategy(json &config) {
     // TODO: Expand
 //    if (config["type"] == "Impatient Decision Maker"){
-    return new ImpatientDecisionMaker(0,
-                                      config["alpha"],
-                                      stringToResearcherPreference.find(config["preference"])->second);
+    return new ImpatientDecisionMaker(stringToResearcherPreference.find(config["preference"])->second);
 //    }
 }
 

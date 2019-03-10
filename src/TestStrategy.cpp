@@ -14,13 +14,8 @@
 #include <Experiment.h>
 
 using boost::math::students_t;
-using std::cout; using std::endl;
-using std::left; using std::fixed; using std::right; using std::scientific;
-using std::setw;
-using std::setprecision;
-using namespace std;
 
-std::map<std::string, TestSide>
+const std::map<std::string, TestSide>
 stringToTestSide = {
     {"One Side", TestSide::OneSide},
     {"Two Side", TestSide::TwoSide}
@@ -41,6 +36,7 @@ void TTest::run(Experiment* experiment) {
                                               this->_side);
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
+        experiment->sigs[i] = res.sig;
     }
 }
 

@@ -10,14 +10,6 @@
 
 void Researcher::hack() {
     
-    // Preparing the history ------------------------------
-    // With this, I basically save everything, and then later on the decisionStrategy
-    // can use it to make the final decision
-    // I think I need to set this up somewhere else, not in the hacking procedure
-//    Experiment e = *experiment;
-//    experimentsList.push_back(e);
-//    submissionsList.push_back(decisionStrategy->selectOutcome(e));
-    
     Submission sub;
     
     for (auto &h : hackingStrategies){
@@ -27,9 +19,12 @@ void Researcher::hack() {
             Experiment* tempExpr = experiment;
             
             h->perform(tempExpr, decisionStrategy);
-            experimentsList.push_back(*tempExpr);
+//            experimentsList.push_back(*tempExpr);
+//
+//            sub = decisionStrategy->selectOutcome(*tempExpr);
             
-            sub = decisionStrategy->selectOutcome(*tempExpr);
+            decisionStrategy->verdict(*tempExpr,
+                                      DecisionStage::DoneHacking);
         }
         else if (hackingStyle == onCopy){
             // Sending the copy
@@ -37,15 +32,19 @@ void Researcher::hack() {
             
             h->perform(&copiedExpr, decisionStrategy);
             copiedExpr.isHacked = true;
-            experimentsList.push_back(copiedExpr);
+//            experimentsList.push_back(copiedExpr);
+//
+//            sub = decisionStrategy->selectOutcome(copiedExpr);
             
-            sub = decisionStrategy->selectOutcome(copiedExpr);
+            decisionStrategy->verdict(copiedExpr,
+                                      DecisionStage::DoneHacking);
         }
         
-        submissionsList.push_back(sub);
+//        submissionsList.push_back(sub);
         
         // Checking if the researcher is happy with the current result
-        decisionStrategy->verdict(submissionsList, experimentsList);
+//        decisionStrategy->verdict(submissionsList, experimentsList);
+        
         
         // If the researcher statisfied, hacking routine will be stopped
         if (!decisionStrategy->isStillHacking){
@@ -59,7 +58,7 @@ void Researcher::hack() {
 
 void Researcher::prepareTheSubmission() {
     
-    decisionStrategy->verdict(submissionsList, experimentsList);
+    // decisionStrategy->verdict(submissionsList, experimentsList);
 
     submissionRecord = decisionStrategy->finalSubmission;
 
@@ -89,10 +88,6 @@ void Researcher::setDecisionStrategy(DecisionStrategy* d) {
  * finally generating the data using the DataGenStrategy
  */
 void Researcher::prepareResearch() {
-    
-    // Cleanup if necessary
-    this->experimentsList.clear();
-    this->submissionsList.clear();
     
     // Randomize if necessary
     // TODO: I need to handle this better because nobs is being assigned in the
@@ -124,14 +119,17 @@ void Researcher::performResearch(){
     this->experiment->runTest();
     
     // See #50
-    Experiment e = *this->experiment;
-    this->experimentsList.push_back(e);
-    this->submissionsList.push_back(this->decisionStrategy->selectOutcome(e));
+    // Experiment e = *this->experiment;
+    // this->experimentsList.push_back(e);
+    // this->submissionsList.push_back(this->decisionStrategy->selectOutcome(e));
+
+    bool isPublishable = this->decisionStrategy->verdict(*this->experiment,
+                                                         DecisionStage::Initial);
     
     // I think I need to make a decision here whether the result is signficant or not,
     // or it complies with researcher's preference, if not then, I should hack
     
-    if (this->isHacker){
+    if (this->isHacker && !isPublishable){
         this->hack();
     }
 }
@@ -145,8 +143,13 @@ void Researcher::publishResearch(){
     
     // hack 3
     
-    this->prepareTheSubmission();
+    this->decisionStrategy->verdict(*this->experiment,
+                                    DecisionStage::Final);
+
+    this->journal->review(this->decisionStrategy->finalSubmission);
+   
+    // this->prepareTheSubmission();
     
-    this->submitToJournal();
+    // this->submitToJournal();
     
 }

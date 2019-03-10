@@ -11,7 +11,26 @@
 #include "SubmissionRecord.h"
 #include "Experiment.h"
 
-enum class ResearcherPreference {
+/**
+ DecisionStage enum indicates on what stages of the _research_ the Researcher is
+ making decision in. 
+ 
+ */
+enum class DecisionStage {
+    Initial,
+    WhileHacking,
+    DoneHacking,
+    Final
+};
+
+/**
+ An enum class representing different prefeneces when it comse
+ to selecting an outcome. The DecisionStrategy can choose to
+ report Pre-registered outcome, or any other outcome based on
+ certain criteria, e.g., MinPvalue, where `researcher->decisionStrategy` will prefer an outcome with the lowest
+ p-value.
+ */
+enum class DecisionPreference {
     PreRegisteredOutcome,
     MinSigPvalue,
     MinPvalue,
@@ -20,27 +39,29 @@ enum class ResearcherPreference {
     MinPvalueMaxEffect
 };
 
-const std::map<std::string, ResearcherPreference>
+const std::map<std::string, DecisionPreference>
 stringToResearcherPreference = {
-    {"Pre-registered Outcome", ResearcherPreference::PreRegisteredOutcome},
-    {"Min Sig P-value", ResearcherPreference::MinSigPvalue},
-    {"Min P-value", ResearcherPreference::MinPvalue},
-    {"Max Sig Effect", ResearcherPreference::MaxSigEffect},
-    {"Max Effect", ResearcherPreference::MaxEffect},
-    {"Min P-value, Max Effect", ResearcherPreference::MinPvalueMaxEffect}
+    {"Pre-registered Outcome", DecisionPreference::PreRegisteredOutcome},
+    {"Min Sig P-value", DecisionPreference::MinSigPvalue},
+    {"Min P-value", DecisionPreference::MinPvalue},
+    {"Max Sig Effect", DecisionPreference::MaxSigEffect},
+    {"Max Effect", DecisionPreference::MaxEffect},
+    {"Min P-value, Max Effect", DecisionPreference::MinPvalueMaxEffect}
 };
+
+
 
 /**
  \brief Abstract class for different decision strategies.
  
  */
 class DecisionStrategy {
-
+    
 public:
     
     static DecisionStrategy* buildDecisionStrategy(json& config);
     
-    ResearcherPreference selectionPref;     ///< Indicates researcher's selection preference on how he choose the outcome variable for submission.
+    DecisionPreference selectionPref;     ///< Indicates researcher's selection preference on how he choose the outcome variable for submission.
     bool isStillHacking = true;         ///< If `true`, the Researcher will continue traversing through the hacknig methods, otherwise, he/she will stop the hacking and prepare the finalSubmission. It will be updated on each call of verdict(). Basically verdict() decides if the Researcher is happy with the submission record or not.
     
     int preRegGroup = 0;            ///< Indicates the pre-registered outcome in the case where the Researcher prefers the PreRegisteredOutcome
@@ -48,7 +69,7 @@ public:
     
     // TODO: I don't use this at the moment, I basically thought I need it for cases like
     // MinSigPvalue
-    double alpha = 0.05;
+//    double alpha = 0.05;
     
     virtual Submission selectOutcome(Experiment& experiment) = 0;
     
@@ -63,6 +84,8 @@ public:
     
     virtual void verdict(std::vector<Submission>&, std::vector<Experiment>&) = 0;
     
+    virtual bool verdict(Experiment&, DecisionStage) = 0;
+    
     //    virtual void finalDecision();
     
     Submission _select_Outcome(Experiment&);
@@ -72,18 +95,23 @@ public:
  \brief Implementation of an impatient researcher. In this case, the Researcher will stop as soon as find a significant result and will not continue exploring other hacking methods in his arsenal.
  */
 class ImpatientDecisionMaker : public DecisionStrategy {
-
+    
 public:
-    ImpatientDecisionMaker(int pre_registered_group,
-                           double alpha,
-                           ResearcherPreference selection_pref){
-        preRegGroup = pre_registered_group;
+    
+    std::vector<Submission> submissionsPool;
+    std::vector<Experiment> experimentsPool;
+    
+    ImpatientDecisionMaker(DecisionPreference selection_pref){
         selectionPref = selection_pref;
     };
     
-    Submission selectOutcome(Experiment& experiment) {
+    Submission selectOutcome(Experiment &experiment) {
         return _select_Outcome(experiment);
     };
+    
+    bool isPublishable(const Submission &sub){
+        return sub.isSig();
+    }
     
     void verdict(std::vector<Submission>& submissions, std::vector<Experiment>& experiments) {
         
@@ -95,6 +123,63 @@ public:
         }else{
             isStillHacking = true;
         }
+    }
+    
+    void clearPools(){
+        experimentsPool.clear();
+        submissionsPool.clear();
+    }
+    
+    bool verdict(Experiment &experiment, DecisionStage stage) {
+        switch(stage){
+            case DecisionStage::Initial:
+                {
+                    Submission sub = selectOutcome(experiment);
+        
+                    // Preparing pools anyway
+                    experimentsPool.push_back(experiment);
+                    submissionsPool.push_back(sub);
+        
+                    if (isPublishable(sub)){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+                break;
+            case DecisionStage::WhileHacking:
+            {
+                bool publishable = isPublishable(selectOutcome(experiment));
+                    isStillHacking = publishable;
+                return publishable;
+            }
+                break;
+            case DecisionStage::DoneHacking:
+                {
+                    Submission sub = selectOutcome(experiment);
+                    if (isPublishable(sub)){
+                        experimentsPool.push_back(experiment);
+                        submissionsPool.push_back(sub);
+                        
+                        return true;
+                    }else{
+                        isStillHacking = true;
+                        return isStillHacking;
+                    }
+                }
+                break;
+            case DecisionStage::Final:
+                // TODO: This can be implemented differenly if necessary
+            {
+                finalSubmission = submissionsPool.back();
+                experimentsPool.clear();
+                submissionsPool.clear();
+                return true;
+                
+            }
+                break;
+        }
+        
     }
     
 };
@@ -115,9 +200,13 @@ public:
         return Submission(experiment, preRegGroup);
     };
     
-    virtual void verdict(std::vector<Submission>& submissions, std::vector<Experiment>& experiments) {
+    void verdict(std::vector<Submission>& submissions, std::vector<Experiment>& experiments) {
         isStillHacking = true;
     }
+    
+    bool verdict(Experiment &experiment, DecisionStage stage) {
+        return true;
+    };
 
 //    Submission selectBetweenSubmission(std::vector<Submission>& submissions){
 //

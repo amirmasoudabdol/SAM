@@ -23,7 +23,7 @@
     "--n-dep-vars": 3,
     "--n-items": 3,
     "--n-obs": 25,
-    "--means": 0.145,
+    "--means": 0.25,
     "--vars": 0.5,
     "--covs": 0.00,
     "--loadings": 0.7,
@@ -36,29 +36,23 @@
     }
   },
   "Researcher Parameters": {
-    "--is-phacker": false,
+    "--is-phacker": true,
     "--p-hacking-methods": [
         {
           "type": "Outcome Switching",
           "preference": "Min P-value"
         },
         {
-          "type": "SD Outlier Removal",
+          "type": "Optional Stopping",
           "mode": "Recursive",
           "level": "dv",
-          "order": "max first",
-          "method": "One by One",
-          "num": 2,
-          "n_attempts": 4,
-          "max_attempts": 10,
-          "min_observations": 20,
-          "multipliers": [1]
+          "num": 3,
+          "n_attempts": 3,
+          "max_attempts": 10
         }
     ],
     "--decision-strategy": {
       "type": "Impatient Decision Maker",
-      "params": 1,
-      "alpha": 0.5,
       "preference": "Min P-value"
     }
   }

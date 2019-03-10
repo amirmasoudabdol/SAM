@@ -18,10 +18,17 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)
     {
-        case HackingMethod::OutcomeSwitching   : os << "Outcome Switching";    break;
-        case HackingMethod::OptionalStopping   : os << "Optional Stopping"; break;
-        case HackingMethod::OutlierRemoval     : os << "Outlier Removal";  break;
-        default    : os.setstate(std::ios_base::failbit);
+        case HackingMethod::OutcomeSwitching:
+            os << "Outcome Switching";
+            break;
+        case HackingMethod::OptionalStopping:
+            os << "Optional Stopping";
+            break;
+        case HackingMethod::OutlierRemoval:
+            os << "Outlier Removal";
+            break;
+        default:
+            os.setstate(std::ios_base::failbit);
     }
     return os;
 }
@@ -54,7 +61,7 @@ void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisio
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
     
-    Submission tmpSub;
+//    Submission tmpSub;
     
     for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
         
@@ -65,9 +72,12 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         experiment->calculateEffects();
         experiment->runTest();
         
-        tmpSub = decisionStrategy->selectOutcome(*experiment);
+//        tmpSub = decisionStrategy->selectOutcome(*experiment);
+//
+//        if (tmpSub.isSig())
+//            return;
         
-        if (tmpSub.isSig())
+        if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking))
             return;
     }
     
@@ -99,7 +109,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
-    Submission tmpSub;
+//    Submission tmpSub;
     int res = 0;
     
     for (auto &d : _multipliers) {
@@ -115,12 +125,15 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             experiment->calculateEffects();
             experiment->runTest();
             
-            tmpSub = decisionStrategy->selectOutcome(*experiment);
+//            tmpSub = decisionStrategy->selectOutcome(*experiment);
+//
+////            std::cout << tmpSub.pvalue << ", " <<  t << "\n" ;
+//
+//            if (tmpSub.isSig())
+//                return;
             
-//            std::cout << tmpSub.pvalue << ", " <<  t << "\n" ;
-            
-            if (tmpSub.isSig())
-                return;
+            if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking))
+                return ;
             
         }
     }

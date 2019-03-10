@@ -34,6 +34,7 @@ public:
     arma::Row<double> statistics;
     arma::Row<double> pvalues;
     arma::Row<double> effects;
+    arma::Row<short> sigs;
     
     std::vector<arma::Row<double> > measurements;
     

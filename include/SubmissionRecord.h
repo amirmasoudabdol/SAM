@@ -37,7 +37,7 @@ public:
     double tcov;
     
     // Journal's Parameters
-    double alpha = 0.05;         // FIXME: I'm hardcoded, this is a tricky problem, remember all the debuggin. I
+//    double alpha = 0.05;         // FIXME: I'm hardcoded, this is a tricky problem, remember all the debuggin. I
     double pubbias;
 
     Submission() = default;
@@ -58,7 +58,8 @@ public:
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
         
-        sig = (pvalue < alpha);
+//        sig = (pvalue < alpha);
+        sig = e.sigs[index];
         
         // CHECK: This will cause problem if I do GroupPooling!
         // BUG: This is also a problem if I'm working with the LatentModel because I'm
@@ -78,7 +79,7 @@ public:
     /**
      @return `true` if the Submission is significant, `false` otherwise
      */
-    bool isSig() {
+    const bool isSig() const {
         return sig;
     }
 

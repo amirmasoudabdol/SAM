@@ -46,6 +46,7 @@ void Experiment::initResources() {
     statistics.zeros(setup.ng);
     pvalues.zeros(setup.ng);
     effects.zeros(setup.ng);
+    sigs.zeros(setup.ng);
 }
 
 void Experiment::calculateStatistics() {
@@ -81,7 +82,7 @@ Experiment::Experiment(json &config) {
 
     this->dataStrategy = DataGenStrategy::buildDataStrategy(setup);
     
-    this->testStrategy = TestStrategy::buildTestStrategy(setup);
+    this->testStrategy = TestStrategy::buildTestStrategy(config["Experiment Parameters"]["--test-strategy"]);
     
 }
 

@@ -35,9 +35,6 @@ public:
     bool isHacker = false;
     
     HackingStyle hackingStyle = onCopy;
-    
-	std::vector<Experiment> experimentsList;
-	std::vector<Submission> submissionsList;
 
     Submission submissionRecord;
 
@@ -67,7 +64,7 @@ public:
     void performResearch();
     void publishResearch();
     
-    ResearcherPreference selectionPref = ResearcherPreference::PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
+    DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
     
     // std::string decisionStrategy = "asap";
     
@@ -110,7 +107,7 @@ private:
 
     DecisionStrategy* _decisionStrategy;
 
-    ResearcherPreference _researcherPreference;
+    DecisionPreference _researcherPreference;
 
 
 public:
@@ -159,7 +156,7 @@ public:
     };
 
 
-    Builder& setResearcherPreference(ResearcherPreference pref){
+    Builder& setResearcherPreference(DecisionPreference pref){
         // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
         this->_researcherPreference = pref;
         return *this;
