@@ -39,13 +39,7 @@ void Researcher::hack() {
             decisionStrategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);
         }
-        
-//        submissionsList.push_back(sub);
-        
-        // Checking if the researcher is happy with the current result
-//        decisionStrategy->verdict(submissionsList, experimentsList);
-        
-        
+                
         // If the researcher statisfied, hacking routine will be stopped
         if (!decisionStrategy->isStillHacking){
             break;

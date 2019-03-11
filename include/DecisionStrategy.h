@@ -71,8 +71,6 @@ public:
     
     virtual Submission selectOutcome(Experiment& experiment) = 0;
     
-    virtual void verdict(std::vector<Submission>&, std::vector<Experiment>&) = 0;
-    
     virtual bool verdict(Experiment&, DecisionStage) = 0;
     
     /**
@@ -106,18 +104,6 @@ public:
     
     bool isPublishable(const Submission &sub){
         return sub.isSig();
-    }
-    
-    void verdict(std::vector<Submission>& submissions, std::vector<Experiment>& experiments) {
-        
-        finalSubmission = submissions.back();
-        
-        // TODO: Move the significance test to the Submission
-        if (submissions.back().isSig()) {
-            isStillHacking = false;
-        }else{
-            isStillHacking = true;
-        }
     }
     
     void clearPools(){
@@ -192,10 +178,6 @@ public:
     Submission selectOutcome(Experiment& experiment) {
         return Submission(experiment, preRegGroup);
     };
-    
-    void verdict(std::vector<Submission>& submissions, std::vector<Experiment>& experiments) {
-        isStillHacking = true;
-    }
     
     bool verdict(Experiment &experiment, DecisionStage stage) {
         return true;
