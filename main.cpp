@@ -5,6 +5,8 @@
 #include <memory>
 #include <iomanip>
 
+#include <main.h>
+
 #include "Utilities.h"
 #include "docopt.h"
 #include "tqdm/tqdm.h"
@@ -75,6 +77,11 @@ using json = nlohmann::json;
 
 tqdm progressBar;
 
+bool VERBOSE;
+bool PROGRESS;
+bool DEBUG;
+bool OUTPUT;
+
 int main(int argc, const char** argv){
     
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
@@ -91,11 +98,11 @@ int main(int argc, const char** argv){
 }
 
 void runSimulation(json& simConfig){
-
-    bool verbose = simConfig["Simulation Parameters"]["--verbose"];
-    bool progress = simConfig["Simulation Parameters"]["--progress"];
-    bool debug = simConfig["Simulation Parameters"]["--debug"];
-    bool output = simConfig["Simulation Parameters"]["--save-output"];
+    
+    VERBOSE = simConfig["Simulation Parameters"]["--verbose"];
+    PROGRESS = simConfig["Simulation Parameters"]["--progress"];
+    DEBUG = simConfig["Simulation Parameters"]["--debug"];
+    OUTPUT = simConfig["Simulation Parameters"]["--save-output"];
 
     if (simConfig["Simulation Parameters"]["--master-seed"] == 0) {
         srand(time(NULL));
@@ -133,22 +140,22 @@ void runSimulation(json& simConfig){
             researcher.publishResearch();
             
             
-            if (progress)
+            if (PROGRESS)
                 progressBar.progress(i, nSims);
 
         }
         
-        if (output){
+        if (OUTPUT){
             researcher.journal->saveSubmissions(i, csvWriter);
         }
         
         researcher.journal->clear();
     }
 
-    if (progress)
+    if (PROGRESS)
         progressBar.finish();
     
-    if (output){
+    if (OUTPUT){
         csvWriter.close();
         std::cout << "\nSaved to: " << outputfilename << "\n";
     }
