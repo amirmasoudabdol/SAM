@@ -1,7 +1,7 @@
 {
   "Simulation Parameters":{
     "--debug": true,
-    "--verbose": false,
+    "--verbose": true,
     "--progress": false,
     "--n-sims": 1,
     "--master-seed": 42,

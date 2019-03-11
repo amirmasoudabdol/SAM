@@ -17,13 +17,20 @@
 
 using json = nlohmann::json;
 
+/**
+ * \brief      Specifying different type of expeirments.
+ */
 enum class ExperimentType {
-    LinearModel,
-    LatentModel
+    LinearModel,    ///< Linear Model, with or without covarinace
+    LatentModel     ///< Latent Model or Structural Equation Model
 };
 
+/**
+ * \brief      Specifying the significant testing method
+ */
 enum class TestMethod {
-    TTest
+    TTest,           ///< T-test
+    FTest            ///< F-test
 };
 
 const std::map<std::string, ExperimentType>
@@ -83,7 +90,6 @@ public:
     void randomize_nObs();
 
     // Multivariate Experiments
-//    bool isCorrelated = false;
     double cov = 0;
     arma::Mat<double> true_sigma;
     

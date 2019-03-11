@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+#include <stdexcept>
 
 HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
@@ -22,9 +23,6 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)
     {
-        case HackingMethod::OutcomeSwitching:
-            os << "Outcome Switching";
-            break;
         case HackingMethod::OptionalStopping:
             os << "Optional Stopping";
             break;
@@ -35,25 +33,6 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
             os.setstate(std::ios_base::failbit);
     }
     return os;
-}
-
-/**
- This has been deprecated. The outcome switching is now implemeted as part of DecisionStrategy
- where the researcher specifies how he'd approach selecting an outcome. This is determinded by
- ResearcherPreference.
- */
-void OutcomeSwitching::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
-
-    // long selectedOutcome = 0;
-    
-    // if (_method == "Min P-value"){
-    //     selectedOutcome = std::distance(experiment->pvalues.begin(), std::min_element(experiment->pvalues.begin(), experiment->pvalues.end()));
-
-    // }else if (_method == "MaxEffect"){
-    //     selectedOutcome = std::distance(experiment->effects.begin(), std::max_element(experiment->effects.begin(), experiment->effects.end()));
-
-    // }
-    
 }
 
 /**
@@ -202,8 +181,7 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
     }else if (type == "Group Pooling") {
         return new GroupPooling("first");
     }else{
-        // This is not ok, this final else should be resolved somehow
-        return new OutcomeSwitching("none");
+        throw std::invalid_argument("Cannot recognize the p-hacking method.");
     }
     
 }

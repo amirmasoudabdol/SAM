@@ -16,13 +16,11 @@
 using json = nlohmann::json;
 
 enum class HackingMethod {
-    OutcomeSwitching,
     OptionalStopping,
     OutlierRemoval
 };
 const std::map<std::string, HackingMethod>
 stringToHackingMethod = {
-    {"Outcome Switching", HackingMethod::OutcomeSwitching},
     {"Optional Stopping", HackingMethod::OptionalStopping},
     {"SD Outlier Removal", HackingMethod::OutlierRemoval}
 };
@@ -57,27 +55,6 @@ public:
     // wants to run several hacking over one experiment. I guess for this to be
     // done properly I need to do implement some sort of Template Pattern.
     virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
-};
-
-/**
- \brief Declration of Outcome Swithcing.
- 
- \note This has been deprecated.
- */
-class OutcomeSwitching : public HackingStrategy {
-public:
-
-    OutcomeSwitching();
-    OutcomeSwitching(std::string method) : _method(method) {
-
-    };
-    
-    // Submission hackedSubmission;
-    // TODO: I don't think it's even necessary for the `perform()` to return a Submission
-    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
-
-private:
-    std::string _method = "Min P-value";
 };
 
 

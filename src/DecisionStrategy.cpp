@@ -4,6 +4,11 @@
 
 #include "DecisionStrategy.h"
 
+/**
+ * Pure deconstructor of DecisionStrategy.
+ * This is necessary for proper deconstruction of derived
+ * classes.
+ */
 DecisionStrategy::~DecisionStrategy() {
     // pure deconstructor
 };

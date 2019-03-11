@@ -84,7 +84,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else{
         throw std::invalid_argument("--vars is invalid or not provided.");
     }
-    std::cout << true_vars;
+    // std::cout << true_vars;
     
     // I can drop this and only check if `cov == 0` and assume that the user wants
     // to run a correlated model
@@ -118,7 +118,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
             throw std::invalid_argument("--covs is invalid or not provided.");
         }
 //    }
-    std::cout << true_sigma << std::endl;
+    // std::cout << true_sigma << std::endl;
 
     // Factor Loading ...
     // CHECK: I think there are `ni` of these,

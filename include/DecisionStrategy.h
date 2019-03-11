@@ -69,26 +69,21 @@ public:
     int preRegGroup = 0;            ///< Indicates the pre-registered outcome in the case where the Researcher prefers the PreRegisteredOutcome
     Submission finalSubmission;     ///< This will set to the final submission recrod that the Researcher is satisfied about. At the same time, isStillHacking will set to `false`.
     
-    // TODO: I don't use this at the moment, I basically thought I need it for cases like
-    // MinSigPvalue
-//    double alpha = 0.05;
-    
     virtual Submission selectOutcome(Experiment& experiment) = 0;
-    
-    // These two are quite similar, and they are being used in the prepareForSubmission
-    // routine where the researcher makes the final decision, in this way, based on how
-    // aggressive his decision making is, he can choose between travesing all groups — all
-    // the way back, through all hacking — or travese only between the submissions that he
-    // has previously selected.
-    // Check *Researcher* for more info on more complex setup
-//    virtual Submission selectBetweenSubmission(std::vector<Submission>& submissions) = 0;
-//    virtual Submission selectBetweenExperiments(std::vector<Experiment>& experiments) = 0;
     
     virtual void verdict(std::vector<Submission>&, std::vector<Experiment>&) = 0;
     
     virtual bool verdict(Experiment&, DecisionStage) = 0;
     
-    Submission _select_Outcome(Experiment&);
+    /**
+     * \brief      Based on the DecisionPreference, it'll select the outcome
+     * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece will
+     *
+     * \param      experiment  { parameter_description }
+     *
+     * \return     A copy of the selected outcome
+     */
+    Submission _select_Outcome(Experiment &experiment);
 };
 
 /**
@@ -187,8 +182,6 @@ public:
 
 class ReportPreregisteredGroup : public DecisionStrategy {
 
-//    int _pre_registered_group = 0;
-
 public:
 
     
@@ -207,14 +200,6 @@ public:
     bool verdict(Experiment &experiment, DecisionStage stage) {
         return true;
     };
-
-//    Submission selectBetweenSubmission(std::vector<Submission>& submissions){
-//
-//        return submissions.back(); // FIXME: For now this is alright!
-//    };
-//    Submission selectBetweenExperiments(std::vector<Experiment>& experiments){
-//        return Submission();
-//    };
     
 };
 
