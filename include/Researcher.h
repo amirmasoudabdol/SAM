@@ -155,6 +155,14 @@ public:
     
     Builder& setExperimentSetup(ExperimentSetup);
     Builder& setExperiment(Experiment);
+    Builder& setDataStrategy(DataGenStrategy *dgs){
+        this->_experiment->dataStrategy = dgs;
+        return *this;
+    }
+    Builder& setTestStrategy(TestStrategy *ts){
+        this->_experiment->testStrategy = ts;
+        return *this;
+    };
     Builder& setJournal(Journal j){
         this->_journal = &j;
         return *this;
