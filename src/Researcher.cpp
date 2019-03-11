@@ -19,9 +19,6 @@ void Researcher::hack() {
             Experiment* tempExpr = experiment;
             
             h->perform(tempExpr, decisionStrategy);
-//            experimentsList.push_back(*tempExpr);
-//
-//            sub = decisionStrategy->selectOutcome(*tempExpr);
             
             decisionStrategy->verdict(*tempExpr,
                                       DecisionStage::DoneHacking);
@@ -32,9 +29,6 @@ void Researcher::hack() {
             
             h->perform(&copiedExpr, decisionStrategy);
             copiedExpr.isHacked = true;
-//            experimentsList.push_back(copiedExpr);
-//
-//            sub = decisionStrategy->selectOutcome(copiedExpr);
             
             decisionStrategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);
@@ -47,7 +41,6 @@ void Researcher::hack() {
         
     }
     
-    // Or, I can run all of them, and then decide
 }
 
 

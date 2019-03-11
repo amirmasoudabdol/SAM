@@ -57,7 +57,8 @@ public:
     ExperimentType experimentType;
     TestMethod testMethod;
     
-    int nc = 1;     ///< Number of experimental conditions, e.g., treatment 1, treatment 2.
+    //! Number of experimental conditions, e.g., treatment 1, treatment 2.
+    int nc = 1;
     int nd = 3;     ///< Number of _dependent variables_ in each experimental condition.
     int ni = 0;     ///< Number of items for each latent variable, if `isFactorModel` is `true`.
     int ng;         ///< \brief Total number of groups
