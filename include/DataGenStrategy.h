@@ -33,6 +33,8 @@ public:
 
     static DataGenStrategy* buildDataStrategy(ExperimentSetup& setup);
     
+    virtual ~DataGenStrategy() = 0;
+    
     virtual void genData(Experiment* experiment) = 0;
     virtual std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
     virtual arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;

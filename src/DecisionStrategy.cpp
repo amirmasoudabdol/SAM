@@ -4,6 +4,9 @@
 
 #include "DecisionStrategy.h"
 
+DecisionStrategy::~DecisionStrategy() {
+    // pure deconstructor
+};
 
 std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
 {

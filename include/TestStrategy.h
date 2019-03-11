@@ -51,6 +51,8 @@ public:
     
     static TestStrategy* buildTestStrategy(json &config);
     
+    virtual ~TestStrategy() = 0;
+    
     virtual void run(Experiment* experiment) = 0;
 
 };

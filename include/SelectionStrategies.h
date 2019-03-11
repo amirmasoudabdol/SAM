@@ -28,6 +28,8 @@ class SelectionStrategy{
 public:
     
     static SelectionStrategy* buildSelectionStrategy(json& config);
+    
+    virtual ~SelectionStrategy() = 0;
 
     virtual bool review(Submission& s) = 0 ;
 };

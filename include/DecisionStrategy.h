@@ -61,6 +61,8 @@ public:
     
     static DecisionStrategy* buildDecisionStrategy(json& config);
     
+    virtual ~DecisionStrategy() = 0;
+    
     DecisionPreference selectionPref;     ///< Indicates researcher's selection preference on how he choose the outcome variable for submission.
     bool isStillHacking = true;         ///< If `true`, the Researcher will continue traversing through the hacknig methods, otherwise, he/she will stop the hacking and prepare the finalSubmission. It will be updated on each call of verdict(). Basically verdict() decides if the Researcher is happy with the submission record or not.
     

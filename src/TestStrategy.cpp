@@ -13,6 +13,10 @@
 
 #include <Experiment.h>
 
+TestStrategy::~TestStrategy() {
+    // Pure deconstructor
+};
+
 using boost::math::students_t;
 
 const std::map<std::string, TestSide>

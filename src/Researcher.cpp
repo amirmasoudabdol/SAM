@@ -56,17 +56,7 @@ void Researcher::hack() {
     // Or, I can run all of them, and then decide
 }
 
-// void Researcher::prepareTheSubmission() {
-    
-    // decisionStrategy->verdict(submissionsList, experimentsList);
 
-    // submissionRecord = decisionStrategy->finalSubmission;
-
-// }
-
-// void Researcher::submitToJournal() {
-//	journal->review(submissionRecord);
-// }
 
 void Researcher::setJournal(Journal* j) {
 	journal = j;

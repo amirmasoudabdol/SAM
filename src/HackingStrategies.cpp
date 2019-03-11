@@ -14,6 +14,10 @@
 #include <numeric>
 #include <cmath>
 
+HackingStrategy::~HackingStrategy() {
+    // Pure deconstructor
+};
+
 std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)

@@ -4,6 +4,10 @@
 
 #include <SelectionStrategies.h>
 
+SelectionStrategy::~SelectionStrategy() {
+    // Pure deconstructor
+}
+
 
 
 //@param s A submission record to be reviewed

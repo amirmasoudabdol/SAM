@@ -9,6 +9,9 @@
 #include "Utilities.h"
 #include "Experiment.h"
 
+DataGenStrategy::~DataGenStrategy() {
+    // Pure deconstructor
+}
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
     experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means,

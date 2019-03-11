@@ -66,16 +66,7 @@ public:
     
     DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
     
-    // std::string decisionStrategy = "asap";
-    
     void setDecisionStrategy(DecisionStrategy* d);
-    
-//    DecisionStrategy* finalDecision;
-    // The `finalDecision` can be used alongside the `decisionStrategy`. While
-    // `decisionStrategy` is being used to construct a submission from an experiment,
-    // the `finalDecision` can be used to travese between all other submisions, and
-    // pick the ultimate best. Having two decision strategy allow for more detail
-    // implementation.
 	
     // This could be renamed to something like, selectThePreferedSubmission()
     void prepareTheSubmission();
