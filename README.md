@@ -1,8 +1,23 @@
 # SAM
 
-SAM is an extensible 
+SAM is an extensible p-hacking simulator. It provides different interfaces and APIs to design and experiment different statistical experiment and study the effects of various *p*-hacking method, a.k.a *questionable research practices*, on a defined experiment. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
 
-## SAM’s Compartments
+While there are a few conventional and well-known p-hacking methods are provided out of the box, the flexibility of SAM allows the user to define any specific methods, e.g., modifying measurements, and apply it on the currently existing experiment.
+
+In this vignette, I’ll describe the underlying design of SAM and some of its capabilities with a few examples. 
+
+## Scientific Research Process
+
+The process of producing a scientific research is often a cumbersome and complicated process. A scientific research starts by an hypothesis where a **Researcher** writes down his idea about how a process or system works. In order to test his hypothesis, he/she designs an experiment involving certain parameters. After the **Experiment Setup** is finalized. The experiment is being conducted and researcher collects certain set of datasets quantifying the result of the **Experiment**. The next stage of scientific research is processing the data, analyzing the data and coming up with a conclusion whether the initial hypothesis, *pre-registered hypothesis*, was correct or not. If the result is considered satisfactory and informative, despite the correctness of the initial hypothesis, the researcher will select a **Journal** and submit his research in the form of a **Publication** to be reviewed by journal’s criteria. Finally, the Journal will decide if the submitted result worth publishing or not. 
+
+As it’s been shown and discussed [cite, cite], this process is often long and prune to many errors in every different stage. The complexity of the process as well as large  numbers of degrees of freedom on the hand of a Researcher and Journal will affect the quality of research and publications. Researchers intentionally or unintentionally may make mistakes and Journals may select particular set of publications based on wrong or outdated criteria and as a result resources will be wasted and our selected publications might be biased one way or another. 
+
+Studying this aforementioned interaction between a Research, his/her Researcher, the Journal, *publishing medium*, and finally the outcome, *Knowledge*, is proven to be a challenging task [cite]. The field of meta-analysis has grown in popularity, in recent years, in order to try to evaluate and aggregate our collective knowledge of certain hypothesis. In this process, we discovered the effect of researchers degrees of freedoms on published results and journal’s bias toward “positive and novel” results on our knowledge [cite]. It’s been discovered that process of adding new data points to the experiment — after the initial data collection, a process known as optional stopping — will makes it easier for a researcher to achieve significant results, and therefore gets his/her research published. As a result, the aggregated outcome around a specific theory will be skewed toward incorrect research. 
+
+
+
+
+## SAM’s Main Component
 
 SAM consists of 3 main compartments, *Experiment, Researcher* and *Journal*. 
 
