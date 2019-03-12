@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( r_welch_t_test )
     arma::rowvec A = arma::regspace<arma::rowvec>(1, 10);
     arma::rowvec B = arma::regspace<arma::rowvec>(7, 20);
     
-    TestResult res = t_test(A, B);
+    TestResult res = t_test(A, B, 0.05, TestSide::TwoSide);
     
     BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
 }

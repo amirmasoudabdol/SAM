@@ -5,15 +5,12 @@
 #include <TestStrategy.h>
 #include "Utilities.h"
 #include <iostream>
-// #include "gsl/gsl_statistics.h"
-// #include "gsl/gsl_randist.h"
 
 #include <boost/math/distributions/students_t.hpp>
 #include <iomanip>
 #include <cmath>
 
 #include <Experiment.h>
-// #include <armadillo>
 
 TestStrategy::~TestStrategy() {
     // Pure deconstructor
@@ -23,7 +20,7 @@ using boost::math::students_t;
 
 const std::map<std::string, TestSide>
 stringToTestSide = {
-    {"One Side", TestSide::OneSide},
+    {"One Side", TestSide::Greater},
     {"Two Side", TestSide::TwoSide}
 };
 
@@ -91,69 +88,6 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestS
 
 }
 
-TestResult two_samples_welch_t_test(double Sm1, double Sd1, int Sn1,
-                                    double Sm2, double Sd2, int Sn2,
-                                    double alpha, TestSide side){
-
-    bool sig = false;
-    
-    
-    // Degrees of freedom:
-    double v = std::pow(Sd1, 2) / Sn1 + std::pow(Sd2, 2) / Sn2;
-    v *= v;
-    double t1 = std::pow(Sd1, 4) / (std::pow(Sn1, 2) * (Sn1 - 1));
-    double t2 = std::pow(Sd2, 4) / (std::pow(Sn2, 2) * (Sn2 - 1));
-    v = v / (t1 + t2);
-    
-    // t-statistic:
-    double t_stat = (Sm1 - Sm2) / sqrt(Sd1 * Sd1 / Sn1 + Sd2 * Sd2 / Sn2);
-    
-    //
-    // Define our distribution, and get the probability:
-    //
-    students_t dist(v);
-    double q = cdf(complement(dist, fabs(t_stat)));
-    
-    //
-    // Finally print out results of alternative hypothesis:
-    //
-    
-    if (side == TestSide::TwoSide){
-        // Sample 1 Mean != Sample 2 Mean
-        if(q < alpha / 2){
-            // Alternative "NOT REJECTED"
-            sig = true;
-        }else{
-            // Alternative "REJECTED"
-            sig = false;
-        }
-    }
-    
-    if (side == TestSide::OneSide){
-        // Sample 1 Mean <  Sample 2 Mean
-        if(cdf(dist, t_stat) < alpha){
-            // Alternative "NOT REJECTED"
-            sig = true;
-        }else{
-            // Alternative "REJECTED"
-            sig = false;
-        }
-    }
-    
-    // Don't think that I need this yet!
-    //   // Sample 1 Mean >  Sample 2 Mean
-    //   if(cdf(complement(dist, t_stat)) < alpha){
-    //      // Alternative "NOT REJECTED"
-    //       sig = true;
-    //   }else{
-    //       sig = false;
-    //      // Alternative "REJECTED"
-    //   }
-    
-    return TestResult(t_stat, q, 1, sig);    
-}
-
-
 
 /**
  Caculate the degress of freedom to achieve a significance result with the given alpha
@@ -168,7 +102,7 @@ double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestS
     
     // calculate df for one-sided or two-sided test:
     double df = students_t::find_degrees_of_freedom(fabs(M - Sm),
-                                                    (side == TestSide::OneSide) ? alpha : alpha / 2. ,
+                                                    (side == TestSide::Greater) ? alpha : alpha / 2. ,
                                                     alpha,
                                                     Sd);
     
@@ -176,10 +110,20 @@ double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestS
     return ceil(df) + 1;
 }
 
-TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2){
-    return two_samples_welch_t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
-                                           arma::mean(dt2), arma::stddev(dt2), dt2.size(),
-                                           0.05, TestSide::TwoSide);
+TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2, double alpha, TestSide side){
+    return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
+                   arma::mean(dt2), arma::stddev(dt2), dt2.size(),
+                    alpha, side);
+}
+
+
+TestResult
+t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestSide side){
+    if (Sd1 == Sd2) {
+        return two_samples_t_test_equal_sd(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2, alpha, side);
+    }else{
+        return two_samples_t_test_unequal_sd(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2, alpha, side);
+    }
 }
 
 
@@ -246,7 +190,7 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
     //    sig = false;
     //    }
     
-    if (side == TestSide::OneSide){
+    if (side == TestSide::Greater){
         // Mean  > M
         if(cdf(dist, t_stat) > alpha){
             // Alternative "NOT REJECTED"
@@ -316,7 +260,7 @@ TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, dou
         }
     }
     
-    if (side == TestSide::OneSide){
+    if (side == TestSide::Greater){
         // Sample 1 Mean <  Sample 2 Mean
         if(cdf(dist, t_stat) < alpha){
             // Alternative "NOT REJECTED"
@@ -400,7 +344,7 @@ TestResult two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, d
         }
     }
     
-    if (side == TestSide::OneSide){
+    if (side == TestSide::Greater){
         // Sample 1 Mean <  Sample 2 Mean
         if(cdf(dist, t_stat) < alpha){
             // Alternative "NOT REJECTED"
