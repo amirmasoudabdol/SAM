@@ -1,4 +1,4 @@
-### *P*-hacking Methods
+### Hacking Methods
 
 #### Optional Stopping
 

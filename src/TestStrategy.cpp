@@ -5,13 +5,15 @@
 #include <TestStrategy.h>
 #include "Utilities.h"
 #include <iostream>
-#include "gsl/gsl_statistics.h"
-#include "gsl/gsl_randist.h"
+// #include "gsl/gsl_statistics.h"
+// #include "gsl/gsl_randist.h"
 
 #include <boost/math/distributions/students_t.hpp>
 #include <iomanip>
+#include <cmath>
 
 #include <Experiment.h>
+// #include <armadillo>
 
 TestStrategy::~TestStrategy() {
     // Pure deconstructor
@@ -55,7 +57,6 @@ TestStrategy *TestStrategy::buildTestStrategy(json &config){
     
 }
 
-
 /**
  Calculate confidence intervals for the mean.
  For example if we set the confidence limit to
@@ -90,6 +91,68 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestS
 
 }
 
+TestResult two_samples_welch_t_test(double Sm1, double Sd1, int Sn1,
+                                    double Sm2, double Sd2, int Sn2,
+                                    double alpha, TestSide side){
+
+    bool sig = false;
+    
+    
+    // Degrees of freedom:
+    double v = std::pow(Sd1, 2) / Sn1 + std::pow(Sd2, 2) / Sn2;
+    v *= v;
+    double t1 = std::pow(Sd1, 4) / (std::pow(Sn1, 2) * (Sn1 - 1));
+    double t2 = std::pow(Sd2, 4) / (std::pow(Sn2, 2) * (Sn2 - 1));
+    v = v / (t1 + t2);
+    
+    // t-statistic:
+    double t_stat = (Sm1 - Sm2) / sqrt(Sd1 * Sd1 / Sn1 + Sd2 * Sd2 / Sn2);
+    
+    //
+    // Define our distribution, and get the probability:
+    //
+    students_t dist(v);
+    double q = cdf(complement(dist, fabs(t_stat)));
+    
+    //
+    // Finally print out results of alternative hypothesis:
+    //
+    
+    if (side == TestSide::TwoSide){
+        // Sample 1 Mean != Sample 2 Mean
+        if(q < alpha / 2){
+            // Alternative "NOT REJECTED"
+            sig = true;
+        }else{
+            // Alternative "REJECTED"
+            sig = false;
+        }
+    }
+    
+    if (side == TestSide::OneSide){
+        // Sample 1 Mean <  Sample 2 Mean
+        if(cdf(dist, t_stat) < alpha){
+            // Alternative "NOT REJECTED"
+            sig = true;
+        }else{
+            // Alternative "REJECTED"
+            sig = false;
+        }
+    }
+    
+    // Don't think that I need this yet!
+    //   // Sample 1 Mean >  Sample 2 Mean
+    //   if(cdf(complement(dist, t_stat)) < alpha){
+    //      // Alternative "NOT REJECTED"
+    //       sig = true;
+    //   }else{
+    //       sig = false;
+    //      // Alternative "REJECTED"
+    //   }
+    
+    return TestResult(t_stat, q, 1, sig);    
+}
+
 
 
 /**
@@ -99,7 +162,7 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestS
  @param Sm Sample Mean.
  @param Sd Sample Standard Deviation.
  */
-int single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide side)
+double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide side)
 {
     using boost::math::students_t;
     
@@ -111,6 +174,12 @@ int single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide
     
     // convert to sample size, always one more than the degrees of freedom:
     return ceil(df) + 1;
+}
+
+TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2){
+    return two_samples_welch_t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
+                                           arma::mean(dt2), arma::stddev(dt2), dt2.size(),
+                                           0.05, TestSide::TwoSide);
 }
 
 
@@ -224,6 +293,8 @@ TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, dou
     // t-statistic:
     double t_stat = (Sm1 - Sm2) / (sp * sqrt(1.0 / Sn1 + 1.0 / Sn2));
     
+
+    std::cout << "df: " << v << "\n";
     //
     // Define our distribution, and get the probability:
     //

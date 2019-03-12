@@ -10,4 +10,10 @@ extern bool DEBUG;
 extern bool VERBOSE;
 extern bool OUTPUT;
 
+
+// bool PROGRESS;
+// bool DEBUG;
+// bool VERBOSE;
+// bool OUTPUT;
+
 #endif //SAMPP_MAIN_H

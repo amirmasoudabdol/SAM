@@ -9,6 +9,9 @@ outputs/
 xcode-project/
 cling-playground/
 
+# Tests
+testBin/
+
 # ------------------------------------------------
 # C++
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include <string>
+#include <armadillo>
 
 #include "nlohmann/json.hpp"
 
@@ -26,6 +27,8 @@ struct TestResult {
     double pvalue = 0;
     int side = 0;
     bool sig = 0;
+
+    TestResult() = default;
     
     TestResult(double statistic, double pvalue, int side, double sig) :
     statistic(statistic), pvalue(pvalue), side(side), sig(sig) {};
@@ -87,10 +90,13 @@ public:
 
 // Stats Utility
 
-int single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide side);
+double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide side);
 
 std::pair<double, double>
 confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestSide side);
+
+TestResult
+t_test(arma::Row<double> d1, arma::Row<double> d2);
 
 TestResult
 single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestSide side);
@@ -101,4 +107,6 @@ two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, do
 TestResult
 two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestSide side);
 
+
 #endif //SAMPP_TESTSTRATEGIES_H
+

@@ -8,6 +8,8 @@
 
 #include "main.h"
 
+// bool VERBOSE;
+
 
 Journal::Journal(json& config){
     _max_pubs = config["--max-pubs"];
@@ -68,10 +70,10 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
         p.pubbias = _pub_bias;
         
         // TODO: I need a global DEBUG variable
-        if (VERBOSE){
+        // if (VERBOSE){
             std::cout << std::setprecision(8);
             std::cout << p << "\n";
-        }
+        // }
         
         writer << p << "\n";
     }
