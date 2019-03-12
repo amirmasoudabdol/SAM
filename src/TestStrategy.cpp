@@ -232,8 +232,6 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
  */
 TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestSide side)  
 {
-
-    std::cout << "two_samples_t_test_equal_sd\n";
     
     bool sig = false;
     
