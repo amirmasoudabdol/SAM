@@ -100,7 +100,7 @@ TestResult
 t_test(arma::Row<double> d1, arma::Row<double> d2, double alpha, TestSide side);
 
 TestResult
-t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestSide side);
+t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestSide side, bool equal_var);
 
 TestResult
 single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestSide side);
