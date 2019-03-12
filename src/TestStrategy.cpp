@@ -20,7 +20,8 @@ using boost::math::students_t;
 
 const std::map<std::string, TestSide>
 stringToTestSide = {
-    {"One Side", TestSide::Greater},
+    {"Less", TestSide::Less},
+    {"Greater", TestSide::Greater},
     {"Two Side", TestSide::TwoSide}
 };
 
@@ -76,16 +77,16 @@ std::pair<double, double>
 confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestSide side)
 {
     students_t dist(Sn - 1);
- 
+    
     // calculate T
     double T = quantile(complement(dist, alpha / 2));   // TODO: Implement the side!./sa
- 
+    
     // Calculate width of interval (one sided):
     double w = T * Sd / sqrt(double(Sn));
     
     // Calculate and return the interval
     return std::make_pair(Sm - w, Sm + w);
-
+    
 }
 
 
@@ -112,8 +113,8 @@ double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestS
 
 TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2, double alpha, TestSide side){
     return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
-                   arma::mean(dt2), arma::stddev(dt2), dt2.size(),
-                    alpha, side);
+                  arma::mean(dt2), arma::stddev(dt2), dt2.size(),
+                  alpha, side);
 }
 
 
@@ -179,16 +180,17 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
         }
     }
     
-    // I don't think I need this, for now!
-    //    // Mean  < M
-    //    if(cdf(complement(dist, t_stat)) > alpha){
-    // Alternative "NOT REJECTED"
-    //        sig = true;
-    //    }
-    //    else{
-    // Alternative "REJECTED"
-    //    sig = false;
-    //    }
+    if (side == TestSide::Less){
+        // Mean  < M
+        if(cdf(complement(dist, t_stat)) > alpha){
+            Alternative "NOT REJECTED"
+            sig = true;
+        }
+        else{
+            Alternative "REJECTED"
+            sig = false;
+        }
+    }
     
     if (side == TestSide::Greater){
         // Mean  > M
@@ -237,7 +239,7 @@ TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, dou
     // t-statistic:
     double t_stat = (Sm1 - Sm2) / (sp * sqrt(1.0 / Sn1 + 1.0 / Sn2));
     
-
+    
     std::cout << "df: " << v << "\n";
     //
     // Define our distribution, and get the probability:
@@ -271,15 +273,17 @@ TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, dou
         }
     }
     
-    // I don't think that I need this!
-    //   // Sample 1 Mean >  Sample 2 Mean
-    //   if(cdf(complement(dist, t_stat)) < alpha){
-    //      // Alternative "NOT REJECTED"
-    //       sig = true;
-    //   }else{
-    //       sig = false;
-    //      // Alternative "REJECTED"
-    //   }
+    if (side == TestSide::Less){
+        
+        // Sample 1 Mean >  Sample 2 Mean
+        if(cdf(complement(dist, t_stat)) < alpha){
+            // Alternative "NOT REJECTED"
+            sig = true;
+        }else{
+            sig = false;
+            // Alternative "REJECTED"
+        }
+    }
     
     return TestResult(t_stat, q, 1, sig);
 }
@@ -355,15 +359,16 @@ TestResult two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, d
         }
     }
     
-    // Don't think that I need this yet!
-    //   // Sample 1 Mean >  Sample 2 Mean
-    //   if(cdf(complement(dist, t_stat)) < alpha){
-    //      // Alternative "NOT REJECTED"
-    //       sig = true;
-    //   }else{
-    //       sig = false;
-    //      // Alternative "REJECTED"
-    //   }
+    if (side == TestSide::Less){
+        // Sample 1 Mean >  Sample 2 Mean
+        if(cdf(complement(dist, t_stat)) < alpha){
+            // Alternative "NOT REJECTED"
+            sig = true;
+        }else{
+            sig = false;
+            // Alternative "REJECTED"
+        }
+    }
     
     return TestResult(t_stat, q, 1, sig);
 }
