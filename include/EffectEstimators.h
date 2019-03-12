@@ -32,9 +32,12 @@ public:
 };
 
 
-double cohens_d(double m1, double s1, double m2, double s2);
-double hedges_g(double d, int n, int df);
-double pearsons_r(double d);
+double cohens_d(double Sm1, double Sd1, double Sn1,
+				 double Sm2, double Sd2, double Sn2);
+double hedges_g(double Cd, int Sn, int df);
+double pearsons_r(double Cd);
+double glass_delta(double Sm1, double Sd1, double Sn1,
+					double Sm2, double Sd2, double Sn2);
 
 //class StandardMeanDiffEffectEstimator : public EffectEstimators {
 //public:
