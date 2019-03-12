@@ -120,6 +120,10 @@ TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2, double alpha, Te
 
 TestResult
 t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestSide side){
+    if (Sm1 == 0.){
+        return single_sample_t_test(Sm1, Sm2, Sd2, Sn2, alpha, side);
+    }
+    
     if (Sd1 == Sd2) {
         return two_samples_t_test_equal_sd(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2, alpha, side);
     }else{
@@ -183,11 +187,11 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
     if (side == TestSide::Less){
         // Mean  < M
         if(cdf(complement(dist, t_stat)) > alpha){
-            Alternative "NOT REJECTED"
+            // Alternative "NOT REJECTED"
             sig = true;
         }
         else{
-            Alternative "REJECTED"
+            // Alternative "REJECTED"
             sig = false;
         }
     }
@@ -239,8 +243,6 @@ TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, dou
     // t-statistic:
     double t_stat = (Sm1 - Sm2) / (sp * sqrt(1.0 / Sn1 + 1.0 / Sn2));
     
-    
-    std::cout << "df: " << v << "\n";
     //
     // Define our distribution, and get the probability:
     //
