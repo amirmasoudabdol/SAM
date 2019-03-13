@@ -1,3 +1,11 @@
+## SAM’s Design
+
+Computer simulations are one of the effective tools that helps us mimic complicated, expensive and time consuming systems *in silico*, in order to move toward better understanding of interactions and hopefully formulate new theories that can be tested in real life.
+
+Any computer program attempting to simulate this complicated process, ...
+
+
+
 ## SAM’s Main Components
 
 SAM consists of 3 main compartments, *Experiment, Researcher* and *Journal*. 
@@ -14,8 +22,11 @@ SAM consists of 3 main compartments, *Experiment, Researcher* and *Journal*.
 
 #### Test Strategy
 
+#### Data Strategy
+
 ### Journal
 
+#### Selection Strategy
 
 #### Submission
 

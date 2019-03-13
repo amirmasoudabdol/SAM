@@ -18,10 +18,3 @@ Unfortunately, studying and understanding effects of some of the other questiona
 
 
 Next: [SAM's Design and Components](Components.md)
-
-## SAM’s Design
-
-Computer simulations are one of the effective tools that helps us mimic complicated, expensive and time consuming systems *in silico*, in order to move toward better understanding of interactions and hopefully formulate new theories that can be tested in real life.
-
-Any computer program attempting to simulate this complicated process, ...
-
