@@ -1,4 +1,4 @@
-Before I start discussing SAM’s implementation and design, let’s review the underlying process of defining, conducting and reporting a common scientific research. In the next section, I will try to explain an — embarrassingly — simplified process of producing a scientific result. This will allow me to expose typical components and entities that are involved in the each stage, and later on explain how each subprocess translates into different components of SAM. At the end, I will briefly touch on the question of why we decided to develop SAM the way we did.
+Before I start discussing SAM’s implementation and design, let’s review the underlying process of defining, conducting and reporting a common scientific research. In the next section, I will try to explain an — embarrassingly — simplified process of producing a scientific result. This will allow me to expose typical components and entities that are involved in the each stage, and later on explain how each subprocess translates into different components of SAM. At the end, I will briefly touch up on the question of why we decided to develop SAM the way we did.
 
 ## Scientific Research Process
 
