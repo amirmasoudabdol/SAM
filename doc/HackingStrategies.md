@@ -1,4 +1,4 @@
-# Hacking Strategies
+## Hacking Strategies
 
 ### Optional Stopping
 
