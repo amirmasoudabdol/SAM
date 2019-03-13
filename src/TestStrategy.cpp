@@ -187,7 +187,8 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
     
     if (side == TestSide::Less){
         // Mean  < M
-        if(cdf(complement(dist, t_stat)) > alpha){
+        q = cdf(complement(dist, t_stat));
+        if(q > alpha){
             // Alternative "NOT REJECTED"
             sig = true;
         }
@@ -199,7 +200,8 @@ TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, dou
     
     if (side == TestSide::Greater){
         // Mean  > M
-        if(cdf(dist, t_stat) > alpha){
+        q = cdf(dist, t_stat);
+        if(q > alpha){
             // Alternative "NOT REJECTED"
             sig = true;
         }
