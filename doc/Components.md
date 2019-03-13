@@ -10,14 +10,18 @@ SAM consists of 3 main compartments, *Experiment, Researcher* and *Journal*.
 ### Experiment
 
 
-#### ExperimentSetup
+#### Experiment Setup
 
+#### Test Strategy
 
 ### Journal
 
 
+#### Submission
+
+
 ### Researcher
 
-#### HackingStrategies
+#### Hacking Strategy
 
-[Optional Stopping](HackingStrategies.md#optional-stopping)
+#### Decision Strategy
