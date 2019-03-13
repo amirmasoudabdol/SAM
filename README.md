@@ -1,12 +1,10 @@
-**NOTE:** SAM is under development!
+<div style="text-align: right">**SAM is currently under development and testing**!</div>
 
----
+SAM is an extensible p-hacking simulator. It provides different interfaces and APIs for designing — and experimenting with — different statistical experiments under the influence of various *p*-hacking methods or strategies, a.k.a *questionable research practices*. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
 
-SAM is an extensible p-hacking simulator. It provides different interfaces and APIs for designing and experimenting with different statistical experiments with the presence various *p*-hacking method, a.k.a *questionable research practices*, on a defined experiment. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
+While there are a few conventional and well-known p-hacking methods are provided out of the box, the flexibility of SAM allows the user to define any specific methods, e.g., modifying measurements based on an specific metric, and apply it on the currently existing experiment.
 
-While there are a few conventional and well-known p-hacking methods are provided out of the box, the flexibility of SAM allows the user to define any specific methods, e.g., modifying measurements, and apply it on the currently existing experiment.
-
-In this vignette, I’ll describe the underlying design of SAM and some of its capabilities alongside some examples. 
+In this vignette, I’ll describe the underlying design principles of SAM and some of its capabilities alongside some examples. In the Introduction section, I’ll explain what’s the problem that SAM is trying to solve and how are we going to approach it. After setting the ground roles, we can dive into different components of SAM and process of designing your own simulation. 
 
 - [Introduction](doc/Introduction.md)
 - [SAM's Main Components](doc/Components.md)
@@ -16,21 +14,46 @@ In this vignette, I’ll describe the underlying design of SAM and some of its c
 - [Decision Strategies](doc/DecisionStrategies.md)
 - [SAM's API](doc/API.md)
 
-If you like to install SAM before getting into more details, please follow the description below.
+**Note**: If you like to install SAM before getting into more details, please follow the instruction below.
 
 ## Dependencies
+
+SAM uses a few well known C++ libraries to perform certain tasks. 
 
 - [Boost](https://github.com/docopt/docopt.cpp), General purpose C++ library 
 - [docopt](https://github.com/docopt/docopt.cpp), CLI library 
 - [Armadillo](http://arma.sourceforge.net/), C++ library for linear algebra & scientific computing
 - [nlohmanh/json](https://github.com/nlohmann/json), JSON for Modern C++
+- [CMake](https://cmake.org), Automatic build system 
 
-On macOS, you can install all the dependencies using brew package manager by running, `brew tap nlohmann/json` and then `brew install boost docopt armadillo nlohmann_json`.
+On **macOS**, you can install all the dependencies using brew package manager by running, `brew tap nlohmann/json` and then `brew install boost docopt armadillo nlohmann_json cmake`.
+
+On **Ubuntu**, you can use `apt` to install the listed packages by running:
+
+	sudo apt-get update
+	sudo apt-get install liblapack-dev
+	sudo apt-get install libblas-dev
+	sudo apt-get install libboost-dev
+	sudo apt-get install libarmadillo-dev
+	
+For `nlohmann/json` and `docopt`, please check their documentation. You’ll probably need to make and install them manually. 
+
+##### conda package manager
+
+If you are using `conda` package manager you can install all packages via `conda` as follow 
+
+
+	conda install -c anaconda boost
+	conda install -c conda-forge armadillo
+	conda install -c conda-forge nlohmann_json
+	
+You will still need to manually install `docopt` since it’s not included in `conda-forge` repository. 
 
 ## Build
 
-After successfully installing the dependencies, you can use CMAKE to create SAM’s executable using following commands:
+Once you have successfully installed all the dependencies, you can use CMake to create SAM’s executable using following commands:
 
+	git clone https://amirmasoudabdol.github.com/SAMpp
 	cd SAMpp
 	mkdir build
 	cd build
@@ -39,7 +62,7 @@ After successfully installing the dependencies, you can use CMAKE to create SAM�
 
 If everything goes right, you’ll have a file named `SAMpp` in your build directory which you’ll be able to use to run your simulation with it.
 
-### Testing
+### Testing (Optional)
 
 SAM's unit test cases can be run using `make test`. Tests are designed to check the integrity of the code and API during the extension process, e.g., implementing new hacking strategy.
 
