@@ -3,7 +3,7 @@
 A configuration file consists of 4 parts, each specifying parameters for different part of the simulation. The *Simulation Parameters* specifies the general parameters for the simulation, e.g., the output filename. The *Experiment Parameters* section lists the necessary parameters of the underlying experiment of the simulation, e.g., number of observations, factor loadings. The *Researcher Parameters* indicates the behavior of the researcher, e.g., weather he is a hacker or not and finally the *Journal Parameters* indicates how the journal will review and accept a publication. 
 
 
-| Parameter &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Value | Description |
+| Parameter | Value | Description |
 |:--|:--|:--|
 | **Simulation Parameters** | | |
 | `--debug`  | `bool` | Indicates if SAMpp is running in debug mode. |
