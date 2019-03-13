@@ -1,5 +1,7 @@
 # Excluding docs
-doc/
+doc/latex
+doc/xml
+doc/html
 
 # Excluding input/output
 inputs/
