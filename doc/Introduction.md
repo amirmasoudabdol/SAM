@@ -17,11 +17,11 @@ Studying this complicated interaction between a *Research*, his/her *Researcher*
 Unfortunately, studying and understanding effects of some of the other questionable research practices, QRPs, are not often as straightforward or apparent as effects of *optional stopping*. The list of degrees of freedoms is long [cite], and researchers are not fully aware of their consequences on the final outcome of their research. At the same time, the scientific community is also not fully understand (or agree on) the propagative impacts these practices on our collective knowledge, *true effect size*.
 
 
-Next: [SAM's Design and Components](Components.md) {: .right}
+Next: [SAM's Design and Components](Components.md)
 
 ## SAM’s Design
 
-Computer simulations are one of the tools that helps us mimic complicated, expensive and time consuming systems *in silico*, in order to move toward better understanding of interactions and hopefully formulate new theories that can be tested in real life.
+Computer simulations are one of the effective tools that helps us mimic complicated, expensive and time consuming systems *in silico*, in order to move toward better understanding of interactions and hopefully formulate new theories that can be tested in real life.
 
 Any computer program attempting to simulate this complicated process, ...
 
