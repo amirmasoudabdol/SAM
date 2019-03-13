@@ -1,11 +1,42 @@
 # SAM
 
-SAM is an extensible p-hacking simulator. It provides different interfaces and APIs to design and experiment different statistical experiment and study the effects of various *p*-hacking method, a.k.a *questionable research practices*, on a defined experiment. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
+SAM is an extensible p-hacking simulator. It provides different interfaces and APIs for designing and experiment different statistical experiment and study the effects of various *p*-hacking method, a.k.a *questionable research practices*, on a defined experiment. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
 
 While there are a few conventional and well-known p-hacking methods are provided out of the box, the flexibility of SAM allows the user to define any specific methods, e.g., modifying measurements, and apply it on the currently existing experiment.
 
 In this vignette, I’ll describe the underlying design of SAM and some of its capabilities with a few examples. 
 
+### Dependencies
+
+- [Boost](https://github.com/docopt/docopt.cpp), General purpose C++ library 
+- [docopt](https://github.com/docopt/docopt.cpp), CLI library 
+- [Armadillo](http://arma.sourceforge.net/), C++ library for linear algebra & scientific computing
+- [nlohmanh/json](https://github.com/nlohmann/json), JSON for Modern C++
+
+On macOS, you can install all the dependencies using brew package manager by running, `brew tap nlohmann/json` and then `brew install boost docopt armadillo nlohmann_json`.
+
+### Build
+
+After successfully installing the dependencies, you can use CMAKE to create SAM’s executable using following commands:
+
+	cd SAMpp
+	mkdir build
+	cd build
+	cmake ..
+	make
+
+If everything goes right, you’ll have a file named `SAMpp` in your build directory which you’ll be able to use to run your simulation with it.
+
+### Sample Run
+
+After successfully building SAMpp, you’ll be able to run your first simulation. Executing `./SAMpp` in your build folder will start a simulation based on the parameters located in `SAMpp/input/sample-input.json`. 
+
+	$ ./SAMpp
+	Initializing the simulation...
+	
+	Simulation output is saved in ../outputs/sample_simulation.csv
+	
+	
 ## Scientific Research Process
 
 The process of producing a scientific research is often a cumbersome and complicated process. A scientific research starts by an hypothesis where a **Researcher** writes down his idea about how a process or system works. In order to test his hypothesis, he/she designs an experiment involving certain parameters. After the **Experiment Setup** is finalized. The experiment is being conducted and researcher collects certain set of datasets quantifying the result of the **Experiment**. The next stage of scientific research is processing the data, analyzing the data and coming up with a conclusion whether the initial hypothesis, *pre-registered hypothesis*, was correct or not. If the result is considered satisfactory and informative, despite the correctness of the initial hypothesis, the researcher will select a **Journal** and submit his research in the form of a **Publication** to be reviewed by journal’s criteria. Finally, the Journal will decide if the submitted result worth publishing or not. 
