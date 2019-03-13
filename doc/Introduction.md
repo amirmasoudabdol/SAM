@@ -1,4 +1,4 @@
-# Scientific Research Process
+## Scientific Research Process
 
 The process of producing a scientific research is often a cumbersome and complicated process. A scientific research starts by an hypothesis where a **Researcher** writes down his idea about how a process or system works. In order to test his hypothesis, he/she designs an experiment involving certain parameters. After the **Experiment Setup** is finalized. The experiment is being conducted and researcher collects certain set of datasets quantifying the result of the **Experiment**. The next stage of scientific research is processing the data, analyzing the data and coming up with a conclusion whether the initial hypothesis, *pre-registered hypothesis*, was correct or not. If the result is considered satisfactory and informative, despite the correctness of the initial hypothesis, the researcher will select a **Journal** and submit his research in the form of a **Publication** to be reviewed by journal’s criteria. Finally, the Journal will decide if the submitted result worth publishing or not. 
 
