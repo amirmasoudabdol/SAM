@@ -1,6 +1,6 @@
 ### Hacking Methods
 
-#### Optional Stopping
+### Optional Stopping
 
 Optional stopping is the practice of adding new observation to the dataset until significant achievement.
 
@@ -25,7 +25,7 @@ Optional stopping is the practice of adding new observation to the dataset until
 | `level` | "item" | Adding new value to items in the underlying SEM. <br>**Note:** Only applicable in Latent Model. |
 |  | "dvs" | Adding new values to dependent variables.  |
 
-#### Outlier Removal
+### Outlier Removal
 
 Removing outliers can be done in several different ways. In the simplest case, a researcher will decide to remove a datapoint from a dataset if the value is farther than a distance from the sample mean. One common method is to compare the distance of a value to different multiplier of \sigma. This type of outlier removal can be deployed by defining the following parameters.
 
@@ -55,6 +55,6 @@ Removing outliers can be done in several different ways. In the simplest case, a
 | `order` | max first, random |  |
 
 
-#### Group Pooling
+### Group Pooling
 
 
