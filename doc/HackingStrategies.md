@@ -1,4 +1,4 @@
-### Hacking Methods
+# Hacking Strategies
 
 ### Optional Stopping
 
