@@ -1,6 +1,6 @@
 # SAM
 
-SAM is an extensible p-hacking simulator. It provides different interfaces and APIs for designing and experiment different statistical experiment and study the effects of various *p*-hacking method, a.k.a *questionable research practices*, on a defined experiment. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
+SAM is an extensible p-hacking simulator. It provides different interfaces and APIs for designing and experimenting with different statistical experiments with the presence various *p*-hacking method, a.k.a *questionable research practices*, on a defined experiment. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
 
 While there are a few conventional and well-known p-hacking methods are provided out of the box, the flexibility of SAM allows the user to define any specific methods, e.g., modifying measurements, and apply it on the currently existing experiment.
 
