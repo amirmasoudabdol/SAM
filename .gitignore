@@ -2,10 +2,11 @@
 doc/latex
 doc/xml
 doc/html
+doc/rtf
 
 # Excluding input/output
-inputs/
-outputs/
+# inputs/
+outputs/*
 
 # Excluding the xcode-project
 xcode-project/
