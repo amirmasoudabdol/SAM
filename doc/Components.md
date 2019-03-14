@@ -44,6 +44,7 @@ A short list of variables and methods of `Experiment` is provided below:
 	- `sign`, indicator of significance for each group
 - **[`dataStrategy`](#data-strategy)**, a pointer to the selected `DataStrategy`
 - **[`testStrategy`](#test-strategy)**, a pointer to the selected `TestStrategy`
+- [more ...](doxymark/class_experiment.md)
 
 `Experiment` and `ExperimentSetup` parameters’ can be set via [`Experiment Parameters`](#ConfigurationFileSpecfications.md#experiment-parameters) section of the configuration file.
 
@@ -88,19 +89,38 @@ A short list of variables and parameters `Journal` is listed below:
 - `_max_pubs`, maximum number of publications before stop accepting new publications
 - `_pub_bias`, publication bias rate
 - `_alpha`, significance $\alpha$. This can be different from `TestStrategy`’s $\alpha$.
-- [`**Selection Strategy**`](#selection-strategy), journal’s selection strategy.
+- **[`selectionStrategy`](#selection-strategy)**, journal’s selection strategy.
 - `isStillAccepting()`, a function returning the state of the journal.
 - `review()`, `accept()`, `reject()`, 
 - `submissionList`, list of accepted submissions.
+- [more ...](doxymark/class_journal.md)
 
 `Journal`’s parameters can be set though [`Journal Parameters`](ConfigurationFileSpecifications.md#journal-parameters) section of the configuration file.
 
 #### Selection Strategy
 
-`SelectionStrategy` implements the logic behind accepting or rejecting a submission. Simplest algorithms are mainly working with *p*-values and based their decision on that. However, more elaborate [*Selection Strategies*](#selection-strategy) can incorporate different metrics or criteria, e.g., pre-registration, sample sizes, or meta-analysis, into their final decision. For instance, if appropriate, a journal can have an updated estimation of the effect size from its current publications pool and incorporate that to accept or reject widely different submissions.
+`SelectionStrategy` implements the logic behind accepting or rejecting a submission. Simplest algorithms are mainly working with *p*-values and based their decision on that. However, more elaborate selection strategies can incorporate different metrics or criteria, e.g., pre-registration, sample sizes, or meta-analysis, into their final decision. For instance, if appropriate, a journal can have an updated estimation of the effect size from its current publications pool and incorporate that to accept or reject widely different submissions.
 
 #### Submission
 
+A `Submission` is a small container, created by the `Researcher` and provided to the `Journal`. It provides a simple interface between `Journal, Experiment` and `Researcher` objects. 
+
+After performing the test and deciding the outcome variable, the `Researcher` put together a report containing necessary information for the `Journal` to be able to make a decision whether to accept or reject the `Experiment`. In other words, a `Submission` resembles a `paper` when it’s at the hand of the researcher and it will resemble a `publication` after being accepted by the journal. 
+
+`Submission`’s variables are:
+
+- `nobs`, number of observations
+- `yi`, mean of the selected outcome
+- `vi`, variance of the selected outcome
+- `estimator`, effect size estimator of choice 
+- `ei`, effect size of the select outcome
+- `statistics`, the test statistics value
+- `pvalue`, *p*-value of the test
+- `sig`, a Boolean value indicating the significance of the test
+- `side`, the side of the effect, positive or negative
+- [more ...](doxymark/class_submission.md)
+
+***Note:** `Submission` is an abstract representation of the paper and publication and it doesn’t try to closely resembles a full publication although it is possible to expand the list of parameters.* 
 
 ### Researcher
 
