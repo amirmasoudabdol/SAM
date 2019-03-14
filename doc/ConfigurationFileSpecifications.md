@@ -15,7 +15,7 @@ A configuration file consists of 4 parts, each specifying parameters for differe
 | `--output-prefix` | `string` | A prefix to be added to output filenames'. All output files will end with `_sim.csv` |
 | **Experiment Parameters** | | |
 | `--data-strategy`| `string` | See also, DataStrategy.md |
-| `--n-conditions`| \f$n_c\f$, `int` | Number of treatment conditions |
+| `--n-conditions`| $n_c$, `int` | Number of treatment conditions |
 | `--n-dep-vars`| \f$n_d\f$, `int` | Number of dependent variables |
 | `--n-items`| \f$n_i\f$, `int` | Number of items. Only applicable for Latent Model. |
 | `--n-obs`| nobs, `int` | Number of observation per each group |

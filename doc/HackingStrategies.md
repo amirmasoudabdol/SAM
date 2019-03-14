@@ -1,3 +1,5 @@
+<div style="text-align: right"><i>Hacking Strategy</i></div><br>
+
 ## Hacking Strategies
 
 ### Optional Stopping

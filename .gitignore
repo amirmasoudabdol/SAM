@@ -3,6 +3,7 @@ doc/latex
 doc/xml
 doc/html
 doc/rtf
+doc/docbook
 
 # Excluding input/output
 # inputs/
