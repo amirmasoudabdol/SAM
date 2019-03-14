@@ -124,6 +124,45 @@ After performing the test and deciding the outcome variable, the `Researcher` pu
 
 ### Researcher
 
-#### Hacking Strategy
+`Researcher` object is the main player of the simulation. With the exception of `ExperimentSetup` and `Journal`, it can access and modify all other objects if necessary. 
+
+After the initialization of the `ExperimentSetup`, `Researcher` will prepare the `Experiment` object by setting the test strategy, setting the data strategy and finally generating the dataset. Then, it will run the statistical test, and if necessary applies different p-hacking methods on the dataset. Finally, it will prepare a `Submission` record and send it to the `Journal` for review. The [Execution Flow](ExecusionFlow.md) section describes this process in more details.
+
+`Researcher`’s main methods and variables can be listed as follow:
+
+- **`experiment`**, an instance of [Experiment](#experiment)
+- **`journal`**, and instance of [Journal](#journal)
+- **[`decisionStrategy`](#decision-strategy)**, researcher’s decision strategy
+- *isHacker*, a flag indicating whether the researcher will perform any p-hacking methods on the data
+- **[`hackingStrategies`](#hacking-strategy)**, a list of hacking strategies
+- `prepareResearch()`, a method to initialize the experiment, i.e., initializing the [`ExperimentSetup`](#experiment-setup) and generating the dataset
+- `performResearch()`, a method to calculate the necessary statistics, running the tests, and applying p-hacking methods (if applicable).
+- `publishResearch()`, a method to prepare the final [`Submission`](#submission) and submit it to the [`Journal`](#journal) for review.
+- [more ...](doxymark/class_researcher.md)
 
 #### Decision Strategy
+
+As the name suggests, `DecisionStrategy` is the implementation of how the `Researcher` chooses between different outcome variables during the research. The list below shows a few possible options, started items are not implemented yet. The default is always `PreRegisteredOutcome` which means the `Researcher` always select the pre-registered outcome regardless of its significance. Any other option will set `isHacker` flag to `true`.  
+
+- `PreRegisteredOutcome`
+- `MinPvalue`
+- `MinSigPvalue`*
+- `MaxEffect`
+- `MaxSigPvalue`*
+- `MaxEffectMinPvalue`*
+
+`Researcher` can consult his decision strategy in different stages of a research. Just before applying any hacking strategies, researcher can check if the pre-registered outcome is significant or not, *initial verdict*. If it not, during the execution of a hacking strategy, researcher can ask his decision strategy whether to interrupt the hacking process or not, *intermediate verdict*. After the completion of a hacking routine, decision strategy can evaluate the outcome, *hacking result verdict*. Finally, in his *final verdict*, researcher can look back at history of his `Experiment` and pick the final result to be submitted in the form of `Submission`. *Note: This process will clarify in [Execution Flow](ExecutionFlow.md) section*
+
+Main variables and methods of `DecisionStrategy` are:
+
+- *isStillHacking*, a flag indicating whether the `Researcher` should continue with the hacking procedure, or the result is already satisfactory
+- `isPublishable()`, a method indicating if the selected outcome is significant or not
+- submissionsPool, a history of all `Submission` records during the research
+- experimentsPool, a history of all modified versions of `Experiment` during the research.
+- **`verdict(Experiment, DecisionStage)`**
+- [more ...](doxymark/class_decision_strategy.md)
+
+***NOTE:** Decision Strategy is a helper class to implement the decision process more effectively and flexibly throughout the code.*
+
+#### Hacking Strategy
+
