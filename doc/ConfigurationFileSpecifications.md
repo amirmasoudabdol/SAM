@@ -1,11 +1,12 @@
-# Configuration File
+<div style="text-align: right"><i>Configuration</i></div><br>
 
-A configuration file consists of 4 parts, each specifying parameters for different part of the simulation. The *Simulation Parameters* specifies the general parameters for the simulation, e.g., the output filename. The *Experiment Parameters* section lists the necessary parameters of the underlying experiment of the simulation, e.g., number of observations, factor loadings. The *Researcher Parameters* indicates the behavior of the researcher, e.g., weather he is a hacker or not and finally the *Journal Parameters* indicates how the journal will review and accept a publication. 
+A configuration file consists of 4 parts, each specifying parameters for different parts of the simulation. The *Simulation Parameters* specifies the general parameters for the simulation, e.g., the output filename. The *Experiment Parameters* section lists the necessary parameters of the underlying experiment of the simulation, e.g., number of observations, factor loadings. The *Researcher Parameters* indicates the behavior of the researcher, e.g., weather he is a hacker or not and finally the *Journal Parameters* indicates how the journal will review and accept a publication. 
 
+
+## Simulation Parameters
 
 | Parameter | Value | Description |
 |:--|:--|:--|
-| **Simulation Parameters** | | |
 | `--debug`  | `bool` | Indicates if SAMpp is running in debug mode. |
 | `--verbose` | `bool` | Cause SAM to be verbose, announcing the execution of different procedures. |
 | `--progress` | `bool` | Shows the progress bar. |
@@ -13,7 +14,11 @@ A configuration file consists of 4 parts, each specifying parameters for differe
 | `--n-sims`| `int` | Number of simulation with each given set of parameters. |
 | `--output-path` | `string` | A path to save the output files |
 | `--output-prefix` | `string` | A prefix to be added to output filenames'. All output files will end with `_sim.csv` |
-| **Experiment Parameters** | | |
+
+## Experiment Parameters
+
+| Parameter | Value | Description |
+|:--|:--|:--|
 | `--data-strategy`| `string` | See also, DataStrategy.md |
 | `--n-conditions`| $n_c$, `int` | Number of treatment conditions |
 | `--n-dep-vars`| \f$n_d\f$, `int` | Number of dependent variables |
@@ -26,10 +31,19 @@ A configuration file consists of 4 parts, each specifying parameters for differe
 | `--loadings`|  | |
 | `--err-vars`| | |
 | `--err-covs`| | |
-| **Researcher Parameters** | | |
+
+## Researcher Parameters
+
+| Parameter | Value | Description |
+|:--|:--|:--|
 | `--is-phacker` | `bool` | Whether the Researcher is a hacker or not, if `true`, listed methods will be applied on the dataset. |
 | `--p-hacking-methods` | `list` of `dict` | A list of `dict` each indicating a Hacking Method with its parameters. |
-| **Journal Parameters** | | |
+
+
+## Journal Parameters
+
+| Parameter | Value | Description |
+|:--|:--|:--|
 | `--pub-bias` | `double` | Publication bias rate. |
 | `--journal-selection-model` | `string` | See also, Selection Model |
 | `--max-pubs` | `double` | Maximum publications that is going to be accepted by a Journal. |
