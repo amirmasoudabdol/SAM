@@ -6,7 +6,8 @@ One of our main design goals with SAM was to achieve a level of flexibility wher
 
 This section will clarify the design principles behind each component, how they work and interact with each other in order to simulate the entire process.
 
-> Figure 1.
+![**Figure 1.** SAM's components and their interactions](figures/Components.svg)
+
 
 ## SAM’s Main Components
 
