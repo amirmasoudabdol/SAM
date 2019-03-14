@@ -126,7 +126,7 @@ After performing the test and deciding the outcome variable, the `Researcher` pu
 
 `Researcher` object is the main player of the simulation. With the exception of `ExperimentSetup` and `Journal`, it can access and modify all other objects if necessary. 
 
-After the initialization of the `ExperimentSetup`, `Researcher` will prepare the `Experiment` object by setting the test strategy, setting the data strategy and finally generating the dataset. Then, it will run the statistical test, and if necessary applies different p-hacking methods on the dataset. Finally, it will prepare a `Submission` record and send it to the `Journal` for review. The [Execution Flow](ExecusionFlow.md) section describes this process in more details.
+After the initialization of the `ExperimentSetup`, `Researcher` will prepare the `Experiment` object by setting the test strategy, setting the data strategy and finally generating the dataset. Then, it will run the statistical test, and if necessary applies different p-hacking methods on the dataset. Finally, it will prepare a `Submission` record and send it to the `Journal` for review.
 
 `Researcher`’s main methods and variables can be listed as follow:
 
@@ -140,6 +140,9 @@ After the initialization of the `ExperimentSetup`, `Researcher` will prepare the
 - `publishResearch()`, a method to prepare the final [`Submission`](#submission) and submit it to the [`Journal`](#journal) for review.
 - [more ...](doxymark/class_researcher.md)
 
+> **NOTE:**\ 
+> `Researcher` object is the more complex objects in SAM, especially when complicated decision making and hacking strategies is involved. The rest of this section explains the interaction in detail; however, if you have difficulty understanding the flow, continue reading and everything will be clarified in the next section, when I’ll explain the [Execution Flow](ExecutionFlow.md) of SAM.
+
 #### Decision Strategy
 
 As the name suggests, `DecisionStrategy` is the implementation of how the `Researcher` chooses between different outcome variables during the research. The list below shows a few possible options, started items are not implemented yet. The default is always `PreRegisteredOutcome` which means the `Researcher` always select the pre-registered outcome regardless of its significance. Any other option will set `isHacker` flag to `true`.  
@@ -151,18 +154,27 @@ As the name suggests, `DecisionStrategy` is the implementation of how the `Resea
 - `MaxSigPvalue`*
 - `MaxEffectMinPvalue`*
 
-`Researcher` can consult his decision strategy in different stages of a research. Just before applying any hacking strategies, researcher can check if the pre-registered outcome is significant or not, *initial verdict*. If it not, during the execution of a hacking strategy, researcher can ask his decision strategy whether to interrupt the hacking process or not, *intermediate verdict*. After the completion of a hacking routine, decision strategy can evaluate the outcome, *hacking result verdict*. Finally, in his *final verdict*, researcher can look back at history of his `Experiment` and pick the final result to be submitted in the form of `Submission`. *Note: This process will clarify in [Execution Flow](ExecutionFlow.md) section*
+`Researcher` can consult his decision strategy in different stages of a research. Just before applying any hacking strategies, researcher can check if the pre-registered outcome is significant or not, *initial verdict*. If it not, during the execution of a hacking strategy, researcher can ask his decision strategy whether to interrupt the hacking process or not, *intermediate verdict*. After the completion of a hacking routine, decision strategy can evaluate the outcome, *hacking verdict*. Finally, in his *final verdict*, researcher can look back at history of his `Experiment` and pick the final result to be submitted in the form of `Submission`. *Note: This process will clarify in [Execution Flow](ExecutionFlow.md) section*
 
 Main variables and methods of `DecisionStrategy` are:
 
 - *isStillHacking*, a flag indicating whether the `Researcher` should continue with the hacking procedure, or the result is already satisfactory
 - `isPublishable()`, a method indicating if the selected outcome is significant or not
-- submissionsPool, a history of all `Submission` records during the research
-- experimentsPool, a history of all modified versions of `Experiment` during the research.
+- `submissionsPool`, a history of all `Submission` records during the research
+- `experimentsPool`, a history of all modified versions of `Experiment` during the research.
 - **`verdict(Experiment, DecisionStage)`**
+- `finalSubmission`, 
 - [more ...](doxymark/class_decision_strategy.md)
 
 ***NOTE:** Decision Strategy is a helper class to implement the decision process more effectively and flexibly throughout the code.*
 
 #### Hacking Strategy
 
+`HackingStrategy` is an *abstract object* representing the main body of different p-hacking or QRP methods. In itself, a `HackingStrategy` object is a simple object with one function `perform`(). The `Researcher` *performs* a hacking strategy by sending a copy of its `Experiment` to the `perform` function. The `HackingStrategy` takes control of the experiment, modifies it, (e.g., adding new values, removing values), recomputes the statistic, rerun the test, and finally returns the modified `Experiment`. At this point, `Researcher` consult his decision strategy, *hacking verdict* to prepare a new `Submission`. 
+
+As mentioned in [Researcher](#researcher), a `Researcher` instance can have a list of **hackingStrategies** in his hand. If there is more than on hacking strategies are registered, `Researcher` performs all hacking methods on different copies of the original Experiment and stores the result in `submissionsPool` and `experimentsPool`. After applying all the method, `Researcher` will ask the `DecisionStrategy` for *final verdict*, and choose among all results as its preparing the `finalSubmission`. 
+
+The [Hacking Strategies](HackingStrategies.md) section will get into more details on each hacking methods.
+
+- - - 
+Next: [Execution Flow](ExecutionFlow.md)
