@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="1608.3 826.5429 342.69998 284.54864" width="342.69998" height="284.54864">
+  <defs>
+    <filter id="Shadow" filterUnits="userSpaceOnUse" x="1608.3" y="826.5429">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="1.308"/>
+      <feOffset in="blur" result="offset" dx="0" dy="2"/>
+      <feFlood flood-color="black" flood-opacity=".5" result="flood"/>
+      <feComposite in="flood" in2="offset" operator="in"/>
+    </filter>
+    <font-face font-family="Palatino" font-size="5" units-per-em="1000" underline-position="-101.5625" underline-thickness="58.10547" slope="-2400" x-height="476.5625" cap-height="692.8711" ascent="822.7539" descent="-277.34375" font-style="italic" font-weight="400">
+      <font-face-src>
+        <font-face-name name="Palatino-Italic"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Palatino" font-size="6" units-per-em="1000" underline-position="-103.02734" underline-thickness="59.57031" slope="-2e3" x-height="477.0508" cap-height="684.082" ascent="822.7539" descent="-277.34375" font-style="italic" font-weight="700">
+      <font-face-src>
+        <font-face-name name="Palatino-BoldItalic"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Palatino" font-size="5" units-per-em="1000" underline-position="-101.5625" underline-thickness="58.59375" slope="0" x-height="471.1914" cap-height="694.8242" ascent="822.7539" descent="-277.34375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="Palatino-Roman"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Symbol" font-size="5" units-per-em="1000" underline-position="-166.01562" underline-thickness="69.82422" slope="0" x-height="467.28516" cap-height="623.0469" ascent="701.1719" descent="-298.82812" font-weight="400">
+      <font-face-src>
+        <font-face-name name="Symbol"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Palatino" font-size="10" units-per-em="1000" underline-position="-103.02734" underline-thickness="59.57031" slope="0" x-height="471.1914" cap-height="684.082" ascent="822.7539" descent="-277.34375" font-weight="700">
+      <font-face-src>
+        <font-face-name name="Palatino-Bold"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Palatino" font-size="7" units-per-em="1000" underline-position="-101.5625" underline-thickness="58.59375" slope="0" x-height="471.1914" cap-height="694.8242" ascent="822.7539" descent="-277.34375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="Palatino-Roman"/>
+      </font-face-src>
+    </font-face>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -3 6 6" markerWidth="6" markerHeight="6" color="black">
+      <g>
+        <path d="M 4 0 L 0 -1.5 L 0 1.5 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <font-face font-family="Palatino" font-size="7" units-per-em="1000" underline-position="-101.5625" underline-thickness="58.10547" slope="-1714.2857" x-height="476.5625" cap-height="692.8711" ascent="822.7539" descent="-277.34375" font-style="italic" font-weight="400">
+      <font-face-src>
+        <font-face-name name="Palatino-Italic"/>
+      </font-face-src>
+    </font-face>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.10.1 
+    <dc:date>2019-03-14 18:24:01 +0000</dc:date>
+  </metadata>
+  <g id="Canvas_2" fill-opacity="1" stroke="none" stroke-dasharray="none" stroke-opacity="1" fill="none">
+    <title>Flowchart</title>
+    <g id="Canvas_2: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_127_shadow" filter="url(#Shadow)">
+        <path d="M 1811.7618 828.0429 L 1874.7618 828.0429 C 1882.2138 828.0429 1888.2618 836.1069 1888.2618 846.0429 C 1888.2618 855.9789 1882.2138 864.0429 1874.7618 864.0429 L 1811.7618 864.0429 C 1804.3098 864.0429 1798.2618 855.9789 1798.2618 846.0429 C 1798.2618 836.1069 1804.3098 828.0429 1811.7618 828.0429 Z" fill="white"/>
+        <path d="M 1811.7618 828.0429 L 1874.7618 828.0429 C 1882.2138 828.0429 1888.2618 836.1069 1888.2618 846.0429 C 1888.2618 855.9789 1882.2138 864.0429 1874.7618 864.0429 L 1811.7618 864.0429 C 1804.3098 864.0429 1798.2618 855.9789 1798.2618 846.0429 C 1798.2618 836.1069 1804.3098 828.0429 1811.7618 828.0429 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_126_shadow" filter="url(#Shadow)">
+        <path d="M 1811.7618 1069.5916 L 1874.7618 1069.5916 C 1882.2138 1069.5916 1888.2618 1077.6556 1888.2618 1087.5916 C 1888.2618 1097.5276 1882.2138 1105.5916 1874.7618 1105.5916 L 1811.7618 1105.5916 C 1804.3098 1105.5916 1798.2618 1097.5276 1798.2618 1087.5916 C 1798.2618 1077.6556 1804.3098 1069.5916 1811.7618 1069.5916 Z" fill="white"/>
+        <path d="M 1811.7618 1069.5916 L 1874.7618 1069.5916 C 1882.2138 1069.5916 1888.2618 1077.6556 1888.2618 1087.5916 C 1888.2618 1097.5276 1882.2138 1105.5916 1874.7618 1105.5916 L 1811.7618 1105.5916 C 1804.3098 1105.5916 1798.2618 1097.5276 1798.2618 1087.5916 C 1798.2618 1077.6556 1804.3098 1069.5916 1811.7618 1069.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_125_shadow" filter="url(#Shadow)">
+        <rect x="1794.7421" y="884.0429" width="97.0393" height="16" fill="white"/>
+        <rect x="1794.7421" y="884.0429" width="97.0393" height="16" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_123_shadow" filter="url(#Shadow)">
+        <rect x="1794.7421" y="920.8172" width="97.0393" height="16" fill="white"/>
+        <rect x="1794.7421" y="920.8172" width="97.0393" height="16" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_121_shadow" filter="url(#Shadow)">
+        <path d="M 1843.2618 957.5916 L 1878.7655 975.5916 L 1843.2618 993.5916 L 1807.758 975.5916 Z" fill="white"/>
+        <path d="M 1843.2618 957.5916 L 1878.7655 975.5916 L 1843.2618 993.5916 L 1807.758 975.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_119_shadow" filter="url(#Shadow)">
+        <path d="M 1843.2618 1013.5916 L 1878.7655 1031.5916 L 1843.2618 1049.5916 L 1807.758 1031.5916 Z" fill="white"/>
+        <path d="M 1843.2618 1013.5916 L 1878.7655 1031.5916 L 1843.2618 1049.5916 L 1807.758 1031.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_155_shadow" filter="url(#Shadow)">
+        <rect x="1702.2" y="1017.5916" width="50" height="28" fill="white"/>
+        <rect x="1702.2" y="1017.5916" width="50" height="28" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_160_shadow" filter="url(#Shadow)">
+        <path d="M 1647.3037 1013.5916 L 1682.8074 1031.5916 L 1647.3037 1049.5916 L 1611.8 1031.5916 Z" fill="white"/>
+        <path d="M 1647.3037 1013.5916 L 1682.8074 1031.5916 L 1647.3037 1049.5916 L 1611.8 1031.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_172_shadow" filter="url(#Shadow)">
+        <rect x="1702.2" y="1073.5916" width="50" height="28" fill="white"/>
+        <rect x="1702.2" y="1073.5916" width="50" height="28" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_174_shadow" filter="url(#Shadow)">
+        <rect x="1897.5" y="1016.7416" width="50" height="28" fill="white"/>
+        <rect x="1897.5" y="1016.7416" width="50" height="28" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_164">
+        <rect x="1840.2" y="997.8002" width="43.200026" height="10.808457" fill="white"/>
+        <clipPath id="clip_path">
+          <rect x="0" y="0" width="43.200026" height="10.808457" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path)" transform="translate(1844.5808 999.7044)" fill="black">
+          <tspan font-family="Palatino" font-size="5" font-style="italic" font-weight="400" fill="black" x="0" y="5">Not good enough</tspan>
+        </text>
+      </g>
+      <g id="Graphic_163">
+        <rect x="1640.6" y="985.2" width="51.000026" height="10.808457" fill="white"/>
+        <clipPath id="clip_path_2">
+          <rect x="0" y="0" width="51.000026" height="10.808457" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_2)" transform="translate(1648.8808 987.1042)" fill="black">
+          <tspan font-family="Palatino" font-size="5" font-style="italic" font-weight="400" fill="black" x="0" y="5">Not good enough</tspan>
+        </text>
+      </g>
+      <g id="Graphic_157">
+        <rect x="1753.2" y="1019.2" width="62.15669" height="10.808457" fill="white"/>
+        <clipPath id="clip_path_3">
+          <rect x="0" y="0" width="62.15669" height="10.808457" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_3)" transform="translate(1761.1329 1020.6042)" fill="black">
+          <tspan font-family="Palatino" font-size="6" font-style="italic" font-weight="700" fill="black" x="0" y="6">h</tspan>
+          <tspan font-family="Palatino" font-size="5" font-weight="400" fill="black" y="6"> </tspan>
+          <tspan font-family="Symbol" font-size="5" font-weight="400" fill="black" y="6">∈</tspan>
+          <tspan font-family="Palatino" font-size="5" font-style="italic" font-weight="400" fill="black" y="6"> {hacking methods}</tspan>
+        </text>
+      </g>
+      <g id="Graphic_165">
+        <rect x="1870.4" y="968.6978" width="43.200026" height="6.608457" fill="white"/>
+        <clipPath id="clip_path_4">
+          <rect x="0" y="0" width="43.200026" height="6.608457" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_4)" transform="translate(1880.379 968.5021)" fill="black">
+          <tspan font-family="Palatino" font-size="5" font-style="italic" font-weight="400" fill="black" x="0" y="5">Publishable</tspan>
+        </text>
+      </g>
+      <g id="Graphic_166">
+        <rect x="1639.6074" y="1077.8" width="43.200026" height="10.808457" fill="white"/>
+        <clipPath id="clip_path_5">
+          <rect x="0" y="0" width="43.200026" height="10.808457" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_5)" transform="translate(1649.5863 1079.7042)" fill="black">
+          <tspan font-family="Palatino" font-size="5" font-style="italic" font-weight="400" fill="black" x="0" y="5">Publishable</tspan>
+        </text>
+      </g>
+      <g id="Graphic_127">
+        <path d="M 1811.7618 828.0429 L 1874.7618 828.0429 C 1882.2138 828.0429 1888.2618 836.1069 1888.2618 846.0429 C 1888.2618 855.9789 1882.2138 864.0429 1874.7618 864.0429 L 1811.7618 864.0429 C 1804.3098 864.0429 1798.2618 855.9789 1798.2618 846.0429 C 1798.2618 836.1069 1804.3098 828.0429 1811.7618 828.0429 Z" fill="white"/>
+        <path d="M 1811.7618 828.0429 L 1874.7618 828.0429 C 1882.2138 828.0429 1888.2618 836.1069 1888.2618 846.0429 C 1888.2618 855.9789 1882.2138 864.0429 1874.7618 864.0429 L 1811.7618 864.0429 C 1804.3098 864.0429 1798.2618 855.9789 1798.2618 846.0429 C 1798.2618 836.1069 1804.3098 828.0429 1811.7618 828.0429 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(1812.2618 833.0429)" fill="black">
+          <tspan font-family="Palatino" font-size="10" font-weight="700" fill="black" x="3.9125977" y="10">Perform the </tspan>
+          <tspan font-family="Palatino" font-size="10" font-weight="700" fill="black" x="10.450684" y="23">Research</tspan>
+        </text>
+      </g>
+      <g id="Graphic_126">
+        <path d="M 1811.7618 1069.5916 L 1874.7618 1069.5916 C 1882.2138 1069.5916 1888.2618 1077.6556 1888.2618 1087.5916 C 1888.2618 1097.5276 1882.2138 1105.5916 1874.7618 1105.5916 L 1811.7618 1105.5916 C 1804.3098 1105.5916 1798.2618 1097.5276 1798.2618 1087.5916 C 1798.2618 1077.6556 1804.3098 1069.5916 1811.7618 1069.5916 Z" fill="white"/>
+        <path d="M 1811.7618 1069.5916 L 1874.7618 1069.5916 C 1882.2138 1069.5916 1888.2618 1077.6556 1888.2618 1087.5916 C 1888.2618 1097.5276 1882.2138 1105.5916 1874.7618 1105.5916 L 1811.7618 1105.5916 C 1804.3098 1105.5916 1798.2618 1097.5276 1798.2618 1087.5916 C 1798.2618 1077.6556 1804.3098 1069.5916 1811.7618 1069.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(1812.2618 1074.5916)" fill="black">
+          <tspan font-family="Palatino" font-size="10" font-weight="700" fill="black" x="4.7646484" y="10">Publish the </tspan>
+          <tspan font-family="Palatino" font-size="10" font-weight="700" fill="black" x="10.450684" y="23">Research</tspan>
+        </text>
+      </g>
+      <g id="Graphic_125">
+        <rect x="1794.7421" y="884.0429" width="97.0393" height="16" fill="white"/>
+        <rect x="1794.7421" y="884.0429" width="97.0393" height="16" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <clipPath id="clip_path_6">
+          <rect x="0" y="0" width="97.0393" height="16" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_6)" transform="translate(1794.7421 887.0429)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="4.050169" y="8">Compute necessary statistics</tspan>
+        </text>
+      </g>
+      <g id="Line_124">
+        <line x1="1843.2618" y1="864.0429" x2="1843.2618" y2="878.1429" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_123">
+        <rect x="1794.7421" y="920.8172" width="97.0393" height="16" fill="white"/>
+        <rect x="1794.7421" y="920.8172" width="97.0393" height="16" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <clipPath id="clip_path_7">
+          <rect x="0" y="0" width="97.0393" height="16" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_7)" transform="translate(1794.7421 923.8172)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="29.985716" y="8">Run the test</tspan>
+        </text>
+      </g>
+      <g id="Line_122">
+        <line x1="1843.2618" y1="900.0429" x2="1843.2618" y2="914.9172" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_121">
+        <path d="M 1843.2618 957.5916 L 1878.7655 975.5916 L 1843.2618 993.5916 L 1807.758 975.5916 Z" fill="white"/>
+        <path d="M 1843.2618 957.5916 L 1878.7655 975.5916 L 1843.2618 993.5916 L 1807.758 975.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(1822.344 970.2316)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="9.085525" y="8">Verdict?</tspan>
+        </text>
+      </g>
+      <g id="Line_120">
+        <line x1="1843.2618" y1="993.5916" x2="1843.2618" y2="1007.6916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_119">
+        <path d="M 1843.2618 1013.5916 L 1878.7655 1031.5916 L 1843.2618 1049.5916 L 1807.758 1031.5916 Z" fill="white"/>
+        <path d="M 1843.2618 1013.5916 L 1878.7655 1031.5916 L 1843.2618 1049.5916 L 1807.758 1031.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(1822.344 1026.2316)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="6.1905055" y="8">Is hacker?</tspan>
+        </text>
+      </g>
+      <g id="Line_118">
+        <line x1="1843.2618" y1="936.8172" x2="1843.2618" y2="951.6916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_117">
+        <line x1="1843.2618" y1="1049.5916" x2="1843.2618" y2="1063.6916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_114">
+        <path d="M 1878.7655 975.5916 L 1922.5 975.5916 L 1922.5 1010.8416" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_155">
+        <rect x="1702.2" y="1017.5916" width="50" height="28" fill="white"/>
+        <rect x="1702.2" y="1017.5916" width="50" height="28" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <clipPath id="clip_path_8">
+          <rect x="0" y="0" width="50" height="28" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_8)" transform="translate(1702.2 1021.5916)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="7.657227" y="8">Apply </tspan>
+          <tspan font-family="Palatino" font-size="7" font-style="italic" font-weight="400" fill="black" y="8">h</tspan>
+          <tspan font-family="Palatino" font-size="7" font-style="italic" font-weight="400" fill="black" y="8"> </tspan>
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" y="8">on </tspan>
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="6.929199" y="18">Experiment</tspan>
+        </text>
+      </g>
+      <g id="Line_156">
+        <line x1="1807.758" y1="1031.5916" x2="1758.1" y2="1031.5916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_160">
+        <path d="M 1647.3037 1013.5916 L 1682.8074 1031.5916 L 1647.3037 1049.5916 L 1611.8 1031.5916 Z" fill="white"/>
+        <path d="M 1647.3037 1013.5916 L 1682.8074 1031.5916 L 1647.3037 1049.5916 L 1611.8 1031.5916 Z" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <text transform="translate(1626.386 1026.2316)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="9.085525" y="8">Verdict?</tspan>
+        </text>
+      </g>
+      <g id="Line_161">
+        <line x1="1702.2" y1="1031.5916" x2="1688.7074" y2="1031.5916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_162">
+        <path d="M 1647.3037 1013.5916 L 1647.3037 994.9404 L 1727.2 994.9404 L 1727.2 1011.6916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Line_167">
+        <path d="M 1647.3037 1049.5916 L 1647.3037 1087.5916 L 1696.3 1087.5916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_172">
+        <rect x="1702.2" y="1073.5916" width="50" height="28" fill="white"/>
+        <rect x="1702.2" y="1073.5916" width="50" height="28" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <clipPath id="clip_path_9">
+          <rect x="0" y="0" width="50" height="28" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_9)" transform="translate(1702.2 1077.5916)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="7.306885" y="8">Prepare the </tspan>
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="7.074463" y="18">Submission</tspan>
+        </text>
+      </g>
+      <g id="Line_173">
+        <line x1="1752.2" y1="1087.5916" x2="1792.3618" y2="1087.5916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_174">
+        <rect x="1897.5" y="1016.7416" width="50" height="28" fill="white"/>
+        <rect x="1897.5" y="1016.7416" width="50" height="28" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        <clipPath id="clip_path_10">
+          <rect x="0" y="0" width="50" height="28" fill="white"/>
+        </clipPath>
+        <text clip-path="url(#clip_path_10)" transform="translate(1897.5 1020.7416)" fill="black">
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="7.306885" y="8">Prepare the </tspan>
+          <tspan font-family="Palatino" font-size="7" font-weight="400" fill="black" x="7.074463" y="18">Submission</tspan>
+        </text>
+      </g>
+      <g id="Line_175">
+        <path d="M 1922.5 1044.7416 L 1922.5 1087.5916 L 1894.1618 1087.5916" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+    </g>
+  </g>
+</svg>
