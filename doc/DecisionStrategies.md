@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Configuration File
-nav_order: 8
+title: Decision Strategy
+nav_order: 7
 ---
 
 # Decision Strategies

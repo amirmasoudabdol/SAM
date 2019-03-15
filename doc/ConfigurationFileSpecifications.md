@@ -93,7 +93,7 @@ This section specifies general parameters of the simulation. These parameter are
 This section lists necessary parameters of the [`ExperimentSetup`](Components.md#experiment-setup) and [`Experiment`](Components.md#experiment). 
 In the case of `--means` and other similar variables, if a single numeric value is provided, SAM sets the mean of each group to the given value. On the other hand, if an `array` is provided, mean's of `i`th group will set to `i`th elements of the given array. Similarly, if the paramter refers to a matrix, a single numeric value will initialize the entire matrix with the given value, while providing a `matrix` will set each values individually.
 
-Note:
+Note
 {: .label .label-red}
 The size of an given `array` or `matrix` must agree with number of conditions, dependant variables, and items, otherwise an error will occur.
 
@@ -120,7 +120,6 @@ This section defines the behavior of the `Researcher`.
 | `--is-phacker`          | `bool` | Whether the `Researcher` is a hacker or not, if `true`, listed methods will be applied on the `Experiment`. |
 | `--p-decision-strategy` | `dict` | Specification of a `DecisionStrategy`. Read more [here](#DecisionStrategy.md). |
 | `--p-hacking-methods`.  | `list` | A list of `list`, each indicating a chain of `HackingStrategy`. Read more [here](#HackingStrategies.md). |
-
 
 
 ## Journal Parameters

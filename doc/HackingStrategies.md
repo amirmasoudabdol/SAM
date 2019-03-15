@@ -15,6 +15,7 @@ nav_order: 6
 
 ---
 
+
 ## Optional Stopping
 
 Optional stopping is the practice of adding new observation to the dataset until significant achievement.
