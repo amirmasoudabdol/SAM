@@ -1,1 +1,7 @@
-<div style="text-align: right"><i>Decision Strategy</i></div><br>
+---
+layout: default
+title: Configuration File
+nav_order: 8
+---
+
+# Decision Strategies

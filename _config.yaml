@@ -2,7 +2,7 @@ title: SAM
 description: An extensible p-hacking simulator
 
 permalink: pretty
-exclude: ["src/", "include/"]
+exclude: ["src/", "include/", "inputs/", "outputs/"]
 
 
 remote_theme: pmarsceill/just-the-docs

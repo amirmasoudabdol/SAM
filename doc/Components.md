@@ -4,15 +4,13 @@ title: Design
 nav_order: 3
 ---
 
-<div style="text-align: right"><i>Design</i></div><br>
-
 In the previous section, while reviewing the underling process of conducting a scientific research, I listed some of the main components and entities involving in different stages of a research, e.g., *Experiment Setup, Experiment, Researcher, Submission*, and *Journal*. In the abstraction, each component  can be seen as a loosely independent entity while the whole system, i.e., *scientific research*, can be described by a set of behaviors, tasks and interactions.
 
 One of our main design goals with SAM was to achieve a level of flexibility where we could modify different aspects of the research process relatively easily. In order to achieve this, we have tried to decouple the system to smaller but conceptually meaningful scientific routines and objects. Figure 1. shows all the components of SAM and their dependencies alongside their interactions with each other. 
 
 This section will clarify the design principles behind each component, how they work and interact with each other in order to simulate the entire process.
 
-![**Figure 1.** SAM's components and their interactions](figures/Components.svg)
+![**Figure 1.** SAM's components and their interactions](figures/components.png)
 
 ## SAM’s Main Components
 
@@ -181,6 +179,3 @@ Main variables and methods of `DecisionStrategy` are:
 As mentioned in [Researcher](#researcher), a `Researcher` instance can have a list of **hackingStrategies** in his hand. If there is more than on hacking strategies are registered, `Researcher` performs all hacking methods on different copies of the original Experiment and stores the result in `submissionsPool` and `experimentsPool`. After applying all the method, `Researcher` will ask the `DecisionStrategy` for *final verdict*, and choose among all results as its preparing the `finalSubmission`. 
 
 The [Hacking Strategies](HackingStrategies.md) section will get into more details on each hacking methods.
-
-- - - 
-Next: [Execution Flow](ExecutionFlow.md)

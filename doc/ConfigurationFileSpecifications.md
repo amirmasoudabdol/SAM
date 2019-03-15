@@ -4,55 +4,133 @@ title: Configuration File
 nav_order: 5
 ---
 
-In order to setup a simulation, SAM needs to know the specific representation of each of its components. All the necessary parameters can be listed in a JSON file and provided to SAM via the `--config` parameters of the CLI, e.g. `./SAM --config=simulation_parameters.json`
+# Configuration File Specification
+
+SAM uses a [JSON](https://www.json.org) file to load and save all simulation parameters. The code block below shows a general configuration file used by SAM to prepare the simulation and all its components. As you can see, the file is separated into 4 different sections, each corresponding to one of SAM's components. After customizing your own configuration file, you can load it to SAM using `./SAMpp --config=your-configuration-file.json`. This will start the simulation as described in [Flow](#ExecutionFlow.md) section.
+
+While most parameters are self-explanatory, this section goes into more details on how SAM will process and interpret them during the initialization phase.
 
 
-A configuration file consists of 4 parts, each specifying parameters for different parts of the simulation. The *Simulation Parameters* specifies the general parameters for the simulation, e.g., the output filename. The *Experiment Parameters* section lists the necessary parameters of the underlying experiment of the simulation, e.g., number of observations, factor loadings. The *Researcher Parameters* indicates the behavior of the researcher, e.g., weather he is a hacker or not and finally the *Journal Parameters* indicates how the journal will review and accept a publication. 
+```json
+{
+  "Simulation Parameters":{
+    "--debug": true,
+    "--verbose": true,
+    "--progress": false,
+    "--n-sims": 1,
+    "--master-seed": 42,
+    "--save-output": true,
+    "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
+    "--output-prefix": "auto"
+  },
+  "Experiment Parameters": {
+    "--meta-seed": 42,
+    "--data-strategy": "Linear Model",
+    "--n-conditions": 1,
+    "--n-dep-vars": 3,
+    "--n-items": 3,
+    "--n-obs": 25,
+    "--means": 0.25,
+    "--vars": 0.5,
+    "--covs": 0.00,
+    "--loadings": 0.7,
+    "--err-vars": 0.01,
+    "--err-covs": 0.001,
+    "--test-strategy": {
+      "type": "TTest",
+      "side": "Two Side",
+      "alpha": 0.05
+    }
+  },
+  "Journal Parameters" :{
+    "--pub-bias": 0.95,
+    "--journal-selection-model": "Significant Selection",
+    "--max-pubs": 20,
+    "--alpha": 0.05,
+    "--side": 0
+  },
+  "Researcher Parameters": {
+    "--is-phacker": true,
+    "--p-hacking-methods": [
+        [
+        	{
+	          "type": "Optional Stopping",
+	          "mode": "Recursive",
+	          "level": "dv",
+	          "num": 3,
+	          "n_attempts": 3,
+	          "max_attempts": 10
+	        }
+	    ]
+    ],
+    "--decision-strategy": {
+      "type": "Impatient Decision Maker",
+      "preference": "Min P-value"
+    }
+  }
+}
+```
+
 
 
 ## Simulation Parameters
 
-| Parameter | Value | Description |
-|:--|:--|:--|
-| `--debug`  | `bool` | Indicates if SAMpp is running in debug mode. |
-| `--verbose` | `bool` | Cause SAM to be verbose, announcing the execution of different procedures. |
-| `--progress` | `bool` | Shows the progress bar. |
-| `--master-seed` | `int` | An integer for initiating the seed of the main random number generator stream. All other necessary streams will be seeded based on the given seed.<br> The value **0** tells SAM that master seed should be randomized as well. | 
-| `--n-sims`| `int` | Number of simulation with each given set of parameters. |
-| `--output-path` | `string` | A path to save the output files |
-| `--output-prefix` | `string` | A prefix to be added to output filenames'. All output files will end with `_sim.csv` |
+This section specifies general parameters of the simulation. These parameter are not necessary influencing SAM's components but will define the overall behavior of SAM with regard to input and output. 
+
+| Parameter         | Value    | Description                                                      |
+|:------------------|:-------- |:-----------------------------------------------------------------|
+| `--debug`         | `bool`   | Runs SAM in debug mode.        				      |
+| `--verbose`       | `bool`   | Causes SAM to be verbose, announcing the execution of different processes.   |
+| `--progress`      | `bool`   | Shows the progress bar.										  |
+| `--master-seed`   | `int`    | An integer for initiating seed's of the *main random number generator stream*. All other necessary streams will be seeded based on the given seed. Setting this to `"random"` tells SAM to use the clock to randomize the random seed. (default: `42`) |
+| `--n-sims`        | `int`    | Number of simulation repeated simulation for given parameters.          |
+| `--save-output`   | `bool`   | Tells SAM to export the simulation data to a CSV file.
+| `--output-path`   | `string` | A path for output files.								  |
+| `--output-prefix` | `string` | A prefix to be added to output filenames. {: .label} Raw simulation data files ends with `_sim.csv`, and meta-analysis data files ends with `_meta.csv` |
 
 ## Experiment Parameters
 
-| Parameter | Value | Description |
-|:--|:--|:--|
-| `--data-strategy`| `string` | See also, DataStrategy.md |
-| `--n-conditions`| $n_c$, `int` | Number of treatment conditions |
-| `--n-dep-vars`| \f$n_d\f$, `int` | Number of dependent variables |
-| `--n-items`| \f$n_i\f$, `int` | Number of items. Only applicable for Latent Model. |
-| `--n-obs`| nobs, `int` | Number of observation per each group |
-| `--means`| mu, `double` or `array` | Mean of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `mu`. If an `array` is given, `mu[i]` will be used for group `i`.  |
-| `--vars`| sd, `double` or `array`  | Variance of each group. If a `double` is provided, it'll be broadcasted to `nc * nd` array, therefore all groups will have the same `sd`. If an `array` is given, `sd[I]` will be used for group `i`. |
-| `--is-correlated`| `bool` | Indicates whether dependent variables are correlated or not. |
-| `--covs`| cov, `double` or `2d array` | The covariance coefficient between each group. If a `double` is provided, it'll be broadcasted to a matrix of  `nc * nd` by `nc * nd` with `cov` for every `i` and `j`, therefore all groups will have the same covariance. If a `2d array` is given, `cov[I][j]` will indicate the covariance coefficient between group `i` and `j`.<br> **Note:** If both `sd` and `cov` are scalar values, diagonal elements of `cov` matrix will be replaced by `sd` for each `i`. |
-| `--loadings`|  | |
-| `--err-vars`| | |
-| `--err-covs`| | |
+This section lists necessary parameters of the [`ExperimentSetup`](Components.md#experiment-setup) and [`Experiment`](Components.md#experiment). 
+In the case of `--means` and other similar variables, if a single numeric value is provided, SAM sets the mean of each group to the given value. On the other hand, if an `array` is provided, mean's of `i`th group will set to `i`th elements of the given array. Similarly, if the paramter refers to a matrix, a single numeric value will initialize the entire matrix with the given value, while providing a `matrix` will set each values individually.
+
+Note:
+{: .label .label-red}
+The size of an given `array` or `matrix` must agree with number of conditions, dependant variables, and items, otherwise an error will occur.
+
+| Parameter         | Value              | Description                                                      |
+|:------------------|:-------------------|:-----------------------------------------------------------------|
+| `--data-strategy` | `string`           | Specify the underlying data model. See [Data Strategy](DataStrategies.md)    |
+| `--n-conditions`  | `int`              | Number of treatment conditions, `nc` .*Exluding the control group.* 				|
+| `--n-dep-vars`    | `int`              | Number of dependent variables in each condition, `nd`. 					|
+| `--n-items`       | `int`              | Number of items. Only applicable for Latent Model, `ni`.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `--n-obs`         | `int`, `array`     | Number of observation per group.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `--means`         | `double`, `array`  | An array of size `nc * nd`, or a numeric value. |
+| `--vars`          | `double`, `array`  | An array of size `nc * nd`, or a numeric value. Diagonal values of *covariance matrix* will set by the given array or value.    |
+| `--covs`          | `double`, `martix` | A matrix of size `(nc * nd) x (nc * nd)`. If non-zero, non-diagonal values of *convariance matrix* will set with to the given value. |
+| `--loadings`      | `double`, `array`  |					|
+| `--err-vars`      | `double`, `matrix` |					|
+| `--err-covs`      | `double`, `matrix` |					|
 
 ## Researcher Parameters
 
-| Parameter | Value | Description |
-|:--|:--|:--|
-| `--is-phacker` | `bool` | Whether the Researcher is a hacker or not, if `true`, listed methods will be applied on the dataset. |
-| `--p-hacking-methods` | `list` of `dict` | A list of `dict` each indicating a Hacking Method with its parameters. |
+This section defines the behavior of the `Researcher`. 
+
+| Parameter               | Value   | Description                                                    |
+|:------------------------|:-------|:-----------------------------------------------------------------|
+| `--is-phacker`          | `bool` | Whether the `Researcher` is a hacker or not, if `true`, listed methods will be applied on the `Experiment`. |
+| `--p-decision-strategy` | `dict` | Specification of a `DecisionStrategy`. Read more [here](#DecisionStrategy.md). |
+| `--p-hacking-methods`.  | `list` | A list of `list`, each indicating a chain of `HackingStrategy`. Read more [here](#HackingStrategies.md). |
+
 
 
 ## Journal Parameters
 
-| Parameter | Value | Description |
-|:--|:--|:--|
-| `--pub-bias` | `double` | Publication bias rate. |
-| `--journal-selection-model` | `string` | See also, Selection Model |
-| `--max-pubs` | `double` | Maximum publications that is going to be accepted by a Journal. |
-| `--alpha` | \f$\alpha\f$, `double` | Alpha of the significant testing |
-| `--side` | `int` | Indicates journal's preference regarding the effect size. Acceptance of Positive/Negative/Neutral results will be indicated by 1, -1, and 0, respectively. |
+This section specifies the properties of the `Journal`.
+
+| Parameter                   | Value    | Description                                                      |
+|:----------------------------|:-------- |:-----------------------------------------------------------------|
+| `--pub-bias`                | `double` | Publication bias rate.                                                                                                                                     |
+| `--journal-selection-model` | `string` | The `SelectionStrategy` of the journal. Read more [here](#selection-strategies.md).                                                                                                                                |
+| `--max-pubs`                | `double` | Maximum publications that is going to be accepted by the journal before stop accepting new `Submission`s.                                                                                            |
+| `--alpha`                   | `double` | Journal's significance ⍺.                                                                                                                           |
+| `--side`                    | `int`    | Indicates journal's preference regarding the effect size. Acceptance of Positive/Negative/Neutral results will be indicated by 1, -1, and 0, respectively. |

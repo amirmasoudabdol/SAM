@@ -9,13 +9,6 @@
     "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
     "--output-prefix": "auto"
   },
-  "Journal Parameters" :{
-    "--pub-bias": 0.95,
-    "--journal-selection-model": "Significant Selection",
-    "--max-pubs": 20,
-    "--alpha": 0.05,
-    "--side": 0
-  },
   "Experiment Parameters": {
     "--meta-seed": 42,
     "--data-strategy": "Linear Model",
@@ -34,6 +27,13 @@
       "side": "Two Side",
       "alpha": 0.05
     }
+  },
+  "Journal Parameters" :{
+    "--pub-bias": 0.95,
+    "--journal-selection-model": "Significant Selection",
+    "--max-pubs": 20,
+    "--alpha": 0.05,
+    "--side": 0
   },
   "Researcher Parameters": {
     "--is-phacker": true,
