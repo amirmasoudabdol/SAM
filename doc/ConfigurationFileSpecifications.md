@@ -113,7 +113,7 @@ The size of an given `array` or `matrix` must agree with number of conditions, d
 
 ## Researcher Parameters
 
-This section defines the behavior of the `Researcher`. 
+This section defines the behavior of the `Researcher`.
 
 | Parameter               | Value   | Description                                                    |
 |:------------------------|:-------|:-----------------------------------------------------------------|
@@ -133,3 +133,8 @@ This section specifies the properties of the `Journal`.
 | `--max-pubs`                | `double` | Maximum publications that is going to be accepted by the journal before stop accepting new `Submission`s.                                                                                            |
 | `--alpha`                   | `double` | Journal's significance ⍺.                                                                                                                           |
 | `--side`                    | `int`    | Indicates journal's preference regarding the effect size. Acceptance of Positive/Negative/Neutral results will be indicated by 1, -1, and 0, respectively. |
+
+
+#### Crash Course on JSON
+
+> A JSON object is an *unordered* set of name/value pairs inserted between two curly brackets, `{"name": "Sam"}`. A JSON list/array is an ordered set of values between two brackets, `[1, "blue", {"name": "Sam"}]`
