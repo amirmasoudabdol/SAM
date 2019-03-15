@@ -26,30 +26,40 @@ Public Attributes
 -----------------
 
 int **simid** = 0\
+Simulation ID.
 
 int **pubid** = 0\
+Publication ID.
 
 int **inx**\
 
 int **nobs**\
+Number of observation in submitted group.
 
 double **yi**\
+Effect size of the submitted group.
 
 double **sei**\
+Standard error of the submitted group.
 
 double **statistic**\
+Corresponding statistics of the submitted group.
 
 double **pvalue**\
+*P*-value of the submitted group
 
 bool **sig** = false\
+Indicates if the submission is significant or not.
 
 short **side** = 1\
+The side of the observed effect.
 
 bool **isHacked** = false\
 
 int **tnobs**\
 
 double **tyi**\
+True mean/effect of the selected submission record.
 
 double **tvi**\
 

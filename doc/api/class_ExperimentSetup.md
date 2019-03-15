@@ -8,7 +8,7 @@ title: ExperimentSetup
 NAME
 ====
 
-ExperimentSetup
+ExperimentSetup - Define a class for **ExperimentSetup**.
 
 SYNOPSIS
 ========
@@ -36,16 +36,23 @@ ExperimentType **experimentType**\
 TestMethod **testMethod**\
 
 int **nc** = 1\
+Number of experimental conditions, e.g., treatment 1, treatment 2.
 
 int **nd** = 3\
+Number of *dependent variables* in each experimental condition.
 
 int **ni** = 0\
+Number of items for each latent variable, if `isFactorModel` is `true`.
 
 int **ng**\
+Total number of groups Always calculated as \$n\_g = n\_c \* n\_d\$,
+unless the simulation contains latent variables, \$n\_g = n\_c \* n\_d
+\* n\_i\$.
 
 int **nrows**\
 
 int **nobs**\
+Number of observations in each group.
 
 bool **isNRandomized** = false\
 
@@ -62,6 +69,7 @@ double **cov** = 0\
 arma::Mat\< double \> **true\_sigma**\
 
 arma::Row\< double \> **factorLoadings**\
+\$ambda\$
 
 arma::Row\< double \> **errorMeans**\
 

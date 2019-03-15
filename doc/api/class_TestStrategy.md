@@ -8,7 +8,7 @@ title: TestStrategy
 NAME
 ====
 
-TestStrategy
+TestStrategy - Abstract class for defining test strategies.
 
 SYNOPSIS
 ========

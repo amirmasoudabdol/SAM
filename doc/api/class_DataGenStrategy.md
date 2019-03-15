@@ -8,7 +8,7 @@ title: DataGenStrategy
 NAME
 ====
 
-DataGenStrategy
+DataGenStrategy - Abstract class for Data Strategies.
 
 SYNOPSIS
 ========

@@ -8,7 +8,7 @@ title: OptionalStopping
 NAME
 ====
 
-OptionalStopping
+OptionalStopping - Declartion of **OptionalStopping** hacking strategy.
 
 SYNOPSIS
 ========
@@ -27,6 +27,7 @@ n\_attempts, int max\_attempts)\
 
 void **perform** (**Experiment** \*experiment, **DecisionStrategy**
 \*decisionStrategy)\
+Implementation of optional stopping.
 
 Additional Inherited Members
 ----------------------------

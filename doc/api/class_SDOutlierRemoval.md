@@ -8,7 +8,8 @@ title: SDOutlierRemoval
 NAME
 ====
 
-SDOutlierRemoval
+SDOutlierRemoval - Declaration of Outlier Removal hacking method based
+on items\' distance from their sample mean.
 
 SYNOPSIS
 ========
@@ -28,6 +29,8 @@ min\_observations, std::vector\< double \> multipliers)\
 
 void **perform** (**Experiment** \*experiment, **DecisionStrategy**
 \*decisionStrategy)\
+Implementation of Outliers Removal based on an item\'s distance from the
+\$\$.
 
 Additional Inherited Members
 ----------------------------

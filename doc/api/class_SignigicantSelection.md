@@ -8,7 +8,7 @@ title: SignigicantSelection
 NAME
 ====
 
-SignigicantSelection
+SignigicantSelection - Significant-based Selection Strategy.
 
 SYNOPSIS
 ========
@@ -31,10 +31,15 @@ Public Attributes
 -----------------
 
 double **\_alpha**\
+The \$lpha\$ at which the *selection strategy* decides the significance
+of a publication.
 
 double **\_pub\_bias**\
 
 int **\_side**\
+Indicates the *selection stratgy*\'s preference toward positive, `1`, or
+negative, `-1` effect. If `0`, **Journal** doesn\'t have any
+preferences.
 
 int **\_seed**\
 

@@ -8,7 +8,7 @@ title: Experiment
 NAME
 ====
 
-Experiment
+Experiment - **Experiment** class declaration.
 
 SYNOPSIS
 ========

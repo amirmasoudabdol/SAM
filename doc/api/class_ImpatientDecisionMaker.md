@@ -8,7 +8,10 @@ title: ImpatientDecisionMaker
 NAME
 ====
 
-ImpatientDecisionMaker
+ImpatientDecisionMaker - Implementation of an impatient researcher. In
+this case, the **Researcher** will stop as soon as find a significant
+result and will not continue exploring other hacking methods in his
+arsenal.
 
 SYNOPSIS
 ========

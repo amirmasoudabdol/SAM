@@ -8,7 +8,7 @@ title: HackingStrategy
 NAME
 ====
 
-HackingStrategy
+HackingStrategy - Abstract class for Hacking Strategies.
 
 SYNOPSIS
 ========

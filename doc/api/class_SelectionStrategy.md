@@ -8,7 +8,8 @@ title: SelectionStrategy
 NAME
 ====
 
-SelectionStrategy
+SelectionStrategy - Abstract class for **Journal**\'s selection
+strategies.
 
 SYNOPSIS
 ========
