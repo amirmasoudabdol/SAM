@@ -1,3 +1,9 @@
+---
+layout: default
+title: Design
+nav_order: 3
+---
+
 <div style="text-align: right"><i>Design</i></div><br>
 
 In the previous section, while reviewing the underling process of conducting a scientific research, I listed some of the main components and entities involving in different stages of a research, e.g., *Experiment Setup, Experiment, Researcher, Submission*, and *Journal*. In the abstraction, each component  can be seen as a loosely independent entity while the whole system, i.e., *scientific research*, can be described by a set of behaviors, tasks and interactions.

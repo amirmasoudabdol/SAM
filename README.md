@@ -1,20 +1,12 @@
-**SAM is currently under development and testing!**
+> **SAM is currently under development and testing!**
 
-SAM is an extensible p-hacking simulator. It provides different interfaces and APIs for designing — and experimenting with — different statistical experiments under the influence of various *p*-hacking methods or strategies, a.k.a *questionable research practices*. For instance, one could design a two-by-two factorial experiment and study the effect of optional stopping on achieving significant results.
+---
 
-While there are a few conventional and well-known p-hacking methods are provided out of the box, the flexibility of SAM allows the user to define any specific methods, e.g., modifying measurements based on an specific metric, and apply it on the currently existing experiment.
+SAM is a C++ program, and soon a library for simulating and studying the effects of different p-hacking method, questionable research practices or other researcher’s degrees of freedom on the statistical inference and meta-analysis metrics. 
 
-In this vignette, I’ll describe the underlying design principles of SAM and some of its capabilities alongside some examples. In the Introduction section, I’ll explain what’s the problem that SAM is trying to solve and how are we going to approach it. After setting the ground roles, we can dive into different components of SAM and process of designing your own simulation. 
+**Please visit the [documentation](index.md) page to learn more about our design decisions and the available methods.** 
 
-- [Introduction](doc/Introduction.md)
-- [SAM's Main Components](doc/Components.md)
-- [Configuration File Specifications](doc/ConfigurationFileSpecifications.md)
-- [Components Interaction and Execution Flow](doc/ExecutionFlow.md)
-- [Hacking Strategies](doc/HackingStrategies.md)
-- [Decision Strategies](doc/DecisionStrategies.md)
-- [SAM's API](doc/API.md)
-
-**Note**: If you like to install SAM before getting into more details, please follow the instruction below.
+If you like to install SAM before getting into more details, please follow the instruction below.
 
 ## Dependencies
 
@@ -38,10 +30,7 @@ On **Ubuntu**, you can use `apt` to install the listed packages by running:
 	
 For `nlohmann/json` and `docopt`, please check their documentation. You’ll probably need to make and install them manually. 
 
-##### conda package manager
-
-If you are using `conda` package manager you can install all packages via `conda` as follow 
-
+If you are using **[conda](https://anaconda.org)** package manager you can install all packages via `conda` as follow 
 
 	conda install -c anaconda boost
 	conda install -c conda-forge armadillo
@@ -49,7 +38,7 @@ If you are using `conda` package manager you can install all packages via `conda
 	
 You will still need to manually install `docopt` since it’s not included in `conda-forge` repository. 
 
-## Build
+## Build Process
 
 Once you have successfully installed all the dependencies, you can use CMake to create SAM’s executable using following commands:
 
@@ -75,22 +64,4 @@ After successfully building SAMpp, you’ll be able to run your first simulation
 	
 	Simulation output is saved in ../outputs/sample_simulation.csv
 	
-
-
-
-## Simulation Setup
-
-In order to setup a simulation, SAM needs to know the specific representation of each of its components. All the necessary parameters can be listed in a JSON file and provided to SAM via the `--config` parameters of the CLI, e.g. `./SAM --config=simulation_parameters.json`
-
-
-
-
-### QRP Methods
-
-While SAM provides an interface to implement your own QRP algorithms, it will provide a few methods out of the box.
-
-Read more on ...
-
-
-## Outputs
-
+[More examples...](doc/examples.md)

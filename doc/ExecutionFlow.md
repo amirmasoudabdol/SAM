@@ -1,3 +1,9 @@
+---
+layout: default
+title: Introduction
+nav_order: 4
+---
+
 <div style="text-align: right"><i>Flow</i></div><br>
 
 SAM simulate the scientific process through several subprocesses as depicted in the following flowchart. Each rounded rectangle describes a process, often perform by one of the components or through collaboration between different components. This section describes each subprocess in more details. 
