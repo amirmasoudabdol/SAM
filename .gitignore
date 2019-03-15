@@ -4,6 +4,7 @@ doc/xml
 doc/html
 doc/rtf
 doc/docbook
+doc/m.math.cache
 
 # Excluding input/output
 # inputs/
