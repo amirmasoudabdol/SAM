@@ -1,5 +1,6 @@
 ---
 date: Fri Mar 15 2019
+parent: API
 section: 3
 title: LatentDataStrategy
 ---

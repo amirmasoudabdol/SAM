@@ -3,5 +3,5 @@ do
   # echo $manpage
   markdownfile="class_"$(basename "$manpage" .3)".md"
   # echo $markdownfile
-  pandoc -f man -t markdown -s $manpage -o doc/api/$markdownfile
+  pandoc -f man -t markdown -M parent=API -s $manpage -o doc/api/$markdownfile
 done
