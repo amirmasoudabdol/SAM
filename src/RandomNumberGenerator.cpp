@@ -77,9 +77,9 @@ double RandomNumberGenerator::uniform(const double &min, const double &max){
 
 
 /**
- Return a value between \f$[a, b)\f$ or \f$[b, c)\f$ based on the outcome of a Bernoulli trial with
- probability of \f$p\f$. The return value has \f$p\f$ chance of being in \f$[a, b)\f$ and \f$1-p\f$
- chance of being in \f$[b, c)\f$.
+ Return a value between [a, b) or [b, c) based on the outcome of a Bernoulli trial with
+ probability of p. The return value has p chance of being in [a, b) and 1-p
+ chance of being in [b, c).
  */
 
 //\param p Bernoulli trial probability

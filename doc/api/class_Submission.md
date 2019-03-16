@@ -1,89 +1,94 @@
 ---
-date: Fri Mar 15 2019
 parent: API
-section: 3
-title: Submission
 ---
 
-NAME
-====
+Submission Class Reference
+==========================
 
 Submission
 
-SYNOPSIS
-========
+-   **Submission** (Experiment &e, const int &index)
 
-\
+-   const bool isSig () const
 
-Public Member Functions
------------------------
+<!-- -->
 
-**Submission** (**Experiment** &e, const int &index)\
+-   int simid = 0
 
-const bool **isSig** () const\
+    Simulation ID.
 
-Public Attributes
------------------
+-   int pubid = 0
 
-int **simid** = 0\
-Simulation ID.
+    Publication ID.
 
-int **pubid** = 0\
-Publication ID.
+-   int **inx**
 
-int **inx**\
+-   int nobs
 
-int **nobs**\
-Number of observation in submitted group.
+    Number of observation in submitted group.
 
-double **yi**\
-Effect size of the submitted group.
+-   double yi
 
-double **sei**\
-Standard error of the submitted group.
+    Effect size of the submitted group.
 
-double **statistic**\
-Corresponding statistics of the submitted group.
+-   double sei
 
-double **pvalue**\
-*P*-value of the submitted group
+    Standard error of the submitted group.
 
-bool **sig** = false\
-Indicates if the submission is significant or not.
+-   double statistic
 
-short **side** = 1\
-The side of the observed effect.
+    Corresponding statistics of the submitted group.
 
-bool **isHacked** = false\
+-   double pvalue
 
-int **tnobs**\
+    *P*-value of the submitted group
 
-double **tyi**\
-True mean/effect of the selected submission record.
+-   bool sig = false
 
-double **tvi**\
+    Indicates if the submission is significant or not.
 
-double **tcov**\
+-   short side = 1
 
-double **pubbias**\
+    The side of the observed effect.
 
-Friends
--------
+-   bool **isHacked** = false
 
-std::ostream & **operator\<\<** (std::ostream &os, const **Submission**
-&s)\
+-   int **tnobs**
+
+-   double tyi
+
+    True mean/effect of the selected submission record.
+
+-   double **tvi**
+
+-   double **tcov**
+
+-   double **pubbias**
+
+<!-- -->
+
+-   std::ostream & **operator\<\<** (std::ostream &os, const Submission
+    &s)
 
 Member Function Documentation
-=============================
+-----------------------------
 
-const bool Submission::isSig () const` [inline]`
-------------------------------------------------
+### isSig()
 
-**Returns:**
+isSig
 
-> `true` if the **Submission** is significant, `false` otherwise
+Submission
 
-Author
-======
+Submission
 
-Generated automatically by Doxygen for SAMpp from the source code.
+isSig
+
+`const bool Submission::isSig ( ) const[inline]`
+
+**Returns:.**
+
+`true` if the Submission is significant, `false` otherwise
+
+The documentation for this class was generated from the following file:
+
+include/SubmissionRecord.h

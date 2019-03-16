@@ -62,7 +62,7 @@ public:
     int nd = 3;     ///< Number of _dependent variables_ in each experimental condition.
     int ni = 0;     ///< Number of items for each latent variable, if `isFactorModel` is `true`.
     int ng;         ///< \brief Total number of groups
-                    ///< Always calculated as \f$n_g = n_c * n_d\f$, unless the simulation contains latent variables, \f$n_g = n_c * n_d * n_i\f$
+                    ///< Always calculated as n_g = n_c * n_d, unless the simulation contains latent variables, n_g = n_c * n_d * n_i
     int nrows;
     int nobs;       ///< Number of observations in each group
     bool isNRandomized = false;
@@ -95,7 +95,7 @@ public:
     arma::Mat<double> true_sigma;
     
     // Latent Experiments
-    arma::Row<double> factorLoadings;                 ///< \f$\lambda\f$
+    arma::Row<double> factorLoadings;                 ///< \lambda
     arma::Row<double> errorMeans;
     arma::Row<double> errorVars;
     arma::Mat<double> errorCov;          ///<

@@ -1,49 +1,38 @@
 ---
-date: Fri Mar 15 2019
 parent: API
-section: 3
-title: Journal
 ---
 
-NAME
-====
+Journal Class Reference
+=======================
 
 Journal
 
-SYNOPSIS
-========
+-   **Journal** (json &config)
 
-\
+-   **Journal** (double max\_pubs, double pub\_bias, double alpha)
 
-Public Member Functions
------------------------
+-   void **setSelectionStrategy** (SelectionStrategy \*s)
 
-**Journal** (json &config)\
+-   bool **review** (Submission &s)
 
-**Journal** (double max\_pubs, double pub\_bias, double alpha)\
+-   void **accept** (Submission s)
 
-void **setSelectionStrategy** (**SelectionStrategy** \*s)\
+-   void **reject** (Submission &s)
 
-bool **review** (**Submission** &s)\
+-   void **clear** ()
 
-void **accept** (**Submission** s)\
+-   bool **isStillAccepting** ()
 
-void **reject** (**Submission** &s)\
+-   void **saveSubmissions** (int simid, std::ofstream &writer)
 
-void **clear** ()\
+<!-- -->
 
-bool **isStillAccepting** ()\
+-   std::vector\< Submission \> **submissionList**
 
-void **saveSubmissions** (int simid, std::ofstream &writer)\
+-   SelectionStrategy \* **selectionStrategy**
 
-Public Attributes
------------------
+The documentation for this class was generated from the following files:
 
-std::vector\< **Submission** \> **submissionList**\
+include/Journal.h
 
-**SelectionStrategy** \* **selectionStrategy**\
-
-Author
-======
-
-Generated automatically by Doxygen for SAMpp from the source code.
+src/Journal.cpp

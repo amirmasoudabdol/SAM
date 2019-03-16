@@ -77,10 +77,10 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 
 
 /**
- \brief Implementation of Outliers Removal based on an item's distance from the \f$\mu\f$.
+ \brief Implementation of Outliers Removal based on an item's distance from the \mu.
  
- The `_sd_multiplier`, \f$d\f$ is set at the construction, and it'll be used to check whether a measurement
- should be removed or not. Any item satisfying the \f$ v > |\mu - d * \sigma| \f$ will be removed from the
+ The `_sd_multiplier`, d is set at the construction, and it'll be used to check whether a measurement
+ should be removed or not. Any item satisfying the  v > |\mu - d * \sigma|  will be removed from the
  dataset.
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){

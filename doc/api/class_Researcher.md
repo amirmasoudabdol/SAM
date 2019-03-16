@@ -1,88 +1,79 @@
 ---
-date: Fri Mar 15 2019
 parent: API
-section: 3
-title: Researcher
 ---
 
-NAME
-====
+Researcher Class Reference
+==========================
 
 Researcher
 
-SYNOPSIS
-========
+-   class Builder
 
-\
+<!-- -->
 
-Classes
--------
+-   **Researcher** (json &config)
 
-class **Builder**\
+-   **Researcher** (Experiment \*e)
 
-Public Member Functions
------------------------
+-   **Researcher** (Experiment \*e, Journal \*j, DecisionStrategy \*ds,
+    std::vector\< HackingStrategy \* \> hs, bool ish)
 
-**Researcher** (json &config)\
+-   void **registerAHackingStrategy** (HackingStrategy \*h)
 
-**Researcher** (**Experiment** \*e)\
+-   void **hack** ()
 
-**Researcher** (**Experiment** \*e, **Journal** \*j,
-**DecisionStrategy** \*ds, std::vector\< **HackingStrategy** \* \> hs,
-bool ish)\
+-   void prepareResearch ()
 
-void **registerAHackingStrategy** (**HackingStrategy** \*h)\
+    Prepares the research by cleaning up the memeory, randomizing the
+    ExperimentSetup parameters, allocating data and finally generating
+    the data using the DataGenStrategy.
 
-void **hack** ()\
+-   void performResearch ()
 
-void **prepareResearch** ()\
-Prepares the research by cleaning up the memeory, randomizing the
-**ExperimentSetup** parameters, allocating data and finally generating
-the data using the **DataGenStrategy**.
+    Performs the research by calculating the statistics, calculating the
+    effects, and running the test. In the case where the researcher is a
+    hacker, the researcher will apply the hacking methods on the
+    `experiment`.
 
-void **performResearch** ()\
-Performs the research by calculating the statistics, calculating the
-effects, and running the test. In the case where the researcher is a
-hacker, the researcher will apply the hacking methods on the
-`experiment`.
+-   void publishResearch ()
 
-void **publishResearch** ()\
-Prepares the submission record by asking the `decisionStrategy` to pick
-his prefered submission record from the list of available submission,
-`submissionsList`. AFter than, it\'ll submit the submission record to
-the selected `journal`.
+    Prepares the submission record by asking the `decisionStrategy` to
+    pick his prefered submission record from the list of available
+    submission, `submissionsList`. AFter than, it\'ll submit the
+    submission record to the selected `journal`.
 
-void **setDecisionStrategy** (**DecisionStrategy** \*d)\
+-   void **setDecisionStrategy** (DecisionStrategy \*d)
 
-void **prepareTheSubmission** ()\
+-   void **prepareTheSubmission** ()
 
-void **submitToJournal** ()\
+-   void **submitToJournal** ()
 
-void **setJournal** (**Journal** \*j)\
+-   void **setJournal** (Journal \*j)
 
-Public Attributes
------------------
+<!-- -->
 
-**Experiment** \* **experiment**\
+-   Experiment \* **experiment**
 
-**Journal** \* **journal**\
+-   Journal \* **journal**
 
-**DecisionStrategy** \* **decisionStrategy**\
+-   DecisionStrategy \* **decisionStrategy**
 
-std::vector\< **HackingStrategy** \* \> **hackingStrategies**\
+-   std::vector\< HackingStrategy \* \> **hackingStrategies**
 
-bool **isHacker** = false\
+-   bool **isHacker** = false
 
-HackingStyle **hackingStyle** = onCopy\
+-   HackingStyle **hackingStyle** = onCopy
 
-**Submission** **submissionRecord**\
+-   Submission **submissionRecord**
 
-DecisionPreference **selectionPref** =
-DecisionPreference::PreRegisteredOutcome\
-By default, a researcher always prefer to return the pre-registered
-result.
+-   DecisionPreference selectionPref =
+    DecisionPreference::PreRegisteredOutcome
 
-Author
-======
+    By default, a researcher always prefer to return the pre-registered
+    result.
 
-Generated automatically by Doxygen for SAMpp from the source code.
+The documentation for this class was generated from the following files:
+
+include/Researcher.h
+
+src/Researcher.cpp

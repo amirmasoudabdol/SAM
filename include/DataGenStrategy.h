@@ -44,7 +44,7 @@ public:
 
 /**
  The fixed-effect data strategy will produce data from a fixed-effect
- model with the given \f$\mu\f$ and \f$sigma\f$.
+ model with the given \mu and sigma.
  */
 class LinearModelStrategy : public DataGenStrategy {
 

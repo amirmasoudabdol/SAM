@@ -1,36 +1,20 @@
 ---
-date: Fri Mar 15 2019
 parent: API
-section: 3
-title: TTest
 ---
 
-NAME
-====
+TTest Class Reference
+=====================
 
 TTest
 
-SYNOPSIS
-========
-
-\
-
 `#include <TestStrategy.h>`
 
-Inherits **TestStrategy**.
+-   **TTest** (TestSide side, double alpha)
 
-Public Member Functions
------------------------
-
-**TTest** (TestSide side, double alpha)\
-
-void **run** (**Experiment** \*experiment)\
-
-Additional Inherited Members
-----------------------------
+-   void **run** (Experiment \*experiment)
 
 Detailed Description
-====================
+--------------------
 
 Declration of t-test.
 
@@ -39,9 +23,10 @@ two groups. In the current setup, every `experiment->means` is
 considered an effect size between a treatment group and a control group
 with the mean of zero. Therefore, computing the t-statistics and
 computing the p-value would be sufficient. This is technically an
-implementation of `one sample t-test`.
+implementation of one sample t-test.
 
-Author
-======
+The documentation for this class was generated from the following files:
 
-Generated automatically by Doxygen for SAMpp from the source code.
+include/TestStrategy.h
+
+src/TestStrategy.cpp
