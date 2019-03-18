@@ -61,7 +61,7 @@ public:
     void setDataStrategy(DataGenStrategy* d);
 
     // Initialize the Experiment/**/
-    void initResources();
+    void initResources(int len);
     void initExperiment();
     void generateData();
     void calculateStatistics();

@@ -167,9 +167,13 @@ private:
 };
 
 class GroupPooling : public HackingStrategy {
+    
+private:
+    int _num = 2;
+    
 public:
     
-    GroupPooling() {};
+    GroupPooling(int num) : _num(num) {};
     
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);

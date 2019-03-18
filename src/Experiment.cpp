@@ -29,24 +29,24 @@ void Experiment::runTest(){
 }
 
 void Experiment::initExperiment() {
-    initResources();
+    initResources(setup.ng);
     generateData();
     calculateStatistics();
     calculateEffects();
 }
 
-void Experiment::initResources() {
+void Experiment::initResources(int len) {
     // std::cout << "alloc, ng is :" << setup.ng;
     // TODO: There is an issue with the allocation;
     // TODO: I either need to initiate or push_back
     // FIXME: This is very error prune, since it's fixed number
-    means.zeros(setup.ng);
-    vars.zeros(setup.ng);
-    ses.zeros(setup.ng);
-    statistics.zeros(setup.ng);
-    pvalues.zeros(setup.ng);
-    effects.zeros(setup.ng);
-    sigs.zeros(setup.ng);
+    means.zeros(len);
+    vars.zeros(len);
+    ses.zeros(len);
+    statistics.zeros(len);
+    pvalues.zeros(len);
+    effects.zeros(len);
+    sigs.zeros(len);
 }
 
 void Experiment::calculateStatistics() {
@@ -57,6 +57,7 @@ void Experiment::calculateStatistics() {
         ses[i] = sqrt(vars[i] / measurements[i].size());
     }
     
+//    ses = sqrt(vars / nobs);
     
 }
 

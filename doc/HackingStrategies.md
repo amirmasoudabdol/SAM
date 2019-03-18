@@ -125,17 +125,17 @@ Table below describes all the available parameters and their valid values.
 
 ## Group Pooling
 
-Group pooling is the act of pooling data from two or more groups into one _new_ group and testing the significance of the data in the new group. Group pooling can be applied by adding the following JSON object to the list of hacking methods.
+Group pooling is the act of pooling data from two or more groups into one _new_ group and compare the newly formed treatment group with the control group. Group pooling can be applied by adding the following JSON object to the list of hacking methods.
 
 ```json
 {
   "type": "Group Pooling",
-  "groups": [1, 2, ...]
+  "num": n
 }
 ```
 
+Group pooling algorithm can pool differnet number of groups, `num`, together to form a new group. In its current setup, the Researcher traverse through every permutation of length `num` and create a new group. When, he collected all the combinations, he will then ask his DecisionStrategy for `verdict` and consequently checks the significance of every new group.
+
 | **Parameters** | **Value** | **Details** |
 |:--|:--|:--|
-| `groups` | `array` | Indicates the number list of groups to be pooled together. |
-| | "Recursive All" | In this case, all possible combinations of groups are being pooled together. |
-
+| `num` | `int` | Inidiates the number of groups to be pooled together |

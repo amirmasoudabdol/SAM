@@ -184,7 +184,7 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
                                     config["multipliers"]);
 
     }else if (type == "Group Pooling") {
-        return new GroupPooling();
+        return new GroupPooling(config["num"]);
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");
     }
@@ -192,16 +192,27 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
 }
 
 
+/**
+ Perform Group Pooling on the given Experiment.
+
+ @param experiment A pointer to researcher's experiment
+ @param decisionStrategy A pointer to researcher's decision strategy
+ */
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
     if (experiment->setup.nc >= 2){
         
+        // Length of each permutation
+        const int r = _num;
         
-        const int r = 2;
+        // Original number of conditions
         const int n = experiment->setup.nc;
+        
+        // Filling a range(0, n)
         std::vector<int> v(n);
         std::iota(v.begin(), v.end(), 0);
         
+        // Gets the list of all permutation
         std::vector<std::vector<int>>
         permutations = for_each_reversible_circular_permutation(v.begin(),
                                                                  v.begin() + r,
@@ -210,12 +221,32 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
         
         std::vector<arma::Row<double>> pooled_groups;
         for (auto &per : permutations) {
+            
+            display(per.begin(), per.end());
+            std::cout << std::endl;
+            
             for (int d = 0; d < experiment->setup.nd; d++) {
-                pooled_groups.push_back(experiment->measurements[per[0] * (n-1) + d] + experiment->measurements[per[1] * (n-1) + d]);
+                
+                // Creating an empty new group
+                experiment->measurements.push_back(arma::Row<double>());
+                
+                for (int i = 0; i < r ; i++){
+                    
+                    // Fill the new group by pooling members of the selected permutation, `per`.
+                    experiment->measurements.back().insert_cols(experiment->measurements.back().size(),
+                                                                experiment->measurements[per[i] * (n - 1) + d]);
+                    
+                    
+                }
+                
             }
+            
         }
-        experiment->measurements.insert(experiment->measurements.end(), pooled_groups.begin(), pooled_groups.end());
         
+        
+        // TODO: Improve me! This is very ugly and prune to error
+        int new_ng = experiment->measurements.size();
+        experiment->initResources(new_ng);
         
         experiment->calculateStatistics();
         experiment->calculateEffects();
@@ -229,7 +260,5 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     }else{
         throw std::domain_error("There is not enough groups for pooling.");
     }
-    
-
 
 }
