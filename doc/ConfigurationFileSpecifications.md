@@ -131,7 +131,7 @@ This section specifies the properties of the `Journal`.
 | `--pub-bias`                | `double` | Publication bias rate.                                                                                                                                     |
 | `--journal-selection-model` | `string` | The `SelectionStrategy` of the journal. Read more [here](#selection-strategies.md).                                                                                                                                |
 | `--max-pubs`                | `double` | Maximum publications that is going to be accepted by the journal before stop accepting new `Submission`s.                                                                                            |
-| `--alpha`                   | `double` | Journal's significance ⍺.                                                                                                                           |
+| `--alpha`                   | `double` | Journal's significance $\alpha$.                                                                                                                           |
 | `--side`                    | `int`    | Indicates journal's preference regarding the effect size. Acceptance of Positive/Negative/Neutral results will be indicated by 1, -1, and 0, respectively. |
 
 

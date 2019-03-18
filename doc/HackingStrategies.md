@@ -19,7 +19,7 @@ nav_order: 6
 
 SAM can execute complicated set of hacking stratgies on a given `Experiment`. A list of hacking strategies will be applied one-by-one and in the given order. `Researcher` can observe their influences on all outcome variables and decides when to stop, and what to report, see [here](Components.md#hacking-strategy) and [here](ExecutionFlow.md#perform-research).
 
-The code below shows how you can define a chain of hacking strategies. The `--p-hacking-methods` is a *list of list of JSON objects*, [🤯](ConfigurationFileSpecfications.md#crash-course-on-json). You can define several groups of hacking strategies,  each listing different hacking strategies with different order and parameters.  Since JSON arrays' are ordered objects, this setup is suitable for controlling the order in which each group, and method in each group is going to apply on the `Experiment`. The example below defines 3 groups of hacking strategies with different number of methods in each.
+The code below shows how you can define a chain of hacking strategies. The `--p-hacking-methods` is a *list of list of JSON objects*, see [crash course on JSON](ConfigurationFileSpecfications.md#crash-course-on-json). You can define several groups of hacking strategies,  each listing different hacking strategies with different order and parameters.  Since JSON arrays' are ordered objects, this setup is suitable for controlling the order in which each group, and method in each group is going to apply on the `Experiment`. The example below defines 3 groups of hacking strategies with different number of methods in each.
 
 
 ```json
