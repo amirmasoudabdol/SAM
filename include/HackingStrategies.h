@@ -17,12 +17,14 @@ using json = nlohmann::json;
 
 enum class HackingMethod {
     OptionalStopping,
-    OutlierRemoval
+    OutlierRemoval,
+    GroupPooling
 };
 const std::map<std::string, HackingMethod>
 stringToHackingMethod = {
     {"Optional Stopping", HackingMethod::OptionalStopping},
-    {"SD Outlier Removal", HackingMethod::OutlierRemoval}
+    {"SD Outlier Removal", HackingMethod::OutlierRemoval},
+    {"Group Pooling", HackingMethod::GroupPooling},
 };
 
 /**
@@ -167,13 +169,10 @@ private:
 class GroupPooling : public HackingStrategy {
 public:
     
-    GroupPooling(std::string scheme) : _scheme(scheme) {} ;
+    GroupPooling() {};
     
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
-    
-private:
-    std::string _scheme;
 };
 
 //class QuestionableRounding : public HackingStrategy {

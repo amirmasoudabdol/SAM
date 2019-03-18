@@ -15,6 +15,8 @@
 #include <cmath>
 #include <stdexcept>
 
+#include "permutation.h"
+
 HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
 };
@@ -28,6 +30,9 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
             break;
         case HackingMethod::OutlierRemoval:
             os << "Outlier Removal";
+            break;
+        case HackingMethod::GroupPooling:
+            os << "Group Pooling";
             break;
         default:
             os.setstate(std::ios_base::failbit);
@@ -179,7 +184,7 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
                                     config["multipliers"]);
 
     }else if (type == "Group Pooling") {
-        return new GroupPooling("first");
+        return new GroupPooling();
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");
     }
@@ -189,5 +194,42 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
 
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
-}
+    if (experiment->setup.nc >= 2){
+        
+        
+        const int r = 2;
+        const int n = experiment->setup.nc;
+        std::vector<int> v(n);
+        std::iota(v.begin(), v.end(), 0);
+        
+        std::vector<std::vector<int>>
+        permutations = for_each_reversible_circular_permutation(v.begin(),
+                                                                 v.begin() + r,
+                                                                 v.end(),
+                                                                 collector());
+        
+        std::vector<arma::Row<double>> pooled_groups;
+        for (auto &per : permutations) {
+            for (int d = 0; d < experiment->setup.nd; d++) {
+                pooled_groups.push_back(experiment->measurements[per[0] * (n-1) + d] + experiment->measurements[per[1] * (n-1) + d]);
+            }
+        }
+        experiment->measurements.insert(experiment->measurements.end(), pooled_groups.begin(), pooled_groups.end());
+        
+        
+        experiment->calculateStatistics();
+        experiment->calculateEffects();
+        experiment->runTest();
+        
+        if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)){
+            return ;
+        }
+        
+        
+    }else{
+        throw std::domain_error("There is not enough groups for pooling.");
+    }
+    
 
+
+}
