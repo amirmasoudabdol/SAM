@@ -51,7 +51,7 @@ void Experiment::initResources() {
 
 void Experiment::calculateStatistics() {
     
-    for (int i = 0; i < setup.ng; ++i) {
+    for (int i = 0; i < measurements.size(); ++i) {
         means[i] = arma::mean(measurements[i]);
         vars[i] = arma::var(measurements[i]);
         ses[i] = sqrt(vars[i] / measurements[i].size());
