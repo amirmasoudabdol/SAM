@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Decision Strategy
+title: Decision Strategies
 nav_order: 7
 ---
 
@@ -35,7 +35,8 @@ In the case or `PreRegisteredOutcome`, the Researcher always reports the pre-reg
 A "honest researcher" always reports the pre-registered result and will not apply any p-hacking methods on the Experiment. 
 
 Default
-{: .label .label-blue} *This is the **default** decision making method.*
+{: .label .label-blue}
+*This is the **default** decision making method.*
 
 ## Impatient Decision Maker
 
