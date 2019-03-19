@@ -39,10 +39,6 @@
     "--is-phacker": true,
     "--p-hacking-methods": [
         {
-          "type": "Outcome Switching",
-          "preference": "Min P-value"
-        },
-        {
           "type": "Optional Stopping",
           "mode": "Recursive",
           "level": "dv",

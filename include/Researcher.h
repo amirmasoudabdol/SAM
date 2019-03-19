@@ -136,11 +136,11 @@ public:
         this->isHacker();
         if (this->_isHacker){
             for (auto &item : _config["Researcher Parameters"]["--p-hacking-methods"]) {
-                if (item["type"] == "Outcome Switching"){
-                    this->setResearcherPreference(stringToResearcherPreference.find(item["preference"])->second);
-                }else{
+                // if (item["type"] == "Outcome Switching"){
+                //     this->setResearcherPreference(stringToResearcherPreference.find(item["preference"])->second);
+                // }else{
                     this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
-                }
+                // }
             }
         }
         return *this;
