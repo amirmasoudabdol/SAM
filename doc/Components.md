@@ -152,9 +152,7 @@ As the name suggests, `DecisionStrategy` is the implementation of how the `Resea
 
 - `PreRegisteredOutcome`
 - `MinPvalue`
-- `MinSigPvalue`*
 - `MaxEffect`
-- `MaxSigPvalue`*
 - `MaxEffectMinPvalue`*
 
 `Researcher` can consult his decision strategy in different stages of research. Just before applying any hacking strategies, a researcher can check if the pre-registered outcome is significant or not, *initial verdict*. If it not, during the execution of a hacking strategy, it can ask his decision strategy whether to interrupt the hacking process, *intermediate verdict*. After the completion of a hacking routine, the decision strategy evaluates the outcome, *hacking verdict*. Finally, in his *final verdict*, a researcher can look back at the history of his `Experiment` and pick the final result to be submitted in the form of `Submission`. *Note: This process will clarify in [Execution Flow](ExecutionFlow.md) section*
