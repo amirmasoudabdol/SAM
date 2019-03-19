@@ -1,4 +1,4 @@
-> **SAM is currently under development and testing!**
+> **SAM is under development and testing!**
 
 ---
 
@@ -28,7 +28,7 @@ On **Ubuntu**, you can use `apt` to install the listed packages by running:
 	sudo apt-get install libboost-dev
 	sudo apt-get install libarmadillo-dev
 	
-For `nlohmann/json` and `docopt`, please check their documentation. You’ll probably need to make and install them manually. 
+For `nlohmann/json` and `docopt`, please check their documentation. You probably must make and install them manually. 
 
 If you are using **[conda](https://anaconda.org)** package manager you can install all packages via `conda` as follow 
 
@@ -53,11 +53,11 @@ If everything goes right, you’ll have a file named `SAMpp` in your build direc
 
 ### Testing (Optional)
 
-SAM's unit test cases can be run using `make test`. Tests are designed to check the integrity of the code and API during the extension process, e.g., implementing new hacking strategy.
+You can run SAM‘s unit test cases using `make test`. I design a few tests to check the integrity of the code and API during the extension process, e.g., implementing new hacking strategy. We will add more tests as we improve our API.
 
 ## A Sample Run
 
-After successfully building SAMpp, you’ll be able to run your first simulation. Executing `./SAMpp` in your build folder will start a simulation based on the parameters located in `SAMpp/input/sample-input.json`. 
+After successfully building SAMpp, you’ll be able to run your first simulation. Executing `./SAMpp` in your build folder will start a simulation based on the parameters in `SAMpp/input/sample-input.json`. 
 
 	$ ./SAMpp
 	Initializing the simulation...
