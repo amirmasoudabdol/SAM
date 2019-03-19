@@ -40,7 +40,7 @@
     "--p-hacking-methods": [
         [
           {
-            "type": "Optional Stopping",
+            "name": "Optional Stopping",
             "level": "dv",
             "num": 3,
             "n_attempts": 3,
@@ -49,13 +49,13 @@
         ],
         [
           {
-            "type": "Group Pooling",
+            "name": "Group Pooling",
             "num": 2
           }
         ]
     ],
     "--decision-strategy": {
-      "type": "Patient Decision Maker",
+      "name": "Patient Decision Maker",
       "preference": "Min P-value"
     }
   }

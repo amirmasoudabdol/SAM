@@ -50,7 +50,7 @@ A JSON object defines the specifications of each hacking strategy. The code belo
 
 ```json
 {
-  "type": "H1",
+  "name": "H1",
   "param-1": 1,
   "param-2": "yellow",
   "param-3": "at all cost"
@@ -66,7 +66,7 @@ Optional stopping is the practice of adding new observations to `Experiment`'s d
 
 ```json
 {
-  "type": "Optional Stopping",
+  "name": "Optional Stopping",
   "num": n,
   "attempts": t,
   "max attempts": m,
@@ -94,7 +94,7 @@ Outliers removal method can be implemented in several different ways as well. In
 
 ```json
 {
-  "type": "SD Outlier Removal",
+  "name": "SD Outlier Removal",
   "mode": "Recursive Attempts",  
   "level": "dv",   
   "num": n,
@@ -128,7 +128,7 @@ Group pooling is the act of pooling data from two or more groups into one _new_ 
 
 ```json
 {
-  "type": "Group Pooling",
+  "name": "Group Pooling",
   "num": n
 }
 ```

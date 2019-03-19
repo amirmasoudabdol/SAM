@@ -44,7 +44,7 @@ An "impatient researcher" stops his effort as soon as he/she finds a significant
 
 ```JSON
 {
-  "type": "ImpatientDecisionMaker",
+  "name": "ImpatientDecisionMaker",
   "preference": dp
 }
 ```
@@ -56,7 +56,7 @@ A "patient researcher" behaves differently from the impatient researcher. While 
 
 ```JSON
 {
-  "type": "PatientDecisionMaker",
+  "name": "PatientDecisionMaker",
   "preference": dp
 }
 ```

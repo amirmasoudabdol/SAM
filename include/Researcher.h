@@ -17,10 +17,10 @@
 
 using json = nlohmann::json;
 
-enum HackingStyle {
-    onOrig,
-    onCopy
-};
+//enum HackingStyle {
+//    onOrig,
+//    onCopy
+//};
 
 class Researcher {
 
@@ -34,7 +34,7 @@ public:
     std::vector<std::vector<HackingStrategy*>> hackingStrategies;
     bool isHacker = false;
     
-    HackingStyle hackingStyle = onCopy;
+//    HackingStyle hackingStyle = onCopy;
 
     Submission submissionRecord;
 

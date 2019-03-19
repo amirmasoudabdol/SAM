@@ -172,14 +172,14 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
  @return Pointer to a HackingStrategy
  */
 HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
-    std::string type = config["type"];
-    if (type == "Optional Stopping"){
+
+    if (config["name"] == "Optional Stopping"){
         return new OptionalStopping(config["level"],
                                     config["num"],
                                     config["n_attempts"],
                                     config["max_attempts"]);
 
-    }else if (type == "SD Outlier Removal") {
+    }else if (config["name"] == "SD Outlier Removal") {
         return new SDOutlierRemoval(config["level"],
                                     config["order"],
                                     config["num"],
@@ -188,7 +188,7 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
                                     config["min_observations"],
                                     config["multipliers"]);
 
-    }else if (type == "Group Pooling") {
+    }else if (config["name"] == "Group Pooling") {
         return new GroupPooling(config["num"]);
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");

@@ -37,7 +37,7 @@ While most parameters are self-explanatory, this section goes into more details 
     "--err-vars": 0.01,
     "--err-covs": 0.001,
     "--test-strategy": {
-      "type": "TTest",
+      "name": "TTest",
       "side": "Two Side",
       "alpha": 0.05
     }
@@ -54,7 +54,7 @@ While most parameters are self-explanatory, this section goes into more details 
     "--p-hacking-methods": [
         [
         	{
-	          "type": "Optional Stopping",
+	          "name": "Optional Stopping",
 	          "mode": "Recursive",
 	          "level": "dv",
 	          "num": 3,
@@ -64,7 +64,7 @@ While most parameters are self-explanatory, this section goes into more details 
 	    ]
     ],
     "--decision-strategy": {
-      "type": "Impatient Decision Maker",
+      "name": "Impatient Decision Maker",
       "preference": "Min P-value"
     }
   }

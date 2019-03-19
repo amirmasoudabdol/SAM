@@ -14,10 +14,10 @@ DecisionStrategy::~DecisionStrategy() {
 };
 
 DecisionStrategy *DecisionStrategy::buildDecisionStrategy(json &config) {
-    // TODO: Expand
-    if (config["type"] == "Impatient Decision Maker"){
+
+    if (config["name"] == "Impatient Decision Maker"){
         return new ImpatientDecisionMaker(stringToResearcherPreference.find(config["preference"])->second);
-    }else if (config["type"] == "Patient Decision Maker"){
+    }else if (config["name"] == "Patient Decision Maker"){
         return new PatientDecisionMaker(stringToResearcherPreference.find(config["preference"])->second);
     }else{
         throw std::invalid_argument("Unknown DecisionStrategy");

@@ -69,7 +69,7 @@ public:
  
  ```
  {
-    "type": "Optional Stopping",
+    "name": "Optional Stopping",
     "size": n,
     "attempts": m
  }
@@ -112,7 +112,7 @@ private:
  
  ```
      {
-     "type": "SD Outlier Removal",
+     "name": "SD Outlier Removal",
      "sd_multiplier": d
      }
  

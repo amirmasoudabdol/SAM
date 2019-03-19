@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Data Strategy
+title: Data Strategies
 nav_order: 8
 ---
 
