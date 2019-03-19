@@ -5,10 +5,17 @@
 #include <EffectEstimators.h>
 #include <iostream>
 
-//void StandardMeanDiffEffectEstimator::computeEffectFromStats(double mean1, double sd1, double nobs1, double mean2,
-//                                                             double sd2, double nobs2) {
-//    std::cout << "hi";
-//}
+EffectSizeEstimator::~EffectSizeEstimator() {
+    // Pure deconstructor
+};
+
+EffectSizeEstimator *EffectSizeEstimator::build(json &config){
+    if (config["name"] == "Cohens D") {
+        return new CohensD();
+    }else{
+        throw std::invalid_argument("Uknown effect size estimator.\n");
+    }
+}
 
 void CohensD::computeEffects(Experiment *experiment){
     for (int i = 0; i < experiment->means.size(); i++) {

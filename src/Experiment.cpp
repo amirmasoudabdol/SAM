@@ -62,7 +62,8 @@ void Experiment::calculateStatistics() {
 }
 
 void Experiment::calculateEffects() {
-    effects = means;
+//    effects = means;
+    effectSizeEstimator->computeEffects(this);
 }
 
 
@@ -84,6 +85,8 @@ Experiment::Experiment(json &config) {
     this->dataStrategy = DataGenStrategy::buildDataStrategy(setup);
     
     this->testStrategy = TestStrategy::buildTestStrategy(config["Experiment Parameters"]["--test-strategy"]);
+    
+    this->effectSizeEstimator = EffectSizeEstimator::build(config["Experiment Parameters"]["--effect-estimators"]);
     
 }
 

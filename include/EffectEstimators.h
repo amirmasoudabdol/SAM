@@ -8,14 +8,19 @@
 #include <vector>
 #include "Experiment.h"
 
-class EffectEstimators {
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
+class EffectSizeEstimator {
     double effect;
 
 public:
+    
+    static EffectSizeEstimator *build(json &config);
+    
+    virtual ~EffectSizeEstimator() = 0;
 
-//    void computeEffectFromStats(double mean1, double sd1, double nobs1, double mean2, double sd2, double nobs2);
-//    void computeEffectFromData(std::vector<double> dts1, std::vector<double> dts2);
-//    virtual std::vector<double> computeEffects(std::vector<std::vector<double >>);
     virtual void computeEffects(Experiment *experiment) = 0;
 
 //private:
@@ -24,7 +29,7 @@ public:
 };
 
 
-class CohensD : public EffectEstimators {
+class CohensD : public EffectSizeEstimator {
 //private:
 //
 public:

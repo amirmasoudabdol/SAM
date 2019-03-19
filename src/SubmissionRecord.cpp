@@ -19,6 +19,6 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
             s.sei << ", " <<
             s.statistic << ", " <<
             s.pvalue << ", " <<
-//            s.sig << ", " <<
+            s.effect << ", " <<
             s.side;
 }

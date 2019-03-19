@@ -13,6 +13,8 @@
 #include "EffectEstimators.h"
 #include "TestStrategy.h"
 
+class EffectSizeEstimator;
+
 /**
  \brief Experiment class declaration
  
@@ -59,6 +61,9 @@ public:
 
     DataGenStrategy* dataStrategy;
     void setDataStrategy(DataGenStrategy* d);
+    
+    EffectSizeEstimator *effectSizeEstimator;
+    void setEffectSizeEstimator(EffectSizeEstimator *efs);
 
     // Initialize the Experiment/**/
     void initResources(int len);

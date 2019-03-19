@@ -26,6 +26,7 @@ public:
     double sei;             ///< Standard error of the submitted group
     double statistic;       ///< Corresponding statistics of the submitted group
     double pvalue;          ///< _P_-value of the submitted group
+    double effect;
     bool sig = false;       ///< Indicates if the submission is significant or not
     short side = 1;         ///< The side of the observed effect
     bool isHacked = false;
@@ -53,10 +54,13 @@ public:
         
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
-        yi = e.effects[index];
+        yi = e.means[index];
         sei = e.ses[index];
+
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
+        
+        effect = e.effects[index];
         
 //        sig = (pvalue < alpha);
         sig = e.sigs[index];

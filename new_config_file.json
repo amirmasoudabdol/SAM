@@ -26,6 +26,9 @@
       "type": "TTest",
       "side": "Two Side",
       "alpha": 0.05
+    },
+    "--effect-estimators": {
+      "name": "Cohens D"
     }
   },
   "Journal Parameters" :{
