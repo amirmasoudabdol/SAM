@@ -17,6 +17,8 @@
 
 #include "permutation.h"
 
+#include "main.h"
+
 HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
 };
@@ -48,6 +50,8 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
  the results is significant, it'll not make a new attempt to add more data, and will return to the hack() routine.
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
+    
+    if (VERBOSE) std::cout << "Optional Stopping...\n";
     
     for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
         
@@ -89,6 +93,9 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
  dataset.
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
+    
+    if (VERBOSE) std::cout << "Outliers Removal...\n";
+    
     int res = 0;
     
     for (auto &d : _multipliers) {
@@ -200,6 +207,8 @@ HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
  */
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
+    if (VERBOSE) std::cout << "Group Pooling...\n";
+    
     if (experiment->setup.nc >= 2){
         
         // Length of each permutation
@@ -221,10 +230,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
         
         std::vector<arma::Row<double>> pooled_groups;
         for (auto &per : permutations) {
-            
-            display(per.begin(), per.end());
-            std::cout << std::endl;
-            
+                        
             for (int d = 0; d < experiment->setup.nd; d++) {
                 
                 // Creating an empty new group

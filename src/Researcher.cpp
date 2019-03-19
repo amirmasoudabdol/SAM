@@ -12,35 +12,29 @@ void Researcher::hack() {
     
     Submission sub;
     
-    for (auto &h : hackingStrategies){
+    for (auto &set : hackingStrategies){
         
-        if (hackingStyle == onOrig){
-            // Just send the pointer
-            Experiment* tempExpr = experiment;
-            
-            h->perform(tempExpr, decisionStrategy);
-            
-            decisionStrategy->verdict(*tempExpr,
-                                      DecisionStage::DoneHacking);
-        }
-        else if (hackingStyle == onCopy){
-            // Sending the copy
-            Experiment copiedExpr = *experiment;
+        // For each set, we make a copy of the experiment and apply the given
+        // set of methods over each other.
+        
+        Experiment copiedExpr = *experiment;
+        copiedExpr.isHacked = true;
+        
+        for (auto &h : set){
             
             h->perform(&copiedExpr, decisionStrategy);
             copiedExpr.isHacked = true;
             
             decisionStrategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);
+            
+            // If the researcher statisfied, hacking routine will be stopped
+            if (!decisionStrategy->isStillHacking){
+                break;
+            }
+            
         }
-                
-        // If the researcher statisfied, hacking routine will be stopped
-        if (!decisionStrategy->isStillHacking){
-            break;
-        }
-        
     }
-    
 }
 
 
@@ -50,7 +44,8 @@ void Researcher::setJournal(Journal* j) {
 }
 
 void Researcher::registerAHackingStrategy(HackingStrategy *h) {
-	hackingStrategies.push_back(h);
+    // TODO: The register builder needs some work, especially for hacking methods
+//    hackingStrategies.push_back({h});
 }
 
 

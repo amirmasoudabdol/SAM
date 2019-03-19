@@ -139,6 +139,7 @@ void runSimulation(json& simConfig){
             
             researcher.publishResearch();
             
+            if (VERBOSE) std::cout << std::endl;
             
             if (PROGRESS)
                 progressBar.progress(i, nSims);

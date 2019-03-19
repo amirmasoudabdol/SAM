@@ -31,7 +31,7 @@ public:
     Experiment* experiment;
 	Journal* journal;
     DecisionStrategy* decisionStrategy;
-    std::vector<HackingStrategy*> hackingStrategies;
+    std::vector<std::vector<HackingStrategy*>> hackingStrategies;
     bool isHacker = false;
     
     HackingStyle hackingStyle = onCopy;
@@ -47,7 +47,7 @@ public:
     Researcher(Experiment* e,
                     Journal* j,
                     DecisionStrategy* ds,
-                    std::vector<HackingStrategy*> hs,
+                    std::vector<std::vector<HackingStrategy*>> hs,
                     bool ish) :
     experiment(e),
     journal(j),
@@ -94,7 +94,7 @@ private:
     Journal* _journal;
     
     bool _isHacker;
-    std::vector<HackingStrategy*> _hackingStrategies;
+    std::vector<std::vector<HackingStrategy*>> _hackingStrategies;
 
     DecisionStrategy* _decisionStrategy;
 
@@ -135,12 +135,17 @@ public:
     Builder& makeHackingStrategies(){
         this->isHacker();
         if (this->_isHacker){
-            for (auto &item : _config["Researcher Parameters"]["--p-hacking-methods"]) {
-                // if (item["type"] == "Outcome Switching"){
-                //     this->setResearcherPreference(stringToResearcherPreference.find(item["preference"])->second);
-                // }else{
-                    this->_hackingStrategies.push_back(HackingStrategy::buildHackingMethod(item));
-                // }
+            for (auto &set : _config["Researcher Parameters"]["--p-hacking-methods"]) {
+                
+//                this->_hackingStrategies
+                this->_hackingStrategies.push_back({});
+                
+                for (auto &item : set) {
+                    
+                    this->_hackingStrategies.back().push_back(HackingStrategy::buildHackingMethod(item));
+                    
+                }
+                
             }
         }
         return *this;
@@ -169,7 +174,7 @@ public:
     };
     Builder& setDecisionStrategy(DecisionStrategy);
     Builder& setHackingStrategy(HackingStrategy);
-    Builder& setHackingStrategy(std::vector<HackingStrategy*>);
+    Builder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
     
     Builder& chooseHackingStrategies(std::vector<HackingStrategy>);
 
