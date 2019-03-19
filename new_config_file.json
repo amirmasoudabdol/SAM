@@ -17,7 +17,7 @@
     "--n-items": 3,
     "--n-obs": 25,
     "--means": 0.125,
-    "--vars": 0.5,
+    "--vars": 0.1,
     "--covs": 0.00,
     "--loadings": 0.7,
     "--err-vars": 0.01,
@@ -41,16 +41,21 @@
         [
           {
             "type": "Optional Stopping",
-            "mode": "Recursive",
             "level": "dv",
             "num": 3,
             "n_attempts": 3,
             "max_attempts": 10
           }
+        ],
+        [
+          {
+            "type": "Group Pooling",
+            "num": 2
+          }
         ]
     ],
     "--decision-strategy": {
-      "type": "Impatient Decision Maker",
+      "type": "Patient Decision Maker",
       "preference": "Min P-value"
     }
   }

@@ -79,23 +79,22 @@ public:
 class OptionalStopping : public HackingStrategy {
 public:
 
-    OptionalStopping(std::string mode, std::string level, int num, int n_attempts, int max_attempts) :
-        _mode(mode),
+    OptionalStopping(std::string level, int num, int n_attempts, int max_attempts) :
         _level(level),
         _num(num),
         _n_attempts(n_attempts),
         _max_attempts(max_attempts)
     {
-        if (mode == "Extreme"){
-            _num = 1;
-            _n_attempts = _max_attempts;
-        }
+//        if (mode == "Extreme"){
+//            _num = 1;
+//            _n_attempts = _max_attempts;
+//        }
     };
 
     void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
 
 private:
-    std::string _mode = "Recursive";
+//    std::string _mode = "Recursive";
     std::string _level = "dv";
     int _num;
     int _n_attempts;
@@ -122,8 +121,7 @@ private:
 class SDOutlierRemoval : public HackingStrategy {
 public:
 
-    SDOutlierRemoval(std::string mode, std::string level, std::string order, int num, int n_attempts, int max_attempts, int min_observations, std::vector<double> multipliers) :
-        _mode(mode),
+    SDOutlierRemoval(std::string level, std::string order, int num, int n_attempts, int max_attempts, int min_observations, std::vector<double> multipliers) :
         _level(level),
         _order(order),
         _num(num),
@@ -133,14 +131,14 @@ public:
         _multipliers(multipliers)
     {
         
-        if (_mode == "Extreme") {
-            _num = 1;
-            _n_attempts = _MAX_ITERS;
-            _max_attempts = _MAX_ITERS;
-        }else if (_mode == "Recursive"){
-            _n_attempts = _MAX_ITERS;
-            _max_attempts = _MAX_ITERS;
-        }
+//        if (_mode == "Extreme") {
+//            _num = 1;
+//            _n_attempts = _MAX_ITERS;
+//            _max_attempts = _MAX_ITERS;
+//        }else if (_mode == "Recursive"){
+//            _n_attempts = _MAX_ITERS;
+//            _max_attempts = _MAX_ITERS;
+//        }
         
     };
     
@@ -149,7 +147,7 @@ public:
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
     
 private:
-    std::string _mode = "Recursive Attempts";
+//    std::string _mode = "Recursive Attempts";
     std::string _level = "dv";
     std::string _order = "max first";
     int _num;

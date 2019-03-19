@@ -67,7 +67,6 @@ Optional stopping is the practice of adding new observations to `Experiment`'s d
 ```json
 {
   "type": "Optional Stopping",
-  "mode": "Extreme",
   "num": n,
   "attempts": t,
   "max attempts": m,
@@ -75,7 +74,7 @@ Optional stopping is the practice of adding new observations to `Experiment`'s d
 }
 ```
 
-The optional stopping algorithm is implemented based on the fact that often a researcher perform multiple attempts to achieve significance. Here, `attempts` defines the number of attempts and `num` specifies the number of items — to be added — in each attempt. While you can implemented most scenarios of optional stopping by alternating these parameters, you can specify the `mode` parameters to override the parameters to some special cases. 
+The optional stopping algorithm is implemented based on the fact that often a researcher perform multiple attempts to achieve significance. Here, `attempts` defines the number of attempts and `num` specifies the number of items — to be added — in each attempt. 
 
 | **Parameters** | **Value** | **Description** |
 |:--|:--|:--|
@@ -84,8 +83,8 @@ The optional stopping algorithm is implemented based on the fact that often a re
 | `max attempts` | m, `int`  | Maximum number of attempts |
 | `level` | "item" | Adding new value to items in the underlying SEM. <br>**Note:** Only applicable in Latent Model. |
 |  | "dvs" | Adding new values to dependent variables. |
-| `mode` | "Extreme" | In each attempt, the algorithm adds ***n = 1*** observation to the dataset until it achieves significance. Both `attempts` and `num`  will be ignored in this mode. The process will stop after `max attempts` regardless of achieving significant.  |
-| | "Recursive" (*Default*) | In *t* attempts, the algorithm adds *n* observations to the dataset until it achieves significance. |
+
+You can control the intensity of optional stopping by alternating the parameters. For instance, you can implement an *extreme* optional stopping by setting `num = 1` and using large values for `attempts` and `max_attempts`. 
 
 ## Outliers Removal
 
@@ -96,32 +95,32 @@ Outliers removal method can be implemented in several different ways as well. In
 ```json
 {
   "type": "SD Outlier Removal",
-  "mode": "Extreme",  
+  "mode": "Recursive Attempts",  
   "level": "dv",   
   "num": n,
   "n_attempts": t,
   "max_attempts": m,
+  "min_observations": e,
   "multipliers": [...]
 }
 ```
 
-The main body of outliers removal algorithm is implemented similar to the optional stopping, where the researcher will add `num` items in `n_attempts` before stopping the process, or achieving significant results. Here though, you can also specify a list of `multipliers` to indicate the distance of an item to the $\sigma$. For examples, see [here](#examples.md).
+The main body of outliers removal algorithm is implemented similar to the optional stopping, where the researcher will add `num` items in `n_attempts` before stopping the process, or achieving significant results. Here though, you can also specify a list of `multipliers` to indicate the distance of an item to the $\sigma$. The algorithm performs *t* attempts to remove *n* outliers from a dataset based on given multipliers, $\sigma_i$. The algorithm will advance if there is no item left to be removed at *i < n* attempts, or after *n* attempts.
 
 Table below describes all the available parameters and their valid values.
 
 | **Parameters** | **Value** | **Details** |
 |:--|:--|:--|
 | `num` | *n*, `int` | Number of items to be removed at each attempt |
-| `attempts` | _t_, `int` | Number of attempts to remove outliers for each multiplier |
+| `n_attempts` | _t_, `int` | Number of attempts to remove outliers for each multiplier |
+| `max_attempts` | `int` | Maximum number of iterations before stopping the process. |
+| `min_observations` | `int` | The minimum number of observations. Outliers removal stops removing values when a group reaches `min_observation`. |
 | `multipliers` | `array` | A list of multipliers to be used. |
 | `level` | "dv" | Removing outliers at dependent variable level.|
 |  | "item" | Removing outliers at the item level, only applicable under Latent Model configuration. |
 | `order` | max first, random |  |
-| `mode` | "Extreme" | A researcher will remove **_n = 1_** outlier in each trial until he achieves significance. If more than one multiplier is provided, the process starts with the largest multiplier and continues recursively until there is no item can be removed from the dataset using the smallest multiplier. <br>**Note**: In this case, `num` will be ignored. |
-| | "Recursive" | At each round, the researcher will remove _n_ outliers based on the given multipliers. He will advance toward smaller multipliers when no item can be removed using the larger values. In this case, `attempts` will be ignored. |
-| | "Recursive Attempts" (*Default*) | The algorithm performs *t* attempts to remove *n* outliers from a dataset based on given multipliers. The algorithm will advance if there is no item left to be removed at *i < n* attempts, or after *n* attempts. |
 
-
+You can achieve different variants of outliers removal method by modifying its parameters. For instance, setting `num = 1` and choosing large values for `n_attempts` will remove the values one-by-one from Experiment until it reaches the significance. You can control this process by specifying a list of `multipliers`. 
 
 ## Group Pooling
 

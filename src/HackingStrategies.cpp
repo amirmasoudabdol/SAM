@@ -174,15 +174,13 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
 HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
     std::string type = config["type"];
     if (type == "Optional Stopping"){
-        return new OptionalStopping(config["mode"],
-                                    config["level"],
+        return new OptionalStopping(config["level"],
                                     config["num"],
                                     config["n_attempts"],
                                     config["max_attempts"]);
 
     }else if (type == "SD Outlier Removal") {
-        return new SDOutlierRemoval(config["mode"],
-                                    config["level"],
+        return new SDOutlierRemoval(config["level"],
                                     config["order"],
                                     config["num"],
                                     config["n_attempts"],

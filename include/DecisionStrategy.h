@@ -111,59 +111,39 @@ public:
         submissionsPool.clear();
     }
     
-    bool verdict(Experiment &experiment, DecisionStage stage) {
-        switch(stage){
-            case DecisionStage::Initial:
-                {
-                    Submission sub = selectOutcome(experiment);
-        
-                    // Preparing pools anyway
-                    experimentsPool.push_back(experiment);
-                    submissionsPool.push_back(sub);
-        
-                    if (isPublishable(sub)){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }
-                break;
-            case DecisionStage::WhileHacking:
-            {
-                bool publishable = isPublishable(selectOutcome(experiment));
-                    isStillHacking = publishable;
-                return publishable;
-            }
-                break;
-            case DecisionStage::DoneHacking:
-                {
-                    Submission sub = selectOutcome(experiment);
-                    if (isPublishable(sub)){
-                        experimentsPool.push_back(experiment);
-                        submissionsPool.push_back(sub);
-                        
-                        return true;
-                    }else{
-                        isStillHacking = true;
-                        return isStillHacking;
-                    }
-                }
-                break;
-            case DecisionStage::Final:
-                // TODO: This can be implemented differenly if necessary
-            {
-                finalSubmission = submissionsPool.back();
-                experimentsPool.clear();
-                submissionsPool.clear();
-                return true;
-                
-            }
-                break;
-        }
-        
-    }
+    virtual bool verdict(Experiment &experiment, DecisionStage stage);
     
 };
+
+
+class PatientDecisionMaker : public DecisionStrategy {
+
+public:
+    
+    std::vector<Submission> submissionsPool;
+    std::vector<Experiment> experimentsPool;
+    
+    PatientDecisionMaker(DecisionPreference selection_pref) {
+        selectionPref = selection_pref;
+    };
+    
+    Submission selectOutcome(Experiment &experiment){
+        return _select_Outcome(experiment);
+    };
+    
+    bool isPublishable(const Submission &sub){
+        return sub.isSig();
+    };
+    
+    virtual bool verdict(Experiment &experiment, DecisionStage stage);
+    
+    bool initDecision(Experiment &experiment);
+    bool intermediateDecision(Experiment &experiment);
+    bool afterhackDecision(Experiment &experiment);
+    bool finalDecision(Experiment &experiment);
+    
+};
+
 
 
 class ReportPreregisteredGroup : public DecisionStrategy {

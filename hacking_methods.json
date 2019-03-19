@@ -13,7 +13,6 @@
      },
      {
           "type": "Optional Stopping",
-          "mode": "Recursive",
           "level": "dv",
           "num": 100,
           "n_attempts": 3,
