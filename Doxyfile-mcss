@@ -1,12 +1,5 @@
 @INCLUDE                = Doxyfile
 GENERATE_HTML           = YES
 GENERATE_XML            = YES
-XML_PROGRAMLISTING      = NO
+XML_PROGRAMLISTING      = YES
 M_PAGE_FINE_PRINT       = 
-M_LINKS_NAVBAR1 		= annotated
-M_LINKS_NAVBAR2 		= 
-
-HTML_EXTRA_STYLESHEET = \
-    https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,400i,700,700i%7CIBM+Plex+Mono:400,400i,600 \
-    ../css/m-light+doxygen.compiled.css
-M_FAVICON = favicon-light.png
