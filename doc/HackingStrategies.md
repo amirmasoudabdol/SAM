@@ -86,6 +86,8 @@ The optional stopping algorithm is implemented based on the fact that often a re
 
 You can control the intensity of optional stopping by alternating the parameters. For instance, you can implement an *extreme* optional stopping by setting `num = 1` and using large values for `attempts` and `max_attempts`. 
 
+> **Note:** As discussed in the [Data Strategies](DataStrategies.md) section, optional stopping utilizes the `DataStrategy` for generating new datapoint.
+
 ## Outliers Removal
 
 Removing outliers is another popular researcher's degrees of freedom. While use of outliers removal is not prohibited, most researcher are not aware of its consequences if applies poorly. 
