@@ -20,7 +20,7 @@ While most parameters are self-explanatory, this section goes into more details 
     "--n-sims": 1,
     "--master-seed": 42,
     "--save-output": true,
-    "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
+    "--output-path": "outputs/",
     "--output-prefix": "auto"
   },
   "Experiment Parameters": {
@@ -75,7 +75,7 @@ While most parameters are self-explanatory, this section goes into more details 
 
 ## Simulation Parameters
 
-This section specifies general parameters of the simulation. These parameter are not necessary influencing SAM's components but will define the overall behavior of SAM with regard to input and output. 
+This section specifies general parameters of the simulation. These parameters are not necessarily influencing SAM's components but will define the overall behavior of SAM regarding input and output. 
 
 | Parameter         | Value    | Description                                                      |
 |:------------------|:-------- |:-----------------------------------------------------------------|
@@ -91,22 +91,20 @@ This section specifies general parameters of the simulation. These parameter are
 ## Experiment Parameters
 
 This section lists necessary parameters of the [`ExperimentSetup`](Components.md#experiment-setup) and [`Experiment`](Components.md#experiment). 
-In the case of `--means` and other similar variables, if a single numeric value is provided, SAM sets the mean of each group to the given value. On the other hand, if an `array` is provided, mean's of `i`th group will set to `i`th elements of the given array. Similarly, if the paramter refers to a matrix, a single numeric value will initialize the entire matrix with the given value, while providing a `matrix` will set each values individually.
+With `--means` and other similar variables, if a single numeric value is provided, SAM sets the mean of each group to the given value. On the other hand, if an `array` is provided, mean's of `i`th group will set to `i`th elements of the given array. Similarly, if the parameter refers to a matrix, a single numeric value will initialize the entire matrix with the given value, while providing a `matrix` will set each value individually.
 
-Note
-{: .label .label-red}
-The size of an given `array` or `matrix` must agree with number of conditions, dependant variables, and items, otherwise an error will occur.
+> **Note:** The size of an given `array` or `matrix` must agree with the number of conditions, dependant variables, and items, otherwise an error will occur.
 
 | Parameter         | Value              | Description                                                      |
 |:------------------|:-------------------|:-----------------------------------------------------------------|
 | `--data-strategy` | `string`           | Specify the underlying data model. See [Data Strategy](DataStrategies.md)    |
-| `--n-conditions`  | `int`              | Number of treatment conditions, `nc` .*Exluding the control group.* 				|
+| `--n-conditions`  | `int`              | Number of treatment conditions, `nc` .*Excluding the control group.* 				|
 | `--n-dep-vars`    | `int`              | Number of dependent variables in each condition, `nd`. 					|
 | `--n-items`       | `int`              | Number of items. Only applicable for Latent Model, `ni`.                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `--n-obs`         | `int`, `array`     | Number of observation per group.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `--means`         | `double`, `array`  | An array of size `nc * nd`, or a numeric value. |
 | `--vars`          | `double`, `array`  | An array of size `nc * nd`, or a numeric value. Diagonal values of *covariance matrix* will set by the given array or value.    |
-| `--covs`          | `double`, `martix` | A matrix of size `(nc * nd) x (nc * nd)`. If non-zero, non-diagonal values of *convariance matrix* will set with to the given value. |
+| `--covs`          | `double`, `martix` | A matrix of size `(nc * nd) x (nc * nd)`. If non-zero, non-diagonal values of *convariance matrix* will set with the given value. |
 | `--loadings`      | `double`, `array`  |					|
 | `--err-vars`      | `double`, `matrix` |					|
 | `--err-covs`      | `double`, `matrix` |					|
@@ -117,9 +115,9 @@ This section defines the behavior of the `Researcher`.
 
 | Parameter               | Value   | Description                                                    |
 |:------------------------|:-------|:-----------------------------------------------------------------|
-| `--is-phacker`          | `bool` | Whether the `Researcher` is a hacker or not, if `true`, listed methods will be applied on the `Experiment`. |
-| `--p-decision-strategy` | `dict` | Specification of a `DecisionStrategy`. Read more [here](#DecisionStrategy.md). |
-| `--p-hacking-methods`.  | `list` | A list of `list`, each indicating a chain of `HackingStrategy`. Read more [here](#HackingStrategies.md). |
+| `--is-phacker`          | `bool` | Indicates whether the `Researcher` is a *hacker* or not, if `true`, the list of hacking strategies will be applied on the `Experiment`. |
+| `--decision-strategy` | `dict` | Specification of a `DecisionStrategy`. Read more [here](#DecisionStrategy.md). |
+| `--p-hacking-methods`.  | `array` of `array` of `dict` | A list of `list`, each indicating a chain of `HackingStrategy`. Read more [here](#HackingStrategies.md). |
 
 
 ## Journal Parameters
@@ -130,7 +128,7 @@ This section specifies the properties of the `Journal`.
 |:----------------------------|:-------- |:-----------------------------------------------------------------|
 | `--pub-bias`                | `double` | Publication bias rate.                                                                                                                                     |
 | `--journal-selection-model` | `string` | The `SelectionStrategy` of the journal. Read more [here](#selection-strategies.md).                                                                                                                                |
-| `--max-pubs`                | `double` | Maximum publications that is going to be accepted by the journal before stop accepting new `Submission`s.                                                                                            |
+| `--max-pubs`                | `double` | Maximum number of publications that will be accepted by the `Journal`.                                                                                            |
 | `--alpha`                   | `double` | Journal's significance $\alpha$.                                                                                                                           |
 | `--side`                    | `int`    | Indicates journal's preference regarding the effect size. Acceptance of Positive/Negative/Neutral results will be indicated by 1, -1, and 0, respectively. |
 
