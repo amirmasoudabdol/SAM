@@ -40,7 +40,11 @@ While most parameters are self-explanatory, this section goes into more details 
       "name": "TTest",
       "side": "Two Side",
       "alpha": 0.05
-    }
+    },
+    "--effect-estimators": [
+      "Cohens D",
+      "Hedges G"
+    ]
   },
   "Journal Parameters" :{
     "--pub-bias": 0.95,
@@ -100,14 +104,15 @@ With `--means` and other similar variables, if a single numeric value is provide
 | `--data-strategy` | `string`           | Specify the underlying data model. See [Data Strategy](DataStrategies.md)    |
 | `--n-conditions`  | `int`              | Number of treatment conditions, `nc` .*Excluding the control group.* 				|
 | `--n-dep-vars`    | `int`              | Number of dependent variables in each condition, `nd`. 					|
-| `--n-items`       | `int`              | Number of items. Only applicable for Latent Model, `ni`.                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `--n-obs`         | `int`, `array`     | Number of observation per group.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `--n-items`       | `int`              | Number of items. Only applicable for Latent Model, `ni`.   |
+| `--n-obs`         | `int`, `array`     | Number of observation per group.  |
 | `--means`         | `double`, `array`  | An array of size `nc * nd`, or a numeric value. |
 | `--vars`          | `double`, `array`  | An array of size `nc * nd`, or a numeric value. Diagonal values of *covariance matrix* will set by the given array or value.    |
 | `--covs`          | `double`, `martix` | A matrix of size `(nc * nd) x (nc * nd)`. If non-zero, non-diagonal values of *convariance matrix* will set with the given value. |
 | `--loadings`      | `double`, `array`  |					|
 | `--err-vars`      | `double`, `matrix` |					|
 | `--err-covs`      | `double`, `matrix` |					|
+| `--effect-estimators` | `array` | List of effect size estimators to be calculated during the simulation. Possible options are: "Cohens D", "Hedges G", "Odd Ratio", "Pearson R", "Eta Sequared" |
 
 ## Researcher Parameters
 
