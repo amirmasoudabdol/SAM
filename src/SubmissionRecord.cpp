@@ -5,7 +5,7 @@
 #include "SubmissionRecord.h"
 
 std::ostream& operator<<(std::ostream& os, const Submission& s){
-	return os <<
+	os <<
             s.simid << ", " <<
             s.pubid << ", " <<
 //            s.method << ", " <<
@@ -18,7 +18,12 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
             s.yi << ", " <<
             s.sei << ", " <<
             s.statistic << ", " <<
-            s.pvalue << ", " <<
-            s.effect << ", " <<
-            s.side;
+            s.pvalue << ", ";
+//            s.effect << ", " <<
+            for (auto &e : s.effects){
+                os << e << ", ";
+            };
+            os << s.side;
+    
+    return os;
 }

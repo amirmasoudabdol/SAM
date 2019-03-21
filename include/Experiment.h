@@ -35,7 +35,7 @@ public:
     arma::Row<double> ses;
     arma::Row<double> statistics;
     arma::Row<double> pvalues;
-    arma::Row<double> effects;
+    std::map<std::string, arma::Row<double>> effects;
     arma::Row<short> sigs;
     
     std::vector<arma::Row<double> > measurements;
@@ -62,7 +62,7 @@ public:
     DataGenStrategy* dataStrategy;
     void setDataStrategy(DataGenStrategy* d);
     
-    EffectSizeEstimator *effectSizeEstimator;
+    std::vector<EffectSizeEstimator *> effectSizeEstimators;
     void setEffectSizeEstimator(EffectSizeEstimator *efs);
 
     // Initialize the Experiment/**/

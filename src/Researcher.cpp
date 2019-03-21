@@ -87,7 +87,7 @@ void Researcher::performResearch(){
     this->experiment->calculateStatistics();
     
     this->experiment->calculateEffects();
-        
+    
     this->experiment->runTest();
 
     // 

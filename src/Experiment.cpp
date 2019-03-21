@@ -45,7 +45,12 @@ void Experiment::initResources(int len) {
     ses.zeros(len);
     statistics.zeros(len);
     pvalues.zeros(len);
-    effects.zeros(len);
+//    effects.zeros(len);
+    
+    for (auto &estimator : effectSizeEstimators) {
+        effects[estimator->name].zeros(len);
+    }
+    
     sigs.zeros(len);
 }
 
@@ -63,7 +68,10 @@ void Experiment::calculateStatistics() {
 
 void Experiment::calculateEffects() {
 //    effects = means;
-    effectSizeEstimator->computeEffects(this);
+    for (auto &estimator : effectSizeEstimators){
+        estimator->computeEffects(this);
+    }
+//    effectSizeEstimator->computeEffects(this);
 }
 
 
@@ -86,7 +94,12 @@ Experiment::Experiment(json &config) {
     
     this->testStrategy = TestStrategy::buildTestStrategy(config["Experiment Parameters"]["--test-strategy"]);
     
-    this->effectSizeEstimator = EffectSizeEstimator::build(config["Experiment Parameters"]["--effect-estimators"]);
+    for (auto &estimator : config["Experiment Parameters"]["--effect-estimators"]){
+        std::cout << estimator << std::endl;
+        this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
+    }
+    
+//     = EffectSizeEstimator::build(config["Experiment Parameters"]["--effect-estimators"]);
     
 }
 

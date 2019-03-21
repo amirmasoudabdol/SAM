@@ -6,6 +6,7 @@
 #define SAMPP_EFFECTESTIMATORS_H
 
 #include <vector>
+#include <string>
 #include "Experiment.h"
 
 #include "nlohmann/json.hpp"
@@ -13,15 +14,17 @@
 using json = nlohmann::json;
 
 class EffectSizeEstimator {
-    double effect;
+    
 
 public:
     
-    static EffectSizeEstimator *build(json &config);
+    static EffectSizeEstimator *build(const std::string &name);
     
     virtual ~EffectSizeEstimator() = 0;
 
     virtual void computeEffects(Experiment *experiment) = 0;
+
+    std::string name;
 
 //private:
 //    double _calculate_effect();
@@ -30,16 +33,77 @@ public:
 
 
 class CohensD : public EffectSizeEstimator {
-//private:
-//
+
 public:
+    // const std::string name = "Cohens D";
+
+    explicit CohensD() {
+        name = "Cohens D";
+    };
+
     void computeEffects(Experiment *experiment);
+    
 };
+
+
+class HedgesG : public EffectSizeEstimator {
+    
+public:
+
+    explicit HedgesG(){
+        name = "Hedges G";
+    }
+
+    void computeEffects(Experiment *experiment);
+    
+};
+
+//
+//class OddRatio : public EffectSizeEstimator {
+//    
+//public:
+//    void computeEffects(Experiment *experiment);
+//    
+//private:
+//    const std::string name = "Odd Ratio";
+//};
+//
+//
+//class PearsonR : public EffectSizeEstimator {
+//    
+//public:
+//    void computeEffects(Experiment *experiment);
+//    
+//private:
+//    const std::string name = "Pearson R";
+//};
+//
+//class GlassDelta : public EffectSizeEstimator {
+//    
+//public:
+//    void computeEffects(Experiment *experiment);
+//    
+//private:
+//    const std::string name = "Glass Delta";
+//};
+//
+//class EtaSquared : public EffectSizeEstimator {
+//    
+//public:
+//    void computeEffects(Experiment *experiment);
+//    
+//private:
+//    const std::string name = "Eta Squared";
+//};
+
+
+
 
 
 double cohens_d(double Sm1, double Sd1, double Sn1,
 				 double Sm2, double Sd2, double Sn2);
-double hedges_g(double Cd, int Sn, int df);
+double hedges_g(double Sm1, double Sd1, double Sn1,
+                double Sm2, double Sd2, double Sn2);
 double pearsons_r(double Cd);
 double glass_delta(double Sm1, double Sd1, double Sn1,
 					double Sm2, double Sd2, double Sn2);

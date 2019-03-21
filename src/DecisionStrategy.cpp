@@ -75,7 +75,7 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
             break;
             
         case DecisionPreference::MaxEffect:
-            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
+//            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
             break;
             
         case DecisionPreference::MinPvalueMaxEffect:

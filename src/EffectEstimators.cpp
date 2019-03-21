@@ -9,22 +9,41 @@ EffectSizeEstimator::~EffectSizeEstimator() {
     // Pure deconstructor
 };
 
-EffectSizeEstimator *EffectSizeEstimator::build(json &config){
-    if (config["name"] == "Cohens D") {
+EffectSizeEstimator *EffectSizeEstimator::build(const std::string &name){
+    if (name == "Cohens D") {
         return new CohensD();
+    }else if (name == "Hedges G"){
+        return new HedgesG();
     }else{
         throw std::invalid_argument("Uknown effect size estimator.\n");
     }
 }
 
 void CohensD::computeEffects(Experiment *experiment){
+    
+//    experiment->effects[this->name].resize(experiment->setup.ng);
+//
     for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[i] = cohens_d(experiment->setup.true_means[i],
-                                          std::sqrt(experiment->setup.true_vars[i]),
-                                          experiment->setup.true_nobs[i],
-                                          experiment->means[i],
-                                          experiment->vars[i],
-                                          experiment->measurements[i].size());
+        experiment->effects[this->name][i] = cohens_d(experiment->setup.true_means[i],
+                                                      sqrt(experiment->setup.true_vars[i]),
+                                                      experiment->setup.true_nobs[i],
+                                                      experiment->means[i],
+                                                      experiment->vars[i],
+                                                      experiment->measurements[i].size());
+    }
+}
+
+void HedgesG::computeEffects(Experiment *experiment){
+    
+    //    experiment->effects[this->name].resize(experiment->setup.ng);
+    //
+    for (int i = 0; i < experiment->means.size(); i++) {
+        experiment->effects[this->name][i] = hedges_g(experiment->setup.true_means[i],
+                                                        sqrt(experiment->setup.true_vars[i]),
+                                                        experiment->setup.true_nobs[i],
+                                                        experiment->means[i],
+                                                        experiment->vars[i],
+                                                        experiment->measurements[i].size());
     }
 }
 
@@ -41,8 +60,28 @@ double cohens_d(double Sm1, double Sd1, double Sn1,
     return std::abs(Sm1 - Sm2) / sp;
 }
 
-double hedges_g(double Cd, int Sn, int df){
-    return Cd / sqrt(Sn / df);
+double hedges_g(double Sm1, double Sd1, double Sn1,
+                double Sm2, double Sd2, double Sn2){
+    
+    // Degrees of freedom:
+    double df = Sn1 + Sn2 - 2;
+    
+    // Pooled variance and hence standard deviation:
+    double sp = sqrt(((Sn1-1) * Sd1 * Sd1 + (Sn2-1) * Sd2 * Sd2) / df);
+    
+    // Cohen's D:
+    double Cd = std::abs(Sm1 - Sm2) / sp;
+    
+    // Sum of sample sizes
+    double n = Sn1 + Sn2;
+    
+    // Adding the bais correction factor for n < 50
+    if (n < 50) {
+        return Cd * (n - 3) / (n - 2.25) * sqrt((n-2) / n);
+    }
+    
+    return Cd;
+//    return Cd / sqrt(Sn / df);
 }
 
 double pearsons_r(double Cd){

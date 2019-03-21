@@ -26,7 +26,7 @@ public:
     double sei;             ///< Standard error of the submitted group
     double statistic;       ///< Corresponding statistics of the submitted group
     double pvalue;          ///< _P_-value of the submitted group
-    double effect;
+    std::vector<double> effects;
     bool sig = false;       ///< Indicates if the submission is significant or not
     short side = 1;         ///< The side of the observed effect
     bool isHacked = false;
@@ -60,7 +60,12 @@ public:
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
         
-        effect = e.effects[index];
+//        effect = e.effects[index];
+        for (auto &estimator : e.effectSizeEstimators){
+//            std::cout << estimator->name;
+            effects.push_back(e.effects[estimator->name][index]);
+        }
+        
         
 //        sig = (pvalue < alpha);
         sig = e.sigs[index];
