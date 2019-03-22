@@ -77,7 +77,7 @@ public:
      * \brief      Based on the DecisionPreference, it'll select the outcome
      * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece will
      *
-     * \param      experiment  { parameter_description }
+     * \param      experiment  
      *
      * \return     A copy of the selected outcome
      */

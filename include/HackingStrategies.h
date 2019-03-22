@@ -48,14 +48,15 @@ public:
     
     virtual ~HackingStrategy() = 0;
 
-    // `perform()` makes a copy of the experiment, and perform the hacking.
-    // This is usually a good idea, but its expensive if I have to do a lot of
-    // them. Keep in mind that not all *HackingStrategies* need to modify the
-    // *experiment*, so maybe later on, I can decide what kind of hacking I'm
-    // performing, and decide if I need to make a copy or not.
-    // Also, I still don't know how to implement the case where a researcher
-    // wants to run several hacking over one experiment. I guess for this to be
-    // done properly I need to do implement some sort of Template Pattern.
+    /**
+     * \brief      Applies the hacking method on the Experiment.
+     *
+     * \param      experiment        A pointer to an Experiment.
+     *                               Researcher decides if this is a pointer to
+     *                               a *fresh* copy of the Experiment or a pointer 
+     *                               to a previously "hacked" Experiment.
+     * \param      decisionStrategy  The decision strategy
+     */
     virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
 };
 
@@ -67,14 +68,6 @@ public:
  config file where `n` specify number of new observations that is going to be
  added to the experiment in each trial, `m`.
  
- ```
- {
-    "name": "Optional Stopping",
-    "size": n,
-    "attempts": m
- }
- ```
- 
  */
 class OptionalStopping : public HackingStrategy {
 public:
@@ -85,10 +78,7 @@ public:
         _n_attempts(n_attempts),
         _max_attempts(max_attempts)
     {
-//        if (mode == "Extreme"){
-//            _num = 1;
-//            _n_attempts = _max_attempts;
-//        }
+
     };
 
     void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
@@ -108,15 +98,6 @@ private:
  \brief Declaration of Outlier Removal hacking method based on items' distance from their
  sample mean.
  
- `sd_multiplier` ...
- 
- ```
-     {
-     "name": "SD Outlier Removal",
-     "sd_multiplier": d
-     }
- 
- ```
  */
 class SDOutlierRemoval : public HackingStrategy {
 public:
@@ -160,8 +141,6 @@ private:
     
     int removeOutliers(Experiment *experiment, const int &n, const int &d);
     
-//    double _sd_multiplier;      ///< Specifies the multiplier threshold for removing the outliers
-
 };
 
 class GroupPooling : public HackingStrategy {

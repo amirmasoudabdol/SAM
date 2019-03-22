@@ -16,7 +16,7 @@ void Experiment::generateData() {
     dataStrategy->genData(this);
 }
 
-void Experiment::setDataStrategy(DataGenStrategy* d) {
+void Experiment::setDataStrategy(DataStrategy* d) {
     dataStrategy = d;
 }
 
@@ -90,7 +90,7 @@ Experiment::Experiment(json &config) {
     // TODO: This should initialize everything, also set TestStrategy, ...
     this->setup = ExperimentSetup(config["Experiment Parameters"]);
 
-    this->dataStrategy = DataGenStrategy::buildDataStrategy(setup);
+    this->dataStrategy = DataStrategy::buildDataStrategy(setup);
     
     this->testStrategy = TestStrategy::buildTestStrategy(config["Experiment Parameters"]["--test-strategy"]);
     

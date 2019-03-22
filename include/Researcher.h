@@ -160,7 +160,7 @@ public:
     
     Builder& setExperimentSetup(ExperimentSetup);
     Builder& setExperiment(Experiment);
-    Builder& setDataStrategy(DataGenStrategy *dgs){
+    Builder& setDataStrategy(DataStrategy *dgs){
         this->_experiment->dataStrategy = dgs;
         return *this;
     }

@@ -2,14 +2,14 @@
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
 
-#include <DataGenStrategy.h>
+#include <DataStrategy.h>
 #include <iostream>
 #include "gsl/gsl_statistics.h"
 
 #include "Utilities.h"
 #include "Experiment.h"
 
-DataGenStrategy::~DataGenStrategy() {
+DataStrategy::~DataStrategy() {
     // Pure deconstructor
 }
 
@@ -199,7 +199,7 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
     return arma::Row<double>();
 }
 
-DataGenStrategy *DataGenStrategy::buildDataStrategy(ExperimentSetup& setup){
+DataStrategy *DataStrategy::buildDataStrategy(ExperimentSetup& setup){
     switch (setup.experimentType) {
         case ExperimentType::LinearModel:
             return new LinearModelStrategy(setup);

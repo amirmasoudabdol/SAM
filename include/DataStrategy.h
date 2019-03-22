@@ -27,13 +27,13 @@ class Experiment;
  \note Each Data Strategy should have access to an instance of RandomNumberGenerator. This is usually done
  by creating a desired _random engine_ and passing the pointer to the DataGenStrategy.
  */
-class DataGenStrategy {
+class DataStrategy {
 
 public:
 
-    static DataGenStrategy* buildDataStrategy(ExperimentSetup& setup);
+    static DataStrategy* buildDataStrategy(ExperimentSetup& setup);
     
-    virtual ~DataGenStrategy() = 0;
+    virtual ~DataStrategy() = 0;
     
     virtual void genData(Experiment* experiment) = 0;
     virtual std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
@@ -46,7 +46,7 @@ public:
  The fixed-effect data strategy will produce data from a fixed-effect
  model with the given \mu and sigma.
  */
-class LinearModelStrategy : public DataGenStrategy {
+class LinearModelStrategy : public DataStrategy {
 
 public:
     
@@ -74,7 +74,7 @@ private:
 
  \note LatentDataStrategy will generate individual items, therefore it might be slower than other models.
  */
-class LatentDataStrategy : public DataGenStrategy {
+class LatentDataStrategy : public DataStrategy {
 
 public:
     

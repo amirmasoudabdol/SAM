@@ -8,7 +8,7 @@
 #include <vector>
 #include <armadillo>
 
-#include "DataGenStrategy.h"
+#include "DataStrategy.h"
 #include "ExperimentSetup.h"
 #include "EffectEstimators.h"
 #include "TestStrategy.h"
@@ -59,8 +59,8 @@ public:
     void setTestStrategy(TestStrategy* t);
     void runTest();
 
-    DataGenStrategy* dataStrategy;
-    void setDataStrategy(DataGenStrategy* d);
+    DataStrategy* dataStrategy;
+    void setDataStrategy(DataStrategy* d);
     
     std::vector<EffectSizeEstimator *> effectSizeEstimators;
     void setEffectSizeEstimator(EffectSizeEstimator *efs);

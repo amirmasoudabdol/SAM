@@ -14,7 +14,7 @@
 #include <Experiment.h>
 #include <ExperimentSetup.h>
 #include <EffectEstimators.h>
-#include <DataGenStrategy.h>
+#include <DataStrategy.h>
 #include <TestStrategy.h>
 #include <RandomNumberGenerator.h>
 #include <Researcher.h>
