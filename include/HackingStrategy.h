@@ -28,15 +28,13 @@ stringToHackingMethod = {
 };
 
 /**
- \brief Abstract class for Hacking Strategies
+ \brief Abstract class for hacking strategies.
  
- Each _Hacking Strategy_ should provide a `perform()` method. The `perform()` method
- will take over a **pointer** copy of an Experiment and apply the implemented hacking on it. Changes
- will be applied to the copy and will be return to the Researcher.
- 
- \note Researcher decides if it's going to pass a copy or a reference to an existing Experiment. This is important since it allows the researcher to either stack
-    different hacking over each others or pass a new copy — usually the original experiment —
- to the experiment.
+ Each HackingStrategy should provide a `perform()` method. The `perform()` method
+ will take over a pointer to an Experiment and apply the implemented hacking on it. 
+ Researcher decides if this is a pointer to a *fresh* copy of the Experiment or a pointer
+ to a previously "hacked" Experiment.
+
  */
 class HackingStrategy {
 
@@ -53,17 +51,20 @@ public:
      *
      * \return     The hacking method.
      */
-    static HackingStrategy* build(json &config);
+    static HackingStrategy* buildHackingMethod(json& config);
     
+
+    /**
+     * \brief      Pure deconstuctor of the Base calss. This is important
+     * for proper deconstruction of Derived classes.
+     */
     virtual ~HackingStrategy() = 0;
 
     /**
      * \brief      Applies the hacking method on the Experiment.
      *
      * \param      experiment        A pointer to an Experiment.
-     *                               Researcher decides if this is a pointer to
-     *                               a *fresh* copy of the Experiment or a pointer 
-     *                               to a previously "hacked" Experiment.
+     *                               
      * \param      decisionStrategy  A pointer to Researcher's DecisionStrategy.
      *                               The HackingStrategy decides with what flag it
      *                               is going to use the DecisionStrategy.
@@ -74,11 +75,6 @@ public:
 
 /**
  \brief Declartion of OptionalStopping hacking strategy
- 
- In order to apply the OptionalStopping, use the following format in the JSON
- config file where `n` specify number of new observations that is going to be
- added to the experiment in each trial, `m`.
- 
  */
 class OptionalStopping : public HackingStrategy {
 public:
@@ -88,14 +84,11 @@ public:
         _num(num),
         _n_attempts(n_attempts),
         _max_attempts(max_attempts)
-    {
-
-    };
+    { };
 
     void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
 
 private:
-//    std::string _mode = "Recursive";
     std::string _level = "dv";
     int _num;
     int _n_attempts;
@@ -121,25 +114,13 @@ public:
         _max_attempts(max_attempts),
         _min_observations(min_observations),
         _multipliers(multipliers)
-    {
-        
-//        if (_mode == "Extreme") {
-//            _num = 1;
-//            _n_attempts = _MAX_ITERS;
-//            _max_attempts = _MAX_ITERS;
-//        }else if (_mode == "Recursive"){
-//            _n_attempts = _MAX_ITERS;
-//            _max_attempts = _MAX_ITERS;
-//        }
-        
-    };
+    { };
     
 
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
     
 private:
-//    std::string _mode = "Recursive Attempts";
     std::string _level = "dv";
     std::string _order = "max first";
     int _num;
