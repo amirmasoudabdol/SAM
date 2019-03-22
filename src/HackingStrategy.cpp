@@ -2,7 +2,7 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
-#include <HackingStrategies.h>
+#include <HackingStrategy.h>
 #include <Experiment.h>
 #include <Utilities.h>
 #include <DecisionStrategy.h>
@@ -15,7 +15,7 @@
 #include <cmath>
 #include <stdexcept>
 
-#include "permutation.h"
+#include "utils/permutation.h"
 
 #include "main.h"
 
@@ -171,7 +171,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
  @param config A JSON object defining a hacking strategy, and its parameters
  @return Pointer to a HackingStrategy
  */
-HackingStrategy *HackingStrategy::buildHackingMethod(json& config) {
+HackingStrategy *HackingStrategy::build(json &config) {
 
     if (config["name"] == "Optional Stopping"){
         return new OptionalStopping(config["level"],

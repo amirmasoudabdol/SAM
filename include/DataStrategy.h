@@ -31,7 +31,7 @@ class DataStrategy {
 
 public:
 
-    static DataStrategy* buildDataStrategy(ExperimentSetup& setup);
+    static DataStrategy* build(ExperimentSetup &setup);
     
     virtual ~DataStrategy() = 0;
     

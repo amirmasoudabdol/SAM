@@ -27,7 +27,7 @@ class SelectionStrategy{
 
 public:
     
-    static SelectionStrategy* buildSelectionStrategy(json& config);
+    static SelectionStrategy* build(json &config);
     
     virtual ~SelectionStrategy() = 0;
 

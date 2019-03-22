@@ -199,7 +199,7 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
     return arma::Row<double>();
 }
 
-DataStrategy *DataStrategy::buildDataStrategy(ExperimentSetup& setup){
+DataStrategy *DataStrategy::build(ExperimentSetup &setup){
     switch (setup.experimentType) {
         case ExperimentType::LinearModel:
             return new LinearModelStrategy(setup);

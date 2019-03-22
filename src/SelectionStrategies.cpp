@@ -27,7 +27,7 @@ bool SignigicantSelection::review(Submission &s) {
 }
 
 
-SelectionStrategy *SelectionStrategy::buildSelectionStrategy(json& config) {
+SelectionStrategy *SelectionStrategy::build(json &config) {
 //    if (config["--selection-strategy"] == "SignificantSelection") {
         int selectionSeed = rand();
         config["--selection-seed"] = selectionSeed;

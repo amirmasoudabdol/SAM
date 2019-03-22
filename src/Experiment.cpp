@@ -90,9 +90,9 @@ Experiment::Experiment(json &config) {
     // TODO: This should initialize everything, also set TestStrategy, ...
     this->setup = ExperimentSetup(config["Experiment Parameters"]);
 
-    this->dataStrategy = DataStrategy::buildDataStrategy(setup);
+    this->dataStrategy = DataStrategy::build(setup);
     
-    this->testStrategy = TestStrategy::buildTestStrategy(config["Experiment Parameters"]["--test-strategy"]);
+    this->testStrategy = TestStrategy::build(config["Experiment Parameters"]["--test-strategy"]);
     
     for (auto &estimator : config["Experiment Parameters"]["--effect-estimators"]){
         std::cout << estimator << std::endl;

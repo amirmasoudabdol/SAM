@@ -44,7 +44,16 @@ class HackingStrategy {
 
 public:
     
-    static HackingStrategy* buildHackingMethod(json& config);
+    /**
+     * \brief      Factory method for building a HackingStrategy
+     *
+     * \param      config  A reference to an item of the `json['--hacking-strategy']`.
+     *                     Researcher::Builder is responsible for passing this object
+     *                     correctly. 
+     *
+     * \return     The hacking method.
+     */
+    static HackingStrategy* build(json &config);
     
     virtual ~HackingStrategy() = 0;
 
@@ -55,7 +64,9 @@ public:
      *                               Researcher decides if this is a pointer to
      *                               a *fresh* copy of the Experiment or a pointer 
      *                               to a previously "hacked" Experiment.
-     * \param      decisionStrategy  The decision strategy
+     * \param      decisionStrategy  A pointer to Researcher's DecisionStrategy.
+     *                               The HackingStrategy decides with what flag it
+     *                               is going to use the DecisionStrategy.
      */
     virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
 };

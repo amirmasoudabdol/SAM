@@ -9,7 +9,7 @@
 #include "Experiment.h"
 #include "TestStrategy.h"
 #include "SubmissionRecord.h"
-#include "HackingStrategies.h"
+#include "HackingStrategy.h"
 #include "Journal.h"
 #include "DecisionStrategy.h"
 
@@ -123,7 +123,7 @@ public:
     };
     
     Builder& makeDecisionStrategy() {
-        this->_decisionStrategy = DecisionStrategy::buildDecisionStrategy(_config["Researcher Parameters"]["--decision-strategy"]);
+        this->_decisionStrategy = DecisionStrategy::build(_config["Researcher Parameters"]["--decision-strategy"]);
         return *this;
     };
     
@@ -142,7 +142,7 @@ public:
                 
                 for (auto &item : set) {
                     
-                    this->_hackingStrategies.back().push_back(HackingStrategy::buildHackingMethod(item));
+                    this->_hackingStrategies.back().push_back(HackingStrategy::build(item));
                     
                 }
                 

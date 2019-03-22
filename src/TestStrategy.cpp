@@ -44,7 +44,7 @@ void TTest::run(Experiment* experiment) {
     }
 }
 
-TestStrategy *TestStrategy::buildTestStrategy(json &config){
+TestStrategy *TestStrategy::build(json &config){
     
     if (config["name"] == "TTest"){
         return new TTest(stringToTestSide.find(config["side"])->second,

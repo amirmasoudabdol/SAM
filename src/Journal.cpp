@@ -18,7 +18,7 @@ Journal::Journal(json& config){
     
     // This can even initialize and set the SelectionStrategy
     
-    this->selectionStrategy = SelectionStrategy::buildSelectionStrategy(config);
+    this->selectionStrategy = SelectionStrategy::build(config);
 }
 
 void Journal::setSelectionStrategy(SelectionStrategy *s) {

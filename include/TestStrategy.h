@@ -53,7 +53,7 @@ class TestStrategy {
 
 public:
     
-    static TestStrategy* buildTestStrategy(json &config);
+    static TestStrategy* build(json &config);
     
     virtual ~TestStrategy() = 0;
     

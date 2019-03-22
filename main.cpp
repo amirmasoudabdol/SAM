@@ -9,7 +9,7 @@
 
 #include "Utilities.h"
 #include "docopt.h"
-#include "tqdm/tqdm.h"
+#include "utils/tqdm.h"
 
 #include <Experiment.h>
 #include <ExperimentSetup.h>
@@ -20,7 +20,7 @@
 #include <Researcher.h>
 #include <Journal.h>
 #include <SelectionStrategies.h>
-#include <HackingStrategies.h>
+#include <HackingStrategy.h>
 #include <DecisionStrategy.h>
 
 #include "ioUtilities.h"

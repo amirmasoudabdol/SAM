@@ -59,7 +59,7 @@ class DecisionStrategy {
     
 public:
     
-    static DecisionStrategy* buildDecisionStrategy(json& config);
+    static DecisionStrategy* build(json &config);
     
     virtual ~DecisionStrategy() = 0;
     

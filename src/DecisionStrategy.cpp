@@ -13,7 +13,7 @@ DecisionStrategy::~DecisionStrategy() {
     // pure deconstructor
 };
 
-DecisionStrategy *DecisionStrategy::buildDecisionStrategy(json &config) {
+DecisionStrategy *DecisionStrategy::build(json &config) {
 
     if (config["name"] == "Impatient Decision Maker"){
         return new ImpatientDecisionMaker(stringToResearcherPreference.find(config["preference"])->second);
