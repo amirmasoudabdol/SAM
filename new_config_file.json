@@ -15,7 +15,7 @@
     "--n-conditions": 3,
     "--n-dep-vars": 3,
     "--n-items": 3,
-    "--n-obs": 20,
+    "--n-obs": "random",
     "--means": 0.125,
     "--vars": 0.1,
     "--covs": 0.00,

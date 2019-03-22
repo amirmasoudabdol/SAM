@@ -23,6 +23,39 @@ HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
 };
 
+/**
+ A Factory method for building hacking strategies
+ 
+ \sa README.md
+ 
+ @param config A JSON object defining a hacking strategy, and its parameters
+ @return Pointer to a HackingStrategy
+ */
+HackingStrategy *HackingStrategy::build(json &config) {
+    
+    if (config["name"] == "Optional Stopping"){
+        return new OptionalStopping(config["level"],
+                                    config["num"],
+                                    config["n_attempts"],
+                                    config["max_attempts"]);
+        
+    }else if (config["name"] == "SD Outlier Removal") {
+        return new SDOutlierRemoval(config["level"],
+                                    config["order"],
+                                    config["num"],
+                                    config["n_attempts"],
+                                    config["max_attempts"],
+                                    config["min_observations"],
+                                    config["multipliers"]);
+        
+    }else if (config["name"] == "Group Pooling") {
+        return new GroupPooling(config["num"]);
+    }else{
+        throw std::invalid_argument("Cannot recognize the p-hacking method.");
+    }
+    
+}
+
 std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)
@@ -163,38 +196,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
 
 
 
-/**
- A Factory method for building hacking strategies
- 
- \sa README.md
 
- @param config A JSON object defining a hacking strategy, and its parameters
- @return Pointer to a HackingStrategy
- */
-HackingStrategy *HackingStrategy::build(json &config) {
-
-    if (config["name"] == "Optional Stopping"){
-        return new OptionalStopping(config["level"],
-                                    config["num"],
-                                    config["n_attempts"],
-                                    config["max_attempts"]);
-
-    }else if (config["name"] == "SD Outlier Removal") {
-        return new SDOutlierRemoval(config["level"],
-                                    config["order"],
-                                    config["num"],
-                                    config["n_attempts"],
-                                    config["max_attempts"],
-                                    config["min_observations"],
-                                    config["multipliers"]);
-
-    }else if (config["name"] == "Group Pooling") {
-        return new GroupPooling(config["num"]);
-    }else{
-        throw std::invalid_argument("Cannot recognize the p-hacking method.");
-    }
-    
-}
 
 
 /**

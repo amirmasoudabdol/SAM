@@ -191,6 +191,7 @@ std::vector<arma::Row<double> >
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // FIXME: Commented during the migration
 //    return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+    return std::vector<arma::Row<double>>();
 }
 
 arma::Row<double>

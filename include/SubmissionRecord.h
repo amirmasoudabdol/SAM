@@ -45,9 +45,9 @@ public:
     
     Submission(Experiment& e, const int &index){
         
-        // FIXME: This needs to be updated, especially if we perform OptionalStopping, then `setup.nobs` is never updated. All statistics are running on measurements.size(), so they are fine, but not this one.
+
         
-        tnobs = e.setup.true_nobs[index];               // TODO: This is not good enough either, niether e.setup.true_nobs since I'm using `0` to tell the simulator that I want to randomize the values, and this will only report `0`. See also: [#27](https://github.com/amirmasoudabdol/SAMpp/issues/27) and [#47](https://github.com/amirmasoudabdol/SAMpp/issues/47).
+        tnobs = e.setup.true_nobs[index];
         tyi = e.setup.true_means[index];
         tvi = e.setup.true_vars[index];
         tcov = e.setup.cov;         // FIXME: Not generalized again

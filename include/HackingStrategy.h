@@ -51,7 +51,7 @@ public:
      *
      * \return     The hacking method.
      */
-    static HackingStrategy* buildHackingMethod(json& config);
+    static HackingStrategy* build(json& config);
     
 
     /**

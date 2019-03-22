@@ -44,22 +44,25 @@ ExperimentSetup::ExperimentSetup(json& config) {
     ng = nc * nd;
     nrows = ng * ni;
 
-    nobs = config["--n-obs"];
     
-    if (config["--n-obs"].is_array()){
-        if (config["--n-obs"].size() != ng){
-            throw std::invalid_argument( "Size of --n-obs does not match the size of the experiment.");
-        }
-        true_nobs = config["--n-obs"].get<std::vector<int>>();
-    }else if (config["--n-obs"].is_number()){
-        // Broadcase the given --n-obs to a vector of length `ng`
-        true_nobs = std::vector<int>(ng, config["--n-obs"]);
-    }
-    if (config["--n-obs"].get<int>() == 0){
+    
+    true_nobs.resize(ng);
+    if (config["--n-obs"] == "random"){
         isNRandomized = true;
-        nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+        int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
         std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+    }else{
+        if (config["--n-obs"].is_array()){
+            if (config["--n-obs"].size() != ng){
+                throw std::invalid_argument( "Size of --n-obs does not match the size of the experiment.");
+            }
+            true_nobs = config["--n-obs"].get<std::vector<int>>();
+        }else if (config["--n-obs"].is_number()){
+            // Broadcase the given --n-obs to a vector of length `ng`
+            true_nobs = std::vector<int>(ng, config["--n-obs"]);
+        }
     }
+
     
     if (config["--means"].is_array()){
         if (config["--means"].size() != ng){
