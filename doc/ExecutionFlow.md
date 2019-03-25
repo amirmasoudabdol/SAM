@@ -36,6 +36,6 @@ Process of publishing the research as it sounds resembles the preparation of fin
 
 After applying the last hack, `Researcher` will proceed with preparation of its **final** Submission, by asking `DecisionStrategy` for its *final verdict*. This is where `Researcher` looks backs at different versions of `Experiment` or `Submission` and pick the most satisfying record.  
 
-At this stage, despite finding any significant results, `Researcher` **must** prepare a Submission record and submit it to the `Journal` for review. Journal will judge the submitted Submission`’s based on the criteria of the `SelectionStrategy`. If accepted, `Journal` will add the submission to its publication lists for further analysis or adjustment of its `SelectionStrategy`. 
+At this stage, despite finding any significant results, `Researcher` **must** prepare a Submission record and submit it to the `Journal` for review. Journal will judge the submitted `Submission`’s based on the criteria of the `SelectionStrategy`. If accepted, `Journal` will add the submission to its publication lists for further analysis or adjustment of its `SelectionStrategy`. 
 
 ![](figures/publish-research.png)
