@@ -28,7 +28,7 @@ SAM comprises 3 main components, *Experiment, Researcher* and *Journal*. Each co
 
 After this brief introduction to each component, I will dive deeper in each of them to describe their subprocesses, properties and relations.
 
-SAM uses several object-oriented principles and design patterns to achieve the level of flexibility that is offering. Since all comments of SAM are technically  C++ classes, from now on, I’ll refer to them as objects, e.g., Experiment object. 
+SAM uses several object-oriented principles and design patterns to achieve the level of flexibility that is offering. Since all components of SAM are technically  C++ classes, from now on, I’ll refer to them as objects, e.g., Experiment object. 
 ### Experiment
 
 As mentioned, `Experiment` object acts as an umbrella object for everything related to an actual experiment. This includes metadata (`ExperimentSetup`), raw data, method/model for generating the data, e.g., *linear model*, and method of testing the hypothesis. The `Researcher` object has complete control to every aspects of an `Experiment` with one exception, it can only read but not change the `ExperimentSetup` object. This is an important factor when later we implement the concept of pre-registration.
