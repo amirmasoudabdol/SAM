@@ -23,7 +23,8 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
             for (auto &e : s.effects){
                 os << e << ", ";
             };
-            os << s.side;
+            os << s.side << ", ";
+            os << s.isHacked;
     
     return os;
 }

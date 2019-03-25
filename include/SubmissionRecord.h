@@ -60,22 +60,16 @@ public:
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
         
-//        effect = e.effects[index];
         for (auto &estimator : e.effectSizeEstimators){
-//            std::cout << estimator->name;
             effects.push_back(e.effects[estimator->name][index]);
         }
         
-        
-//        sig = (pvalue < alpha);
         sig = e.sigs[index];
         
         // CHECK: This will cause problem if I do GroupPooling!
         // BUG: This is also a problem if I'm working with the LatentModel because I'm
         // storing latent means, vars with different names. **This is just not a good idea**.
         // Submission should be self-contained and I shouldn't look into another object
-//        double diff = yi - e.setup.true_means[index];
-//        side = (diff > 0) ? 1 : ((diff < 0) ? -1 : 0);
         tyi = e.setup.true_means[index];
         side = std::copysign(1.0, yi - e.setup.true_means[index]);
         
