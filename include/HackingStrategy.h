@@ -54,7 +54,7 @@ public:
      *                     Researcher::Builder is responsible for passing this object
      *                     correctly. 
      *
-     * \return     The hacking method.
+     * \return     A new HackingStrategy
      */
     static HackingStrategy* build(json& config);
     
