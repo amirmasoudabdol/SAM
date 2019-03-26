@@ -143,14 +143,14 @@ Below is a list of main methods and variables of `Researcher`.
 
 #### Decision Strategy
 
-As the name suggests, `DecisionStrategy` is the implementation of how the `Researcher` chooses between different outcome variables during the research. The list below shows a few options. The default is always `PreRegisteredOutcome` which means the `Researcher` always select the pre-registered outcome regardless of its significance. Any other option will set `isHacker` flag to `true`.  
+As the name suggests, `DecisionStrategy` is the implementation of how the `Researcher` chooses between different outcome variables during the research. The list below shows a few options. The default is always `PreRegisteredOutcome` which means the `Researcher` always selects the pre-registered outcome regardless of its significance. Any other options will set `isHacker` flag to `true`. 
 
 - `PreRegisteredOutcome`
 - `MinPvalue`
 - `MaxEffect`
-- `MaxEffectMinPvalue`*
+- `MaxEffectMinPvalue`
 
-`Researcher` can consult his decision strategy in different stages of research. Just before applying any hacking strategies, a researcher can check if the pre-registered outcome is significant or not, *initial verdict*. If it not, during the execution of a hacking strategy, it can ask his decision strategy whether to interrupt the hacking process, *intermediate verdict*. After the completion of a hacking routine, the decision strategy evaluates the outcome, *hacking verdict*. Finally, in his *final verdict*, a researcher can look back at the history of his `Experiment` and pick the final result to be submitted in the form of `Submission`. *Note: This process will be clarified in [Execution Flow](ExecutionFlow.md) section*
+`Researcher` can consult his *Decision Strategy* in different stages of the research. Just before applying any hacking strategies, a researcher can check if the pre-registered outcome is significant or not, *initial verdict*. If it is not, during the execution of a hacking strategy, it can ask his decision strategy whether to interrupt the hacking process, *intermediate verdict*. After the completion of a hacking routine, the decision strategy evaluates the outcome, *hacking verdict*. Finally, in his *final verdict*, a researcher can look back at the history of his `Experiment` and pick the final result that is going to be submitted in the form of `Submission`. *Note: This process will be clarified in [Execution Flow](ExecutionFlow.md) section*
 
 Main variables and methods of `DecisionStrategy` are:
 
@@ -166,8 +166,8 @@ Main variables and methods of `DecisionStrategy` are:
 
 #### Hacking Strategy
 
-`HackingStrategy` is an *abstract object* representing the main body of different p-hacking or QRP methods. A `HackingStrategy` object is a simple object with one function `perform()`. The `Researcher` *performs* a hacking strategy by sending a copy of its `Experiment` to the `perform` function. The `HackingStrategy` takes control of the experiment, modifies it, (e.g., adding new values, removing values), recomputes the statistic, rerun the test, and finally returns the modified `Experiment`. At this point, `Researcher` consult his decision strategy, *hacking verdict* to prepare a new `Submission`. 
+`HackingStrategy` is an abstract object representing the main body of different p-hacking or QRP methods. A `HackingStrategy` object is a simple object with one function `perform()`. The `Researcher` *performs* a hacking strategy by sending a copy of its `Experiment` to the `perform` function. The `HackingStrategy` takes control of the experiment, modifies it, (e.g., adding new values, removing values), recomputes the statistic, reruns the test, and finally returns the modified `Experiment`. At this point, `Researcher` consults his decision strategy, *hacking verdict*, to prepare a new `Submission`. 
 
-As mentioned in [Researcher](#researcher), a `Researcher` instance can have a list of **hackingStrategies** in his hand. If there is more than on hacking strategies are registered, `Researcher` performs all hacking methods on different copies of the original Experiment and stores the result in `submissionsPool` and `experimentsPool`. After applying all the method, `Researcher` will ask the `DecisionStrategy` for *final verdict*, and choose among all results as its preparing the `finalSubmission`. 
+As mentioned in [Researcher](#researcher) section, a `Researcher` instance can have a list of **hackingStrategies** in hand. If there is more than one hacking strategy is registered, `Researcher` performs all hacking methods on different copies of the original Experiment and stores the result in `submissionsPool` and `experimentsPool`. After applying all methods, `Researcher` will ask the `DecisionStrategy` for its *final verdict*, and choose among all results to come up with its *final submission*.
 
 The [Hacking Strategies](HackingStrategies.md) section will get into more details on each hacking methods.
