@@ -47,7 +47,6 @@ std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
             os << "Maximum Effect with Min Pvalue";
             break;
         default:
-            // CHECKME: What's this?
             os.setstate(std::ios_base::failbit);
     }
     return os;
@@ -75,6 +74,7 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
             break;
             
         case DecisionPreference::MaxEffect:
+            // TODO: Activate me, I don't work because there are more than one effects
 //            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
             break;
             

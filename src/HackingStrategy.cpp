@@ -63,7 +63,7 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
         case HackingMethod::OptionalStopping:
             os << "Optional Stopping";
             break;
-        case HackingMethod::OutlierRemoval:
+        case HackingMethod::SDOutlierRemoval:
             os << "Outlier Removal";
             break;
         case HackingMethod::GroupPooling:

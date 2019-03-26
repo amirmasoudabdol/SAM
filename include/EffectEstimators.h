@@ -26,16 +26,12 @@ public:
 
     std::string name;
 
-//private:
-//    double _calculate_effect();
-
 };
 
 
 class CohensD : public EffectSizeEstimator {
 
 public:
-    // const std::string name = "Cohens D";
 
     explicit CohensD() {
         name = "Cohens D";

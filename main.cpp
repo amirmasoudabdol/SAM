@@ -124,7 +124,9 @@ void runSimulation(json& simConfig){
     // I need an interface for this
     std::string outputfilename = simConfig["Simulation Parameters"]["--output-path"].get<std::string>() + simConfig["Simulation Parameters"]["--output-prefix"].get<std::string>() + "_sim.csv";
     std::ofstream csvWriter( outputfilename );
-    csvWriter << "simid, pid, tnobs, tyi, tvi, tcov, nobs, yi, sei, statistic, pvalue, side\n";
+
+    // Initializing the CSV header    
+    csvWriter << Submission::header(simConfig["Experiment Parameters"]["--effect-estimators"]) << "\n";
     
     int nSims = simConfig["Simulation Parameters"]["--n-sims"];
     

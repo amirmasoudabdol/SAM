@@ -14,7 +14,7 @@
 class Journal{
 public:
 
-    std::vector<Submission> submissionList;
+    std::vector<Submission> publicationList;
 
     SelectionStrategy* selectionStrategy;
     
@@ -27,9 +27,31 @@ public:
 
     void setSelectionStrategy(SelectionStrategy* s);
 
-    bool review(Submission& s);
-    void accept(Submission s);
-    void reject(Submission& s);
+    /**
+     * \brief      Review the Submission by calling
+     * `SelectionStrategy::review()`.
+     *
+     * \param[in]  s     A reference to the Submission
+     *
+     * \return     A boolean indicating whether the Submission should
+     * be accpeted or not.
+     */
+    bool review(const Submission &s);
+
+    /**
+     * \brief      Accept the Submission by adding it to the 
+     * `publicationList`.
+     *
+     * \param[in]  s     A copy of the Submission
+     */
+    void accept(const Submission s);
+
+    /**
+     * \brief      Rejecting the Submission!
+     *
+     * \param[in]  s     A reference to the Submission
+     */
+    void reject(const Submission &s);
 
     void clear();
 

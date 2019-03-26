@@ -31,7 +31,7 @@ public:
     
     virtual ~SelectionStrategy() = 0;
 
-    virtual bool review(Submission& s) = 0 ;
+    virtual bool review(const Submission& s) = 0 ;
 };
 
 /**
@@ -53,7 +53,7 @@ public:
 
     ~SignigicantSelection(){};
 
-    bool review(Submission& s);
+    bool review(const Submission& s);
 
 // private:
     double _alpha;      ///< The \alpha at which the _selection strategy_ decides the significance of a publication

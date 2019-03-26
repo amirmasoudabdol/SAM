@@ -146,12 +146,12 @@ public:
 
 
 
-class ReportPreregisteredGroup : public DecisionStrategy {
+class HonestDecisionMaker : public DecisionStrategy {
 
 public:
 
     
-    ReportPreregisteredGroup(int pre_registered_group){
+    HonestDecisionMaker(int pre_registered_group){
         preRegGroup = pre_registered_group;
     };
 

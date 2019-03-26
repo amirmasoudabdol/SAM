@@ -11,15 +11,14 @@
 #include <Experiment.h>
 
 class Submission {
+
     
 public:
-    // TODO: I would like to have this as static, but I cannot set it properly.
-    // FIXME: This needs to be more flexible and generalized.
-//    double alpha = 0.05;
-    
+
+    static std::string header(const json &effectslist);
+
     int simid = 0;          ///< Simulation ID
     int pubid = 0;          ///< Publication ID
-//    std::string method;
     int inx;
     int nobs;               ///< Number of observation in submitted group
     double yi;              ///< Effect size of the submitted group
@@ -30,27 +29,21 @@ public:
     bool sig = false;       ///< Indicates if the submission is significant or not
     short side = 1;         ///< The side of the observed effect
     bool isHacked = false;
-//    std::string hacking_method = "";
     
     int tnobs;
     double tyi;             ///< True mean/effect of the selected submission record
     double tvi;
-    double tcov;
     
     // Journal's Parameters
-//    double alpha = 0.05;         // FIXME: I'm hardcoded, this is a tricky problem, remember all the debuggin. I
     double pubbias;
 
     Submission() = default;
     
     Submission(Experiment& e, const int &index){
         
-
-        
         tnobs = e.setup.true_nobs[index];
         tyi = e.setup.true_means[index];
         tvi = e.setup.true_vars[index];
-        tcov = e.setup.cov;         // FIXME: Not generalized again
         
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized

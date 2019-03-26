@@ -11,9 +11,14 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 {
     switch(et)
     {
-        case ExperimentType::LinearModel   : os << "Fixed Model" ;  break;
-        case ExperimentType::LatentModel   : os << "Latent Model";  break;
-        default    : os.setstate(std::ios_base::failbit);
+        case ExperimentType::LinearModel:
+            os << "Fixed Model";
+            break;
+        case ExperimentType::LatentModel:
+            os << "Latent Model";
+            break;
+        default:
+            os.setstate(std::ios_base::failbit);
     }
     return os;
 }
@@ -89,37 +94,28 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }
     // std::cout << true_vars;
     
-    // I can drop this and only check if `cov == 0` and assume that the user wants
-    // to run a correlated model
-    // TODO: I need to change the if here
-//    if (config["--is-correlated"]) {
-//        isCorrelated = true;
+
     
-        if (config["--covs"].is_array()){
-            if (config["--covs"].size() != ng){
-                throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
-            }
-            // DOC: Notify the user that the `sds` will be discarded.
-            auto sigma = config["--covs"].get<std::vector<std::vector<double>>>();
-            for (int i = 0; i < sigma.size(); i++) {
-                true_sigma.row(i) = arma::rowvec(sigma[i]);
-            }
-            
-            
-        }else if (config["--covs"].is_number()){
-            // Broadcase the --covs to the a matrix, and replace the diagonal values with
-            // the value already given by --vars.
-            double cov = config["--covs"];
-//            for (int g = 0; g < ng; g++) {
-//                true_sigma.push_back(std::vector<double>(ng, cov));
-//                true_sigma[g][g] = true_vars[g];
-//            }
-            true_sigma.zeros(ng, ng);
-            true_sigma.fill(cov);
-            true_sigma.diag() = true_vars;
-        }else{
-            throw std::invalid_argument("--covs is invalid or not provided.");
+    if (config["--covs"].is_array()){
+        if (config["--covs"].size() != ng){
+            throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
         }
+        // DOC: Notify the user that the `sds` will be discarded.
+        auto sigma = config["--covs"].get<std::vector<std::vector<double>>>();
+        for (int i = 0; i < sigma.size(); i++) {
+            true_sigma.row(i) = arma::rowvec(sigma[i]);
+        }
+    }else if (config["--covs"].is_number()){
+        // Broadcase the --covs to the a matrix, and replace the diagonal values with
+        // the value already given by --vars.
+        double cov = config["--covs"];
+
+        true_sigma.zeros(ng, ng);
+        true_sigma.fill(cov);
+        true_sigma.diag() = true_vars;
+    }else{
+        throw std::invalid_argument("--covs is invalid or not provided.");
+    }
 //    }
     // std::cout << true_sigma << std::endl;
 

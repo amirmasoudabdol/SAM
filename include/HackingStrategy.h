@@ -17,13 +17,14 @@ using json = nlohmann::json;
 
 enum class HackingMethod {
     OptionalStopping,
-    OutlierRemoval,
+    SDOutlierRemoval,
     GroupPooling
 };
+
 const std::map<std::string, HackingMethod>
 stringToHackingMethod = {
     {"Optional Stopping", HackingMethod::OptionalStopping},
-    {"SD Outlier Removal", HackingMethod::OutlierRemoval},
+    {"SD Outlier Removal", HackingMethod::SDOutlierRemoval},
     {"Group Pooling", HackingMethod::GroupPooling},
 };
 
@@ -38,7 +39,11 @@ stringToHackingMethod = {
  */
 class HackingStrategy {
 
-//    double defensibility;
+protected:
+    //! Defensibility of the method
+    //! This is a based on the survey results where researchers have been
+    //! asked to rate the defensibility of different QRPs.
+   double defensibility;
 
 public:
     
@@ -89,9 +94,10 @@ public:
     void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
 
 private:
+    HackingMethod name = HackingMethod::OptionalStopping;
     std::string _level = "dv";
-    int _num;
-    int _n_attempts;
+    int _num = 3;
+    int _n_attempts = 3;
     int _max_attempts = 10;
     
     void addObservations(Experiment *experiment, const int &n);
@@ -121,13 +127,14 @@ public:
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
     
 private:
+    HackingMethod name = HackingMethod::SDOutlierRemoval;
     std::string _level = "dv";
     std::string _order = "max first";
-    int _num;
-    int _n_attempts;
-    int _max_attempts;
-    int _min_observations;
-    std::vector<double> _multipliers;
+    int _num = 3;
+    int _n_attempts = 1;
+    int _max_attempts = 10;
+    int _min_observations = 15;
+    std::vector<double> _multipliers = {3, 2, 1};
     
     int _MAX_ITERS = 100;
     
@@ -136,16 +143,17 @@ private:
 };
 
 class GroupPooling : public HackingStrategy {
-    
-private:
-    int _num = 2;
-    
+        
 public:
     
     GroupPooling(int num) : _num(num) {};
     
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+
+private:
+    HackingMethod name = HackingMethod::GroupPooling;
+    int _num = 2;
 };
 
 //class QuestionableRounding : public HackingStrategy {

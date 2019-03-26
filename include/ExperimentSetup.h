@@ -59,18 +59,20 @@ public:
     
     //! Number of experimental conditions, e.g., treatment 1, treatment 2.
     int nc = 1;
-    int nd = 3;     ///< Number of _dependent variables_ in each experimental condition.
-    int ni = 0;     ///< Number of items for each latent variable, if `isFactorModel` is `true`.
-    int ng;         ///< \brief Total number of groups
-                    ///< Always calculated as n_g = n_c * n_d, unless the simulation contains latent variables, n_g = n_c * n_d * n_i
+    //! Number of _dependent variables_ in each experimental condition.
+    int nd = 3;     
+    //! Number of items for each latent variable, if `isFactorModel` is `true`.
+    int ni = 0;     
+    //! Total number of groups. Always calculated as \f$n_g = n_c \times n_d\f$,
+    //! unless the simulation contains latent variables, \f$n_g = n_c \times n_d \times n_i\f$
+    int ng;         
+                    
     int nrows;
-    int nobs;       ///< Number of observations in each group
+
+    //! Number of observations in each group
+    int nobs;       
     bool isNRandomized = false;
     
-    double alpha = 0.05;
-//    std::vector<std::string> group_names;
-//    std::vector<std::string> dv_names;
-
     arma::Row<int>    true_nobs;
     arma::Row<double> true_means;
     arma::Row<double> true_vars;
@@ -91,7 +93,6 @@ public:
     void randomize_nObs();
 
     // Multivariate Experiments
-    double cov = 0;
     arma::Mat<double> true_sigma;
     
     // Latent Experiments

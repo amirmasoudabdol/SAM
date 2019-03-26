@@ -25,7 +25,7 @@ void Journal::setSelectionStrategy(SelectionStrategy *s) {
     selectionStrategy = s;
 }
 
-bool Journal::review(Submission &s) {
+bool Journal::review(const Submission &s) {
 
     bool decision = this->selectionStrategy->review(s);
 
@@ -37,34 +37,29 @@ bool Journal::review(Submission &s) {
     return decision;
 }
 
-void Journal::accept(Submission s) {
+void Journal::accept(const Submission s) {
 
-    // Updating the accepted submission by some of the Journal specific paramters
-    // FIXME: The conflict between the decison strategy and Journal shows itself here as well.
-    // Should I update them here or during the decision making. 
-    // See also: [#50](https://github.com/amirmasoudabdol/SAMpp/issues/50)
+    publicationList.push_back(s);
 
-    submissionList.push_back(s);
-
-    if (submissionList.size() == _max_pubs){
+    if (publicationList.size() == _max_pubs){
         _still_accepting = false;
     }
     
 }
 
-void Journal::reject(Submission &s) {
+void Journal::reject(const Submission &s) {
 
 }
 
 void Journal::clear() {
-    submissionList.clear();
+    publicationList.clear();
     _still_accepting = true;
 }
 
 void Journal::saveSubmissions(int simid, std::ofstream& writer) {
     
     int i = 0;
-    for (auto& p : submissionList) {
+    for (auto& p : publicationList) {
         p.simid = simid;
         p.pubid = i++;
         p.pubbias = _pub_bias;
