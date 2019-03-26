@@ -4,11 +4,11 @@ title: Design
 nav_order: 3
 ---
 
-In the previous section, while reviewing the underling process of conducting a scientific research, I listed some main components and entities involving in different stages of a research, e.g., *Experiment Setup, Experiment, Researcher, Submission*, and *Journal*. In the abstraction, each component is a loosely independent entity while the whole system, i.e., *scientific research process*, in defined by a set of behaviors, tasks and interactions between them.
+In the previous section, while reviewing the underling processes of conducting a scientific research, I listed some of the main components and entities involving in different stages of a research, e.g., *Experiment Setup, Experiment, Researcher, Submission*, and *Journal*. In the abstraction, each component is a semi-independent entity while the whole system, i.e., *scientific research process*, in defined through a set of interactions between them.
 
 One of our main design goals with SAM was to achieve a level of flexibility where we could relatively easily change different aspects of the research process. To achieve this, we have tried to de-couple the system to smaller but conceptually meaningful scientific routines and objects. Figure 1. shows all the components of SAM and their dependencies alongside their interactions with each other. 
 
-This section will clarify the design principles behind each component, how they work together and interact with each other to simulate the entire process.
+This section will clarify the design principles behind each component, what they try to resemble in the real world and how they work and interact with each other to simulate the entire process.
 
 ![**Figure 1.** SAM's components and their interactions](figures/components.png)
 
