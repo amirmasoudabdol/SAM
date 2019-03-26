@@ -10,7 +10,7 @@ Before I discuss SAM’s implementation and design, let’s review the underlyin
 
 ## Scientific Research Process
 
-The *process* of producing a scientific research/study is often a cumbersome and complicated process. Despite all different ways of doing research, a typical scientific study starts by an formulating a hypothesis as the [**Researcher**](Components.md#researcher) jots down his ideas on how a process explain a certain phenomenon or how a complicated system works. To test his hypothesis, he/she *setup an experiment* by while he/she describes the underlying parameters, compromises or criteria of the study.
+The *process* of producing a scientific research/study is often a cumbersome and complicated process. Despite all different ways of doing research, a typical scientific study starts by formulating a hypothesis as the [**Researcher**](Components.md#researcher) jots down his ideas on how one process explains a certain phenomenon or how thinks a complicated system works. To test his hypothesis, he/she *prepare an experiment* in which he/she describes the underlying parameters, compromises or criteria of the study.
 
 After the [**Experiment Setup**](Components.md#experiment-setup) is finalized, the [**Experiment**](Components.md#experiment) is being conducted in which the researcher collects a set of datasets summarizing measurements, censors data, images, etc. required to test his/her hypothesis. The next step is a mix of processing the data, analyzing the data and coming up with a conclusion regarding the initial hypothesis regardless of agreeing or disagreeing with the initial hypothesis, *pre-registered hypothesis*.
 
