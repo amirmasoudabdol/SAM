@@ -31,9 +31,9 @@ SAM uses several object-oriented principles and design patterns to achieve the l
 
 ### Experiment
 
-As mentioned, `Experiment` object acts as an umbrella object for everything related to an actual experiment. This includes metadata (`ExperimentSetup`), raw data, method/model for generating the data, e.g., *linear model*, and method of testing the hypothesis. The `Researcher` object has complete control to every aspects of an `Experiment` with one exception, it can only read but not change the `ExperimentSetup` object. This is an important factor when later we implement the concept of pre-registration.
+As mentioned, `Experiment` object acts as an umbrella object for everything related to an actual experiment. This includes metadata (`ExperimentSetup`), raw data, method/model for generating the data, e.g., [*linear model*](DataStrategy.md#linear-model), and methods of testing the hypothesis. The `Researcher` object has the complete control over every aspects of an `Experiment` with one exception, it can only read but not change the `ExperimentSetup` object. This is an important factor when later we implement the concept of pre-registration.
 
-Below is a list of variables and methods of `Experiment`.
+Below is a short list of variables and methods of `Experiment`.
 
 - *Data Objects*
 	- `measurements`, a dataset of all data points for each group
@@ -49,11 +49,11 @@ Below is a list of variables and methods of `Experiment`.
 - **[`testStrategy`](#test-strategy)**, a pointer to the selected `TestStrategy`
 - [more ...](doxymark/class_experiment.md)
 
-You can set parameters of the `Experiment` and `ExperimentSetup` using the [`Experiment Parameters`](#ConfigurationFileSpecfications.md#experiment-parameters) section of the configuration file.
+A full list of available parameters are listed in the [`Experiment Parameters`](#ConfigurationFileSpecfications.md#experiment-parameters) section of the configuration file.
 
 #### Experiment Setup
 
-SAM treats the `ExperimentSetup` object as a read-only object after the initialization phase. During the initialization phase, SAM initialize and randomize the `ExperimentSetup` based on the listed parameters in the configuration file (link to the section). After the initialization phase, `ExperimentSetup` will persist intact in the code and will be used as a reference point in different stages. For instance, if you define a `Journal` in such that it requires the study to be pre-registered, `Journal` can then access the `ExperimentSetup` and decide accordingly. 
+SAM treats the `ExperimentSetup` object as a read-only object after the initialization phase. During the initialization phase, SAM initializes and randomizes the `ExperimentSetup` based on the listed parameters in the configuration file (link to the section). After the initialization phase, `ExperimentSetup` will persist intact in the code and will be used as a reference point in different stages. For instance, if you define a `Journal` in such that it requires the study to be pre-registered, `Journal` can then access the `ExperimentSetup` and adjust its verdict accordingly. 
 
 Below is a list of variables and methods of `ExperimentSetup`, read more [here](ConfigurationFileSpecifications.md#experiment-parameters) and [here](DataStrategies.md).
 
