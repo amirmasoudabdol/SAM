@@ -134,8 +134,8 @@ Group pooling is the act of pooling data from two or more groups into one _new_ 
 }
 ```
 
-Group pooling algorithm can pool differnet number of groups, `num`, together to form a new group. In its current setup, the Researcher traverse through every permutation of length `num` and create a new group. When, he collected all the combinations, he will then ask his DecisionStrategy for `verdict` and consequently checks the significance of every new group.
+Group pooling algorithm can pool different number of groups, `num`, together to form a new group. In its current setup, the Researcher traverse through every permutation of length `num` and create a new group. When, he collected all the combinations, he will then ask his DecisionStrategy for `verdict` and consequently checks the significance of every new group.
 
 | **Parameters** | **Value** | **Details** |
 |:--|:--|:--|
-| `num` | `int` | Inidiates the number of groups to be pooled together |
+| `num` | `int` | Indicates the number of groups to be pooled together |
