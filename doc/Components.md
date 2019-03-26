@@ -14,12 +14,12 @@ This section will clarify the design principles behind each component, what they
 
 ## SAM’s Main Components
 
-SAM comprises 3 main components, *Experiment, Researcher* and *Journal*. Each component tries to summarize one of the mentioned subprocesses or entities of a scientific research as described in the [Introduction](Introduction.md). The list below briefly introduces each component and its task and role.
+SAM consists of 3 main components, *Experiment, Researcher* and *Journal*. Each component tries to summarize one of the mentioned subprocesses or entities of a scientific research as described in the [Introduction](Introduction.md). The list below briefly introduces each component and its role.
 
-- The [**Experiment**](#experiment) comprises several subroutines and objects dealing with a different aspect of a research, e.g., setup, data, test. 
-	- [*ExperimentSetup*](#experiment-setup) holds the information and parameters of experiment design. You can only set parameters of the ExperimentSetup at the start of the experiment, and during the simulation, SAM does not allow other components to change them. In fact, we implemented the ExperimentSetup to resemble the *pre-registration* as close as possible.
-	- [*Data Strategy*](#data-strategy) is a routine used to generate the data based on the parameters specified in *ExperimentSetup*.
-	- [*Test Strategy*](#test-strategy) is a statistical method of choice in the Experiment Setup for testing the result of the experiment.
+- The [**Experiment**](#experiment) comprises of several subroutines and objects dealing with different aspects of a research, e.g., setup, data, test. 
+	- [*ExperimentSetup*](#experiment-setup) holds the parameters of an experiment design. You can only set these parameters at the start of the experiment, and during the simulation, SAM does not allow other components to change them. In fact, we implemented the *ExperimentSetup* to resemble the *pre-registration* as close as possible.
+	- [*Data Strategy*](#data-strategy) is a routine used to generate the data based on the specified parameters in the *ExperimentSetup*.
+	- [*Test Strategy*](#test-strategy) is a statistical method of choice in the *ExperimentSetup* for testing the result of the *Experiment*.
 - The **[Researcher](#researcher)** object imitates the behaviors of a researcher including his possible questionable research practices. The researcher will define the *ExperimentSetup*, generate/collect the data, run the statistical test, decides whether to preform any QRPs, prepare the *Submission* record, and finally submit it to his *Journal* of choice.
     - [*Decision Strategy*](#decision-strategy) is the underling logic that the researcher uses for selecting an outcome variable for submission.
     - [*Hacking Strategies*](#hacking-strategy) is a list of questionable research practices in a researcher's hand in the case she/he decides to hack his way through finding significant results. 
