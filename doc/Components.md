@@ -69,17 +69,15 @@ Below is a list of variables and methods of `ExperimentSetup`, read more [here](
 
 #### Data Strategy
 
-`DataStrategy` acts as the *population*, i.e., *data source*. This could be a simple link to a certain distribution as specified in `ExperimentSetup` or it could an interface to an input file, e.g. CSV, containing measurements for each group. In general, `DataStrategy` operates by initializing certain variables of `Experiment`. In most cases, an instance of `DataStrategy` object uses a statistical distribution to sample number of data points and initialize the `measurements` variable, but this can change based on the selected model. 
+`DataStrategy` acts as the population, i.e., *data source*. This could be a simple link to a certain distribution as specified in `ExperimentSetup` or it could be an interface to an input file, e.g., a CSV file containing measurements for each group. In general, `DataStrategy` is responsible for initializing certain variables of the `Experiment`. In most cases, an instance of `DataStrategy` object uses a statistical distribution to sample number of data points and populates the `measurements` variable, but this can change based on the selected model. With certain *p*-hacking methods, e.g., [optional stopping](HackingStrategies.md#optional-stopping), the data strategy should also provide a routine for providing extra data points as requested by the optional stopping. 
 
-With certain *p*-hacking methods, e.g., [optional stopping](HackingStrategies.md#optional-stopping), data strategy should also provide a routine for providing extra data points as requested by the optional stopping. 
-
-I discuss data strategies in more detail in [Data Strategies](#DataStrategies.md) section.
+I discuss data strategies in more details in [Data Strategies](#DataStrategies.md) section.
 
 #### Test Strategy
 
 `TestStrategy` provides a routine for testing the hypothesis. TestStrategy can access the entire `Experiment` object but often it is restricted to only modify relevant variables, e.g., `pvalue, statistics, sig`. 
 
-While the type and parameters of a pre-registered test strategy is preserved in `ExperimentSetup`, the `Researcher` has complete access to the `TestStrategy` and can decide to alternate its parameters or replace it entirely. This can be the case in a specific *p*-hacking method.
+While the type and parameters of a pre-registered test strategy is preserved in `ExperimentSetup`, `Researcher` has complete access to the `TestStrategy` and can decide to alternate its parameters or replace it entirely. This can be the case for a specific *p*-hacking method.
 
 Currently, t-test is the only TestStrategy provided by SAM but we plan to add more methods to the pool. T-test needs to know the *side* of the test, whether variances assumed equal and the value of $\alpha$ to derive the significance. You can set these parameters using the [`--test-strategy`](ConfigurationFileSpecifications.md#--test-strategy) section of the configuration file.
 
@@ -87,28 +85,28 @@ Currently, t-test is the only TestStrategy provided by SAM but we plan to add mo
 
 In SAM, the `Journal` object is often a container for accepted publications. `Journal` is designed to mimic the reviewing process. Therefore, it can use any arbitrary algorithm for deciding whether a *Submission* will be accepted or not. 
 
-Below is a list of variables and parameters `Journal`.
+Below is a list of variables and parameters of `Journal`.
 
-- `_max_pubs`, maximum number of publications before stop accepting new publications
-- `_pub_bias`, publication bias rate
-- `_alpha`, significance $\alpha$. This can differ from `TestStrategy`’s $\alpha$.
+- `_max_pubs`, maximum number of publications before journal stops accepting new publications
+- `_pub_bias`, the publication bias rate
+- `_alpha`, the significance $\alpha$. ***Note:*** This can differ from `TestStrategy`’s $\alpha$.
 - **[`selectionStrategy`](#selection-strategy)**, journal’s selection strategy.
 - `isStillAccepting()`, a function returning the state of the journal.
 - `review()`, `accept()`, `reject()`, 
-- `submissionList`, a list of accepted submissions.
+- `submissionList`, a list of accepted submissions, i.e., publications.
 - [more ...](doxymark/class_journal.md)
 
 You can set these parameters using [`Journal Parameters`](ConfigurationFileSpecifications.md#journal-parameters) section of the configuration file.
 
 #### Selection Strategy
 
-`SelectionStrategy` implements the logic behind accepting or rejecting a submission. The simplest algorithms are mainly working with *p*-values and based their decision on that. However, more elaborate selection strategies can incorporate different metrics or criteria, e.g., pre-registration, sample sizes, or meta-analysis, into their final decision. For instance, if appropriate, a journal can have an updated estimation of the effect size from its current publications pool and incorporate that to accept or reject widely different submissions.
+`SelectionStrategy` implements the logic behind accepting or rejecting a submission. The simplest algorithms are mainly working with *p*-values and based their decision on that. However, more elaborate selection strategies can incorporate different metrics or criteria, e.g., pre-registration, sample sizes, or meta-analysis, into their final decision. For instance, if appropriate, a journal can have an updated estimation of the effect size from its current publications pool and use that to accept or reject submissions with significantly different effect sizes.
 
 #### Submission
 
 A `Submission` is a small container, created by the `Researcher` and provided to the `Journal`. It provides a simple interface between `Journal, Experiment` and `Researcher` objects. 
 
-After performing the test and deciding the outcome variable, the `Researcher` put together a report containing necessary information for the `Journal` to decide whether to accept or reject the `Experiment`. In fact, a `Submission` resembles a `paper` when it’s at the hand of the researcher and it will resemble a `publication` after being accepted by the journal. 
+After performing the test and deciding the outcome variable, the `Researcher` puts together a report containing necessary information for the `Journal` to decide whether to accept or reject the `Experiment`. In fact, a `Submission` resembles a *paper* when it is at the hand of the researcher and it resembles a *publication* after being accepted by the journal. 
 
 `Submission`’s variables are:
 
@@ -123,13 +121,13 @@ After performing the test and deciding the outcome variable, the `Researcher` pu
 - `side`, the side of the effect, positive or negative
 - [more ...](doxymark/class_submission.md)
 
-***Note:** `Submission` is an abstract representation of the paper and publication and it doesn’t try to closely resembles a full publication although it is possible to expand the list of parameters.* 
+***Note:** `Submission` is an abstract representation of the paper and publication and it does not try to closely resembles a full publication although it is possible to expand the list of parameters.* 
 
 ### Researcher
 
 `Researcher` object is the main player in the simulation. Except for `ExperimentSetup` and `Journal`, it can access and modify all other objects. 
 
-After the initialization of the `ExperimentSetup`, `Researcher` will prepare the `Experiment` object by setting the test strategy, setting the data strategy and finally generating the dataset. Then, it will run the statistical test, and if necessary applies different *p*-hacking methods on the dataset. Finally, it will prepare a `Submission` record and send it to the `Journal` for review.
+After the initialization of the `ExperimentSetup`, `Researcher` will prepare the `Experiment` object by setting the test strategy, setting the data strategy and finally generating the dataset. Then, it will run the statistical test, and — if necessary — it applies different *p*-hacking methods on the dataset. Finally, it will prepare a `Submission` record and submit it to the `Journal` for review.
 
 Below is a list of main methods and variables of `Researcher`.
 
