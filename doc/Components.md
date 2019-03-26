@@ -21,14 +21,14 @@ SAM consists of 3 main components, *Experiment, Researcher* and *Journal*. Each 
 	- [*Data Strategy*](#data-strategy) is a routine used to generate the data based on the specified parameters in the *ExperimentSetup*.
 	- [*Test Strategy*](#test-strategy) is a statistical method of choice in the *ExperimentSetup* for testing the result of the *Experiment*.
 - The **[Researcher](#researcher)** object imitates the behaviors of a researcher including his possible questionable research practices. The researcher will define the *ExperimentSetup*, generate/collect the data, run the statistical test, decides whether to preform any QRPs, prepare the *Submission* record, and finally submit it to his *Journal* of choice.
-    - [*Decision Strategy*](#decision-strategy) is the underling logic that the researcher uses for selecting an outcome variable for submission.
-    - [*Hacking Strategies*](#hacking-strategy) is a list of questionable research practices in a researcher's hand in the case she/he decides to hack his way through finding significant results. 
-- The [**Journal**](#journal) is a container of *Submission*s, i.e., published studies. The Journal keeps track of its publications and can utilize different metrics to adapts its selection strategy. ***Note**: Unlike an actual scientific journal that covers a wide range of research tracks, SAM’s Journal in its current implementation assumes that all submitted publications are from one research track. In other words, SAM’s `Journal` mainly acts as a pool for meta-analysis.*
-    - [*Selection Strategy*](#selection-strategy) is the internal algorithm with which a journal decides whether a submission will be accepted. 
-
-After this brief introduction to each component, I will dive deeper in each of them to describe their subprocesses, properties and relations.
+    - [*Decision Strategy*](#decision-strategy) is the underling logic by which the researcher selects the outcome variable for submission.
+    - [*Hacking Strategies*](#hacking-strategy) is a list of questionable research practices in researcher's hand, in the case where she/he decides to hack his way through finding significant results. 
+- The [**Journal**](#journal) is a container for *Submission*s, i.e., published studies. The Journal keeps track of its publications and can utilize different metrics to adapts its selection strategy. ***Note**: Unlike an actual scientific journal that covers a wide range of research tracks, SAM’s Journal in its current implementation assumes that all submitted publications are from one research track. In other words, SAM’s `Journal` mainly acts as a pool for meta-analysis.*
+    - [*Selection Strategy*](#selection-strategy) is the internal algorithm by which the journal decides whether a submission will be accepted.
+    - [*Submission*](#submission) is a short report, acting as a *scientific paper*. When it gets accepted by the *Journal*, it considered as a publication.
 
 SAM uses several object-oriented principles and design patterns to achieve the level of flexibility that is offering. Since all components of SAM are technically  C++ classes, from now on, I’ll refer to them as objects, e.g., Experiment object. 
+
 ### Experiment
 
 As mentioned, `Experiment` object acts as an umbrella object for everything related to an actual experiment. This includes metadata (`ExperimentSetup`), raw data, method/model for generating the data, e.g., *linear model*, and method of testing the hypothesis. The `Researcher` object has complete control to every aspects of an `Experiment` with one exception, it can only read but not change the `ExperimentSetup` object. This is an important factor when later we implement the concept of pre-registration.
