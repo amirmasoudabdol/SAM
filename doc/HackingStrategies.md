@@ -19,7 +19,7 @@ nav_order: 6
 
 SAM can execute a complicated set of hacking strategies on a given `Experiment`. A list of hacking strategies will be applied one-by-one and in the given order. `Researcher` can observe their influences on all outcome variables and decides when to stop, and what to report, see [here](Components.md#hacking-strategy) and [here](ExecutionFlow.md#perform-research).
 
-The code below shows how you can define a chain of hacking strategies. The `--p-hacking-methods` is a *list of list of JSON objects*, see [crash course on JSON](ConfigurationFileSpecfications.md#crash-course-on-json). You can define several groups of hacking strategies,  each listing different hacking strategies with a different order and parameters.  Since JSON arrays' are ordered objects, this setup is suitable for controlling the order in which each group, and method in each group will be applied on the `Experiment`. The example below defines 3 groups of hacking strategies with a different number of methods in each.
+The code below shows how you can define a chain of hacking strategies. The `--p-hacking-methods` is a *list of list of JSON objects*, see [crash course on JSON](ConfigurationFileSpecfications.md#crash-course-on-json). You can define several groups of hacking strategies,  each listing different hacking strategies with different orders and parameters. Since JSON arrays' are ordered objects, this setup is suitable for controlling the order in which each group, and method in each group will be applied on the `Experiment`. The example below defines 3 groups of hacking strategies with a different number of methods in each.
 
 
 ```json
@@ -46,7 +46,7 @@ The code below shows how you can define a chain of hacking strategies. The `--p-
 
 ```
 
-A JSON object defines the specifications of each hacking strategy. The code below defines the *H1* hacking with three parameters. During the [initialization phase](ExecutionFlow.md#initialization), SAM reads the specification and prepare the hacking strategy accordingly. 
+A JSON object defines the specifications of each hacking strategy. The code below defines *H1* hacking with three parameters. During the [initialization phase](ExecutionFlow.md#initialization), SAM reads the specification and prepare the hacking strategy accordingly. 
 
 ```json
 {
@@ -57,12 +57,11 @@ A JSON object defines the specifications of each hacking strategy. The code belo
 }
 ```
 
-
-The rest of this section lists all hacking strategies implemented in SAM. If you are interested to develop your own methods, go to [Extending SAM](extending-sam.md).
+The rest of this section lists all hacking strategies implemented in SAM. If you are interested in developing your own methods, head to [Extension](extending-sam.md) section.
 
 ## Optional Stopping
 
-Optional stopping is the practice of adding new observations to `Experiment`'s data after initial data collection. The incentive behind applying this method is often to achieve significant results. A researcher can perform this method in many way, and here we have tried to provide a set of parameters that can collectively mimic as many scenarios as possible. To add optional stopping to your list of hacking, you must replace one of the hacking methods, $h_i$ with the code block below. 
+Optional stopping is the practice of adding new observations to `Experiment`'s data after initial data collection. The incentive behind applying this method is often to achieve significant results. A researcher can perform this method in many way. Here we have tried to provide a set of parameters that can collectively mimic as many scenarios as possible. To add optional stopping to your list of hacking, you must replace one of the hacking methods, $h_i$ with the code block below. 
 
 ```json
 {
