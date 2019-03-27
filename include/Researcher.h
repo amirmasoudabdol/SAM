@@ -172,8 +172,8 @@ public:
         this->_journal = &j;
         return *this;
     };
-    Builder& setDecisionStrategy(DecisionStrategy);
-    Builder& setHackingStrategy(HackingStrategy);
+    Builder& setDecisionStrategy(DecisionStrategy *ds);
+    Builder& setHackingStrategy(HackingStrategy *hs);
     Builder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
     
     Builder& chooseHackingStrategies(std::vector<HackingStrategy>);
