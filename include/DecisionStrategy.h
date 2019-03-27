@@ -42,11 +42,11 @@ enum class DecisionPreference {
 const std::map<std::string, DecisionPreference>
 stringToResearcherPreference = {
     {"Pre-registered Outcome", DecisionPreference::PreRegisteredOutcome},
-    {"Min Sig P-value", DecisionPreference::MinSigPvalue},
-    {"Min P-value", DecisionPreference::MinPvalue},
-    {"Max Sig Effect", DecisionPreference::MaxSigEffect},
-    {"Max Effect", DecisionPreference::MaxEffect},
-    {"Min P-value, Max Effect", DecisionPreference::MinPvalueMaxEffect}
+    {"MinSigPvalue", DecisionPreference::MinSigPvalue},
+    {"MinPvalue", DecisionPreference::MinPvalue},
+    {"MaxSigEffect", DecisionPreference::MaxSigEffect},
+    {"MaxEffect", DecisionPreference::MaxEffect},
+    {"MinPvalueMaxEffect", DecisionPreference::MinPvalueMaxEffect}
 };
 
 

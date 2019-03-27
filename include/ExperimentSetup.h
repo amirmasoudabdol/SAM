@@ -35,8 +35,8 @@ enum class TestMethod {
 
 const std::map<std::string, ExperimentType>
 stringToExperimentType = {
-    {"Linear Model", ExperimentType::LinearModel},
-    {"Latent Model", ExperimentType::LatentModel}
+    {"LinearModel", ExperimentType::LinearModel},
+    {"LatentModel", ExperimentType::LatentModel}
 };
 
 

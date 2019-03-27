@@ -23,9 +23,9 @@ enum class HackingMethod {
 
 const std::map<std::string, HackingMethod>
 stringToHackingMethod = {
-    {"Optional Stopping", HackingMethod::OptionalStopping},
-    {"SD Outlier Removal", HackingMethod::SDOutlierRemoval},
-    {"Group Pooling", HackingMethod::GroupPooling},
+    {"OptionalStopping", HackingMethod::OptionalStopping},
+    {"SDOutlierRemoval", HackingMethod::SDOutlierRemoval},
+    {"GroupPooling", HackingMethod::GroupPooling},
 };
 
 /**

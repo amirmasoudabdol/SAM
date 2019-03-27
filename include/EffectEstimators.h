@@ -34,7 +34,7 @@ class CohensD : public EffectSizeEstimator {
 public:
 
     explicit CohensD() {
-        name = "Cohens D";
+        name = "CohensD";
     };
 
     void computeEffects(Experiment *experiment);
@@ -47,7 +47,7 @@ class HedgesG : public EffectSizeEstimator {
 public:
 
     explicit HedgesG(){
-        name = "Hedges G";
+        name = "HedgesG";
     }
 
     void computeEffects(Experiment *experiment);
@@ -61,7 +61,7 @@ public:
 //    void computeEffects(Experiment *experiment);
 //    
 //private:
-//    const std::string name = "Odd Ratio";
+//    const std::string name = "OddRatio";
 //};
 //
 //
@@ -71,7 +71,7 @@ public:
 //    void computeEffects(Experiment *experiment);
 //    
 //private:
-//    const std::string name = "Pearson R";
+//    const std::string name = "PearsonR";
 //};
 //
 //class GlassDelta : public EffectSizeEstimator {
@@ -80,7 +80,7 @@ public:
 //    void computeEffects(Experiment *experiment);
 //    
 //private:
-//    const std::string name = "Glass Delta";
+//    const std::string name = "GlassDelta";
 //};
 //
 //class EtaSquared : public EffectSizeEstimator {
@@ -89,7 +89,7 @@ public:
 //    void computeEffects(Experiment *experiment);
 //    
 //private:
-//    const std::string name = "Eta Squared";
+//    const std::string name = "EtaSquared";
 //};
 
 

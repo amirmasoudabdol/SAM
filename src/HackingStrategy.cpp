@@ -33,13 +33,13 @@ HackingStrategy::~HackingStrategy() {
  */
 HackingStrategy *HackingStrategy::build(json &config) {
     
-    if (config["name"] == "Optional Stopping"){
+    if (config["name"] == "OptionalStopping"){
         return new OptionalStopping(config["level"],
                                     config["num"],
                                     config["n_attempts"],
                                     config["max_attempts"]);
         
-    }else if (config["name"] == "SD Outlier Removal") {
+    }else if (config["name"] == "SDOutlierRemoval") {
         return new SDOutlierRemoval(config["level"],
                                     config["order"],
                                     config["num"],
@@ -48,7 +48,7 @@ HackingStrategy *HackingStrategy::build(json &config) {
                                     config["min_observations"],
                                     config["multipliers"]);
         
-    }else if (config["name"] == "Group Pooling") {
+    }else if (config["name"] == "GroupPooling") {
         return new GroupPooling(config["num"]);
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");
@@ -61,13 +61,13 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
     switch(m)
     {
         case HackingMethod::OptionalStopping:
-            os << "Optional Stopping";
+            os << "OptionalStopping";
             break;
         case HackingMethod::SDOutlierRemoval:
-            os << "Outlier Removal";
+            os << "SDOutlierRemoval";
             break;
         case HackingMethod::GroupPooling:
-            os << "Group Pooling";
+            os << "GroupPooling";
             break;
         default:
             os.setstate(std::ios_base::failbit);

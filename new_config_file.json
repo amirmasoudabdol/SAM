@@ -11,7 +11,7 @@
   },
   "Experiment Parameters": {
     "--meta-seed": 42,
-    "--data-strategy": "Linear Model",
+    "--data-strategy": "LinearModel",
     "--n-conditions": 3,
     "--n-dep-vars": 3,
     "--n-items": 3,
@@ -24,17 +24,17 @@
     "--err-covs": 0.001,
     "--test-strategy": {
       "type": "TTest",
-      "side": "Two Side",
+      "side": "TwoSide",
       "alpha": 0.05
     },
     "--effect-estimators": [
-      "Cohens D",
-      "Hedges G"
+      "CohensD",
+      "HedgesG"
     ]
   },
   "Journal Parameters" :{
     "--pub-bias": 0.95,
-    "--journal-selection-model": "Significant Selection",
+    "--journal-selection-model": "SignificantSelection",
     "--max-pubs": 20,
     "--alpha": 0.05,
     "--side": 0
@@ -44,7 +44,7 @@
     "--p-hacking-methods": [
         [
           {
-            "name": "Optional Stopping",
+            "name": "OptionalStopping",
             "level": "dv",
             "num": 3,
             "n_attempts": 3,
@@ -53,14 +53,14 @@
         ],
         [
           {
-            "name": "Group Pooling",
+            "name": "GroupPooling",
             "num": 2
           }
         ]
     ],
     "--decision-strategy": {
-      "name": "Patient Decision Maker",
-      "preference": "Min P-value"
+      "name": "PatientDecisionMaker",
+      "preference": "MinPvalue"
     }
   }
 }

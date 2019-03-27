@@ -22,7 +22,7 @@ const std::map<std::string, TestSide>
 stringToTestSide = {
     {"Less", TestSide::Less},
     {"Greater", TestSide::Greater},
-    {"Two Side", TestSide::TwoSide}
+    {"TwoSide", TestSide::TwoSide}
 };
 
 void TTest::run(Experiment* experiment) {

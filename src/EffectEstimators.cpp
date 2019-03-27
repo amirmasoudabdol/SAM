@@ -10,9 +10,9 @@ EffectSizeEstimator::~EffectSizeEstimator() {
 };
 
 EffectSizeEstimator *EffectSizeEstimator::build(const std::string &name){
-    if (name == "Cohens D") {
+    if (name == "CohensD") {
         return new CohensD();
-    }else if (name == "Hedges G"){
+    }else if (name == "HedgesG"){
         return new HedgesG();
     }else{
         throw std::invalid_argument("Uknown effect size estimator.\n");
