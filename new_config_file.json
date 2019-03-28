@@ -6,7 +6,7 @@
     "--n-sims": 1,
     "--master-seed": 42,
     "--save-output": true,
-    "--output-path": "/Users/amabdol/Projects/SAMpp/outputs/",
+    "--output-path": "outputs/",
     "--output-prefix": "auto"
   },
   "Experiment Parameters": {

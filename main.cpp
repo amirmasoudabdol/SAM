@@ -61,7 +61,7 @@ R"(SAMpp
         --var=V             List of variances for each group [default: 0.01]
         --cov-const=CV        Constant covariant [default: 0.5]
         --output-prefix=PREFIX    Output prefix used for saving files [default: auto]
-        --output-path=PATH      Output path [default: output/]
+        --output-path=PATH      Output path [default: outputs/]
         --config=FILE      JSON config file [default: /Users/amabdol/Projects/SAMpp/new_config_file.json]
         --is-p-hacker      If true, the Researcher will perform phacking techniques on the data [default: false]
         --hacking-methods-config=FILE  JSON config storing p-hacking methods and their parameters [default: ../sample_hacking_methods.json]
@@ -91,6 +91,11 @@ int main(int argc, const char** argv){
 
 
     json jSimConfig = readJSON(args["--config"].asString());
+    
+    if (args.find("--output-path") != args.end()){
+        std::cout << args["--output-path"].asString() << "\n";
+        jSimConfig["Simulation Parameters"]["--output-path"] = args["--output-path"].asString();
+    }
     
     runSimulation(jSimConfig);
 
