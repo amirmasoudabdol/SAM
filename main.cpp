@@ -60,7 +60,7 @@ R"(SAMpp
         --means=M            List of means for each group [default: 0.15]
         --var=V             List of variances for each group [default: 0.01]
         --cov-const=CV        Constant covariant [default: 0.5]
-        --output-prefix=PREFIX    Output prefix used for saving files [default: sam]
+        --output-prefix=PREFIX    Output prefix used for saving files [default: ]
         --output-path=PATH      Output path [default: ../outputs/]
         --config=FILE      JSON config file [default: /Users/amabdol/Projects/SAMpp/new_config_file.json]
         --is-p-hacker      If true, the Researcher will perform phacking techniques on the data [default: false]
@@ -93,12 +93,10 @@ int main(int argc, const char** argv){
     json jSimConfig = readJSON(args["--config"].asString());
     
     if (args.find("--output-path") != args.end()){
-        std::cout << args["--output-path"].asString() << "\n";
         jSimConfig["Simulation Parameters"]["--output-path"] = args["--output-path"].asString();
     }
 
-    if (args.find("--output-prefix") != args.end()){
-        std::cout << args["--output-prefix"].asString() << "\n";
+    if (args["--output-prefix"].asString() != ""){
         jSimConfig["Simulation Parameters"]["--output-prefix"] = args["--output-prefix"].asString();
     }
     
