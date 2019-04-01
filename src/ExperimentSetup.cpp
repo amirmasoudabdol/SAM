@@ -56,6 +56,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
         isNRandomized = true;
         int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
         std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+        
+        config["--n-obs"] = nobs;
     }else{
         if (config["--n-obs"].is_array()){
             if (config["--n-obs"].size() != ng){

@@ -32,39 +32,20 @@ R"(SAMpp
 
     Usage:
         SAMpp [--master-seed S] [--config FILE]
-              [--n-conditions C] [--n-dep-vars D]
-              [--n-items I]
-              [--n-obs O] [--means M] [--var V]
-              [--is-correlated] [--cov-const CV]
-              [--alpha A] [--pub-bias B] [--max-pubs K]
-              [--is-p-hacker] [--hacking-methods-config JSON]
               [--output-path PATH] [--output-prefix PREFIX]
-              [--progress]
-
-
+              [--progress] [--debug] [--verbose]
 
     Options:
-        -h --help          Show this screen.
-        -v --version       Show version.
-        --verbose          Print more texts.
-        --progress         Show progress bar [default: false]
-        --master-seed=S    Set the master seed [default: 42]
-        --n-sims=N         Number of simulations [default: 10000]
-        --n-conditions=C   Number of conditions [default: 1]
-        --n-dep-vars=D     Number of dependent variables [default: 1]
-        --n-items=I        Number of items [default: 0]
-        --alpha=A          Alpha [default: 0.05]
-        --pub-bias=B       Publication bias rate [default: 0.95]
-        --max-pubs=K       Maximum number of publications [default: 70]
-        --n-obs=O          Number of observations [default: 20]
-        --means=M            List of means for each group [default: 0.15]
-        --var=V             List of variances for each group [default: 0.01]
-        --cov-const=CV        Constant covariant [default: 0.5]
-        --output-prefix=PREFIX    Output prefix used for saving files [default: ]
-        --output-path=PATH      Output path [default: ../outputs/]
-        --config=FILE      JSON config file [default: /Users/amabdol/Projects/SAMpp/new_config_file.json]
-        --is-p-hacker      If true, the Researcher will perform phacking techniques on the data [default: false]
-        --hacking-methods-config=FILE  JSON config storing p-hacking methods and their parameters [default: ../sample_hacking_methods.json]
+        -h --help                   Show this screen.
+        -v --version                Show version.
+        --verbose                   Print more texts.
+        --progress                  Show progress bar [default: false]
+        --debug                     Print debugging information [default: false]
+        --master-seed=S             Set the master seed [default: random]
+        --output-prefix=PREFIX      Output prefix used for saving files [default: ]
+        --output-path=PATH          Output path [default: ../outputs/]
+        --config=FILE               JSON config file [default: /Users/amabdol/Projects/SAMpp/new_config_file.json]
+
 )";
 
 // for convenience
@@ -77,10 +58,10 @@ using json = nlohmann::json;
 
 tqdm progressBar;
 
-bool VERBOSE;
-bool PROGRESS;
-bool DEBUG;
-bool OUTPUT;
+extern bool VERBOSE;
+extern bool PROGRESS;
+extern bool DEBUG;
+extern bool UPDATECONFIG;
 
 int main(int argc, const char** argv){
     
@@ -101,6 +82,11 @@ int main(int argc, const char** argv){
     }
     
     runSimulation(jSimConfig);
+    
+    if (UPDATECONFIG){
+        std::ofstream o(args["--config"].asString());
+        o << std::setw(4) << jSimConfig << std::endl;
+    }
 
     return 0;
 }
@@ -110,10 +96,11 @@ void runSimulation(json& simConfig){
     VERBOSE = simConfig["Simulation Parameters"]["--verbose"];
     PROGRESS = simConfig["Simulation Parameters"]["--progress"];
     DEBUG = simConfig["Simulation Parameters"]["--debug"];
-    OUTPUT = simConfig["Simulation Parameters"]["--save-output"];
 
-    if (simConfig["Simulation Parameters"]["--master-seed"] == 0) {
-        srand(time(NULL));
+    if (simConfig["Simulation Parameters"]["--master-seed"] == "random") {
+        int masterseed = time(NULL);
+        simConfig["Simulation Parameters"]["--master-seed"];
+        srand(masterseed);
     }else{
         srand(simConfig["Simulation Parameters"]["--master-seed"]);
     }
@@ -151,26 +138,21 @@ void runSimulation(json& simConfig){
             
             if (VERBOSE) std::cout << std::endl;
             
-            if (PROGRESS)
-                progressBar.progress(i, nSims);
+            if (PROGRESS) progressBar.progress(i, nSims);
 
         }
         
-        if (OUTPUT){
-            researcher.journal->saveSubmissions(i, csvWriter);
-        }
+        researcher.journal->saveSubmissions(i, csvWriter);
         
         researcher.journal->clear();
     }
 
-    if (PROGRESS)
-        progressBar.finish();
+    if (PROGRESS) progressBar.finish();
     
-    if (OUTPUT){
-        csvWriter.close();
-        std::cout << "\nSaved to: " << outputfilename << "\n";
-    }
+    csvWriter.close();
+    std::cout << "\nSaved to: " << outputfilename << "\n";
     
+
 
 }
 

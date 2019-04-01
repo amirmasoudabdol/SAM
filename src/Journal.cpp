@@ -6,9 +6,9 @@
 #include <iostream>
 #include <iomanip>
 
-#include "main.h"
+//#include "main.h"
 
-// bool VERBOSE;
+extern bool VERBOSE;
 
 
 Journal::Journal(json& config){
@@ -65,10 +65,10 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
         p.pubbias = _pub_bias;
         
         // TODO: I need a global DEBUG variable
-        // if (VERBOSE){
+         if (VERBOSE){
             std::cout << std::setprecision(8);
             std::cout << p << "\n";
-        // }
+         }
         
         writer << p << "\n";
     }

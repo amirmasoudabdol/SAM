@@ -13,6 +13,8 @@
 #include <iostream>
 #include "TestStrategy.h"
 
+#include "main.h"
+
 using namespace arma;
 
 BOOST_AUTO_TEST_CASE( one_sample_test )

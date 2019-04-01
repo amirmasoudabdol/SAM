@@ -1,11 +1,10 @@
 {
   "Simulation Parameters":{
-    "--debug": true,
+    "--debug": false,
     "--verbose": false,
     "--progress": false,
     "--n-sims": 1,
-    "--master-seed": 42,
-    "--save-output": true,
+    "--master-seed": "random",
     "--output-path": "outputs/",
     "--output-prefix": "auto"
   },

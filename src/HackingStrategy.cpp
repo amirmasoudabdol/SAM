@@ -17,7 +17,7 @@
 
 #include "utils/permutation.h"
 
-#include "main.h"
+extern bool VERBOSE;
 
 HackingStrategy::~HackingStrategy() {
     // Pure deconstructor

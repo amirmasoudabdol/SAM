@@ -5,10 +5,10 @@
 #ifndef SAMPP_MAIN_H
 #define SAMPP_MAIN_H
 
-extern bool PROGRESS;
-extern bool DEBUG;
-extern bool VERBOSE;
-extern bool OUTPUT;
+bool PROGRESS;
+bool DEBUG;
+bool VERBOSE;
+bool UPDATECONFIG;
 
 
 // bool PROGRESS;
