@@ -20,10 +20,11 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
             s.statistic << "," <<
             s.pvalue << ",";
 //            s.effect << "," <<
-            os << s.side << ",";
             for (auto &e : s.effects){
                 os << e << ",";
             };
+            os << s.side;
+
 //            os << s.isHacked;
     
     return os;
@@ -31,12 +32,14 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
 
 
 std::string Submission::header(const json &effectslist) {
-    std::string header{"simid, pid,  tnobs,  tyi,  tvi,  inx,  nobs,  yi,  sei,  statistic,  pvalue,  side, "};
+    std::string header{"simid,pid,tnobs,tyi,tvi,inx,nobs,yi,sei,statistic,pvalue,"};
     
     for (auto &estimator : effectslist){
         header += estimator;
-        header += ", ";
+        header += ",";
     }
+    
+    header += "side";
     
     return header;
 }

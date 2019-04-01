@@ -95,7 +95,6 @@ Experiment::Experiment(json &config) {
     this->testStrategy = TestStrategy::build(config["Experiment Parameters"]["--test-strategy"]);
     
     for (auto &estimator : config["Experiment Parameters"]["--effect-estimators"]){
-        std::cout << estimator << std::endl;
         this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
     }
     
