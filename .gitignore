@@ -10,6 +10,7 @@ doc/m.math.cache
 # Excluding input/output
 # inputs/
 outputs/*
+dbs/*
 
 # Excluding the xcode-project
 xcode-project/

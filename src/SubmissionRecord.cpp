@@ -6,23 +6,23 @@
 
 std::ostream& operator<<(std::ostream& os, const Submission& s){
 	os <<
-            s.simid << ", " <<
-            s.pubid << ", " <<
-//            s.method << ", " <<
-            s.tnobs << ", " <<
-            s.tyi << ", " <<
-            s.tvi << ", " <<
-//            s.tcov << ", " <<
-            s.inx << ", " <<
-            s.nobs << ", " <<
-            s.yi << ", " <<
-            s.sei << ", " <<
-            s.statistic << ", " <<
-            s.pvalue << ", ";
-//            s.effect << ", " <<
-            os << s.side << ", ";
+            s.simid << "," <<
+            s.pubid << "," <<
+//            s.method << "," <<
+            s.tnobs << "," <<
+            s.tyi << "," <<
+            s.tvi << "," <<
+//            s.tcov << "," <<
+            s.inx << "," <<
+            s.nobs << "," <<
+            s.yi << "," <<
+            s.sei << "," <<
+            s.statistic << "," <<
+            s.pvalue << ",";
+//            s.effect << "," <<
+            os << s.side << ",";
             for (auto &e : s.effects){
-                os << e << ", ";
+                os << e << ",";
             };
 //            os << s.isHacked;
     
