@@ -88,17 +88,17 @@ void Experiment::recalculateEverything() {
 
 Experiment::Experiment(json &config) { 
     // TODO: This should initialize everything, also set TestStrategy, ...
-    this->setup = ExperimentSetup(config["Experiment Parameters"]);
+    this->setup = ExperimentSetup(config["ExperimentParameters"]);
 
     this->dataStrategy = DataStrategy::build(setup);
     
-    this->testStrategy = TestStrategy::build(config["Experiment Parameters"]["--test-strategy"]);
+    this->testStrategy = TestStrategy::build(config["ExperimentParameters"]["--test-strategy"]);
     
-    for (auto &estimator : config["Experiment Parameters"]["--effect-estimators"]){
+    for (auto &estimator : config["ExperimentParameters"]["--effect-estimators"]){
         this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
     }
     
-//     = EffectSizeEstimator::build(config["Experiment Parameters"]["--effect-estimators"]);
+//     = EffectSizeEstimator::build(config["ExperimentParameters"]["--effect-estimators"]);
     
 }
 

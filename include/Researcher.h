@@ -118,24 +118,24 @@ public:
     };
     
     Builder& makeJournal() {
-        this->_journal = new Journal(_config["Journal Parameters"]);
+        this->_journal = new Journal(_config["JournalParameters"]);
         return *this;
     };
     
     Builder& makeDecisionStrategy() {
-        this->_decisionStrategy = DecisionStrategy::build(_config["Researcher Parameters"]["--decision-strategy"]);
+        this->_decisionStrategy = DecisionStrategy::build(_config["ResearcherParameters"]["--decision-strategy"]);
         return *this;
     };
     
     Builder& isHacker() {
-        this->_isHacker = _config["Researcher Parameters"]["--is-phacker"];
+        this->_isHacker = _config["ResearcherParameters"]["--is-phacker"];
         return *this;
     }
     
     Builder& makeHackingStrategies(){
         this->isHacker();
         if (this->_isHacker){
-            for (auto &set : _config["Researcher Parameters"]["--p-hacking-methods"]) {
+            for (auto &set : _config["ResearcherParameters"]["--p-hacking-methods"]) {
                 
 //                this->_hackingStrategies
                 this->_hackingStrategies.push_back({});

@@ -15,17 +15,18 @@
 
 using json = nlohmann::json;
 
+// This is a reference for their id as well
 enum class HackingMethod {
-    OptionalStopping,
-    SDOutlierRemoval,
-    GroupPooling
+    OptionalStopping,       // 1
+    SDOutlierRemoval,       // 2
+    GroupPooling            // 3
 };
 
 const std::map<std::string, HackingMethod>
 stringToHackingMethod = {
     {"OptionalStopping", HackingMethod::OptionalStopping},
     {"SDOutlierRemoval", HackingMethod::SDOutlierRemoval},
-    {"GroupPooling", HackingMethod::GroupPooling},
+    {"GroupPooling", HackingMethod::GroupPooling}         
 };
 
 /**

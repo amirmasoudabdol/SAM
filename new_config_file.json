@@ -1,5 +1,5 @@
 {
-  "Simulation Parameters":{
+  "SimulationParameters":{
     "--debug": false,
     "--verbose": false,
     "--progress": false,
@@ -8,7 +8,7 @@
     "--output-path": "outputs/",
     "--output-prefix": "auto"
   },
-  "Experiment Parameters": {
+  "ExperimentParameters": {
     "--meta-seed": 42,
     "--data-strategy": "LinearModel",
     "--n-conditions": 3,
@@ -31,14 +31,14 @@
       "HedgesG"
     ]
   },
-  "Journal Parameters" :{
+  "JournalParameters" :{
     "--pub-bias": 0.95,
     "--journal-selection-model": "SignificantSelection",
     "--max-pubs": 20,
     "--alpha": 0.05,
     "--side": 0
   },
-  "Researcher Parameters": {
+  "ResearcherParameters": {
     "--is-phacker": true,
     "--p-hacking-methods": [
         [
