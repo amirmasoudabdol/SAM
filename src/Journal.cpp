@@ -12,9 +12,9 @@ extern bool VERBOSE;
 
 
 Journal::Journal(json& config){
-    _max_pubs = config["--max-pubs"];
-    _pub_bias = config["--pub-bias"];
-    _alpha = config["--alpha"];
+    _max_pubs = config["max-pubs"];
+    _pub_bias = config["pub-bias"];
+    _alpha = config["alpha"];
     
     // This can even initialize and set the SelectionStrategy
     

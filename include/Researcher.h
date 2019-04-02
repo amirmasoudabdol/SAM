@@ -123,19 +123,19 @@ public:
     };
     
     Builder& makeDecisionStrategy() {
-        this->_decisionStrategy = DecisionStrategy::build(_config["ResearcherParameters"]["--decision-strategy"]);
+        this->_decisionStrategy = DecisionStrategy::build(_config["ResearcherParameters"]["decision-strategy"]);
         return *this;
     };
     
     Builder& isHacker() {
-        this->_isHacker = _config["ResearcherParameters"]["--is-phacker"];
+        this->_isHacker = _config["ResearcherParameters"]["is-phacker"];
         return *this;
     }
     
     Builder& makeHackingStrategies(){
         this->isHacker();
         if (this->_isHacker){
-            for (auto &set : _config["ResearcherParameters"]["--p-hacking-methods"]) {
+            for (auto &set : _config["ResearcherParameters"]["p-hacking-methods"]) {
                 
 //                this->_hackingStrategies
                 this->_hackingStrategies.push_back({});

@@ -74,11 +74,11 @@ int main(int argc, const char** argv){
     json jSimConfig = readJSON(args["--config"].asString());
     
     if (args.find("--output-path") != args.end()){
-        jSimConfig["SimulationParameters"]["--output-path"] = args["--output-path"].asString();
+        jSimConfig["SimulationParameters"]["output-path"] = args["--output-path"].asString();
     }
 
     if (args["--output-prefix"].asString() != ""){
-        jSimConfig["SimulationParameters"]["--output-prefix"] = args["--output-prefix"].asString();
+        jSimConfig["SimulationParameters"]["output-prefix"] = args["--output-prefix"].asString();
     }
     
     runSimulation(jSimConfig);
@@ -93,16 +93,16 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
     
-    VERBOSE = simConfig["SimulationParameters"]["--verbose"];
-    PROGRESS = simConfig["SimulationParameters"]["--progress"];
-    DEBUG = simConfig["SimulationParameters"]["--debug"];
+    VERBOSE = simConfig["SimulationParameters"]["verbose"];
+    PROGRESS = simConfig["SimulationParameters"]["progress"];
+    DEBUG = simConfig["SimulationParameters"]["debug"];
 
-    if (simConfig["SimulationParameters"]["--master-seed"] == "random") {
+    if (simConfig["SimulationParameters"]["master-seed"] == "random") {
         int masterseed = time(NULL);
-        simConfig["SimulationParameters"]["--master-seed"];
+        simConfig["SimulationParameters"]["master-seed"];
         srand(masterseed);
     }else{
-        srand(simConfig["SimulationParameters"]["--master-seed"]);
+        srand(simConfig["SimulationParameters"]["master-seed"]);
     }
     
     Researcher::Builder researcherBuilder;
@@ -117,16 +117,16 @@ void runSimulation(json& simConfig){
     
     // Initiate the csvWriter
     // I need an interface for this
-    std::string outputfilename = simConfig["SimulationParameters"]["--output-path"].get<std::string>() + simConfig["SimulationParameters"]["--output-prefix"].get<std::string>() + "_sim.csv";
+    std::string outputfilename = simConfig["SimulationParameters"]["output-path"].get<std::string>() + simConfig["SimulationParameters"]["output-prefix"].get<std::string>() + "_sim.csv";
     std::ofstream csvWriter( outputfilename );
 
     // Initializing the CSV header    
-    csvWriter << Submission::header(simConfig["ExperimentParameters"]["--effect-estimators"]) << "\n";
+    csvWriter << Submission::header(simConfig["ExperimentParameters"]["effect-estimators"]) << "\n";
     
-    int nSims = simConfig["SimulationParameters"]["--n-sims"];
+    int nSims = simConfig["SimulationParameters"]["n-sims"];
     
     std::cout << std::endl;
-    for (int i = 0; i < simConfig["SimulationParameters"]["--n-sims"]; i++) {
+    for (int i = 0; i < simConfig["SimulationParameters"]["n-sims"]; i++) {
         
         while (researcher.journal->isStillAccepting()) {
 

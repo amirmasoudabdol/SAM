@@ -92,13 +92,13 @@ Experiment::Experiment(json &config) {
 
     this->dataStrategy = DataStrategy::build(setup);
     
-    this->testStrategy = TestStrategy::build(config["ExperimentParameters"]["--test-strategy"]);
+    this->testStrategy = TestStrategy::build(config["ExperimentParameters"]["test-strategy"]);
     
-    for (auto &estimator : config["ExperimentParameters"]["--effect-estimators"]){
+    for (auto &estimator : config["ExperimentParameters"]["effect-estimators"]){
         this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
     }
     
-//     = EffectSizeEstimator::build(config["ExperimentParameters"]["--effect-estimators"]);
+//     = EffectSizeEstimator::build(config["ExperimentParameters"]["effect-estimators"]);
     
 }
 

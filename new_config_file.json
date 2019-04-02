@@ -1,46 +1,46 @@
 {
   "SimulationParameters":{
-    "--debug": false,
-    "--verbose": false,
-    "--progress": false,
-    "--n-sims": 1,
-    "--master-seed": "random",
-    "--output-path": "outputs/",
-    "--output-prefix": "auto"
+    "debug": false,
+    "verbose": false,
+    "progress": false,
+    "n-sims": 1,
+    "master-seed": "random",
+    "output-path": "outputs/",
+    "output-prefix": "auto"
   },
   "ExperimentParameters": {
-    "--meta-seed": 42,
-    "--data-strategy": "LinearModel",
-    "--n-conditions": 3,
-    "--n-dep-vars": 3,
-    "--n-items": 3,
-    "--n-obs": "random",
-    "--means": 0.125,
-    "--vars": 0.1,
-    "--covs": 0.00,
-    "--loadings": 0.7,
-    "--err-vars": 0.01,
-    "--err-covs": 0.001,
-    "--test-strategy": {
+    "meta-seed": 42,
+    "data-strategy": "LinearModel",
+    "n-conditions": 3,
+    "n-dep-vars": 3,
+    "n-items": 3,
+    "n-obs": "random",
+    "means": 0.125,
+    "vars": 0.1,
+    "covs": 0.00,
+    "loadings": 0.7,
+    "err-vars": 0.01,
+    "err-covs": 0.001,
+    "test-strategy": {
       "type": "TTest",
       "side": "TwoSide",
       "alpha": 0.05
     },
-    "--effect-estimators": [
+    "effect-estimators": [
       "CohensD",
       "HedgesG"
     ]
   },
   "JournalParameters" :{
-    "--pub-bias": 0.95,
-    "--journal-selection-model": "SignificantSelection",
-    "--max-pubs": 20,
-    "--alpha": 0.05,
-    "--side": 0
+    "pub-bias": 0.95,
+    "journal-selection-model": "SignificantSelection",
+    "max-pubs": 20,
+    "alpha": 0.05,
+    "side": 0
   },
   "ResearcherParameters": {
-    "--is-phacker": true,
-    "--p-hacking-methods": [
+    "is-phacker": true,
+    "p-hacking-methods": [
         [
           {
             "name": "OptionalStopping",
@@ -57,7 +57,7 @@
           }
         ]
     ],
-    "--decision-strategy": {
+    "decision-strategy": {
       "name": "PatientDecisionMaker",
       "preference": "MinPvalue"
     }
