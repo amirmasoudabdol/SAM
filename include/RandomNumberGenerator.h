@@ -22,6 +22,8 @@ public:
     std::mt19937 gen;
     std::bernoulli_distribution bernoulliDist;
     std::uniform_real_distribution<double> uniformDist;
+    std::piecewise_constant_distribution<> piecewiseConstDist;
+    
 
     RandomNumberGenerator(int seed) :
         _seed(seed)
@@ -48,6 +50,7 @@ public:
     double uniform(const double &min, const double &max);
     
     int genSampleSize(const double &, const double &, const double &, const double &);
+    int genSampleSize(const std::vector<double> &intervals, const std::vector<double> &weights);
     
     // normal distribution
     arma::Row<double>

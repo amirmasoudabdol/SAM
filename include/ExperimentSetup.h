@@ -102,6 +102,9 @@ public:
     arma::Mat<double> errorCov;          ///<
     
     
+    std::vector<double> intervals;
+    std::vector<double> weights;
+    
 };
 
 #endif //SAMPP_EXPERIMENTSETUP_H

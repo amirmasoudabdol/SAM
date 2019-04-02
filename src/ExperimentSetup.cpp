@@ -52,12 +52,18 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     
     true_nobs.resize(ng);
-    if (config["n-obs"] == "random"){
-        isNRandomized = true;
-        int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+    if (config["n-obs"].is_array() && config["n-obs"][0].is_array()){
+        intervals = config["n-obs"][0].get<std::vector<double>>();
+        weights = config["n-obs"][1].get<std::vector<double>>();
+        int nobs = RNGEngine->genSampleSize(intervals, weights);
         std::fill(true_nobs.begin(), true_nobs.end(), nobs);
-        
-        config["n-obs"] = nobs;
+        isNRandomized = true;
+//    }else if (config["n-obs"] == "random"){
+//        isNRandomized = true;
+//        int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+//        std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+//
+//        config["n-obs"] = nobs;
     }else{
         if (config["n-obs"].is_array()){
             if (config["n-obs"].size() != ng){
@@ -183,7 +189,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
 }
 
 void ExperimentSetup::randomize_nObs() {
-    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+//    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
+    nobs = RNGEngine->genSampleSize(intervals, weights);
     std::fill(true_nobs.begin(), true_nobs.end(), nobs);
 }
 

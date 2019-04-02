@@ -96,3 +96,8 @@ int RandomNumberGenerator::genSampleSize(const double &p, const double &a, const
         return uniform(b, c);
     }
 }
+
+int RandomNumberGenerator::genSampleSize(const std::vector<double> &intervals, const std::vector<double> &weights){
+    piecewiseConstDist.param((std::piecewise_constant_distribution<>::param_type(intervals.begin(), intervals.end(), weights.begin())));
+    return piecewiseConstDist(gen);
+}
