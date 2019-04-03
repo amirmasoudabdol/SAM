@@ -1,11 +1,11 @@
 # Excluding docs
-doc/latex
-doc/xml
-doc/html
-doc/rtf
-doc/docbook
-doc/man
-doc/m.math.cache
+docs/latex
+docs/xml
+docs/html
+docs/rtf
+docs/docbook
+docs/man
+docs/m.math.cache
 
 # Excluding input/output
 # inputs/
