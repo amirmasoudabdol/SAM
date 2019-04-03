@@ -31,7 +31,7 @@ static const char USAGE[] =
 R"(SAMpp
 
     Usage:
-        SAMpp [--master-seed S] [--config FILE]
+        SAMpp [--master-seed S] [--config FILE] [--update-config]
               [--output-path PATH] [--output-prefix PREFIX]
               [--progress] [--debug] [--verbose]
 
