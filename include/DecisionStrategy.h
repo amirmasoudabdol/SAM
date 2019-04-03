@@ -73,6 +73,12 @@ public:
     
     virtual bool verdict(Experiment&, DecisionStage) = 0;
     
+    // Sub-decisions
+    virtual bool initDecision(Experiment &experiment) = 0;
+    virtual bool intermediateDecision(Experiment &experiment) = 0;
+    virtual bool afterhackDecision(Experiment &experiment) = 0;
+    virtual bool finalDecision(Experiment &experiment) = 0;
+    
     /**
      * \brief      Based on the DecisionPreference, it'll select the outcome
      * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece will
@@ -113,6 +119,11 @@ public:
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage);
     
+    virtual bool initDecision(Experiment &experiment);
+    virtual bool intermediateDecision(Experiment &experiment);
+    virtual bool afterhackDecision(Experiment &experiment);
+    virtual bool finalDecision(Experiment &experiment);
+    
 };
 
 
@@ -137,10 +148,10 @@ public:
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage);
     
-    bool initDecision(Experiment &experiment);
-    bool intermediateDecision(Experiment &experiment);
-    bool afterhackDecision(Experiment &experiment);
-    bool finalDecision(Experiment &experiment);
+    virtual bool initDecision(Experiment &experiment);
+    virtual bool intermediateDecision(Experiment &experiment);
+    virtual bool afterhackDecision(Experiment &experiment);
+    virtual bool finalDecision(Experiment &experiment);
     
 };
 
@@ -159,9 +170,14 @@ public:
         return Submission(experiment, preRegGroup);
     };
     
-    bool verdict(Experiment &experiment, DecisionStage stage) {
+    virtual bool verdict(Experiment &experiment, DecisionStage stage) {
         return true;
     };
+    
+    virtual bool initDecision(Experiment &experiment);
+    virtual bool intermediateDecision(Experiment &experiment);
+    virtual bool afterhackDecision(Experiment &experiment);
+    virtual bool finalDecision(Experiment &experiment);
     
 };
 

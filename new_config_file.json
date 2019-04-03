@@ -1,21 +1,21 @@
 {
   "SimulationParameters":{
     "debug": false,
-    "verbose": true,
+    "verbose": false,
     "progress": false,
     "n-sims": 1,
-    "master-seed": "random",
+    "master-seed": 42,
     "output-path": "outputs/",
     "output-prefix": "auto"
   },
   "ExperimentParameters": {
     "data-strategy": "LinearModel",
-    "n-conditions": 3,
+    "n-conditions": 1,
     "n-dep-vars": 3,
     "n-items": 3,
     "n-obs": [[10,25,50,100],[0.75,0,0.25]],
-    "means": 0.125,
-    "vars": 0.1,
+    "means": 0.025,
+    "vars": 0.01,
     "covs": 0.00,
     "loadings": 0.7,
     "err-vars": 0.01,
@@ -38,21 +38,15 @@
     "side": 0
   },
   "ResearcherParameters": {
-    "is-phacker": false,
+    "is-phacker": true,
     "p-hacking-methods": [
         [
           {
             "name": "OptionalStopping",
             "level": "dv",
-            "num": 3,
+            "num": 10,
             "n_attempts": 3,
             "max_attempts": 10
-          }
-        ],
-        [
-          {
-            "name": "GroupPooling",
-            "num": 2
           }
         ]
     ],

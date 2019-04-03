@@ -88,7 +88,9 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
     
     for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
         
+        
         addObservations(experiment, _num);
+        
         
         // TODO: This can still be done nicer
         experiment->calculateStatistics();
@@ -110,8 +112,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     std::for_each(experiment->measurements.begin(), experiment->measurements.end(),
                   [&new_observations, &i](arma::Row<double> &row) {
                       row.insert_cols(row.size(), new_observations[i++]);
-                  });
-    
+                  });    
     
 }
 

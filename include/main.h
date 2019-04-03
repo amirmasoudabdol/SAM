@@ -10,10 +10,4 @@ bool DEBUG;
 bool VERBOSE;
 bool UPDATECONFIG;
 
-
-// bool PROGRESS;
-// bool DEBUG;
-// bool VERBOSE;
-// bool OUTPUT;
-
 #endif //SAMPP_MAIN_H

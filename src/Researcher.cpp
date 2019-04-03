@@ -92,10 +92,10 @@ void Researcher::performResearch(){
     this->experiment->runTest();
 
     // 
-    bool isPublishable = this->decisionStrategy->verdict(*this->experiment,
+    bool willHack = this->decisionStrategy->verdict(*this->experiment,
                                                          DecisionStage::Initial);
     
-    if (this->isHacker && !isPublishable){
+    if (this->isHacker && willHack){
         this->hack();
     }    
 }
