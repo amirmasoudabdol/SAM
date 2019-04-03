@@ -84,7 +84,8 @@ int main(int argc, const char** argv){
     
     runSimulation(jSimConfig);
     
-    if (args["--update-config"]){
+    if (args["--update-config"].asBool()){
+        std::cout << "hi";
         std::ofstream o(args["--config"].asString());
         o << std::setw(4) << jSimConfig << std::endl;
     }
