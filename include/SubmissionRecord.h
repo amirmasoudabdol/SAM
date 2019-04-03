@@ -29,6 +29,7 @@ public:
     bool sig = false;       ///< Indicates if the submission is significant or not
     short side = 1;         ///< The side of the observed effect
     bool isHacked = false;
+    std::vector<int> hHistory;
     
     int tnobs;
     double tyi;             ///< True mean/effect of the selected submission record
@@ -36,6 +37,7 @@ public:
     
     // Journal's Parameters
     double pubbias;
+    
 
     Submission() = default;
     
@@ -67,6 +69,8 @@ public:
         side = std::copysign(1.0, yi - e.setup.true_means[index]);
         
         isHacked = e.isHacked;
+        
+        hHistory = e.hackingHistory;
     };
     
     ~Submission() = default;

@@ -44,9 +44,12 @@ protected:
     //! Defensibility of the method
     //! This is a based on the survey results where researchers have been
     //! asked to rate the defensibility of different QRPs.
-   double defensibility;
+    
+    
 
 public:
+    double defensibility;
+    HackingMethod hid;
     
     /**
      * \brief      Factory method for building a HackingStrategy
@@ -90,12 +93,16 @@ public:
         _num(num),
         _n_attempts(n_attempts),
         _max_attempts(max_attempts)
-    { };
+    {
+        hid = HackingMethod::OptionalStopping;
+    };
 
     void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
-
+    
+    
+    
 private:
-    HackingMethod name = HackingMethod::OptionalStopping;
+    
     std::string _level = "dv";
     int _num = 3;
     int _n_attempts = 3;
@@ -121,14 +128,18 @@ public:
         _max_attempts(max_attempts),
         _min_observations(min_observations),
         _multipliers(multipliers)
-    { };
+    {
+        hid = HackingMethod::SDOutlierRemoval;
+    };
     
 
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
     
+    
+    
 private:
-    HackingMethod name = HackingMethod::SDOutlierRemoval;
+    
     std::string _level = "dv";
     std::string _order = "max first";
     int _num = 3;
@@ -147,13 +158,18 @@ class GroupPooling : public HackingStrategy {
         
 public:
     
-    GroupPooling(int num) : _num(num) {};
+    GroupPooling(int num) : _num(num)
+    {
+        hid = HackingMethod::GroupPooling;
+    };
     
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
-
+    
+    
+    
 private:
-    HackingMethod name = HackingMethod::GroupPooling;
+    
     int _num = 2;
 };
 

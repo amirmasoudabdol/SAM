@@ -6,26 +6,26 @@
 
 std::ostream& operator<<(std::ostream& os, const Submission& s){
 	os <<
-            s.simid << "," <<
-            s.pubid << "," <<
-//            s.method << "," <<
-            s.tnobs << "," <<
-            s.tyi << "," <<
-            s.tvi << "," <<
-//            s.tcov << "," <<
-            s.inx << "," <<
-            s.nobs << "," <<
-            s.yi << "," <<
-            s.sei << "," <<
-            s.statistic << "," <<
-            s.pvalue << ",";
-//            s.effect << "," <<
-            for (auto &e : s.effects){
-                os << e << ",";
-            };
-            os << s.side;
-
-//            os << s.isHacked;
+    s.simid << "," <<
+    s.pubid << "," <<
+    s.tnobs << "," <<
+    s.tyi << "," <<
+    s.tvi << "," <<
+    s.inx << "," <<
+    s.nobs << "," <<
+    s.yi << "," <<
+    s.sei << "," <<
+    s.statistic << "," <<
+    s.pvalue << ",";
+    for (auto &e : s.effects){
+        os << e << ",";
+    };
+    os << s.side << ",";
+    for (auto &hid : s.hHistory) {
+        os << hid << ";";
+    }
+    os << ",";
+    os << s.isHacked;
     
     return os;
 }
@@ -39,7 +39,7 @@ std::string Submission::header(const json &effectslist) {
         header += ",";
     }
     
-    header += "side";
+    header += "side,hids,ish";
     
     return header;
 }

@@ -18,12 +18,13 @@ void Researcher::hack() {
         // set of methods over each other.
         
         Experiment copiedExpr = *experiment;
-        copiedExpr.isHacked = true;
+//        copiedExpr.isHacked = true;
         
         for (auto &h : set){
             
             h->perform(&copiedExpr, decisionStrategy);
             copiedExpr.isHacked = true;
+            copiedExpr.hackingHistory.push_back((int)h->hid);
             
             decisionStrategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);
@@ -96,7 +97,7 @@ void Researcher::performResearch(){
     
     if (this->isHacker && !isPublishable){
         this->hack();
-    }
+    }    
 }
 
 /**

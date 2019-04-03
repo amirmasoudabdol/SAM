@@ -80,7 +80,7 @@ public:
     // Hacking Meta-data
     bool isHacked = false;     ///< Indicates if any hacking routine has
                                ///< been applied on the experiment
-//    std::vector<HackingStrategies> hackingHistory;
+    std::vector<int> hackingHistory;
     
     
 //    Experiment(const Experiment& other){
