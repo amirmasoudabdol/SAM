@@ -8,6 +8,5 @@
 bool PROGRESS;
 bool DEBUG;
 bool VERBOSE;
-bool UPDATECONFIG;
 
 #endif //SAMPP_MAIN_H

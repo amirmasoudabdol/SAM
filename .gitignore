@@ -5,6 +5,8 @@ docs/html
 docs/rtf
 docs/docbook
 docs/man
+docs/api
+docs/_build
 docs/m.math.cache
 
 # Excluding input/output
