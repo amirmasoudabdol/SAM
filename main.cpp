@@ -41,6 +41,7 @@ R"(SAMpp
         --verbose                   Print more texts.
         --progress                  Show progress bar [default: false]
         --debug                     Print debugging information [default: false]
+        --update-config             Update the config file with the drawn seed [default: false]
         --master-seed=S             Set the master seed [default: random]
         --output-prefix=PREFIX      Output prefix used for saving files [default: ]
         --output-path=PATH          Output path [default: ../outputs/]
@@ -83,7 +84,7 @@ int main(int argc, const char** argv){
     
     runSimulation(jSimConfig);
     
-    if (UPDATECONFIG){
+    if (args["--update-config"]){
         std::ofstream o(args["--config"].asString());
         o << std::setw(4) << jSimConfig << std::endl;
     }

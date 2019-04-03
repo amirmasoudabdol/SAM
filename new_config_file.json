@@ -9,7 +9,6 @@
     "output-prefix": "auto"
   },
   "ExperimentParameters": {
-    "meta-seed": 42,
     "data-strategy": "LinearModel",
     "n-conditions": 3,
     "n-dep-vars": 3,

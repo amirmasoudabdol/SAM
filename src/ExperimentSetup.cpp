@@ -26,14 +26,8 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 
 ExperimentSetup::ExperimentSetup(json& config) {
     
-    int metaSeed;
-    if (config["meta-seed"].is_null() || config["meta-seed"].get<int>() == 0){
-        metaSeed = rand();
-    }else{
-        // --meta-seed is a number
-        metaSeed = config["meta-seed"];
-    }
-    RNGEngine = new RandomNumberGenerator(metaSeed);
+    // Setting the seed for number of observation
+    RNGEngine = new RandomNumberGenerator(rand());
     
         
     if (config["data-strategy"].is_null()){
