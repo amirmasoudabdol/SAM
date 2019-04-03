@@ -101,7 +101,7 @@ void runSimulation(json& simConfig){
 
     if (simConfig["SimulationParameters"]["master-seed"] == "random") {
         int masterseed = time(NULL);
-        simConfig["SimulationParameters"]["master-seed"];
+        simConfig["SimulationParameters"]["master-seed"] = masterseed;
         srand(masterseed);
     }else{
         srand(simConfig["SimulationParameters"]["master-seed"]);
