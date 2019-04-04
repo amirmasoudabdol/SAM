@@ -1,3 +1,5 @@
+.. _chap-intro:
+
 Introduction
 ============
 
@@ -9,6 +11,8 @@ to expose typical components and entities involved in each stage, and
 later on, to explain how each subprocess translates into different
 components of SAM. At the end, I will briefly touch up on the question
 of why we developed SAM the way we did.
+
+.. _intro-research-process:
 
 Scientific Research Process
 ---------------------------
@@ -37,6 +41,8 @@ of the initial hypothesis*, the researcher selects a
 of a `Paper <Components.md#submission>`__ to be reviewed by journal’s
 criteria. Finally, the Journal will decide if the submitted result worth
 publishing or not.
+
+.. _intro-meta-analysis:
 
 Meta-analysis
 ~~~~~~~~~~~~~

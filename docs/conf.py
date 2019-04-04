@@ -159,3 +159,39 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+
+latex_engine = 'xelatex'
+
+latex_elements = {
+    'fontpkg': r'''
+        \setmainfont[
+            BoldFont={Nitti Grotesk Bold}, 
+            ItalicFont={Nitti Grotesk Normal Italic},
+            BoldItalicFont={Nitti Grotesk Bold Italic},
+            Scale=1.1
+        ]{Nitti Grotesk Normal}
+
+        \setsansfont[
+            BoldFont={Nitti Grotesk Bold}, 
+            ItalicFont={Nitti Grotesk Normal Italic},
+            BoldItalicFont={Nitti Grotesk Bold Italic},
+            Scale=1.1
+        ]{Nitti Grotesk Normal}
+        
+        \setmonofont[Scale=0.9]{Nitti}
+
+        \setmathrm[Scale=0.9]{Nitti}
+
+        ''',
+            'preamble': r'''
+        \usepackage[titles]{tocloft}
+        \cftsetpnumwidth {1.25cm}\cftsetrmarg{1.5cm}
+        \setlength{\cftchapnumwidth}{0.75cm}
+        \setlength{\cftsecindent}{\cftchapnumwidth}
+        \setlength{\cftsecnumwidth}{1.25cm}
+        ''',
+    'fncychap': r'\usepackage[Bjornstrup]{fncychap}',
+    'printindex': r'\footnotesize\raggedright\printindex',
+}

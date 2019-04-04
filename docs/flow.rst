@@ -1,3 +1,5 @@
+.. _chap-flow:
+
 Flow
 ====
 
@@ -9,6 +11,8 @@ subprocess in more details.
 
 |image0|
 
+.. _flow-initialization:
+
 Initialization
 --------------
 
@@ -19,6 +23,8 @@ After reading user’s parameters, SAM proceeds with initializing each of
 its components.
 
 |image1|
+
+.. _flow-prepare-research:
 
 Prepare Research
 ----------------
@@ -40,6 +46,8 @@ the simulation. And finally, Experiment uses its already initialized
 distribution. This will populate the ``measurements`` variable.
 
 |image2|
+
+.. _flow-perform-research:
 
 Perform Research
 ----------------
@@ -64,6 +72,8 @@ after each addition whether or not its satisfied, *intermediate
 verdict.*
 
 |image3|
+
+.. _flow-publish-research:
 
 Publish Research
 ----------------

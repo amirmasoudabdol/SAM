@@ -1,3 +1,5 @@
+.. _chap-design:
+
 Design
 ======
 
@@ -25,6 +27,8 @@ interact with each other to simulate the entire process.
 
    **Figure 1.** SAM’s components and their interactions
 
+.. _design-components:
+
 SAM’s Main Components
 ---------------------
 
@@ -51,7 +55,7 @@ each component and its role.
       choice in the *ExperimentSetup* for testing the result of the
       *Experiment*.
 
--  The `Researcher <#researcher>`__ object imitates the behaviors of a
+-  The :ref:`design-researcher` object imitates the behaviors of a
    researcher including his possible questionable research practices.
    The researcher will define the *ExperimentSetup*, generate/collect
    the data, run the statistical test, decides whether to preform any
@@ -86,6 +90,8 @@ SAM uses several object-oriented principles and design patterns to
 achieve the level of flexibility that is offering. Since all components
 of SAM are technically C++ classes, from now on, I’ll refer to them as
 objects, e.g., Experiment object.
+
+.. _design-experiment:
 
 Experiment
 ~~~~~~~~~~
@@ -124,6 +130,8 @@ A full list of available parameters are listed in the
 ```Experiment Parameters`` <#ConfigurationFileSpecfications.md#experiment-parameters>`__
 section of the configuration file.
 
+.. _design-experiment-setup:
+
 Experiment Setup
 ^^^^^^^^^^^^^^^^
 
@@ -151,6 +159,8 @@ and `here <DataStrategies.md>`__.
 -  ``true_sigma``, the covariance matrix, if indicated.
 -  `more … <doxymark/class_experiment_setup.md>`__
 
+.. _design-data-strategy:
+
 Data Strategy
 ^^^^^^^^^^^^^
 
@@ -169,6 +179,8 @@ requested by the optional stopping.
 
 I discuss data strategies in more details in `Data
 Strategies <#DataStrategies.md>`__ section.
+
+.. _design-test-strategy:
 
 Test Strategy
 ^^^^^^^^^^^^^
@@ -190,6 +202,8 @@ test, whether variances assumed equal and the value of :math:`\alpha` to
 derive the significance. You can set these parameters using the
 ```--test-strategy`` <ConfigurationFileSpecifications.md#--test-strategy>`__
 section of the configuration file.
+
+.. _design-journal:
 
 Journal
 ~~~~~~~
@@ -219,6 +233,8 @@ You can set these parameters using
 ```Journal Parameters`` <ConfigurationFileSpecifications.md#journal-parameters>`__
 section of the configuration file.
 
+.. _design-selection-strategy:
+
 Selection Strategy
 ^^^^^^^^^^^^^^^^^^
 
@@ -231,6 +247,8 @@ decision. For instance, if appropriate, a journal can have an updated
 estimation of the effect size from its current publications pool and use
 that to accept or reject submissions with significantly different effect
 sizes.
+
+.. _design-submission:
 
 Submission
 ^^^^^^^^^^
@@ -262,6 +280,8 @@ being accepted by the journal.
 **Note:**\ *``Submission`` is an abstract representation of the paper
 and publication and it does not try to closely resembles a full
 publication although it is possible to expand the list of parameters.*
+
+.. _design-researcher:
 
 Researcher
 ~~~~~~~~~~
@@ -298,6 +318,8 @@ Below is a list of main methods and variables of ``Researcher``.
    ```Journal`` <#journal>`__ for review.
 -  `more … <doxymark/class_researcher.md>`__
 
+.. _design-decision-strategy:
+
 Decision Strategy
 ^^^^^^^^^^^^^^^^^
 
@@ -322,8 +344,9 @@ hacking process, *intermediate verdict*. After the completion of a
 hacking routine, the decision strategy evaluates the outcome, *hacking
 verdict*. Finally, in his *final verdict*, a researcher can look back at
 the history of his ``Experiment`` and pick the final result that is
-going to be submitted in the form of ``Submission``. *Note: This process
-will be clarified in*\ `Execution Flow <ExecutionFlow.md>`__\ *section*
+going to be submitted in the form of ``Submission``. 
+
+
 
 Main variables and methods of ``DecisionStrategy`` are:
 
@@ -338,10 +361,16 @@ Main variables and methods of ``DecisionStrategy`` are:
    ``Experiment`` during the research.
 -  **``verdict(Experiment, DecisionStage)``**
 -  ``finalSubmission``,
--  `more … <doxymark/class_decision_strategy.md>`__
+-  :ref:`more … <exhale_class_class_experiment_setup>`
 
-**NOTE:**\ *Decision Strategy is a helper class to implement the
-decision process more effectively and flexibly throughout the code.*
+:note:
+   This process will be clarified in*\ `Execution Flow <ExecutionFlow.md>`__\ *section*
+
+:note: 
+   *Decision Strategy is a helper class to implement the
+   decision process more effectively and flexibly throughout the code.*
+
+.. _design-hacking-strategy:
 
 Hacking Strategy
 ^^^^^^^^^^^^^^^^
@@ -356,7 +385,7 @@ recomputes the statistic, reruns the test, and finally returns the
 modified ``Experiment``. At this point, ``Researcher`` consults his
 decision strategy, *hacking verdict*, to prepare a new ``Submission``.
 
-As mentioned in `Researcher <#researcher>`__ section, a ``Researcher``
+As mentioned in :ref:`design-researcher` section, a ``Researcher``
 instance can have a list of **hackingStrategies** in hand. If there is
 more than one hacking strategy is registered, ``Researcher`` performs
 all hacking methods on different copies of the original Experiment and

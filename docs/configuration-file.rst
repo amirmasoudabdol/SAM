@@ -1,5 +1,7 @@
+.. _chap-config-file:
+
 Configuration File
-================================
+==================
 
 SAM uses a `JSON <https://www.json.org>`__ file to load and save all
 simulation parameters. The code block below shows a general
@@ -8,7 +10,7 @@ components. As you can see, the file is separated into 4 different
 sections, each corresponding to one of SAM’s components. After
 customizing your own configuration file, you can load it to SAM using
 ``./SAMpp --config=your-configuration-file.json``. This will start the
-simulation as described in `Flow <#ExecutionFlow.md>`__ section.
+simulation as described in the :ref:`chap-flow` section.
 
 While most parameters are self-explanatory, this section goes into more
 details on how SAM will process and interpret them during the
@@ -78,6 +80,8 @@ initialization phase.
      }
    }
 
+.. _config-file-simulation-params:
+
 Simulation Parameters
 ---------------------
 
@@ -86,34 +90,38 @@ parameters are not necessarily influencing SAM’s components but will
 define the overall behavior of SAM regarding input and output.
 
 
-+---------------------+------------+----------------------------------------------------------------------------+
-| Parameter           | Value      | Description                                                                |
-+=====================+============+============================================================================+
-| ``--debug``         | ``bool``   | Runs SAM in debug mode.                                                    |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--verbose``       | ``bool``   | Causes SAM to be verbose, announcing the execution of dfiferent processes. |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--progress``      | ``bool``   | Shows the progress bar.                                                    |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--master-seed``   | ``int``    | An integer for initiating seed’s of the                                    |
-|                     |            | *main random number generator stream*. All other                           |
-|                     |            | necessary streams will be seeded based on the                              |
-|                     |            | given seed. Setting this to ``"random"`` tells                             |
-|                     |            | SAM to use the clock to randomize the random                               |
-|                     |            | seed. (default: ``42``)                                                    |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--n-sims``        | ``int``    | Number of simulation repeated simulation for                               |
-|                     |            | given parameters.                                                          |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--save-output``   | ``bool``   | Tells SAM to export the simulation data to a CSV file                      |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--output-path``   | ``string`` | A path for output files.                                                   |
-+---------------------+------------+----------------------------------------------------------------------------+
-| ``--output-prefix`` | ``string`` | A prefix to be added to output filenames. {:                               |
-|                     |            | .label} Raw simulation data files ends with                                |
-|                     |            | ``_sim.csv``, and meta-analysis data files ends                            |
-|                     |            | with ``_meta.csv``                                                         |
-+---------------------+------------+----------------------------------------------------------------------------+
+.. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
++---------------------+------------+-------------------------------------------------------+
+| Parameter           | Value      | Description                                           |
++=====================+============+=======================================================+
+| ``--debug``         | ``bool``   | Runs SAM in debug mode.                               |
++---------------------+------------+-------------------------------------------------------+
+| ``--verbose``       | ``bool``   | Causes SAM to be verbose, announcing                  |
+|                     |            | the execution of dfiferent processes.                 |
++---------------------+------------+-------------------------------------------------------+
+| ``--progress``      | ``bool``   | Shows the progress bar.                               |
++---------------------+------------+-------------------------------------------------------+
+| ``--master-seed``   | ``int``    | An integer for initiating seed’s of the               |
+|                     |            | *main random number generator stream*. All other      |
+|                     |            | necessary streams will be seeded based on the         |
+|                     |            | given seed. Setting this to ``"random"`` tells        |
+|                     |            | SAM to use the clock to randomize the random          |
+|                     |            | seed. (default: ``42``)                               |
++---------------------+------------+-------------------------------------------------------+
+| ``--n-sims``        | ``int``    | Number of simulation repeated simulation for          |
+|                     |            | given parameters.                                     |
++---------------------+------------+-------------------------------------------------------+
+| ``--save-output``   | ``bool``   | Tells SAM to export the simulation data to a CSV file |
++---------------------+------------+-------------------------------------------------------+
+| ``--output-path``   | ``string`` | A path for output files.                              |
++---------------------+------------+-------------------------------------------------------+
+| ``--output-prefix`` | ``string`` | A prefix to be added to output filenames. {:          |
+|                     |            | .label} Raw simulation data files ends with           |
+|                     |            | ``_sim.csv``, and meta-analysis data files ends       |
+|                     |            | with ``_meta.csv``                                    |
++---------------------+------------+-------------------------------------------------------+
+
+.. _config-file-experiment-params:
 
 Experiment Parameters
 ---------------------
@@ -183,6 +191,8 @@ individually.
 |                         |            | Ratio”, “Pearson R”, “Eta Sequared”        |
 +-------------------------+------------+--------------------------------------------+
 
+.. _config-file-researcher-params:
+
 Researcher Parameters
 ---------------------
 
@@ -203,6 +213,8 @@ This section defines the behavior of the ``Researcher``.
 |                         |           | Read more `here <#HackingStrategies.md>`__.                         |
 +-------------------------+-----------+---------------------------------------------------------------------+
 
+.. _config-file-journal-params:
+
 Journal Parameters
 ------------------
 
@@ -210,7 +222,6 @@ This section specifies the properties of the ``Journal``.
 
 +-------------------------------+------------+--------------------------------------------------------------------------+
 | Parameter                     | Value      | Description                                                              |
-|                               | ue         |                                                                          |
 +===============================+============+==========================================================================+
 | ``--pub-bias``                | ``double`` | Publication bias rate.                                                   |
 +-------------------------------+------------+--------------------------------------------------------------------------+
@@ -226,10 +237,12 @@ This section specifies the properties of the ``Journal``.
 |                               |            | indicated by 1, -1, and 0, respectively.                                 |
 +-------------------------------+------------+--------------------------------------------------------------------------+
 
+.. _config-file-json:
+
 Crash Course on JSON
 ^^^^^^^^^^^^^^^^^^^^
 
-   A JSON object is an *unordered* set of name/value pairs inserted
-   between two curly brackets, ``{"name": "Sam"}``. A JSON list/array is
-   an ordered set of values between two brackets,
-   ``[1, "blue", {"name": "Sam"}]``
+  A JSON object is an *unordered* set of name/value pairs inserted
+  between two curly brackets, ``{"name": "Sam"}``. A JSON list/array is
+  an ordered set of values between two brackets,
+  ``[1, "blue", {"name": "Sam"}]``

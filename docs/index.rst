@@ -36,7 +36,6 @@ designing your own simulation.
    data-strategies
    hacking-strategies
    decision-strategies
-   api/library_root
 
 
 Indices and tables

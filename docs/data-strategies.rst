@@ -1,3 +1,5 @@
+.. _chap-data-strategies:
+
 Data Strategies
 ===============
 
@@ -22,6 +24,8 @@ Two available options are *Linear Model* and *Latent Model*. Based on
 your model of choice, SAM only uses fractions of parameters provided in
 the configuration file. In this section, we discuss how SAM uses the
 parameters to set up the model and how it generates data.
+
+.. _data-strategies-linear:
 
 Linear Model
 ------------
@@ -49,6 +53,8 @@ diagonal row of the covariance matrix.
 ``--vars``         :math:`\sigma^2`, ``double`` or ``array``
 ``--covs``         :math:`\Sigma`, ``double``, ``matrix``
 ================== =========================================
+
+.. _data-strategies-latent:
 
 Latent Model
 ------------

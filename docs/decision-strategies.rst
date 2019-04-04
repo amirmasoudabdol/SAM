@@ -1,3 +1,5 @@
+.. _chap-decision-strategies:
+
 Decision Strategies
 ===================
 
@@ -46,6 +48,8 @@ the pre-registered result even if it applies some *p*-hacking methods;
 therefore, his attempts would be to achieve significant results on the
 pre-registered outcome.
 
+.. _decision-strategies-honest:
+
 Honest Decision Maker
 ---------------------
 
@@ -53,6 +57,8 @@ A “honest researcher” always reports the pre-registered result and will
 not apply any p-hacking methods on the Experiment.
 
 **Default:** > *This is the*\ **default**\ *decision making method.*
+
+.. _decision-strategies-impatient:
 
 Impatient Decision Maker
 ------------------------
@@ -68,6 +74,8 @@ setting the ``--decision-strategy`` value:
      "name": "ImpatientDecisionMaker",
      "preference": "MinPvalue"
    }
+
+.. _decision-strategies-patient:
 
 Patient Decision Maker
 ----------------------

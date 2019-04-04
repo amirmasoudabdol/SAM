@@ -1,3 +1,5 @@
+.. _chap-hacking-strategies:
+
 Hacking Strategies
 ==================
 
@@ -70,6 +72,8 @@ The rest of this section lists all hacking strategies implemented in
 SAM. If you are interested in developing your own methods, head to
 `Extension <extending-sam.md>`__ section.
 
+.. _hacking-strategies-optional-stopping:
+
 Optional Stopping
 -----------------
 
@@ -131,6 +135,8 @@ and ``max_attempts``.
    **Note:** As discussed in the `Data Strategies <DataStrategies.md>`__
    section, optional stopping utilizes the ``DataStrategy`` for
    generating new datapoint.
+
+.. _hacking-strategies-outliers-removal:
 
 Outliers Removal
 ----------------
@@ -215,6 +221,8 @@ modifying its parameters. For instance, setting ``num = 1`` and choosing
 large values for ``n_attempts`` will remove the values one-by-one from
 Experiment until it reaches the significance. You can control this
 process by specifying a list of ``multipliers``.
+
+.. _hacking-strategies-group-pooling:
 
 Group Pooling
 -------------
