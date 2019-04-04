@@ -23,9 +23,9 @@ what they try to resemble in the real world and how they work and
 interact with each other to simulate the entire process.
 
 .. figure:: figures/components.png
-   :alt: **Figure 1.** SAM’s components and their interactions
+   :align: center
 
-   **Figure 1.** SAM’s components and their interactions
+   SAM’s components and their interactions
 
 
 .. _design-components:
@@ -83,7 +83,7 @@ each component and its role.
    -  :ref:`selection-strategy` is the internal
       algorithm by which the journal decides whether a submission will
       be accepted.
-   -  :ref:`Submission` is a short report, acting as a
+   -  :ref:`submission` is a short report, acting as a
       *scientific paper*. When it gets accepted by the *Journal*, it
       considered as a publication.
 
@@ -121,9 +121,9 @@ Below is a short list of variables and methods of ``Experiment``.
    -  ``effects``, the effect size of each group
    -  ``sign``, an indicator of significance for each group
 
--  ```dataStrategy`` <#data-strategy>`__, a pointer to the selected
+-  :ref:`dataStrategy data-strategies`, a pointer to the selected
    ``DataStrategy``
--  ```testStrategy`` <#test-strategy>`__, a pointer to the selected
+-  :ref:`testStrategy test-strategies`, a pointer to the selected
    ``TestStrategy``
 -  :ref:`more … exhale_class_class_experiment`
 
@@ -146,8 +146,8 @@ to be pre-registered, ``Journal`` can then access the
 ``ExperimentSetup`` and adjust its verdict accordingly.
 
 Below is a list of variables and methods of ``ExperimentSetup``, read
-more `here <config-file-experiment-parameters>`__
-and `here <decision-strategies>`__.
+more :ref:`here config-file-experiment-parameters`
+and :ref:`here decision-strategies`.
 
 -  ``experimentType``, underlying model for generating data.
 -  ``nc``, the number of conditions
@@ -173,12 +173,11 @@ the ``Experiment``. In most cases, an instance of ``DataStrategy``
 object uses a statistical distribution to sample number of data points
 and populates the ``measurements`` variable, but this can change based
 on the selected model. With certain *p*-hacking methods, e.g., `optional
-stopping <hacking-strategies-optional-stopping>`__, the data strategy
+stopping <hacking-strategies-optional-stopping`, the data strategy
 should also provide a routine for providing extra data points as
 requested by the optional stopping.
 
-I discuss data strategies in more details in `Data
-Strategies <decision-strategies>`__ section.
+I discuss data strategies in more details in :ref:`decision-strategies` section.
 
 .. _design-test-strategy:
 
@@ -200,7 +199,7 @@ Currently, t-test is the only TestStrategy provided by SAM but we plan
 to add more methods to the pool. T-test needs to know the *side* of the
 test, whether variances assumed equal and the value of :math:`\alpha` to
 derive the significance. You can set these parameters using the
-```--test-strategy`` <config-file---test-strategy>`__
+:ref:```--test-strategy`` config-file-test-strategy`
 section of the configuration file.
 
 .. _design-journal:
@@ -220,7 +219,7 @@ Below is a list of variables and parameters of ``Journal``.
 -  ``_pub_bias``, the publication bias rate
 -  ``_alpha``, the significance :math:`\alpha`. **Note:** This can
    differ from ``TestStrategy``\ ’s :math:`\alpha`.
--  ```selectionStrategy`` <#selection-strategy>`__, journal’s selection
+-  :ref:`selectionStrategy selection-strategy`, journal’s selection
    strategy.
 -  ``isStillAccepting()``, a function returning the state of the
    journal.
@@ -230,7 +229,7 @@ Below is a list of variables and parameters of ``Journal``.
 -  :ref:`more … exhale_class_class_journal`
 
 You can set these parameters using
-```Journal Parameters`` <config-file-journal-parameters>`__
+```Journal Parameters`` <config-file-journal-parameters`
 section of the configuration file.
 
 .. _design-selection-strategy:
@@ -277,9 +276,10 @@ being accepted by the journal.
 -  ``side``, the side of the effect, positive or negative
 -  :ref:`more … exhale_class_class_submission`
 
-**Note:**\ *``Submission`` is an abstract representation of the paper
-and publication and it does not try to closely resembles a full
-publication although it is possible to expand the list of parameters.*
+:note:
+    ``Submission`` is an abstract representation of the paper
+    and publication and it does not try to closely resembles a full
+    publication although it is possible to expand the list of parameters.
 
 .. _design-researcher:
 
@@ -305,10 +305,10 @@ Below is a list of main methods and variables of ``Researcher``.
    strategy
 -  *isHacker*, a flag indicating whether the researcher will perform any
    p-hacking methods on the data
--  ```hackingStrategies`` <#hacking-strategy>`__, a list of hacking
+-  :ref:`hackingStrategies hacking-strategy`, a list of hacking
    strategies
 -  ``prepareResearch()``, a method to initialize the experiment, i.e.,
-   initializing the ```ExperimentSetup`` <#experiment-setup>`__ and
+   initializing the ```ExperimentSetup`` <#experiment-setup` and
    generating the dataset
 -  ``performResearch()``, a method to calculate the necessary
    statistics, running the tests, and applying p-hacking methods (if

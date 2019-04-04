@@ -9,7 +9,10 @@ process, often performs by one of the components or through
 collaboration between different components. This section describes each
 subprocess in more details.
 
-|image0|
+.. figure:: figures/main-routine.png
+   :align: center
+   
+   Overall execution flowchart of SAM
 
 .. _flow-initialization:
 
@@ -18,11 +21,12 @@ Initialization
 
 During the initialization phase, SAMs loads a configuration file and
 initializes different compartments based on the parameters. You can read
-more about the parameters `here <ConfigurationFileSpecifications.md>`__.
+more about the parameters :ref:`here config-file`.
 After reading user’s parameters, SAM proceeds with initializing each of
 its components.
 
-|image1|
+.. figure:: figures/initialization.png
+   :align: center
 
 .. _flow-prepare-research:
 
@@ -32,7 +36,7 @@ Prepare Research
 The preparation of the research is the first step in the simulation.
 This step resembles the process of defining a study and finally
 collecting the data for the study. As we discussed in the
-`Design <#Components.md>`__ section, **``ExperimentSetup``** is a
+:ref:`design` section, **``ExperimentSetup``** is a
 read-only object except the case that a user prefers to randomize one of
 its parameters in each different runs of SAM, for instance, randomizing
 the number of observations to study its effect on a particular metric.
@@ -45,7 +49,8 @@ the simulation. And finally, Experiment uses its already initialized
 **``DataStrategy``** to draw a sample from the given population or
 distribution. This will populate the ``measurements`` variable.
 
-|image2|
+.. figure:: figures/prepare-research.png
+   :align: center
 
 .. _flow-perform-research:
 
@@ -71,7 +76,8 @@ or stop. For instance, with optional stopping, Researcher can decide
 after each addition whether or not its satisfied, *intermediate
 verdict.*
 
-|image3|
+.. figure:: figures/perform-research.png
+   :align: center
 
 .. _flow-publish-research:
 
@@ -94,11 +100,6 @@ the criteria of the ``SelectionStrategy``. If accepted, ``Journal`` adds
 the submission to its publication lists for further analysis or
 adjustment of its ``SelectionStrategy``.
 
-|image4|
-
-.. |image0| image:: figures/main-routine.png
-.. |image1| image:: figures/initialization.png
-.. |image2| image:: figures/prepare-research.png
-.. |image3| image:: figures/perform-research.png
-.. |image4| image:: figures/publish-research.png
+.. figure:: figures/publish-research.png
+   :align: center
 

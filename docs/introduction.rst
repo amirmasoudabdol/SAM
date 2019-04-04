@@ -20,14 +20,14 @@ Scientific Research Process
 The *process* of producing a scientific research/study is often a
 cumbersome and complicated process. Despite all different ways of doing
 research, a typical scientific study starts by formulating a hypothesis
-as the `Researcher <Components.md#researcher>`__ jots down his ideas on
+as the :ref:`design-researcher` jots down his ideas on
 how one process explains a certain phenomenon or how thinks a
 complicated system works. To test his hypothesis, he/she *prepare an
 experiment* in which he/she describes the underlying parameters,
 compromises or criteria of the study.
 
-After the `Experiment Setup <Components.md#experiment-setup>`__ is
-finalized, the `Experiment <Components.md#experiment>`__ is being
+After the :ref:`design-experiment-setup` is
+finalized, the :ref:`design-experiment` is being
 conducted in which the researcher collects a set of datasets summarizing
 measurements, censors data, images, etc. that are required to test
 his/her hypothesis. The next step is a mixture of processing the data,
@@ -37,8 +37,8 @@ hypothesis*, i.e., *pre-registered hypothesis*.
 
 If the result is satisfactory and informative, *despite the correctness
 of the initial hypothesis*, the researcher selects a
-`Journal <Components.md#journal>`__ and submit his research in the form
-of a `Paper <Components.md#submission>`__ to be reviewed by journal’s
+:ref:`design-journal` and submit his research in the form
+of a :ref:`Paper design-submission` to be reviewed by journal’s
 criteria. Finally, the Journal will decide if the submitted result worth
 publishing or not.
 
