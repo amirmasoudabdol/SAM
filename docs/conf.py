@@ -161,36 +161,33 @@ html_theme_options = {
 html_static_path = ['_static']
 
 
+#               Latex Configurations
+
 
 latex_engine = 'xelatex'
 
 latex_elements = {
-    'pointsize': '11pt',
+    'papersize': r'a5paper',
+    'pointsize': r'10pt',
     'fontpkg': r'''
-        \setmainfont[
-            BoldFont={Nitti Grotesk Bold}, 
-            ItalicFont={Nitti Grotesk Normal Italic},
-            BoldItalicFont={Nitti Grotesk Bold Italic}
-        ]{Nitti Grotesk Normal}
+        \setmainfont[]{Nitti Grotesk}
 
-        \setsansfont[
-            BoldFont={Nitti Grotesk Bold}, 
-            ItalicFont={Nitti Grotesk Normal Italic},
-            BoldItalicFont={Nitti Grotesk Bold Italic},
-        ]{Nitti Grotesk Normal}
+        \setsansfont[]{Nitti Grotesk}
         
         \setmonofont[Scale=0.9]{Nitti}
 
         \setmathrm[Scale=0.9]{Nitti}
 
         ''',
-            'preamble': r'''
+    'preamble': r'''
         \usepackage[titles]{tocloft}
         \cftsetpnumwidth {1.25cm}\cftsetrmarg{1.5cm}
         \setlength{\cftchapnumwidth}{0.75cm}
         \setlength{\cftsecindent}{\cftchapnumwidth}
         \setlength{\cftsecnumwidth}{1.25cm}
         ''',
-    'fncychap': r'\usepackage[Bjornstrup]{fncychap}',
-    'printindex': r'\footnotesize\raggedright\printindex',
-}
+    'fncychap': r'''
+        \usepackage[Glenn]{fncychap}
+        ''',
+    'printindex': r'\footnotesize\raggedright\printindex'
+    }
