@@ -16,8 +16,8 @@
 using json = nlohmann::json;
 
 // This is a reference for their id as well
-enum class HackingMethod {
-    OptionalStopping,       // 1
+enum class HackingMethod : unsigned int {
+    OptionalStopping = 1,       // 1
     SDOutlierRemoval,       // 2
     GroupPooling            // 3
 };
@@ -165,8 +165,6 @@ public:
     
     // Submission hackedSubmission;
     void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
-    
-    
     
 private:
 

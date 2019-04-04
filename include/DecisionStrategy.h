@@ -27,8 +27,8 @@ enum class DecisionStage {
  An enum class representing different prefeneces when it comse
  to selecting an outcome. The DecisionStrategy can choose to
  report Pre-registered outcome, or any other outcome based on
- certain criteria, e.g., MinPvalue, where `researcher->decisionStrategy` will prefer an outcome with the lowest
- p-value.
+ certain criteria, e.g., MinPvalue, where `researcher->decisionStrategy`
+ will prefer an outcome with the lowest p-value.
  */
 enum class DecisionPreference {
     PreRegisteredOutcome,
@@ -85,13 +85,20 @@ public:
     //! Researcher prefers the PreRegisteredOutcome
     int preRegGroup = 0;
     
-    //! This will set to the final submission recrod that the Researcher
-    //! is satisfied about. At the same time, isStillHacking will set to 
+    //! This will set to the final submission record that the Researcher
+    //! is satisfied with. At the same time, isStillHacking will set to 
     //! `false`
-    Submission finalSubmission;     
+    Submission finalSubmission;
     
-//    virtual Submission selectOutcome(Experiment& experiment) = 0;
     
+    /**
+     Clear the list of submissions and experiments
+     */
+    void clearHistory(){
+        submissionsPool.clear();
+        experimentsPool.clear();
+    }
+        
     /**
      * \brief      Implementation of decision-making procedure.
      *
@@ -140,17 +147,8 @@ public:
         selectionPref = selection_pref;
     };
     
-//    Submission selectOutcome(Experiment &experiment) {
-//        return _select_Outcome(experiment);
-//    };
-    
     bool isPublishable(const Submission &sub){
         return sub.isSig();
-    }
-    
-    void clearPools(){
-        experimentsPool.clear();
-        submissionsPool.clear();
     }
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage);
@@ -170,10 +168,6 @@ public:
     PatientDecisionMaker(DecisionPreference selection_pref) {
         selectionPref = selection_pref;
     };
-    
-//    Submission selectOutcome(Experiment &experiment){
-//        return _select_Outcome(experiment);
-//    };
     
     bool isPublishable(const Submission &sub){
         return sub.isSig();
@@ -197,13 +191,9 @@ public:
     HonestDecisionMaker(int pre_registered_group){
         preRegGroup = pre_registered_group;
     };
-
-//    Submission selectOutcome(Experiment& experiment) {
-//        return Submission(experiment, preRegGroup);
-//    };
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage) {
-        return true;
+        return false;
     };
     
     virtual bool initDecision(Experiment &experiment);

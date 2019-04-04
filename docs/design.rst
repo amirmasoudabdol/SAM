@@ -27,6 +27,7 @@ interact with each other to simulate the entire process.
 
    **Figure 1.** SAM’s components and their interactions
 
+
 .. _design-components:
 
 SAM’s Main Components
@@ -35,23 +36,23 @@ SAM’s Main Components
 SAM consists of 3 main components, *Experiment, Researcher* and
 *Journal*. Each component tries to summarize one of the mentioned
 subprocesses or entities of a scientific research as described in the
-`Introduction <Introduction.md>`__. The list below briefly introduces
+:ref:`chap-intro`. The list below briefly introduces
 each component and its role.
 
--  The `Experiment <#experiment>`__ comprises of several subroutines and
+-  The :ref:`design-experiment` comprises of several subroutines and
    objects dealing with different aspects of a research, e.g., setup,
    data, test.
 
-   -  `ExperimentSetup <#experiment-setup>`__ holds the parameters of an
+   -  :ref:`design-experiment-setup` holds the parameters of an
       experiment design. You can only set these parameters at the start
       of the experiment, and during the simulation, SAM does not allow
       other components to change them. In fact, we implemented the
       *ExperimentSetup* to resemble the *pre-registration* as close as
       possible.
-   -  `Data Strategy <#data-strategy>`__ is a routine used to generate
+   -  :ref:`design-data-strategy` is a routine used to generate
       the data based on the specified parameters in the
       *ExperimentSetup*.
-   -  `Test Strategy <#test-strategy>`__ is a statistical method of
+   -  :ref:`design-test-strategy` is a statistical method of
       choice in the *ExperimentSetup* for testing the result of the
       *Experiment*.
 
@@ -62,15 +63,15 @@ each component and its role.
    QRPs, prepare the *Submission* record, and finally submit it to his
    *Journal* of choice.
 
-   -  `Decision Strategy <#decision-strategy>`__ is the underling logic
+   -  :ref:`decision-strategies` is the underling logic
       by which the researcher selects the outcome variable for
       submission.
-   -  `Hacking Strategies <#hacking-strategy>`__ is a list of
+   -  :ref:`hacking-strategies` is a list of
       questionable research practices in researcher’s hand, in the case
       where she/he decides to hack his way through finding significant
       results.
 
--  The `Journal <#journal>`__ is a container for *Submission*\ s, i.e.,
+-  The :ref:`journal` is a container for *Submission*\ s, i.e.,
    published studies. The Journal keeps track of its publications and
    can utilize different metrics to adapts its selection strategy.
    **Note**\ *: Unlike an actual scientific journal that covers a wide
@@ -79,10 +80,10 @@ each component and its role.
    In other words, SAM’s ``Journal`` mainly acts as a pool for
    meta-analysis.*
 
-   -  `Selection Strategy <#selection-strategy>`__ is the internal
+   -  :ref:`selection-strategy` is the internal
       algorithm by which the journal decides whether a submission will
       be accepted.
-   -  `Submission <#submission>`__ is a short report, acting as a
+   -  :ref:`Submission` is a short report, acting as a
       *scientific paper*. When it gets accepted by the *Journal*, it
       considered as a publication.
 
@@ -99,7 +100,7 @@ Experiment
 As mentioned, ``Experiment`` object acts as an umbrella object for
 everything related to an actual experiment. This includes metadata
 (``ExperimentSetup``), raw data, method/model for generating the data,
-e.g., `linear model <DataStrategy.md#linear-model>`__, and methods of
+e.g., :ref:`data-strategies-linear-model`, and methods of
 testing the hypothesis. The ``Researcher`` object has the complete
 control over every aspects of an ``Experiment`` with one exception, it
 can only read but not change the ``ExperimentSetup`` object. This is an
@@ -124,11 +125,10 @@ Below is a short list of variables and methods of ``Experiment``.
    ``DataStrategy``
 -  ```testStrategy`` <#test-strategy>`__, a pointer to the selected
    ``TestStrategy``
--  `more … <doxymark/class_experiment.md>`__
+-  :ref:`more … exhale_class_class_experiment`
 
 A full list of available parameters are listed in the
-```Experiment Parameters`` <#ConfigurationFileSpecfications.md#experiment-parameters>`__
-section of the configuration file.
+:ref:`config-file-experiment-parameters` section of the configuration file.
 
 .. _design-experiment-setup:
 
@@ -146,8 +146,8 @@ to be pre-registered, ``Journal`` can then access the
 ``ExperimentSetup`` and adjust its verdict accordingly.
 
 Below is a list of variables and methods of ``ExperimentSetup``, read
-more `here <ConfigurationFileSpecifications.md#experiment-parameters>`__
-and `here <DataStrategies.md>`__.
+more `here <config-file-experiment-parameters>`__
+and `here <decision-strategies>`__.
 
 -  ``experimentType``, underlying model for generating data.
 -  ``nc``, the number of conditions
@@ -157,7 +157,7 @@ and `here <DataStrategies.md>`__.
 -  ``true_means``, the mean of each group
 -  ``true_vars``, the variance of each group
 -  ``true_sigma``, the covariance matrix, if indicated.
--  `more … <doxymark/class_experiment_setup.md>`__
+-  :ref:`more … exhale_class_class_experiment_setup`
 
 .. _design-data-strategy:
 
@@ -173,12 +173,12 @@ the ``Experiment``. In most cases, an instance of ``DataStrategy``
 object uses a statistical distribution to sample number of data points
 and populates the ``measurements`` variable, but this can change based
 on the selected model. With certain *p*-hacking methods, e.g., `optional
-stopping <HackingStrategies.md#optional-stopping>`__, the data strategy
+stopping <hacking-strategies-optional-stopping>`__, the data strategy
 should also provide a routine for providing extra data points as
 requested by the optional stopping.
 
 I discuss data strategies in more details in `Data
-Strategies <#DataStrategies.md>`__ section.
+Strategies <decision-strategies>`__ section.
 
 .. _design-test-strategy:
 
@@ -200,7 +200,7 @@ Currently, t-test is the only TestStrategy provided by SAM but we plan
 to add more methods to the pool. T-test needs to know the *side* of the
 test, whether variances assumed equal and the value of :math:`\alpha` to
 derive the significance. You can set these parameters using the
-```--test-strategy`` <ConfigurationFileSpecifications.md#--test-strategy>`__
+```--test-strategy`` <config-file---test-strategy>`__
 section of the configuration file.
 
 .. _design-journal:
@@ -227,10 +227,10 @@ Below is a list of variables and parameters of ``Journal``.
 -  ``review()``, ``accept()``, ``reject()``,
 -  ``submissionList``, a list of accepted submissions, i.e.,
    publications.
--  `more … <doxymark/class_journal.md>`__
+-  :ref:`more … exhale_class_class_journal`
 
 You can set these parameters using
-```Journal Parameters`` <ConfigurationFileSpecifications.md#journal-parameters>`__
+```Journal Parameters`` <config-file-journal-parameters>`__
 section of the configuration file.
 
 .. _design-selection-strategy:
@@ -275,7 +275,7 @@ being accepted by the journal.
 -  ``pvalue``, the *p*-value of the test
 -  ``sig``, a boolean value indicating the significance of the test
 -  ``side``, the side of the effect, positive or negative
--  `more … <doxymark/class_submission.md>`__
+-  :ref:`more … exhale_class_class_submission`
 
 **Note:**\ *``Submission`` is an abstract representation of the paper
 and publication and it does not try to closely resembles a full
@@ -299,9 +299,9 @@ the statistical test, and — if necessary — it applies different
 
 Below is a list of main methods and variables of ``Researcher``.
 
--  **``experiment``**, an instance of `Experiment <#experiment>`__
--  **``journal``**, an instance of `Journal <#journal>`__
--  ```decisionStrategy`` <#decision-strategy>`__, researcher’s decision
+-  **``experiment``**, an instance of :ref:`design-experiment`
+-  **``journal``**, an instance of :ref:`journal`
+-  :ref:```decisionStrategy`` decision-strategy`, researcher’s decision
    strategy
 -  *isHacker*, a flag indicating whether the researcher will perform any
    p-hacking methods on the data
@@ -314,9 +314,9 @@ Below is a list of main methods and variables of ``Researcher``.
    statistics, running the tests, and applying p-hacking methods (if
    applicable).
 -  ``publishResearch()``, a method to prepare the final
-   ```Submission`` <#submission>`__ and submit it to the
-   ```Journal`` <#journal>`__ for review.
--  `more … <doxymark/class_researcher.md>`__
+   :ref:`submission` and submit it to the
+   :ref:`journal` for review.
+-  :ref:`more … exhale_class_class_researcher`
 
 .. _design-decision-strategy:
 
@@ -364,11 +364,11 @@ Main variables and methods of ``DecisionStrategy`` are:
 -  :ref:`more … <exhale_class_class_experiment_setup>`
 
 :note:
-   This process will be clarified in*\ `Execution Flow <ExecutionFlow.md>`__\ *section*
+   This process will be clarified in :ref:`flow` section
 
 :note: 
-   *Decision Strategy is a helper class to implement the
-   decision process more effectively and flexibly throughout the code.*
+   Decision Strategy is a helper class to implement the
+   decision process more effectively and flexibly throughout the code.
 
 .. _design-hacking-strategy:
 
@@ -394,5 +394,5 @@ applying all methods, ``Researcher`` will ask the ``DecisionStrategy``
 for its *final verdict*, and choose among all results to come up with
 its *final submission*.
 
-The `Hacking Strategies <HackingStrategies.md>`__ section will get into
+The :ref:`hacking-strategies` section will get into
 more details on each hacking methods.

@@ -137,10 +137,12 @@ matrix, a single numeric value will initialize the entire matrix with
 the given value, while providing a ``matrix`` will set each value
 individually.
 
-   **Note:** The size of an given ``array`` or ``matrix`` must agree
-   with the number of conditions, dependant variables, and items,
-   otherwise an error will occur.
+:note: 
+    The size of an given ``array`` or ``matrix`` must agree
+    with the number of conditions, dependant variables, and items,
+    otherwise an error will occur.
 
+.. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
 +-------------------------+------------+--------------------------------------------+
 | Parameter               | Value      | Description                                |
 +=========================+============+============================================+
@@ -198,6 +200,7 @@ Researcher Parameters
 
 This section defines the behavior of the ``Researcher``.
 
+.. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
 +-------------------------+-----------+---------------------------------------------------------------------+
 | Parameter               | Value     | Description                                                         |
 +=========================+===========+=====================================================================+
@@ -220,6 +223,7 @@ Journal Parameters
 
 This section specifies the properties of the ``Journal``.
 
+.. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
 +-------------------------------+------------+--------------------------------------------------------------------------+
 | Parameter                     | Value      | Description                                                              |
 +===============================+============+==========================================================================+

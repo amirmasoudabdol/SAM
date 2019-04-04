@@ -13,6 +13,8 @@ about our design decisions and the available methods.**
 If you like to install SAM before getting into more details, please
 follow the instruction below.
 
+.. _readme-deps:
+
 Dependencies
 ------------
 
@@ -57,6 +59,8 @@ can install all packages via ``conda`` as follow
 You will still need to manually install ``docopt`` since it’s not
 included in ``conda-forge`` repository.
 
+.. _readme-build:
+
 Build Process
 -------------
 
@@ -76,6 +80,8 @@ If everything goes right, you’ll have a file named ``SAMpp`` in your
 build directory which you’ll be able to use to run your simulation with
 it.
 
+.. _readme-test:
+
 Testing (Optional)
 ~~~~~~~~~~~~~~~~~~
 
@@ -83,6 +89,8 @@ You can run SAM‘s unit test cases using ``make test``. I design a few
 tests to check the integrity of the code and API during the extension
 process, e.g., implementing new hacking strategy. We will add more tests
 as we improve our API.
+
+.. _readme-sample-run:
 
 A Sample Run
 ------------

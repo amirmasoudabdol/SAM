@@ -170,8 +170,8 @@ bool ImpatientDecisionMaker::finalDecision(Experiment &experiment){
     // TODO: This can be implemented differenly if necessary
 
     finalSubmission = submissionsPool.back();
-    experimentsPool.clear();
-    submissionsPool.clear();
+    
+    clearHistory();
     
     isStillHacking = false;
     return isStillHacking;
@@ -232,8 +232,7 @@ bool PatientDecisionMaker::finalDecision(Experiment &experiment) {
 
     finalSubmission = selectBetweenSubmissions();
     
-    experimentsPool.clear();
-    submissionsPool.clear();
+    clearHistory();
     
     isStillHacking = false;
     return isStillHacking;
