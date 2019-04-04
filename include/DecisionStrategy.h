@@ -57,23 +57,55 @@ stringToResearcherPreference = {
  */
 class DecisionStrategy {
     
+protected:
+    //! List of selected Submission by the researcher.
+    std::vector<Submission> submissionsPool;
+
+    //! List of selected Experiment by the researcher.
+    std::vector<Experiment> experimentsPool;
+    
 public:
     
     static DecisionStrategy* build(json &config);
     
     virtual ~DecisionStrategy() = 0;
     
-    DecisionPreference selectionPref;     ///< Indicates researcher's selection preference on how he choose the outcome variable for submission.
-    bool isStillHacking = true;         ///< If `true`, the Researcher will continue traversing through the hacknig methods, otherwise, he/she will stop the hacking and prepare the finalSubmission. It will be updated on each call of verdict(). Basically verdict() decides if the Researcher is happy with the submission record or not.
+    //! Indicates researcher's selection preference on how he choose the
+    //! outcome variable for submission.
+    DecisionPreference selectionPref;
     
-    int preRegGroup = 0;            ///< Indicates the pre-registered outcome in the case where the Researcher prefers the PreRegisteredOutcome
-    Submission finalSubmission;     ///< This will set to the final submission recrod that the Researcher is satisfied about. At the same time, isStillHacking will set to `false`.
+    //! If `true`, the Researcher will continue traversing through the 
+    //! hacknig methods, otherwise, he/she will stop the hacking and 
+    //! prepare the finalSubmission. It will be updated on each call of 
+    //! verdict(). Basically verdict() decides if the Researcher is 
+    //! happy with the submission record or not.
+    bool isStillHacking = true;
+    
+    //! Indicates the pre-registered outcome in the case where the 
+    //! Researcher prefers the PreRegisteredOutcome
+    int preRegGroup = 0;
+    
+    //! This will set to the final submission recrod that the Researcher
+    //! is satisfied about. At the same time, isStillHacking will set to 
+    //! `false`
+    Submission finalSubmission;     
     
     virtual Submission selectOutcome(Experiment& experiment) = 0;
     
-    virtual bool verdict(Experiment&, DecisionStage) = 0;
+    /**
+     * \brief      Implementation of decision-making procedure.
+     *
+     * \param      experiment
+     * \param[in]  stage       The stage in which the researcher is asking
+     *                         for the verdict. The implementation of verdict
+     *                         sould provide different procedure for different
+     *                         stages of the development.
+     *
+     * \return     A boolean indicating whether result is satisfactory or not
+     */
+    virtual bool verdict(Experiment& experiment, DecisionStage stage) = 0;
     
-    // Sub-decisions
+    // Decision Stages
     virtual bool initDecision(Experiment &experiment) = 0;
     virtual bool intermediateDecision(Experiment &experiment) = 0;
     virtual bool afterhackDecision(Experiment &experiment) = 0;
@@ -88,6 +120,13 @@ public:
      * \return     A copy of the selected outcome
      */
     Submission _select_Outcome(Experiment &experiment);
+
+    /**
+     * \brief      { function_description }
+     *
+     * \return     { description_of_the_return_value }
+     */
+    Submission selectBetweenSubmissions();
 };
 
 /**
@@ -96,9 +135,6 @@ public:
 class ImpatientDecisionMaker : public DecisionStrategy {
     
 public:
-    
-    std::vector<Submission> submissionsPool;
-    std::vector<Experiment> experimentsPool;
     
     ImpatientDecisionMaker(DecisionPreference selection_pref){
         selectionPref = selection_pref;
@@ -131,8 +167,8 @@ class PatientDecisionMaker : public DecisionStrategy {
 
 public:
     
-    std::vector<Submission> submissionsPool;
-    std::vector<Experiment> experimentsPool;
+//    std::vector<Submission> submissionsPool;
+//    std::vector<Experiment> experimentsPool;
     
     PatientDecisionMaker(DecisionPreference selection_pref) {
         selectionPref = selection_pref;

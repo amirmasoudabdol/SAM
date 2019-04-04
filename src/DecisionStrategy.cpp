@@ -93,6 +93,47 @@ Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
 }
 
 
+Submission DecisionStrategy::selectBetweenSubmissions(){
+    
+    switch (selectionPref) {
+        case DecisionPreference::PreRegisteredOutcome:
+            break;
+            
+        case DecisionPreference::MinSigPvalue:
+
+            break;
+            
+        case DecisionPreference::MinPvalue:
+            {
+                std::vector<double> pvalues;
+                std::transform(submissionsPool.begin(), submissionsPool.end(), std::back_inserter(pvalues), [](const Submission &s) {return s.pvalue;} );
+                int min_pvalue_inx = std::distance(pvalues.begin(),
+                                                   std::min_element(pvalues.begin(),
+                                                                    pvalues.end()));
+                return submissionsPool[min_pvalue_inx];
+            }
+            break;
+            
+        case DecisionPreference::MaxSigEffect:
+            
+            break;
+            
+        case DecisionPreference::MaxEffect:
+            // TODO: Activate me, I don't work because there are more than one effects
+            //            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
+            break;
+            
+        case DecisionPreference::MinPvalueMaxEffect:
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+}
+
+
 bool ImpatientDecisionMaker::initDecision(Experiment &experiment){
     Submission sub = selectOutcome(experiment);
     
@@ -189,13 +230,7 @@ bool PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
 bool PatientDecisionMaker::finalDecision(Experiment &experiment) {
 
-    // TODO: This parts need to be implemented based on DecisionPreference
-    std::vector<double> pvalues;
-    std::transform(submissionsPool.begin(), submissionsPool.end(), std::back_inserter(pvalues), [](const Submission &s) {return s.pvalue;} );
-    int min_pvalue_inx = std::distance(pvalues.begin(),
-                                       std::min_element(pvalues.begin(),
-                                                        pvalues.end()));
-    finalSubmission = submissionsPool[min_pvalue_inx];
+    finalSubmission = selectBetweenSubmissions();
     
     experimentsPool.clear();
     submissionsPool.clear();

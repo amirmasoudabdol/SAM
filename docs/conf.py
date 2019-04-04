@@ -165,19 +165,18 @@ html_static_path = ['_static']
 latex_engine = 'xelatex'
 
 latex_elements = {
+    'pointsize': '11pt',
     'fontpkg': r'''
         \setmainfont[
             BoldFont={Nitti Grotesk Bold}, 
             ItalicFont={Nitti Grotesk Normal Italic},
-            BoldItalicFont={Nitti Grotesk Bold Italic},
-            Scale=1.1
+            BoldItalicFont={Nitti Grotesk Bold Italic}
         ]{Nitti Grotesk Normal}
 
         \setsansfont[
             BoldFont={Nitti Grotesk Bold}, 
             ItalicFont={Nitti Grotesk Normal Italic},
             BoldItalicFont={Nitti Grotesk Bold Italic},
-            Scale=1.1
         ]{Nitti Grotesk Normal}
         
         \setmonofont[Scale=0.9]{Nitti}

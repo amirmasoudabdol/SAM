@@ -47,10 +47,6 @@
             "num": 10,
             "n_attempts": 3,
             "max_attempts": 10
-          },
-          {
-            "name": "GroupPooling",
-            "nums": [2, 3]
           }
         ]
     ],
