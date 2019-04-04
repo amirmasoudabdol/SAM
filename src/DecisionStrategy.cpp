@@ -52,7 +52,7 @@ std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
     return os;
 }
 
-Submission DecisionStrategy::_select_Outcome(Experiment& experiment) {
+Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     
     int selectedOutcome = preRegGroup;
     

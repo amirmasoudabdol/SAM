@@ -90,7 +90,7 @@ public:
     //! `false`
     Submission finalSubmission;     
     
-    virtual Submission selectOutcome(Experiment& experiment) = 0;
+//    virtual Submission selectOutcome(Experiment& experiment) = 0;
     
     /**
      * \brief      Implementation of decision-making procedure.
@@ -119,7 +119,7 @@ public:
      *
      * \return     A copy of the selected outcome
      */
-    Submission _select_Outcome(Experiment &experiment);
+    Submission selectOutcome(Experiment &experiment);
 
     /**
      * \brief      { function_description }
@@ -140,9 +140,9 @@ public:
         selectionPref = selection_pref;
     };
     
-    Submission selectOutcome(Experiment &experiment) {
-        return _select_Outcome(experiment);
-    };
+//    Submission selectOutcome(Experiment &experiment) {
+//        return _select_Outcome(experiment);
+//    };
     
     bool isPublishable(const Submission &sub){
         return sub.isSig();
@@ -167,16 +167,13 @@ class PatientDecisionMaker : public DecisionStrategy {
 
 public:
     
-//    std::vector<Submission> submissionsPool;
-//    std::vector<Experiment> experimentsPool;
-    
     PatientDecisionMaker(DecisionPreference selection_pref) {
         selectionPref = selection_pref;
     };
     
-    Submission selectOutcome(Experiment &experiment){
-        return _select_Outcome(experiment);
-    };
+//    Submission selectOutcome(Experiment &experiment){
+//        return _select_Outcome(experiment);
+//    };
     
     bool isPublishable(const Submission &sub){
         return sub.isSig();
@@ -197,14 +194,13 @@ class HonestDecisionMaker : public DecisionStrategy {
 
 public:
 
-    
     HonestDecisionMaker(int pre_registered_group){
         preRegGroup = pre_registered_group;
     };
 
-    Submission selectOutcome(Experiment& experiment) {
-        return Submission(experiment, preRegGroup);
-    };
+//    Submission selectOutcome(Experiment& experiment) {
+//        return Submission(experiment, preRegGroup);
+//    };
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage) {
         return true;

@@ -1,5 +1,0 @@
-@INCLUDE                = Doxyfile
-GENERATE_HTML           = YES
-GENERATE_XML            = YES
-XML_PROGRAMLISTING      = YES
-M_PAGE_FINE_PRINT       = 
