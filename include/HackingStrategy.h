@@ -158,7 +158,7 @@ class GroupPooling : public HackingStrategy {
         
 public:
     
-    GroupPooling(int num) : _num(num)
+    GroupPooling(std::vector<int> nums) : _nums(nums)
     {
         hid = HackingMethod::GroupPooling;
     };
@@ -169,8 +169,10 @@ public:
     
     
 private:
+
+    std::vector<int> _nums = {2};
     
-    int _num = 2;
+    void pool(Experiment* experiment, int r);
 };
 
 //class QuestionableRounding : public HackingStrategy {

@@ -49,7 +49,7 @@ HackingStrategy *HackingStrategy::build(json &config) {
                                     config["multipliers"]);
         
     }else if (config["name"] == "GroupPooling") {
-        return new GroupPooling(config["num"]);
+        return new GroupPooling(config["nums"]);
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");
     }
@@ -210,62 +210,64 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     
     if (VERBOSE) std::cout << "Group Pooling...\n";
     
-    if (experiment->setup.nc >= 2){
+    if (experiment->setup.nc < 2){
+        throw std::domain_error("There is not enough groups for pooling.");
+    }
+    
+    for (auto &r : _nums){
+        pool(experiment, r);
+    }
+    
+    // TODO: Improve me! This is very ugly and prune to error
+    int new_ng = experiment->measurements.size();
+    experiment->initResources(new_ng);
+    
+    experiment->calculateStatistics();
+    experiment->calculateEffects();
+    experiment->runTest();
+    
+    if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)){
+        return ;
+    }
+
+}
+
+void GroupPooling::pool(Experiment *experiment, int r){
+    // Length of each permutation
+    //    const int r = _num;
+    
+    // Original number of conditions
+    const int n = experiment->setup.nc;
+    
+    // Filling a range(0, n)
+    std::vector<int> v(n);
+    std::iota(v.begin(), v.end(), 0);
+    
+    // Gets the list of all permutation
+    std::vector<std::vector<int>>
+    permutations = for_each_reversible_circular_permutation(v.begin(),
+                                                            v.begin() + r,
+                                                            v.end(),
+                                                            collector());
+    
+    std::vector<arma::Row<double>> pooled_groups;
+    for (auto &per : permutations) {
         
-        // Length of each permutation
-        const int r = _num;
-        
-        // Original number of conditions
-        const int n = experiment->setup.nc;
-        
-        // Filling a range(0, n)
-        std::vector<int> v(n);
-        std::iota(v.begin(), v.end(), 0);
-        
-        // Gets the list of all permutation
-        std::vector<std::vector<int>>
-        permutations = for_each_reversible_circular_permutation(v.begin(),
-                                                                 v.begin() + r,
-                                                                 v.end(),
-                                                                 collector());
-        
-        std::vector<arma::Row<double>> pooled_groups;
-        for (auto &per : permutations) {
-                        
-            for (int d = 0; d < experiment->setup.nd; d++) {
+        for (int d = 0; d < experiment->setup.nd; d++) {
+            
+            // Creating an empty new group
+            experiment->measurements.push_back(arma::Row<double>());
+            
+            for (int i = 0; i < r ; i++){
                 
-                // Creating an empty new group
-                experiment->measurements.push_back(arma::Row<double>());
+                // Fill the new group by pooling members of the selected permutation, `per`.
+                experiment->measurements.back().insert_cols(experiment->measurements.back().size(),
+                                                            experiment->measurements[per[i] * (n - 1) + d]);
                 
-                for (int i = 0; i < r ; i++){
-                    
-                    // Fill the new group by pooling members of the selected permutation, `per`.
-                    experiment->measurements.back().insert_cols(experiment->measurements.back().size(),
-                                                                experiment->measurements[per[i] * (n - 1) + d]);
-                    
-                    
-                }
                 
             }
             
         }
         
-        
-        // TODO: Improve me! This is very ugly and prune to error
-        int new_ng = experiment->measurements.size();
-        experiment->initResources(new_ng);
-        
-        experiment->calculateStatistics();
-        experiment->calculateEffects();
-        experiment->runTest();
-        
-        if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)){
-            return ;
-        }
-        
-        
-    }else{
-        throw std::domain_error("There is not enough groups for pooling.");
     }
-
 }
