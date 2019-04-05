@@ -7,13 +7,12 @@ SAM can execute a complicated set of hacking strategies on a given
 ``Experiment``. A list of hacking strategies will be applied one-by-one
 and in the given order. ``Researcher`` can observe their influences on
 all outcome variables and decides when to stop, and what to report, see
-`here <Components.md#hacking-strategy>`__ and
-`here <ExecutionFlow.md#perform-research>`__.
+:ref:`here design-hacking-strategy` and
+:ref:`here flow-perform-research`.
 
 The code below shows how you can define a chain of hacking strategies.
 The ``--p-hacking-methods`` is a *list of list of JSON objects*, see
-`crash course on
-JSON <ConfigurationFileSpecfications.md#crash-course-on-json>`__. You
+:ref:`crash course on JSON config-file-crash-course-on-json`. You
 can define several groups of hacking strategies, each listing different
 hacking strategies with different orders and parameters. Since JSON
 arrays’ are ordered objects, this setup is suitable for controlling the
@@ -56,7 +55,7 @@ strategies with a different number of methods in each.
 
 A JSON object defines the specifications of each hacking strategy. The
 code below defines *H1* hacking with three parameters. During the
-`initialization phase <ExecutionFlow.md#initialization>`__, SAM reads
+:ref:`initialization phase flow-initialization`, SAM reads
 the specification and prepare the hacking strategy accordingly.
 
 .. code:: json
@@ -70,7 +69,7 @@ the specification and prepare the hacking strategy accordingly.
 
 The rest of this section lists all hacking strategies implemented in
 SAM. If you are interested in developing your own methods, head to
-`Extension <extending-sam.md>`__ section.
+:ref:`chap-extension` section.
 
 .. _hacking-strategies-optional-stopping:
 
@@ -78,7 +77,7 @@ Optional Stopping
 -----------------
 
 Optional stopping is the practice of adding new observations to
-``Experiment``\ ’s data after initial data collection. The incentive
+``Experiment``\’s data after initial data collection. The incentive
 behind applying this method is often to achieve significant results. A
 researcher can perform this method in many way. Here we have tried to
 provide a set of parameters that can collectively mimic as many
@@ -132,9 +131,11 @@ parameters. For instance, you can implement an *extreme* optional
 stopping by setting ``num = 1`` and using large values for ``attempts``
 and ``max_attempts``.
 
-   **Note:** As discussed in the `Data Strategies <DataStrategies.md>`__
-   section, optional stopping utilizes the ``DataStrategy`` for
-   generating new datapoint.
+.. note::
+
+    As discussed in the :ref:`data-strategies`
+    section, optional stopping utilizes the ``DataStrategy`` for
+    generating new datapoint.
 
 .. _hacking-strategies-outliers-removal:
 
@@ -172,7 +173,7 @@ results. Here though, you can also specify a list of ``multipliers`` to
 indicate the distance of an item to the :math:`\sigma`. The algorithm
 performs *t* attempts to remove *n* outliers from a dataset based on
 given multipliers, :math:`\sigma_i`. The algorithm will advance if there
-is no item left to be removed at *i < n* attempts, or after *n*
+is no item left to be removed at :math:`i < n` attempts, or after *n*
 attempts.
 
 Table below describes all the available parameters and their valid

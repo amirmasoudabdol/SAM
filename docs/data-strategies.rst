@@ -4,8 +4,7 @@ Data Strategies
 ===============
 
 ``DataStrategy`` provides data for the ``Experiment``. A ``Researcher``
-during the process of `preparing the
-research <#ExecutionFlow.md#prepare-research>`__ reaches to the
+during the process of :ref:`preparing the research flow-prepare-research` reaches to the
 ``DataStrategy`` object and based on the underlying model and parameters
 of the ``Experiment`` — stored in ``ExperimentSetup`` — populates its
 ``measurements`` variable. With this routine, we have tried to simulate
@@ -13,13 +12,13 @@ the *process of collecting data* in a scientific research.
 
 Since ``DataStrategy`` is aware of all underlying model, parameters and
 distribution, it can provide data at any points during the simulation.
-One important implication of this is during the `optional
-stopping <HackingStrategies.md#optional-stopping>`__ where
+One important implication of this is during the :ref:`optional
+stopping hacking-strategies-optional-stopping` where
 ``Researcher`` needs to collect *new* data from the same population he
 started from.
 
 You can select the type of your model by setting ``--data-strategy``
-parameters of the `config file <ConfigurationFileSpecficications.md>`__.
+parameters of the :ref:`config file <chap-config-file`.
 Two available options are *Linear Model* and *Latent Model*. Based on
 your model of choice, SAM only uses fractions of parameters provided in
 the configuration file. In this section, we discuss how SAM uses the

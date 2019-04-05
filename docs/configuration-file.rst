@@ -127,8 +127,7 @@ Experiment Parameters
 ---------------------
 
 This section lists necessary parameters of the
-```ExperimentSetup`` <Components.md#experiment-setup>`__ and
-```Experiment`` <Components.md#experiment>`__. With ``--means`` and
+:ref:`design-experiment-setup` and :ref:`design-experiment`. With ``--means`` and
 other similar variables, if a single numeric value is provided, SAM sets
 the mean of each group to the given value. On the other hand, if an
 ``array`` is provided, mean’s of ``i``\ th group will set to ``i``\ th
@@ -137,7 +136,8 @@ matrix, a single numeric value will initialize the entire matrix with
 the given value, while providing a ``matrix`` will set each value
 individually.
 
-:note: 
+.. note::
+
     The size of an given ``array`` or ``matrix`` must agree
     with the number of conditions, dependant variables, and items,
     otherwise an error will occur.
@@ -147,7 +147,7 @@ individually.
 | Parameter               | Value      | Description                                |
 +=========================+============+============================================+
 | ``--data-strategy``     | ``string`` | Specify the underlying data model. See     |
-|                         |            | `Data Strategy <DataStrategies.md>`__      |
+|                         |            | :ref:`data-strategies`      |
 +-------------------------+------------+--------------------------------------------+
 | ``--n-conditions``      | ``int``    | Number of treatment conditions, ``nc``     |
 |                         |            | .\ *Excluding the control group.*          |
@@ -210,10 +210,10 @@ This section defines the behavior of the ``Researcher``.
 |                         |           | ``Experiment``.                                                     |
 +-------------------------+-----------+---------------------------------------------------------------------+
 | ``--decision-strategy`` | ``dict``  | Specification of a ``DecisionStrategy``. Read                       |
-|                         |           | more `here <#DecisionStrategy.md>`__.                               |
+|                         |           | more :ref:`here data-strategies`.                               |
 +-------------------------+-----------+---------------------------------------------------------------------+
 | ``--p-hacking-methods`` | ``array`` | A list of ``list``, each indicating a chain of ``HackingStrategy``. |
-|                         |           | Read more `here <#HackingStrategies.md>`__.                         |
+|                         |           | Read more :ref:`here hacking-strategies`.                         |
 +-------------------------+-----------+---------------------------------------------------------------------+
 
 .. _config-file-journal-params:

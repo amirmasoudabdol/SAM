@@ -4,10 +4,10 @@ Decision Strategies
 ===================
 
 Decision strategy is one of the important components of SAM. It tries to
-implement ``Researcher``\ ’s intuition and logic during different stages
-of the research. While I have briefly covered the `decision-making
-process <Components.md#deicion-making>`__ before, this section lists all
-the available methods and clarifies their implementation details.
+implement ``Researcher``\’s intuition and logic during different stages
+of the research. While I have briefly covered the 
+:ref:`decision-making process design-deicion-making` before,
+this section lists all the available methods and clarifies their implementation details.
 
 The main responsibility of the ``DecisionStrategy`` is to notify the
 ``Researcher`` about the state of results, i.e., whether a significant
@@ -36,11 +36,11 @@ concern about the significance of the pre-registered outcome or he
 with a set of pre-defined parameters, ``DecisionPreference``, as
 follows:
 
--  **``PreRegisteredOutcome``**. Only reporting the pre-registered
+-  ``PreRegisteredOutcome``. Only reporting the pre-registered
    outcome
--  **``MinPvalue``**. Selecting the outcome with minimum *p*-value.
--  **``MaxEffect``**. Selecting the outcome with maximum effect size.
--  **``MaxEffectMinPvalue``**. Selecting the *significant* outcome with
+-  ``MinPvalue``. Selecting the outcome with minimum *p*-value.
+-  ``MaxEffect``. Selecting the outcome with maximum effect size.
+-  ``MaxEffectMinPvalue``. Selecting the *significant* outcome with
    maximum effect size.
 
 In the case or ``PreRegisteredOutcome``, the Researcher always reports
@@ -56,7 +56,9 @@ Honest Decision Maker
 A “honest researcher” always reports the pre-registered result and will
 not apply any p-hacking methods on the Experiment.
 
-**Default:** > *This is the*\ **default**\ *decision making method.*
+.. note::
+  
+  This is the default *decision making* method.
 
 .. _decision-strategies-impatient:
 

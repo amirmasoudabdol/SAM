@@ -36,7 +36,7 @@ Prepare Research
 The preparation of the research is the first step in the simulation.
 This step resembles the process of defining a study and finally
 collecting the data for the study. As we discussed in the
-:ref:`design` section, **``ExperimentSetup``** is a
+:ref:`design` section, ``ExperimentSetup`` is a
 read-only object except the case that a user prefers to randomize one of
 its parameters in each different runs of SAM, for instance, randomizing
 the number of observations to study its effect on a particular metric.
@@ -46,7 +46,7 @@ object.
 
 The next step is allocating memory for the data, and analysis through
 the simulation. And finally, Experiment uses its already initialized
-**``DataStrategy``** to draw a sample from the given population or
+``DataStrategy`` to draw a sample from the given population or
 distribution. This will populate the ``measurements`` variable.
 
 .. figure:: figures/prepare-research.png
@@ -58,13 +58,13 @@ Perform Research
 ----------------
 
 Performing the research can be closely tied to the data processing
-process. At this stage, ``Researcher`` uses the **``TestStrategy``** of
+process. At this stage, ``Researcher`` uses the ``TestStrategy`` of
 the ``Experiment`` to run the test and populated parameters like
 ``statistic, pvalue, sig, side``, etc.
 
 The next step is to check whether or not the Researcher is satisfied
-with test results. This is being done by passing the **``Experiment``**
-to the **``DecisionStrategy``**. ``Researcher`` relies on
+with test results. This is being done by passing the ``Experiment``
+to the ``DecisionStrategy``. ``Researcher`` relies on
 DecisionStrategy’s verdict to decide whether it proceeds with the
 Submission or it continues applying one or more hacking methods on the
 experiment before submitting the experiment for the review. As
@@ -95,7 +95,7 @@ satisfying record.
 
 At this stage, despite finding any significant results, ``Researcher``
 **must** prepare a Submission record and submit it to the ``Journal``
-for review. Journal will judge the submitted ``Submission``\ ’s based on
+for review. Journal will judge the submitted ``Submission``\’s based on
 the criteria of the ``SelectionStrategy``. If accepted, ``Journal`` adds
 the submission to its publication lists for further analysis or
 adjustment of its ``SelectionStrategy``.

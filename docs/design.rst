@@ -218,7 +218,7 @@ Below is a list of variables and parameters of ``Journal``.
    accepting new publications
 -  ``_pub_bias``, the publication bias rate
 -  ``_alpha``, the significance :math:`\alpha`. **Note:** This can
-   differ from ``TestStrategy``\ ’s :math:`\alpha`.
+   differ from ``TestStrategy``\’s :math:`\alpha`.
 -  :ref:`selectionStrategy selection-strategy`, journal’s selection
    strategy.
 -  ``isStillAccepting()``, a function returning the state of the
@@ -229,8 +229,7 @@ Below is a list of variables and parameters of ``Journal``.
 -  :ref:`more … exhale_class_class_journal`
 
 You can set these parameters using
-```Journal Parameters`` <config-file-journal-parameters`
-section of the configuration file.
+:ref:`config-file-journal-parameters` section of the configuration file.
 
 .. _design-selection-strategy:
 
@@ -263,7 +262,7 @@ for the ``Journal`` to decide whether to accept or reject the
 at the hand of the researcher and it resembles a *publication* after
 being accepted by the journal.
 
-``Submission``\ ’s variables are:
+``Submission``\’s variables are:
 
 -  ``nobs``, the number of observations
 -  ``yi``, the mean of the selected outcome
@@ -276,7 +275,8 @@ being accepted by the journal.
 -  ``side``, the side of the effect, positive or negative
 -  :ref:`more … exhale_class_class_submission`
 
-:note:
+.. note::
+
     ``Submission`` is an abstract representation of the paper
     and publication and it does not try to closely resembles a full
     publication although it is possible to expand the list of parameters.
@@ -299,8 +299,8 @@ the statistical test, and — if necessary — it applies different
 
 Below is a list of main methods and variables of ``Researcher``.
 
--  **``experiment``**, an instance of :ref:`design-experiment`
--  **``journal``**, an instance of :ref:`journal`
+-  ``experiment``, an instance of :ref:`design-experiment`
+-  ``journal``, an instance of :ref:`journal`
 -  :ref:```decisionStrategy`` decision-strategy`, researcher’s decision
    strategy
 -  *isHacker*, a flag indicating whether the researcher will perform any
@@ -359,14 +359,16 @@ Main variables and methods of ``DecisionStrategy`` are:
    the research
 -  ``experimentsPool``, a history of all modified versions of
    ``Experiment`` during the research.
--  **``verdict(Experiment, DecisionStage)``**
+-  ``verdict(Experiment, DecisionStage)``
 -  ``finalSubmission``,
 -  :ref:`more … <exhale_class_class_experiment_setup>`
 
-:note:
+.. note::
+ 
    This process will be clarified in :ref:`flow` section
 
-:note: 
+.. note::
+
    Decision Strategy is a helper class to implement the
    decision process more effectively and flexibly throughout the code.
 
