@@ -50,6 +50,10 @@ HackingStrategy *HackingStrategy::build(json &config) {
         
     }else if (config["name"] == "GroupPooling") {
         return new GroupPooling(config["nums"]);
+    }else if (config["name"] == "ConditionDropping") {
+        return new ConditionDropping();
+    }else if (config["name"] == "NoHack") {
+        return new NoHack();
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");
     }
@@ -60,6 +64,9 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)
     {
+        case HackingMethod::NoHack:
+            os << "NoHack";
+            break;
         case HackingMethod::OptionalStopping:
             os << "OptionalStopping";
             break;
@@ -68,6 +75,9 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
             break;
         case HackingMethod::GroupPooling:
             os << "GroupPooling";
+            break;
+        case HackingMethod::ConditionDropping:
+            os << "ConditionDropping";
             break;
         default:
             os.setstate(std::ios_base::failbit);

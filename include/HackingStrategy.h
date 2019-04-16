@@ -17,16 +17,41 @@ using json = nlohmann::json;
 
 // This is a reference for their id as well
 enum class HackingMethod : unsigned int {
-    OptionalStopping = 1,       // 1
+    NoHack = 0,                 // 0
+    OptionalStopping,           // 1
     SDOutlierRemoval,           // 2
-    GroupPooling                // 3
+    GroupPooling,               // 3
+    ConditionDropping           // 4
 };
 
 const std::map<std::string, HackingMethod>
 stringToHackingMethod = {
+    {"NoHack",              HackingMethod::NoHack},
     {"OptionalStopping",    HackingMethod::OptionalStopping},
     {"SDOutlierRemoval",    HackingMethod::SDOutlierRemoval},
-    {"GroupPooling",        HackingMethod::GroupPooling}
+    {"GroupPooling",        HackingMethod::GroupPooling},
+    {"ConditionDropping",   HackingMethod::ConditionDropping}
+};
+    
+
+/*
+ HackingStage indicates the stage where the hacking is being performed on
+ the Experiment. Each method will be assigned a value, and Researcher can
+ apply different hacking methods in different stages.
+ */
+enum class HackingStage : unsigned int {
+    Setup,
+    DataCollection,
+    DataProcessing,
+    Reporting
+};
+    
+const std::map<std::string, HackingStage>
+stringToHackingStage = {
+    {"Setup",            HackingStage::Setup},
+    {"DataCollection",   HackingStage::DataCollection},
+    {"DataProcessing",   HackingStage::DataProcessing},
+    {"Reporting",        HackingStage::Reporting}
 };
 
 /**
@@ -39,16 +64,15 @@ stringToHackingMethod = {
 
  */
 class HackingStrategy {
-
-protected:
+    
+public:
     //! Defensibility of the method
     //! This is a based on the survey results where researchers have been
     //! asked to rate the defensibility of different QRPs.
-    
-    
-
-public:
     double defensibility;
+    
+    HackingStage hackingStage = HackingStage::DataProcessing;
+    
     HackingMethod hid;
     
     /**
@@ -79,6 +103,17 @@ public:
      *                               is going to use the DecisionStrategy.
      */
     virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
+};
+    
+    
+class NoHack : public HackingStrategy {
+public:
+    NoHack() {
+        hid = HackingMethod::NoHack;
+    };
+    
+    void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) { };
+    
 };
 
 
@@ -148,8 +183,6 @@ private:
     int _min_observations = 15;
     std::vector<double> _multipliers = {3, 2, 1};
     
-    int _MAX_ITERS = 100;
-    
     int removeOutliers(Experiment *experiment, const int &n, const int &d);
     
 };
@@ -171,6 +204,17 @@ private:
     std::vector<int> _nums = {2};
     
     void pool(Experiment* experiment, int r);
+};
+    
+    
+class ConditionDropping : public HackingStrategy {
+
+public:
+    ConditionDropping() {
+        hid = HackingMethod::ConditionDropping;
+    };
+    
+    void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) { };
 };
 
 //class QuestionableRounding : public HackingStrategy {
