@@ -63,6 +63,13 @@ protected:
 
     //! List of selected Experiment by the researcher.
     std::vector<Experiment> experimentsPool;
+
+    //! If `true`, the Researcher will continue traversing through the
+    //! hacknig methods, otherwise, he/she will stop the hacking and
+    //! prepare the finalSubmission. It will be updated on each call of
+    //! verdict(). Basically verdict() decides if the Researcher is
+    //! happy with the submission record or not.
+    bool is_still_hacking = true;
     
 public:
     
@@ -74,12 +81,9 @@ public:
     //! outcome variable for submission.
     DecisionPreference selectionPref;
     
-    //! If `true`, the Researcher will continue traversing through the 
-    //! hacknig methods, otherwise, he/she will stop the hacking and 
-    //! prepare the finalSubmission. It will be updated on each call of 
-    //! verdict(). Basically verdict() decides if the Researcher is 
-    //! happy with the submission record or not.
-    bool is_still_hacking = true;
+    /*
+     * The default get method for is_still_hacking
+     */
     bool isStillHacking() {
         return is_still_hacking;
     }

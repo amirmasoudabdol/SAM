@@ -2,7 +2,10 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
+#include <stdexcept>
+
 #include <SelectionStrategies.h>
+
 
 SelectionStrategy::~SelectionStrategy() {
     // Pure deconstructor
@@ -21,9 +24,28 @@ bool SignigicantSelection::review(const Submission &s) {
 
 
 SelectionStrategy *SelectionStrategy::build(json &config) {
-//    if (config["selection-strategy"] == "SignificantSelection") {
-        int selectionSeed = rand();
-        config["selection-seed"] = selectionSeed;
-        return new SignigicantSelection(config["pub-bias"], config["alpha"], config["side"], selectionSeed);
-//    }
+    
+    int selection_seed = rand();
+    if (config["selection-strategy"] == "SignificantSelection") {
+        
+        config["selection-seed"] = selection_seed;
+        return new SignigicantSelection(config["pub-bias"], config["alpha"], config["side"], selection_seed);
+    
+    }else if(config["selection-strategy"] == "RandomSelection") {
+        
+        config["selection-seed"] = selection_seed;
+        return new RandomSelection(selection_seed);
+    
+    }else{
+        throw std::invalid_argument("Unknown Selection Strategy.");
+    }
+}
+
+
+bool RandomSelection::review(const Submission &s) {
+    if (mainRngStream->uniform() < 0.5) {
+        return true;
+    }else{
+        return false;
+    }
 }

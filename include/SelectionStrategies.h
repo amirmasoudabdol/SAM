@@ -13,7 +13,7 @@
 using json = nlohmann::json;
 
 enum class SelectionType {
-    signigicantSelection,
+    SignigicantSelection,
 };
 
 /**
@@ -24,6 +24,9 @@ enum class SelectionType {
  provides an interface for implementing different selection strategies.
  */
 class SelectionStrategy{
+    
+protected:
+    RandomNumberGenerator* mainRngStream;
 
 public:
     
@@ -71,7 +74,8 @@ class SignigicantSelection : public SelectionStrategy {
 public:
     SignigicantSelection(double alpha, double pub_bias, int side, int seed):
         alpha(alpha),  pub_bias(pub_bias), side(side), seed(seed) {
-            mainRngStream = new RandomNumberGenerator(seed);
+        
+        mainRngStream = new RandomNumberGenerator(seed);
     };
 
     ~SignigicantSelection(){};
@@ -82,6 +86,7 @@ public:
     //! of a publication
     double alpha;
     
+    //! Publication bias rate
     double pub_bias;
     
     //! Indicates the _selection stratgy_'s preference toward positive, `1`,
@@ -89,8 +94,17 @@ public:
     int side;
     
     int seed;
+};
+
+class RandomSelection : public SelectionStrategy {
+public:
+    RandomSelection(int seed) : seed(seed) {
+        mainRngStream = new RandomNumberGenerator(seed);
+    }
     
-    RandomNumberGenerator* mainRngStream;
+    bool review(const Submission& s);
+    
+    int seed;
 };
 
 #endif //SAMPP_SELECTIONSTRATEGIES_H
