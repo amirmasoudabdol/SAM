@@ -68,7 +68,7 @@ public:
         tyi = e.setup.true_means[index];
         side = std::copysign(1.0, yi - e.setup.true_means[index]);
         
-        isHacked = e.isHacked;
+        isHacked = e.is_hacked;
         
         hHistory = e.hackingHistory;
     };

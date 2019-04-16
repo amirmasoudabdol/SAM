@@ -21,8 +21,8 @@ public:
     Journal(json& config);
 
     Journal(double max_pubs, double pub_bias, double alpha) :
-            _max_pubs(max_pubs), _pub_bias(pub_bias), _alpha(alpha){
-        _still_accepting = true;
+            max_pubs(max_pubs), pub_bias(pub_bias), alpha(alpha){
+        still_accepting = true;
     };
 
     void setSelectionStrategy(SelectionStrategy* s);
@@ -56,17 +56,17 @@ public:
     void clear();
 
     bool isStillAccepting(){
-        return _still_accepting;
+        return still_accepting;
     }
 
     void saveSubmissions(int simid, std::ofstream& writer);
 
 private:
-    double _max_pubs;
-    double _pub_bias;
-    double _alpha;
+    double max_pubs;
+    double pub_bias;
+    double alpha;
 
-    bool _still_accepting = true;
+    bool still_accepting = true;
 
 };
 

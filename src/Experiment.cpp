@@ -36,7 +36,6 @@ void Experiment::initExperiment() {
 }
 
 void Experiment::initResources(int len) {
-    // std::cout << "alloc, ng is :" << setup.ng;
     // TODO: There is an issue with the allocation;
     // TODO: I either need to initiate or push_back
     // FIXME: This is very error prune, since it's fixed number
@@ -97,9 +96,7 @@ Experiment::Experiment(json &config) {
     for (auto &estimator : config["ExperimentParameters"]["effect-estimators"]){
         this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
     }
-    
-//     = EffectSizeEstimator::build(config["ExperimentParameters"]["effect-estimators"]);
-    
+        
 }
 
 

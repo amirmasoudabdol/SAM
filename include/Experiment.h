@@ -77,19 +77,10 @@ public:
     void randomize();
 
 
-    // Hacking Meta-data
-    bool isHacked = false;     ///< Indicates if any hacking routine has
-                               ///< been applied on the experiment
+    //! Indicates if any hacking routine has been applied on the experiment
+    bool is_hacked = false;
     std::vector<int> hackingHistory;
     
-    
-//    Experiment(const Experiment& other){
-//
-//    }
-//    
-//    Experiment& operator=(const Experiment& lhs){
-//
-//    };
 
     
 private:
