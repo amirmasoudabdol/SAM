@@ -17,11 +17,6 @@
 
 using json = nlohmann::json;
 
-//enum HackingStyle {
-//    onOrig,
-//    onCopy
-//};
-
 class Researcher {
 
 public:
@@ -34,8 +29,6 @@ public:
     std::vector<std::vector<HackingStrategy*>> hackingStrategies;
     bool isHacker = false;
     
-//    HackingStyle hackingStyle = onCopy;
-
     Submission submissionRecord;
 
     Researcher(json& config);
@@ -75,30 +68,24 @@ public:
 	void setJournal(Journal* j);
 
 
-private:
-	int _pvalue_min_inx;
-	int _max_effect_inx;
-	int _selected_outcome_inx = 0;
-	Submission _create_submission_record(int inx);
-
 };
 
 
 class Researcher::Builder {
 private:
-    json _config;
+    json config;
     
 
-    ExperimentSetup* _experiment_setup;
-    Experiment* _experiment;
-    Journal* _journal;
+    ExperimentSetup* experiment_setup;
+    Experiment* experiment;
+    Journal* journal;
     
-    bool _isHacker;
-    std::vector<std::vector<HackingStrategy*>> _hackingStrategies;
+    bool is_hacker;
+    std::vector<std::vector<HackingStrategy*>> hacking_strategies;
 
-    DecisionStrategy* _decisionStrategy;
+    DecisionStrategy* decision_strategy;
 
-    DecisionPreference _researcherPreference;
+    DecisionPreference researcher_preference;
 
 
 public:
@@ -106,43 +93,42 @@ public:
     Builder() = default;
 
     Builder& setConfig(json& config) {
-        this->_config = config;
+        this->config = config;
         return *this;
     };
     
     Builder& makeExperimentSetup();
     
     Builder& makeExperiment() {
-        this->_experiment = new Experiment(_config);
+        this->experiment = new Experiment(config);
         return *this;
     };
     
     Builder& makeJournal() {
-        this->_journal = new Journal(_config["JournalParameters"]);
+        this->journal = new Journal(config["JournalParameters"]);
         return *this;
     };
     
     Builder& makeDecisionStrategy() {
-        this->_decisionStrategy = DecisionStrategy::build(_config["ResearcherParameters"]["decision-strategy"]);
+        this->decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
         return *this;
     };
     
     Builder& isHacker() {
-        this->_isHacker = _config["ResearcherParameters"]["is-phacker"];
+        this->is_hacker = config["ResearcherParameters"]["is-phacker"];
         return *this;
     }
     
     Builder& makeHackingStrategies(){
         this->isHacker();
-        if (this->_isHacker){
-            for (auto &set : _config["ResearcherParameters"]["p-hacking-methods"]) {
+        if (this->is_hacker){
+            for (auto &set : config["ResearcherParameters"]["p-hacking-methods"]) {
                 
-//                this->_hackingStrategies
-                this->_hackingStrategies.push_back({});
+                this->hacking_strategies.push_back({});
                 
                 for (auto &item : set) {
                     
-                    this->_hackingStrategies.back().push_back(HackingStrategy::build(item));
+                    this->hacking_strategies.back().push_back(HackingStrategy::build(item));
                     
                 }
                 
@@ -154,22 +140,22 @@ public:
 
     Builder& setResearcherPreference(DecisionPreference pref){
         // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
-        this->_researcherPreference = pref;
+        this->researcher_preference = pref;
         return *this;
     };
     
     Builder& setExperimentSetup(ExperimentSetup);
     Builder& setExperiment(Experiment);
     Builder& setDataStrategy(DataStrategy *dgs){
-        this->_experiment->dataStrategy = dgs;
+        this->experiment->dataStrategy = dgs;
         return *this;
     }
     Builder& setTestStrategy(TestStrategy *ts){
-        this->_experiment->testStrategy = ts;
+        this->experiment->testStrategy = ts;
         return *this;
     };
     Builder& setJournal(Journal j){
-        this->_journal = &j;
+        this->journal = &j;
         return *this;
     };
     Builder& setDecisionStrategy(DecisionStrategy *ds);
@@ -179,7 +165,7 @@ public:
     Builder& chooseHackingStrategies(std::vector<HackingStrategy>);
 
     Researcher build() {
-        return Researcher(_experiment, _journal, _decisionStrategy, _hackingStrategies, _isHacker);
+        return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
     };
 };
 

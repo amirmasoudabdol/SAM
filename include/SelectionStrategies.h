@@ -38,6 +38,9 @@ public:
      */
     static SelectionStrategy* build(json &config);
     
+    /**
+     * \brief      Pure deconstructor of the base class
+     */
     virtual ~SelectionStrategy() = 0;
 
     /**
@@ -67,19 +70,25 @@ class SignigicantSelection : public SelectionStrategy {
 
 public:
     SignigicantSelection(double alpha, double pub_bias, int side, int seed):
-        _alpha(alpha),  _pub_bias(pub_bias), _side(side), _seed(seed) {
-            mainRngStream = new RandomNumberGenerator(_seed);
+        alpha(alpha),  pub_bias(pub_bias), side(side), seed(seed) {
+            mainRngStream = new RandomNumberGenerator(seed);
     };
 
     ~SignigicantSelection(){};
 
     bool review(const Submission& s);
 
-// private:
-    double _alpha;      ///< The \alpha at which the _selection strategy_ decides the significance of a publication
-    double _pub_bias;
-    int _side;          ///< Indicates the _selection stratgy_'s preference toward positive, `1`, or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
-    int _seed;
+    //! The \alpha at which the _selection strategy_ decides the significance
+    //! of a publication
+    double alpha;
+    
+    double pub_bias;
+    
+    //! Indicates the _selection stratgy_'s preference toward positive, `1`,
+    //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
+    int side;
+    
+    int seed;
     
     RandomNumberGenerator* mainRngStream;
 };

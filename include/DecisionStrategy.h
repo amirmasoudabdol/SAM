@@ -129,9 +129,9 @@ public:
     Submission selectOutcome(Experiment &experiment);
 
     /**
-     * \brief      { function_description }
+     * \brief      Select the final submission by checking all logged Submissions.
      *
-     * \return     { description_of_the_return_value }
+     * \return     A copy of the selected outcome
      */
     Submission selectBetweenSubmissions();
 };

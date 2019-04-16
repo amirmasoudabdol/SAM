@@ -51,7 +51,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
         weights = config["n-obs"][1].get<std::vector<double>>();
         int nobs = RNGEngine->genSampleSize(intervals, weights);
         std::fill(true_nobs.begin(), true_nobs.end(), nobs);
-        isNRandomized = true;
+        is_n_randomized = true;
 //    }else if (config["n-obs"] == "random"){
 //        isNRandomized = true;
 //        int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);

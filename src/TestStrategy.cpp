@@ -27,11 +27,7 @@ stringToTestSide = {
 
 void TTest::run(Experiment* experiment) {
     
-    for (int i = 0; i < experiment->measurements.size(); ++i) {
-        //        experiment->statistics[i] = experiment->means[i] / experiment->ses[i];
-        //
-        //        experiment->pvalues[i] = gsl_ran_tdist_pdf(experiment->statistics[i], experiment->measurements[i].size() - 1.);
-        
+    for (int i = 0; i < experiment->measurements.size(); ++i) {        
         TestResult res = single_sample_t_test(0,
                                               experiment->means[i],
                                               sqrt(experiment->vars[i]),

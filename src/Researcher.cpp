@@ -18,7 +18,6 @@ void Researcher::hack() {
         // set of methods over each other.
         
         Experiment copiedExpr = *experiment;
-//        copiedExpr.isHacked = true;
         
         for (auto &h : set){
             
@@ -65,7 +64,7 @@ void Researcher::prepareResearch() {
     // Randomize if necessary
     // TODO: I need to handle this better because nobs is being assigned in the
     // ExperimentSetup before this as well, when reading other parameteres.
-    if (this->experiment->setup.isNRandomized){
+    if (this->experiment->setup.is_n_randomized){
         this->experiment->randomize();
     }
     

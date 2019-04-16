@@ -96,12 +96,12 @@ Experiment::Experiment(json &config) {
     for (auto &estimator : config["ExperimentParameters"]["effect-estimators"]){
         this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
     }
-        
+    
 }
 
 
 void Experiment::randomize() {
-    if (setup.isNRandomized) {
+    if (setup.is_n_randomized) {
         setup.randomize_nObs();
     }
 }

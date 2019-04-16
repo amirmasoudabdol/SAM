@@ -9,19 +9,10 @@ SelectionStrategy::~SelectionStrategy() {
 }
 
 
-
-
-
-/**
- Review the given submission based on its _p_-value and its effect side.
- 
- @param s A submission record to be reviewed
- @return A boolean value indicating the acceptance status
- */
 bool SignigicantSelection::review(const Submission &s) {
-    if (s.pvalue < _alpha && (s.side == _side || _side == 0)){
+    if (s.pvalue < alpha && (s.side == side || side == 0)){
         return true;
-    }else if (mainRngStream->uniform() < _pub_bias) {
+    }else if (mainRngStream->uniform() < pub_bias) {
         return true;
     }
 
