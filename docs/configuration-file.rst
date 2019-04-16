@@ -149,8 +149,8 @@ individually.
 | ``--data-strategy``     | ``string`` | Specify the underlying data model. See     |
 |                         |            | :ref:`data-strategies`      |
 +-------------------------+------------+--------------------------------------------+
-| ``--n-conditions``      | ``int``    | Number of treatment conditions, ``nc``     |
-|                         |            | .\ *Excluding the control group.*          |
+| ``--n-conditions``      | ``int``    | Number of treatment conditions, ``nc``.     |
+|                         |            |  *Excluding the control group.*          |
 +-------------------------+------------+--------------------------------------------+
 | ``--n-dep-vars``        | ``int``    | Number of dependent variables in each      |
 |                         |            | condition, ``nd``.                         |

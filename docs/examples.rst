@@ -1,0 +1,5 @@
+.. _chap-examples:
+
+Examples
+========
+

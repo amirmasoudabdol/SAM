@@ -14,8 +14,8 @@
     "n-dep-vars": 3,
     "n-items": 3,
     "n-obs": [[10,25,50,100],[0.75,0,0.25]],
-    "means": 0.025,
-    "vars": 0.01,
+    "means": 0.5,
+    "vars": 1,
     "covs": 0.00,
     "loadings": 0.7,
     "err-vars": 0.01,
@@ -38,7 +38,7 @@
     "side": 0
   },
   "ResearcherParameters": {
-    "is-phacker": true,
+    "is-phacker": false,
     "p-hacking-methods": [
         [
           {
