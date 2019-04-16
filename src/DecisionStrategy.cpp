@@ -146,8 +146,8 @@ bool ImpatientDecisionMaker::initDecision(Experiment &experiment){
 
 bool ImpatientDecisionMaker::intermediateDecision(Experiment &experiment){
 
-    isStillHacking = !isPublishable(selectOutcome(experiment));
-    return isStillHacking;
+    is_still_hacking = !isPublishable(selectOutcome(experiment));
+    return is_still_hacking;
 }
 
 bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
@@ -158,12 +158,12 @@ bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
         experimentsPool.push_back(experiment);
         submissionsPool.push_back(sub);
         
-        isStillHacking = false;
+        is_still_hacking = false;
     }else{
-        isStillHacking = true;
+        is_still_hacking = true;
     }
 
-    return isStillHacking;
+    return is_still_hacking;
 }
 
 bool ImpatientDecisionMaker::finalDecision(Experiment &experiment){
@@ -173,8 +173,8 @@ bool ImpatientDecisionMaker::finalDecision(Experiment &experiment){
     
     clearHistory();
     
-    isStillHacking = false;
-    return isStillHacking;
+    is_still_hacking = false;
+    return is_still_hacking;
 }
 
 
@@ -205,15 +205,15 @@ bool PatientDecisionMaker::initDecision(Experiment &experiment) {
     experimentsPool.push_back(experiment);
     submissionsPool.push_back(sub);
     
-    isStillHacking = !isPublishable(sub);
-    return isStillHacking;
+    is_still_hacking = !isPublishable(sub);
+    return is_still_hacking;
 }
 
 bool PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
     
     
-    isStillHacking = !isPublishable(selectOutcome(experiment));
-    return isStillHacking;
+    is_still_hacking = !isPublishable(selectOutcome(experiment));
+    return is_still_hacking;
 }
 
 bool PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
@@ -224,8 +224,8 @@ bool PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
         submissionsPool.push_back(sub);
     }
     
-    isStillHacking = !isPublishable(sub);
-    return isStillHacking;
+    is_still_hacking = !isPublishable(sub);
+    return is_still_hacking;
 }
 
 bool PatientDecisionMaker::finalDecision(Experiment &experiment) {
@@ -234,8 +234,8 @@ bool PatientDecisionMaker::finalDecision(Experiment &experiment) {
     
     clearHistory();
     
-    isStillHacking = false;
-    return isStillHacking;
+    is_still_hacking = false;
+    return is_still_hacking;
 }
 
 

@@ -79,7 +79,10 @@ public:
     //! prepare the finalSubmission. It will be updated on each call of 
     //! verdict(). Basically verdict() decides if the Researcher is 
     //! happy with the submission record or not.
-    bool isStillHacking = true;
+    bool is_still_hacking = true;
+    bool isStillHacking() {
+        return is_still_hacking;
+    }
     
     //! Indicates the pre-registered outcome in the case where the 
     //! Researcher prefers the PreRegisteredOutcome

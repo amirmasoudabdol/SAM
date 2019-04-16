@@ -27,7 +27,7 @@ public:
 	Journal* journal;
     DecisionStrategy* decisionStrategy;
     std::vector<std::vector<HackingStrategy*>> hackingStrategies;
-    bool isHacker = false;
+    bool is_hacker = false;
     
     Submission submissionRecord;
 
@@ -46,7 +46,7 @@ public:
     journal(j),
     decisionStrategy(ds),
     hackingStrategies(hs),
-    isHacker(ish)
+    is_hacker(ish)
     { };
 
     // This probably needs to be a class of itself as well

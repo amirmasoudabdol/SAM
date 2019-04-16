@@ -29,7 +29,7 @@ void Researcher::hack() {
                                       DecisionStage::DoneHacking);
             
             // If the researcher statisfied, hacking routine will be stopped
-            if (!decisionStrategy->isStillHacking){
+            if (!decisionStrategy->isStillHacking()){
                 break;
             }
             
@@ -94,7 +94,7 @@ void Researcher::performResearch(){
     bool willHack = this->decisionStrategy->verdict(*this->experiment,
                                                          DecisionStage::Initial);
     
-    if (this->isHacker && willHack){
+    if (this->is_hacker && willHack){
         this->hack();
     }    
 }
