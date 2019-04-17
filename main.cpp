@@ -49,10 +49,6 @@ R"(SAMpp
 
 )";
 
-// for convenience
-void testRandomClass();
-void latentStrategyTest();
-
 void runSimulation(json& simConfig);
 
 using json = nlohmann::json;

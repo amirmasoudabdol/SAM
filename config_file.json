@@ -21,7 +21,7 @@
     "err-vars": 0.01,
     "err-covs": 0.001,
     "test-strategy": {
-      "type": "TTest",
+      "name": "TTest",
       "side": "TwoSide",
       "alpha": 0.05
     },
@@ -39,7 +39,7 @@
   },
   "ResearcherParameters": {
     "is-phacker": false,
-    "p-hacking-methods": [
+    "hacking-strategies": [
         [
           {
             "name": "OptionalStopping",

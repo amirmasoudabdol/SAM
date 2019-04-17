@@ -5,6 +5,7 @@
 #include <TestStrategy.h>
 #include "Utilities.h"
 #include <iostream>
+#include <stdexcept>
 
 #include <boost/math/distributions/students_t.hpp>
 #include <iomanip>
@@ -45,9 +46,9 @@ TestStrategy *TestStrategy::build(json &config){
     if (config["name"] == "TTest"){
         return new TTest(stringToTestSide.find(config["side"])->second,
                          config["alpha"]);
+    }else{
+        throw std::invalid_argument("Unknown Test Strategy.");
     }
-    
-    return new TTest(TestSide::TwoSide, 0.05);
     
 }
 

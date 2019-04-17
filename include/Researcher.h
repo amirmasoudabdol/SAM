@@ -122,7 +122,7 @@ public:
     Builder& makeHackingStrategies(){
         this->isHacker();
         if (this->is_hacker){
-            for (auto &set : config["ResearcherParameters"]["p-hacking-methods"]) {
+            for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
                 
                 this->hacking_strategies.push_back({});
                 
