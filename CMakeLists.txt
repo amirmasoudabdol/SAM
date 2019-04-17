@@ -23,7 +23,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 file(GLOB INCLUDES "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
 
-add_executable(SAMpp main.cpp ${SOURCES} src/Experiment.cpp include/Experiment.h src/ExperimentSetup.cpp include/ExperimentSetup.h src/DataStrategy.cpp include/DataStrategy.h src/Utilities.cpp include/Utilities.h src/RandomNumberGenerator.cpp include/RandomNumberGenerator.h src/Journal.cpp include/Journal.h src/TestStrategy.cpp include/TestStrategy.h src/EffectEstimators.cpp include/EffectEstimators.h src/SubmissionRecord.cpp include/SubmissionRecord.h src/Researcher.cpp include/Researcher.h src/SelectionStrategies.cpp include/SelectionStrategies.h src/HackingStrategy.cpp include/HackingStrategy.h src/DecisionStrategy.cpp include/DecisionStrategy.h src/ioUtilities.cpp include/ioUtilities.h include/main.h)
+add_executable(SAMpp main.cpp ${SOURCES} src/Experiment.cpp include/Experiment.h src/ExperimentSetup.cpp include/ExperimentSetup.h src/DataStrategy.cpp include/DataStrategy.h src/RandomNumberGenerator.cpp include/RandomNumberGenerator.h src/Journal.cpp include/Journal.h src/TestStrategy.cpp include/TestStrategy.h src/EffectEstimators.cpp include/EffectEstimators.h src/SubmissionRecord.cpp include/SubmissionRecord.h src/Researcher.cpp include/Researcher.h src/SelectionStrategies.cpp include/SelectionStrategies.h src/HackingStrategy.cpp include/HackingStrategy.h src/DecisionStrategy.cpp include/DecisionStrategy.h include/main.h)
 
 target_link_libraries(SAMpp
         ${ARMADILLO_LIBRARIES}

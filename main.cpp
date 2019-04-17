@@ -7,7 +7,6 @@
 
 #include <main.h>
 
-#include "Utilities.h"
 #include "docopt.h"
 #include "utils/tqdm.h"
 
@@ -22,8 +21,6 @@
 #include <SelectionStrategies.h>
 #include <HackingStrategy.h>
 #include <DecisionStrategy.h>
-
-#include "ioUtilities.h"
 
 using json = nlohmann::json;
 
@@ -68,7 +65,9 @@ int main(int argc, const char** argv){
                                                                "SAMpp 0.1 (Alpha)");        // version string
 
 
-    json jSimConfig = readJSON(args["--config"].asString());
+    json jSimConfig;
+    std::ifstream configFile(args["--config"].asString());
+    configFile >> jSimConfig;
     
     if (args.find("--output-path") != args.end()){
         jSimConfig["SimulationParameters"]["output-path"] = args["--output-path"].asString();

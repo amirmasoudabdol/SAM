@@ -130,6 +130,8 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
         default:
             break;
     }
+
+    return submissionsPool.back();
     
 }
 

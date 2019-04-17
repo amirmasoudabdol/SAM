@@ -3,7 +3,6 @@
 //
 
 #include <TestStrategy.h>
-#include "Utilities.h"
 #include <iostream>
 #include <stdexcept>
 

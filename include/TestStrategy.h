@@ -62,7 +62,7 @@ public:
 };
 
 /**
- Declration of t-test.
+ @brief Declration of t-test.
  
  The `run()` method will check the significance of the difference between two groups.
  In the current setup, every `experiment->means` is considered an effect size between

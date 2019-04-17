@@ -6,7 +6,6 @@
 
 #include <iostream>
 
-#include <Utilities.h>
 
 void Researcher::hack() {
     

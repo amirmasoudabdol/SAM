@@ -7,7 +7,6 @@
 #include <numeric>
 #include <algorithm>
 #include <RandomNumberGenerator.h>
-#include "Utilities.h"
 
 arma::Row<double>
 RandomNumberGenerator::normal(const double &mean, const double &var, const double &n){

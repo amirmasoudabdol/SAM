@@ -10,7 +10,6 @@
 #include <numeric>
 #include <algorithm>
 #include <armadillo>
-#include "Utilities.h"
 
 void Experiment::generateData() {
     dataStrategy->genData(this);

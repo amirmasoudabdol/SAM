@@ -6,7 +6,6 @@
 #include <iostream>
 #include "gsl/gsl_statistics.h"
 
-#include "Utilities.h"
 #include "Experiment.h"
 
 DataStrategy::~DataStrategy() {
