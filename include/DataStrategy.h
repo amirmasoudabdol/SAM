@@ -18,23 +18,41 @@ using json = nlohmann::json;
 class Experiment;
 
 /**
- \brief Abstract class for Data Strategies
+ @brief Abstract class for Data Strategies
 
  A DataGenStrategy should at least two methods, `genData` and `genNewObservationForAllGroups`.
  The former is mainly used to populate a new Experiment while the latter is being used by some 
  hacking strategies, e.g. OptionalStopping, where new data — from the same population — is needed.
 
- \note Each Data Strategy should have access to an instance of RandomNumberGenerator. This is usually done
+ @note Each Data Strategy should have access to an instance of RandomNumberGenerator. This is usually done
  by creating a desired _random engine_ and passing the pointer to the DataGenStrategy.
  */
 class DataStrategy {
 
 public:
 
+    
+    /**
+     Factory method for DataStrategy.
+
+     @param setup An instance of ExperimentSetup
+     @return a new DataStrategy
+     */
     static DataStrategy* build(ExperimentSetup &setup);
     
+    
+    /**
+     Pure deconstructor of the DataStrategy abstract class.
+     */
     virtual ~DataStrategy() = 0;
     
+    
+    /**
+     Populates the `experiment->measurements` with data based on the parameters
+     specified in `setup`.
+
+     @param experiment A pointer to an Experiment object
+     */
     virtual void genData(Experiment* experiment) = 0;
     virtual std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
     virtual arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
@@ -72,7 +90,7 @@ private:
 /**
  A Data Strategy for constructing a general [Structural Equaiton Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).
 
- \note LatentDataStrategy will generate individual items, therefore it might be slower than other models.
+ @note LatentDataStrategy will generate individual items, therefore it might be slower than other models.
  */
 class LatentDataStrategy : public DataStrategy {
 

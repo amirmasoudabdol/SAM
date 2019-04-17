@@ -86,7 +86,7 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 }
 
 /**
- \brief Implementation of optional stopping.
+ @brief Implementation of optional stopping.
  
  This will use two parameters set at construction of the OptionalStopping class, `_n_trials` and `_n_new_obs`
  for every trial, the routine will add `_n_new_obs` to all groups, recalculate the statistics, and run the test. It will then select an outcome based on researcher's preference and check it's significance. If
@@ -130,7 +130,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 
 
 /**
- \brief Implementation of Outliers Removal based on an item's distance from the \mu.
+ @brief Implementation of Outliers Removal based on an item's distance from the \mu.
  
  The `_sd_multiplier`, d is set at the construction, and it'll be used to check whether a measurement
  should be removed or not. Any item satisfying the  v > |\mu - d * \sigma|  will be removed from the

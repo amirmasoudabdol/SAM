@@ -55,7 +55,7 @@ void Researcher::setDecisionStrategy(DecisionStrategy* d) {
 
 
 /**
- * \brief      Prepares the research by cleaning up the memeory, 
+ * @brief      Prepares the research by cleaning up the memeory, 
  * randomizing the ExperimentSetup parameters, allocating data and 
  * finally generating the data using the DataGenStrategy
  */
@@ -76,7 +76,7 @@ void Researcher::prepareResearch() {
 }
 
 /**
- * \brief      Performs the research by calculating the statistics, calculating the effects,
+ * @brief      Performs the research by calculating the statistics, calculating the effects,
  * and running the test. In the case where the researcher is a hacker, the researcher will 
  * apply the hacking methods on the `experiment`.
  */
@@ -100,7 +100,7 @@ void Researcher::performResearch(){
 }
 
 /**
- * \brief      Prepares the submission record by asking the `decisionStrategy` to pick
+ * @brief      Prepares the submission record by asking the `decisionStrategy` to pick
  * his prefered submission record from the list of available submission, `submissionsList`.
  * AFter than, it'll submit the submission record to the selected `journal`.
  */
@@ -111,6 +111,6 @@ void Researcher::publishResearch(){
     this->decisionStrategy->verdict(*this->experiment,
                                     DecisionStage::Final);
 
-    this->journal->review(this->decisionStrategy->finalSubmission);
+    this->journal->review(this->decisionStrategy->final_submission);
     
 }

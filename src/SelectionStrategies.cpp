@@ -11,7 +11,34 @@ SelectionStrategy::~SelectionStrategy() {
     // Pure deconstructor
 }
 
+SelectionStrategy *SelectionStrategy::build(json &config) {
+    
+    int selection_seed = rand();
+    if (config["selection-strategy"] == "SignificantSelection") {
+        
+        config["selection-seed"] = selection_seed;
+        return new SignigicantSelection(config["pub-bias"], config["alpha"], config["side"], selection_seed);
+        
+    }else if(config["selection-strategy"] == "RandomSelection") {
+        
+        config["selection-seed"] = selection_seed;
+        return new RandomSelection(selection_seed);
+        
+    }else{
+        throw std::invalid_argument("Unknown Selection Strategy.");
+    }
+}
 
+
+/**
+ Check if `p-value` of the Submission is less than the specified \f$ \alpha \f$.
+ If true, it will accept the submission, if not, a random number decide wheather
+ the submission is going to be accepted or not. The drawn random number, \f$r\f$
+ will be compared to `pub_bias` of the journal.
+
+ @param s A reference to the Submission
+ @return a boolean indicating whether the Submission is accepted or not.
+ */
 bool SignigicantSelection::review(const Submission &s) {
     if (s.pvalue < alpha && (s.side == side || side == 0)){
         return true;
@@ -22,26 +49,13 @@ bool SignigicantSelection::review(const Submission &s) {
     return false;
 }
 
-
-SelectionStrategy *SelectionStrategy::build(json &config) {
-    
-    int selection_seed = rand();
-    if (config["selection-strategy"] == "SignificantSelection") {
-        
-        config["selection-seed"] = selection_seed;
-        return new SignigicantSelection(config["pub-bias"], config["alpha"], config["side"], selection_seed);
-    
-    }else if(config["selection-strategy"] == "RandomSelection") {
-        
-        config["selection-seed"] = selection_seed;
-        return new RandomSelection(selection_seed);
-    
-    }else{
-        throw std::invalid_argument("Unknown Selection Strategy.");
-    }
-}
-
-
+/**
+ Draw a random number between \f$ r \in [0, 1] \f$, reject the submission if
+ \f$ r < 0.5 \f$.
+ 
+ @param s corresponding submission
+ @return a boolean indicating whether the Submission is accpeted or not.
+ */
 bool RandomSelection::review(const Submission &s) {
     if (mainRngStream->uniform() < 0.5) {
         return true;

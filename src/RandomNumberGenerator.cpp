@@ -82,10 +82,10 @@ double RandomNumberGenerator::uniform(const double &min, const double &max){
  chance of being in [b, c).
  */
 
-//\param p Bernoulli trial probability
-//\param a Lower bound
-//\param b Middle bound
-//\param c Upper bound
+//@param p Bernoulli trial probability
+//@param a Lower bound
+//@param b Middle bound
+//@param c Upper bound
 //\return A value between [a, c)
 
 int RandomNumberGenerator::genSampleSize(const double &p, const double &a, const double &b, const double &c){

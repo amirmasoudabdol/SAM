@@ -18,7 +18,7 @@
 using json = nlohmann::json;
 
 /**
- * \brief      Specifying different type of expeirments.
+ * @brief      Specifying different type of expeirments.
  */
 enum class ExperimentType {
     LinearModel,    ///< Linear Model, with or without covarinace
@@ -26,7 +26,7 @@ enum class ExperimentType {
 };
 
 /**
- * \brief      Specifying the significant testing method
+ * @brief      Specifying the significant testing method
  */
 enum class TestMethod {
     TTest,           ///< T-test
@@ -41,7 +41,7 @@ stringToExperimentType = {
 
 
 /**
- \brief Define a class for ExperimentSetup.
+ @brief Define a class for ExperimentSetup.
  
  ExperimentSetup contains the necessary parameters for initiating and generating
  the data needed for the Experiment.

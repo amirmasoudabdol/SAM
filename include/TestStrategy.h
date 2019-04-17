@@ -42,7 +42,7 @@ class Experiment;
 class ExperimentSetup;
 
 /**
- \brief Abstract class for defining test strategies.
+ @brief Abstract class for defining test strategies.
  
  Statistical test strategies will investigate if there is a meaningful difference
  between means of two samples. Every test strategy should provide a `run()` method.

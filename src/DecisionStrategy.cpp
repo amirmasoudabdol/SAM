@@ -54,11 +54,11 @@ std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
 
 Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     
-    int selectedOutcome = preRegGroup;
+    int selectedOutcome = pre_registered_group;
     
     switch (selectionPref) {
         case DecisionPreference::PreRegisteredOutcome:
-            selectedOutcome = preRegGroup;
+            selectedOutcome = pre_registered_group;
             break;
             
         case DecisionPreference::MinSigPvalue:
@@ -169,7 +169,7 @@ bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
 bool ImpatientDecisionMaker::finalDecision(Experiment &experiment){
     // TODO: This can be implemented differenly if necessary
 
-    finalSubmission = submissionsPool.back();
+    final_submission = submissionsPool.back();
     
     clearHistory();
     
@@ -230,7 +230,7 @@ bool PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
 bool PatientDecisionMaker::finalDecision(Experiment &experiment) {
 
-    finalSubmission = selectBetweenSubmissions();
+    final_submission = selectBetweenSubmissions();
     
     clearHistory();
     

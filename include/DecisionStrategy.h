@@ -52,7 +52,7 @@ stringToResearcherPreference = {
 
 
 /**
- \brief Abstract class for different decision strategies.
+ @brief Abstract class for different decision strategies.
  
  */
 class DecisionStrategy {
@@ -90,12 +90,11 @@ public:
     
     //! Indicates the pre-registered outcome in the case where the 
     //! Researcher prefers the PreRegisteredOutcome
-    int preRegGroup = 0;
+    int pre_registered_group = 0;
     
     //! This will set to the final submission record that the Researcher
-    //! is satisfied with. At the same time, isStillHacking will set to 
-    //! `false`
-    Submission finalSubmission;
+    //! is satisfied with.
+    Submission final_submission;
     
     
     /**
@@ -107,10 +106,10 @@ public:
     }
         
     /**
-     * \brief      Implementation of decision-making procedure.
+     * @brief      Implementation of decision-making procedure.
      *
-     * \param      experiment
-     * \param[in]  stage       The stage in which the researcher is asking
+     * @param      experiment
+     * @param[in]  stage       The stage in which the researcher is asking
      *                         for the verdict. The implementation of verdict
      *                         sould provide different procedure for different
      *                         stages of the development.
@@ -126,17 +125,17 @@ public:
     virtual bool finalDecision(Experiment &experiment) = 0;
     
     /**
-     * \brief      Based on the DecisionPreference, it'll select the outcome
+     * @brief      Based on the DecisionPreference, it'll select the outcome
      * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece will
      *
-     * \param      experiment  
+     * @param      experiment  
      *
      * \return     A copy of the selected outcome
      */
     Submission selectOutcome(Experiment &experiment);
 
     /**
-     * \brief      Select the final submission by checking all logged Submissions.
+     * @brief      Select the final submission by checking all logged Submissions.
      *
      * \return     A copy of the selected outcome
      */
@@ -144,7 +143,7 @@ public:
 };
 
 /**
- \brief Implementation of an impatient researcher. In this case, the Researcher will stop as soon as find a significant result and will not continue exploring other hacking methods in his arsenal.
+ @brief Implementation of an impatient researcher. In this case, the Researcher will stop as soon as find a significant result and will not continue exploring other hacking methods in his arsenal.
  */
 class ImpatientDecisionMaker : public DecisionStrategy {
     
@@ -196,7 +195,7 @@ class HonestDecisionMaker : public DecisionStrategy {
 public:
 
     HonestDecisionMaker(int pre_registered_group){
-        preRegGroup = pre_registered_group;
+        pre_registered_group = pre_registered_group;
     };
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage) {

@@ -55,7 +55,7 @@ stringToHackingStage = {
 };
 
 /**
- \brief Abstract class for hacking strategies.
+ @brief Abstract class for hacking strategies.
  
  Each HackingStrategy should provide a `perform()` method. The `perform()` method
  will take over a pointer to an Experiment and apply the implemented hacking on it. 
@@ -76,9 +76,9 @@ public:
     HackingMethod hid;
     
     /**
-     * \brief      Factory method for building a HackingStrategy
+     * @brief      Factory method for building a HackingStrategy
      *
-     * \param      config  A reference to an item of the `json['--hacking-strategy']`.
+     * @param      config  A reference to an item of the `json['--hacking-strategy']`.
      *                     Researcher::Builder is responsible for passing this object
      *                     correctly. 
      *
@@ -88,17 +88,17 @@ public:
     
 
     /**
-     * \brief      Pure deconstuctor of the Base calss. This is important
+     * @brief      Pure deconstuctor of the Base calss. This is important
      * for proper deconstruction of Derived classes.
      */
     virtual ~HackingStrategy() = 0;
 
     /**
-     * \brief      Applies the hacking method on the Experiment.
+     * @brief      Applies the hacking method on the Experiment.
      *
-     * \param      experiment        A pointer to an Experiment.
+     * @param      experiment        A pointer to an Experiment.
      *                               
-     * \param      decisionStrategy  A pointer to Researcher's DecisionStrategy.
+     * @param      decisionStrategy  A pointer to Researcher's DecisionStrategy.
      *                               The HackingStrategy decides with what flag it
      *                               is going to use the DecisionStrategy.
      */
@@ -118,7 +118,7 @@ public:
 
 
 /**
- \brief Declartion of OptionalStopping hacking strategy
+ @brief Declartion of OptionalStopping hacking strategy
  */
 class OptionalStopping : public HackingStrategy {
 public:
@@ -148,7 +148,7 @@ private:
 };
 
 /**
- \brief Declaration of Outlier Removal hacking method based on items' distance from their
+ @brief Declaration of Outlier Removal hacking method based on items' distance from their
  sample mean.
  
  */

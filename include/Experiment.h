@@ -16,15 +16,14 @@
 class EffectSizeEstimator;
 
 /**
- \brief Experiment class declaration
- 
+ @brief Experiment class declaration
+
+ @note This could be an abstract class. The abstract will define the body an
+ experiment while subclasses customize it for different type of experiments.
+ This can be used to save space because I can only define relevant variables
+ for each type of experiment
  */
 class Experiment {
-    
-    // This could be an abstract class. The abstract will define the body of
-    // an experiment while subclasses customize it for different type of experiments.
-    // This can be used to save space because I can only define relevant variables
-    // for each type of experiment
 
 public:
     ExperimentSetup setup;

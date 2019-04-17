@@ -14,16 +14,17 @@ using json = nlohmann::json;
 
 enum class SelectionType {
     SignigicantSelection,
+    RandomSelection
 };
 
 /**
- \brief Abstract class for Journal's selection strategies.
+ @brief Abstract class for Journal's selection strategies.
  
  A Journal will decide if a Submission is going to be accepted or rejected. This
  decision can be made based on different criteria or formula. A SelectionStrategy
  provides an interface for implementing different selection strategies.
  */
-class SelectionStrategy{
+class SelectionStrategy {
     
 protected:
     RandomNumberGenerator* mainRngStream;
@@ -31,9 +32,9 @@ protected:
 public:
     
     /**
-     * \brief      Factory method for building a SelectionStrategy
+     * @brief      Factory method for building a SelectionStrategy
      *
-     * \param      config  A reference to `json['Journal Parameters'].
+     * @param      config  A reference to `json['Journal Parameters'].
      * Usually Researcher::Builder is responsible for passing the object
      * correctly.
      *
@@ -42,17 +43,17 @@ public:
     static SelectionStrategy* build(json &config);
     
     /**
-     * \brief      Pure deconstructor of the base class
+     * @brief      Pure deconstructor of the base class
      */
     virtual ~SelectionStrategy() = 0;
 
     /**
-     * \brief      Review the Submission and decides if it's
+     * @brief      Review the Submission and decides if it's
      * going to be accepted or rejected. When deriving from 
      * SelectionStrategy, `review` is the main interface and 
      * `Journal` relies on its output
      *
-     * \param[in]  s     A reference to a Submission
+     * @param[in]  s     A reference to a Submission
      *
      * \return     A boolean indicating whether the Submission
      * should be accepted or not.
@@ -61,7 +62,7 @@ public:
 };
 
 /**
- \brief Significant-based Selection Strategy
+ @brief Significant-based Selection Strategy
  
  Significant-based selection strategy accepts a publication if the given *p*-value
  is significant. Certain degree of *publication bias*, can be specified. In this case,
@@ -78,10 +79,9 @@ public:
         mainRngStream = new RandomNumberGenerator(seed);
     };
 
-    ~SignigicantSelection(){};
-
     bool review(const Submission& s);
 
+private:
     //! The \alpha at which the _selection strategy_ decides the significance
     //! of a publication
     double alpha;
@@ -96,6 +96,13 @@ public:
     int seed;
 };
 
+/**
+ @brief Random Selection Strategy
+ 
+ In this method, Journal does not check any criteria for accepting or rejecting a
+ submission. Each submission has 50% chance of being accepted or not.
+ 
+ */
 class RandomSelection : public SelectionStrategy {
 public:
     RandomSelection(int seed) : seed(seed) {
