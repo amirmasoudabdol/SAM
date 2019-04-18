@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-SAMpp
+SAM
 ======
 
 SAM is an extensible p-hacking simulator. It provides different
@@ -27,7 +27,6 @@ designing your own simulation.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents
 
    introduction
    design
@@ -38,9 +37,9 @@ designing your own simulation.
    decision-strategies
 
 
-Indices and tables
-==================
+.. Indices and tables
+.. ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

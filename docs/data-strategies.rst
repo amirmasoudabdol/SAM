@@ -35,7 +35,7 @@ variable), by multiplying the number of treatment conditions,
 :math:`n_d`. After knowing the number of groups, each group is being
 populated by :math:`n_o` observations from a multi-variate normal
 distribution with the mean of :math:`\mu` and covariance matrix of
-:math:`\sigma`, :math:`X \sim MN(\mu, \Sigma)`.
+:math:`\Sigma`, :math:`X \sim MN(\mu, \Sigma)`.
 
 You can change the parameters accordingly to implement your own design.
 For example, in order to set up an experiment with no covariance, you

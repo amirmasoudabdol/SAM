@@ -19,7 +19,7 @@ import textwrap
 
 # -- Project information -----------------------------------------------------
 
-project = 'SAMpp'
+project = 'SAM'
 copyright = '2019, Amir M. Abdol'
 author = 'Amir Masoud Abdol'
 
@@ -34,12 +34,13 @@ release = 'alpha'
 # ones.
 extensions = [
     'breathe',
-    'exhale'
+    'exhale',
+    'alabaster'
 ]
 
 # Setup the `breathe` extension
-breathe_projects = { "SAMpp": "xml" }
-breathe_default_project = "SAMpp"
+breathe_projects = { "SAM": "xml" }
+breathe_default_project = "SAM"
 
 # Setup the `exhale` extension
 import textwrap
@@ -126,33 +127,58 @@ source_suffix = '.rst'
 # a list of builtin themes.
 #
 
-# The name of the Pygments (syntax highlighting) style to use.
-# `sphinx` works very well with the RTD theme, but you can always change it
-pygments_style = 'sphinx'
+# import sphinx_bootstrap_theme
 
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+# # Activate the theme.
+# html_theme = 'bootstrap'
+# html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
-html_theme = 'sphinx_rtd_theme'
+# # The name of the Pygments (syntax highlighting) style to use.
+# # `sphinx` works very well with the RTD theme, but you can always change it
+pygments_style = 'monokai'
+
+# # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+# on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+# if not on_rtd:  # only import and set the theme if we're building docs locally
+#     import sphinx_rtd_theme
+#     html_theme = 'sphinx_rtd_theme'
+#     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+# html_theme = 'sphinx_rtd_theme'
+
+# html_theme_options = {
+#     'canonical_url': '',
+#     'logo_only': False,
+#     'display_version': True,
+#     'prev_next_buttons_location': 'bottom',
+#     'style_external_links': False,
+#     'vcs_pageview_mode': '',
+#     # Toc options
+#     'collapse_navigation': True,
+#     'sticky_navigation': True,
+#     'navigation_depth': 4,
+#     'includehidden': True,
+#     'titles_only': False
+# }
+
+import alabaster
+
+html_theme_path = [alabaster.get_path()]
+html_theme = 'alabaster'
 
 html_theme_options = {
-    'canonical_url': '',
-    'logo_only': False,
-    'display_version': True,
-    'prev_next_buttons_location': 'bottom',
-    'style_external_links': False,
-    'vcs_pageview_mode': '',
-    # Toc options
-    'collapse_navigation': True,
-    'sticky_navigation': True,
-    'navigation_depth': 4,
-    'includehidden': True,
-    'titles_only': False
+    'show_relbars': True,
+    'caption_font_family': "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    'font_family': "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    'code_font_family': "monospace",
+    'show_powered_by': False,
+    'base_bg': "#fdfdfd",
+    'body_bg': "#fdfdfd",
+    'body_text': "#222",
+    'pre_bg': "#27262b",
+    'description': "An extensible p-hacking simulator for Linear and Latent Models"
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
