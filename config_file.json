@@ -38,7 +38,7 @@
     "side": 0
   },
   "ResearcherParameters": {
-    "is-phacker": false,
+    "is-phacker": true,
     "hacking-strategies": [
         [
           {

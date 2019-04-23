@@ -9,9 +9,6 @@
 #include <string>
 #include <armadillo>
 #include <random>
-#include "gsl/gsl_rng.h"
-#include "gsl/gsl_randist.h"
-
 
 class RandomNumberGenerator {
 
