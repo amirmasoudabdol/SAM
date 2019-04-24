@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-find_package(docopt REQUIRED)
+# find_package(docopt REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Armadillo REQUIRED)
 
@@ -24,13 +24,13 @@ include_directories(${Boost_INCLUDE_DIRS})
 file(GLOB INCLUDES "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
 
-add_executable(SAMpp main.cpp ${INCLUDES} ${SOURCES})
+# add_executable(SAMpp main.cpp ${INCLUDES} ${SOURCES})
 
-target_link_libraries(SAMpp
-        ${ARMADILLO_LIBRARIES}
-        ${Boost_LIBRARIES}
-        docopt
-        nlohmann_json::nlohmann_json)
+# target_link_libraries(SAMpp
+#         ${ARMADILLO_LIBRARIES}
+#         ${Boost_LIBRARIES}
+#         docopt
+#         nlohmann_json::nlohmann_json)
 
 add_library(sam STATIC ${INCLUDES} ${SOURCES})
 
