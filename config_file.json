@@ -1,9 +1,9 @@
 {
   "SimulationParameters":{
     "debug": false,
-    "verbose": true,
-    "progress": false,
-    "n-sims": 1,
+    "verbose": false,
+    "progress": true,
+    "n-sims": 1000,
     "master-seed": 42,
     "output-path": "outputs/",
     "output-prefix": "auto"

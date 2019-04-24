@@ -3,6 +3,9 @@ project(SAMpp)
 
 option(ENABLE_TESTS "Enable tests" ON)
 
+set(CMAKE_COLOR_MAKEFILE   ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
+
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
