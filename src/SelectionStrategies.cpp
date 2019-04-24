@@ -14,12 +14,12 @@ SelectionStrategy::~SelectionStrategy() {
 SelectionStrategy *SelectionStrategy::build(json &config) {
     
     int selection_seed = rand();
-    if (config["selection-strategy"] == "SignificantSelection") {
+    if (config["name"] == "SignificantSelection") {
         
         config["selection-seed"] = selection_seed;
-        return new SignigicantSelection(config["pub-bias"], config["alpha"], config["side"], selection_seed);
+        return new SignigicantSelection(config["alpha"], config["pub-bias"], config["side"], selection_seed);
         
-    }else if(config["selection-strategy"] == "RandomSelection") {
+    }else if(config["name"] == "RandomSelection") {
         
         config["selection-seed"] = selection_seed;
         return new RandomSelection(selection_seed);
@@ -39,12 +39,17 @@ SelectionStrategy *SelectionStrategy::build(json &config) {
  @param s A reference to the Submission
  @return a boolean indicating whether the Submission is accepted or not.
  */
-bool SignigicantSelection::review(const Submission &s) {
+bool SignigicantSelection::review(Submission &s) {
+
+    // Updating the Submission with class specific parametrs
+    s.pub_bias = pub_bias;
+
     if (s.pvalue < alpha && (s.side == side || side == 0)){
         return true;
     }else if (mainRngStream->uniform() < pub_bias) {
         return true;
     }
+
 
     return false;
 }
@@ -56,7 +61,7 @@ bool SignigicantSelection::review(const Submission &s) {
  @param s corresponding submission
  @return a boolean indicating whether the Submission is accpeted or not.
  */
-bool RandomSelection::review(const Submission &s) {
+bool RandomSelection::review(Submission &s) {
     if (mainRngStream->uniform() < 0.5) {
         return true;
     }else{

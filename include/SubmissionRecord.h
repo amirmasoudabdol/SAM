@@ -36,7 +36,7 @@ public:
     double tvi;
     
     // Journal's Parameters
-    double pubbias;
+    double pub_bias;
     
 
     Submission() = default;

@@ -13,7 +13,7 @@
 using json = nlohmann::json;
 
 enum class SelectionType {
-    SignigicantSelection,
+    SignificantSelection,
     RandomSelection
 };
 
@@ -30,6 +30,8 @@ protected:
     RandomNumberGenerator* mainRngStream;
 
 public:
+
+    SelectionType id;
     
     /**
      * @brief      Factory method for building a SelectionStrategy
@@ -58,7 +60,7 @@ public:
      * @return     A boolean indicating whether the Submission
      * should be accepted or not.
      */
-    virtual bool review(const Submission& s) = 0 ;
+    virtual bool review(Submission& s) = 0 ;
 };
 
 /**
@@ -73,13 +75,15 @@ public:
 class SignigicantSelection : public SelectionStrategy {
 
 public:
-    SignigicantSelection(double alpha, double pub_bias, int side, int seed):
+    SignigicantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42):
         alpha(alpha),  pub_bias(pub_bias), side(side), seed(seed) {
         
+        id = SelectionType::SignificantSelection;
+
         mainRngStream = new RandomNumberGenerator(seed);
     };
 
-    bool review(const Submission& s);
+    bool review(Submission& s);
 
 private:
     //! The \alpha at which the _selection strategy_ decides the significance
@@ -93,6 +97,7 @@ private:
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
     int side;
     
+    //! Selection seed
     int seed;
 };
 
@@ -106,10 +111,13 @@ private:
 class RandomSelection : public SelectionStrategy {
 public:
     RandomSelection(int seed) : seed(seed) {
+        
+        id = SelectionType::RandomSelection;
+
         mainRngStream = new RandomNumberGenerator(seed);
     }
     
-    bool review(const Submission& s);
+    bool review(Submission& s);
     
     int seed;
 };

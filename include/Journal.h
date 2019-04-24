@@ -20,10 +20,10 @@ public:
     
     Journal(json& config);
 
-    Journal(double max_pubs, double pub_bias, double alpha) :
-            max_pubs(max_pubs), pub_bias(pub_bias), alpha(alpha){
-        still_accepting = true;
-    };
+    // Journal(double max_pubs) :
+    //         max_pubs(max_pubs) {
+    //     still_accepting = true;
+    // };
 
     void setSelectionStrategy(SelectionStrategy* s);
 
@@ -36,7 +36,7 @@ public:
      * @return     A boolean indicating whether the Submission should
      * be accpeted or not.
      */
-    bool review(const Submission &s);
+    bool review(Submission &s);
 
     /**
      * @brief      Accept the Submission by adding it to the 
@@ -44,14 +44,14 @@ public:
      *
      * @param[in]  s     A copy of the Submission
      */
-    void accept(const Submission s);
+    void accept(Submission s);
 
     /**
      * @brief      Rejecting the Submission!
      *
      * @param[in]  s     A reference to the Submission
      */
-    void reject(const Submission &s);
+    void reject(Submission &s);
 
     void clear();
 
@@ -63,8 +63,8 @@ public:
 
 private:
     double max_pubs;
-    double pub_bias;
-    double alpha;
+//    double pub_bias;
+//    double alpha;
 
     bool still_accepting = true;
 
