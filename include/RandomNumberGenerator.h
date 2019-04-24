@@ -22,12 +22,12 @@ public:
     
 
     RandomNumberGenerator(int seed) :
-        _seed(seed)
+        seed(seed)
     {
         gen = std::mt19937(rd());
-        gen.seed(_seed);
+        gen.seed(seed);
         
-        arma::arma_rng::set_seed(_seed);
+        arma::arma_rng::set_seed(seed);
             
     };
     
@@ -36,10 +36,10 @@ public:
     };
 
     void setSeed(int seed) {
-        _seed = seed;
+        seed = seed;
     };
     int getSeed() {
-        return _seed;
+        return seed;
     };
 
     double uniform();
@@ -64,7 +64,7 @@ public:
     
 
 private:
-    int _seed;
+    int seed;
 };
 
 #endif //SAMPP_RANDOMNUMBERGENERATOR_H

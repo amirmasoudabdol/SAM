@@ -16,6 +16,8 @@
 
 #include "utils/permutation.h"
 
+#include <random>
+
 extern bool VERBOSE;
 
 HackingStrategy::~HackingStrategy() {
@@ -87,18 +89,18 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 /**
  @brief Implementation of optional stopping.
  
- This will use two parameters set at construction of the OptionalStopping class, `_n_trials` and `_n_new_obs`
- for every trial, the routine will add `_n_new_obs` to all groups, recalculate the statistics, and run the test. It will then select an outcome based on researcher's preference and check it's significance. If
+ This will use two parameters set at construction of the OptionalStopping class, `n_trials` and `n_new_obs`
+ for every trial, the routine will add `n_new_obs` to all groups, recalculate the statistics, and run the test. It will then select an outcome based on researcher's preference and check it's significance. If
  the results is significant, it'll not make a new attempt to add more data, and will return to the hack() routine.
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
     
     if (VERBOSE) std::cout << "Optional Stopping...\n";
     
-    for (int t = 0; t < _n_attempts && t < _max_attempts ; t++) {
+    for (int t = 0; t < n_attempts && t < max_attempts ; t++) {
         
         
-        addObservations(experiment, _num);
+        addObservations(experiment, num);
         
         
         // TODO: This can still be done nicer
@@ -125,14 +127,28 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     
 }
 
+void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
+    level = "dv"
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> uniform(min_n, max_n);
+
+    num = uniform(gen);
+
+    uniform.param(std::uniform_int_distribution<>::param_type(1, 3));
+    n_attempts = uniform(gen);
+
+    max_attempts = 10;
+}
 
 
 
 /**
  @brief Implementation of Outliers Removal based on an item's distance from the \mu.
  
- The `_sd_multiplier`, d is set at the construction, and it'll be used to check whether a measurement
- should be removed or not. Any item satisfying the  v > |\mu - d * \sigma|  will be removed from the
+ The `sd_multiplier`, d is set at the construction, and it'll be used to check whether a measurement
+ should be removed or not. Any item satisfying the  \f$v > |\mu - d * \sigma|\f$  will be removed from the
  dataset.
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
@@ -141,14 +157,14 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     
     int res = 0;
     
-    for (auto &d : _multipliers) {
+    for (auto &d : multipliers) {
         
-        for (int t = 0; t < _n_attempts &&
-                        t < _max_attempts &&
+        for (int t = 0; t < n_attempts &&
+                        t < max_attempts &&
                         res != 1
                         ; t++) {
             
-            res = removeOutliers(experiment, _num, d);
+            res = removeOutliers(experiment, num, d);
             
             experiment->calculateStatistics();
             experiment->calculateEffects();
@@ -172,13 +188,13 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
     
     for (auto &row : experiment->measurements) {
         
-        // At least one row has less than `_min_observations`
-        if (row.size() <= _min_observations)
+        // At least one row has less than `min_observations`
+        if (row.size() <= min_observations)
             res = 1;
             
         
         // This trick makes finding the largest outlier easier. I'll see if I can find a better way
-        if (_order == "max first")
+        if (order == "max first")
             row = sort(row);
 
         // Finding the outliers
@@ -188,7 +204,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
         
 
         for (int i = inx.size() - 1;
-             i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > _min_observations ;
+             i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > min_observations ;
              i--)
         {
             row.shed_col(inx[i]);

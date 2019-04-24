@@ -32,8 +32,8 @@ void TTest::run(Experiment* experiment) {
                                               experiment->means[i],
                                               sqrt(experiment->vars[i]),
                                               experiment->measurements[i].size(),
-                                              this->_alpha,
-                                              this->_side);
+                                              this->alpha,
+                                              this->side);
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
         experiment->sigs[i] = res.sig;

@@ -62,18 +62,18 @@ public:
 
 /**
  The fixed-effect data strategy will produce data from a fixed-effect
- model with the given \mu and sigma.
+ model with the given \f$\mu\f$ and \f$\sigma\f$.
  */
 class LinearModelStrategy : public DataStrategy {
 
 public:
     
     LinearModelStrategy(ExperimentSetup& setup) {
-        _main_seed = rand();
-        _sec_seed = rand();
+        main_seed = rand();
+        sec_seed = rand();
         
-        mainRngStream = new RandomNumberGenerator(_main_seed);
-        secRngStream = new RandomNumberGenerator(_sec_seed);
+        mainRngStream = new RandomNumberGenerator(main_seed);
+        secRngStream = new RandomNumberGenerator(sec_seed);
     };
     
     void genData(Experiment* experiment);
@@ -81,8 +81,8 @@ public:
     arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
     
 private:
-    int _main_seed;
-    int _sec_seed;
+    int main_seed;
+    int sec_seed;
     RandomNumberGenerator *mainRngStream;
     RandomNumberGenerator *secRngStream;
 };
@@ -97,11 +97,11 @@ class LatentDataStrategy : public DataStrategy {
 public:
     
     LatentDataStrategy(ExperimentSetup& setup){
-        _main_seed = rand();
-        _sec_seed = rand();
+        main_seed = rand();
+        sec_seed = rand();
         
-        mainRngStream = new RandomNumberGenerator(_main_seed);
-        secRngStream = new RandomNumberGenerator(_sec_seed);
+        mainRngStream = new RandomNumberGenerator(main_seed);
+        secRngStream = new RandomNumberGenerator(sec_seed);
     }
     
     void genData(Experiment* experiment);
@@ -109,8 +109,8 @@ public:
     arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
     
 private:
-    int _main_seed;
-    int _sec_seed;
+    int main_seed;
+    int sec_seed;
     RandomNumberGenerator *mainRngStream;
     RandomNumberGenerator *secRngStream;
     

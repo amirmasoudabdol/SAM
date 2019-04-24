@@ -74,14 +74,14 @@ public:
 class TTest : public TestStrategy {
     
 private:
-    TestSide _side;
-    double _alpha;
+    TestSide side;
+    double alpha;
     
 public:
     TTest() = default;
     
     TTest(TestSide side, double alpha) :
-        _side(side), _alpha(alpha)
+        side(side), alpha(alpha)
     {};
     
     void run(Experiment* experiment);

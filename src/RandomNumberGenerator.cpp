@@ -79,13 +79,14 @@ double RandomNumberGenerator::uniform(const double &min, const double &max){
  Return a value between [a, b) or [b, c) based on the outcome of a Bernoulli trial with
  probability of p. The return value has p chance of being in [a, b) and 1-p
  chance of being in [b, c).
+
+ @param p Bernoulli trial probability
+ @param a Lower bound
+ @param b Middle bound
+ @param c Upper bound
+ @return A value between [a, c)
  */
 
-//@param p Bernoulli trial probability
-//@param a Lower bound
-//@param b Middle bound
-//@param c Upper bound
-//\return A value between [a, c)
 
 int RandomNumberGenerator::genSampleSize(const double &p, const double &a, const double &b, const double &c){
     bernoulliDist.param(std::bernoulli_distribution::param_type(p));

@@ -123,11 +123,11 @@ public:
 class OptionalStopping : public HackingStrategy {
 public:
 
-    OptionalStopping(std::string level, int num, int n_attempts, int max_attempts) :
-        _level(level),
-        _num(num),
-        _n_attempts(n_attempts),
-        _max_attempts(max_attempts)
+    OptionalStopping(std::string level = "dv", int num = 3, int n_attempts = 1, int max_attempts = 10) :
+        level(level),
+        num(num),
+        n_attempts(n_attempts),
+        max_attempts(max_attempts)
     {
         hid = HackingMethod::OptionalStopping;
     };
@@ -135,14 +135,33 @@ public:
     void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
     
     
+    /**
+     Randmoize the parameters of the Optional Stopping
+     */
+    void randomize();
     
 private:
     
-    std::string _level = "dv";
-    int _num = 3;
-    int _n_attempts = 3;
-    int _max_attempts = 10;
+    std::string level = "dv";
     
+    //! Number of new observations to be added to each group
+    int num = 3;
+    
+    //! Number of times that Researcher add `num` observations to each group
+    int n_attempts = 1;
+    
+    //! Maximum number of times that Researcher tries to add new observations to
+    //! each group
+    int max_attempts = 10;
+    
+    
+    /**
+     Add _n_ observations to all groups and return the updated experiment to
+     the `perform()` method.
+
+     @param experiment A pointer to the experiment
+     @param n number of new observations to be added
+     */
     void addObservations(Experiment *experiment, const int &n);
 
 };
@@ -155,14 +174,14 @@ private:
 class SDOutlierRemoval : public HackingStrategy {
 public:
 
-    SDOutlierRemoval(std::string level, std::string order, int num, int n_attempts, int max_attempts, int min_observations, std::vector<double> multipliers) :
-        _level(level),
-        _order(order),
-        _num(num),
-        _n_attempts(n_attempts),
-        _max_attempts(max_attempts),
-        _min_observations(min_observations),
-        _multipliers(multipliers)
+    SDOutlierRemoval(std::string level = "dv", std::string order = "max first", int num = 3, int n_attempts = 1, int max_attempts = 3, int min_observations = 10, std::vector<double> multipliers = {3, 2, 1}) :
+        level(level),
+        order(order),
+        num(num),
+        n_attempts(n_attempts),
+        max_attempts(max_attempts),
+        min_observations(min_observations),
+        multipliers(multipliers)
     {
         hid = HackingMethod::SDOutlierRemoval;
     };
@@ -175,13 +194,13 @@ public:
     
 private:
     
-    std::string _level = "dv";
-    std::string _order = "max first";
-    int _num = 3;
-    int _n_attempts = 1;
-    int _max_attempts = 10;
-    int _min_observations = 15;
-    std::vector<double> _multipliers = {3, 2, 1};
+    std::string level = "dv";
+    std::string order = "max first";
+    int num = 3;
+    int n_attempts = 1;
+    int max_attempts = 10;
+    int min_observations = 15;
+    std::vector<double> multipliers = {3, 2, 1};
     
     int removeOutliers(Experiment *experiment, const int &n, const int &d);
     
