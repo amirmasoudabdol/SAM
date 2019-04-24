@@ -8,9 +8,9 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
 	os <<
     s.simid << "," <<
     s.pubid << "," <<
-    s.tnobs << "," <<
-    s.tyi << "," <<
-    s.tvi << "," <<
+//    s.tnobs << "," <<
+//    s.tyi << "," <<
+//    s.tvi << "," <<
     s.inx << "," <<
     s.nobs << "," <<
     s.yi << "," <<
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
 
 
 std::string Submission::header(const json &effectslist) {
-    std::string header{"simid,pid,tnobs,tyi,tvi,inx,nobs,yi,sei,statistic,pvalue,"};
+    std::string header{"simid,pid,inx,nobs,yi,sei,statistic,pvalue,"};
     
     for (auto &estimator : effectslist){
         header += estimator;

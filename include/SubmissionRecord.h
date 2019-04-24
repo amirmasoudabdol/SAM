@@ -31,22 +31,22 @@ public:
     bool isHacked = false;
     std::vector<int> hHistory;
     
-    int tnobs;
-    double tyi;             ///< True mean/effect of the selected submission record
-    double tvi;
+//    int tnobs;
+//    double tyi;             ///< True mean/effect of the selected submission record
+//    double tvi;
     
     // Journal's Parameters
-    double pub_bias;
+//    double pub_bias;
     
 
     Submission() = default;
     
     Submission(Experiment& e, const int &index){
         
-        tnobs = e.setup.true_nobs[index];
-        tyi = e.setup.true_means[index];
-        tvi = e.setup.true_vars[index];
-        
+//        tnobs = e.setup.true_nobs[index];
+//        tyi = e.setup.true_means[index];
+//        tvi = e.setup.true_vars[index];
+//
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         yi = e.means[index];
@@ -65,7 +65,8 @@ public:
         // BUG: This is also a problem if I'm working with the LatentModel because I'm
         // storing latent means, vars with different names. **This is just not a good idea**.
         // Submission should be self-contained and I shouldn't look into another object
-        tyi = e.setup.true_means[index];
+//        tyi = e.setup.true_means[index];
+        // FIXME: This is fishy!
         side = std::copysign(1.0, yi - e.setup.true_means[index]);
         
         isHacked = e.is_hacked;

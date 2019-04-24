@@ -61,9 +61,6 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
     for (auto& p : publicationList) {
         p.simid = simid;
         p.pubid = i++;
-//        if (selectionStrategy->id == SelectionType::SignificantSelection){
-//            p.pubbias = selection;
-//        }
         
         if (VERBOSE){
             std::cout << std::setprecision(8);

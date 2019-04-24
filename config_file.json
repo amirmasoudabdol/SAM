@@ -1,9 +1,9 @@
 {
   "SimulationParameters":{
     "debug": false,
-    "verbose": false,
-    "progress": true,
-    "n-sims": 1000,
+    "verbose": true,
+    "progress": false,
+    "n-sims": 1,
     "master-seed": 42,
     "output-path": "outputs/",
     "output-prefix": "auto"
@@ -14,7 +14,7 @@
     "n-dep-vars": 3,
     "n-items": 3,
     "n-obs": [[10,25,50,100],[0.75,0,0.25]],
-    "means": 0.5,
+    "means": 0.1,
     "vars": 1,
     "covs": 0.00,
     "loadings": 0.7,
@@ -26,9 +26,7 @@
       "alpha": 0.05
     },
     "effect-estimators": [
-      "CohensD",
-      "HedgesG"
-    ]
+      "CohensD"    ]
   },
   "JournalParameters" :{
     "max-pubs": 20,

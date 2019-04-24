@@ -31,7 +31,7 @@ SelectionStrategy *SelectionStrategy::build(json &config) {
 
 
 /**
- Check if `p-value` of the Submission is less than the specified \f$ \alpha \f$.
+ Check if `p-value` of the Submission is less than the specified \f$\alpha\f$.
  If true, it will accept the submission, if not, a random number decide wheather
  the submission is going to be accepted or not. The drawn random number, \f$r\f$
  will be compared to `pub_bias` of the journal.
@@ -40,9 +40,6 @@ SelectionStrategy *SelectionStrategy::build(json &config) {
  @return a boolean indicating whether the Submission is accepted or not.
  */
 bool SignigicantSelection::review(Submission &s) {
-
-    // Updating the Submission with class specific parametrs
-    s.pub_bias = pub_bias;
 
     if (s.pvalue < alpha && (s.side == side || side == 0)){
         return true;
