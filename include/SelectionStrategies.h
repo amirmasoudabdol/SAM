@@ -38,7 +38,7 @@ public:
      * Usually Researcher::Builder is responsible for passing the object
      * correctly.
      *
-     * \return     A new SelectionStrategy
+     * @return     A new SelectionStrategy
      */
     static SelectionStrategy* build(json &config);
     
@@ -55,7 +55,7 @@ public:
      *
      * @param[in]  s     A reference to a Submission
      *
-     * \return     A boolean indicating whether the Submission
+     * @return     A boolean indicating whether the Submission
      * should be accepted or not.
      */
     virtual bool review(const Submission& s) = 0 ;

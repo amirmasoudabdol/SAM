@@ -33,7 +33,7 @@ public:
      *
      * @param[in]  s     A reference to the Submission
      *
-     * \return     A boolean indicating whether the Submission should
+     * @return     A boolean indicating whether the Submission should
      * be accpeted or not.
      */
     bool review(const Submission &s);

@@ -82,7 +82,7 @@ public:
      *                     Researcher::Builder is responsible for passing this object
      *                     correctly. 
      *
-     * \return     A new HackingStrategy
+     * @return     A new HackingStrategy
      */
     static HackingStrategy* build(json& config);
     
@@ -138,7 +138,7 @@ public:
     /**
      Randmoize the parameters of the Optional Stopping
      */
-    void randomize();
+    void randomize(int min_n, int max_n);
     
 private:
     
@@ -174,7 +174,7 @@ private:
 class SDOutlierRemoval : public HackingStrategy {
 public:
 
-    SDOutlierRemoval(std::string level = "dv", std::string order = "max first", int num = 3, int n_attempts = 1, int max_attempts = 3, int min_observations = 10, std::vector<double> multipliers = {3, 2, 1}) :
+    SDOutlierRemoval(std::string level = "dv", std::string order = "max first", int num = 3, int n_attempts = 1, int max_attempts = 3, int min_observations = 10, std::vector<double> multipliers = {3}) :
         level(level),
         order(order),
         num(num),
@@ -200,7 +200,7 @@ private:
     int n_attempts = 1;
     int max_attempts = 10;
     int min_observations = 15;
-    std::vector<double> multipliers = {3, 2, 1};
+    std::vector<double> multipliers = {3};
     
     int removeOutliers(Experiment *experiment, const int &n, const int &d);
     
@@ -210,7 +210,7 @@ class GroupPooling : public HackingStrategy {
         
 public:
     
-    GroupPooling(std::vector<int> nums) : _nums(nums)
+    GroupPooling(std::vector<int> nums = {2}) : nums(nums)
     {
         hid = HackingMethod::GroupPooling;
     };
@@ -220,7 +220,7 @@ public:
     
 private:
 
-    std::vector<int> _nums = {2};
+    std::vector<int> nums = {2};
     
     void pool(Experiment* experiment, int r);
 };

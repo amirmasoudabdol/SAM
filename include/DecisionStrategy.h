@@ -114,7 +114,7 @@ public:
      *                         sould provide different procedure for different
      *                         stages of the development.
      *
-     * \return     A boolean indicating whether result is satisfactory or not
+     * @return     A boolean indicating whether result is satisfactory or not
      */
     virtual bool verdict(Experiment& experiment, DecisionStage stage) = 0;
     
@@ -130,14 +130,14 @@ public:
      *
      * @param      experiment  
      *
-     * \return     A copy of the selected outcome
+     * @return     A copy of the selected outcome
      */
     Submission selectOutcome(Experiment &experiment);
 
     /**
      * @brief      Select the final submission by checking all logged Submissions.
      *
-     * \return     A copy of the selected outcome
+     * @return     A copy of the selected outcome
      */
     Submission selectBetweenSubmissions();
 };

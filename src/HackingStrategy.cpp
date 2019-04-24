@@ -128,7 +128,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 }
 
 void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
-    level = "dv"
+    level = "dv";
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -239,7 +239,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
         throw std::domain_error("There is not enough groups for pooling.");
     }
     
-    for (auto &r : _nums){
+    for (auto &r : nums){
         pool(experiment, r);
     }
     
