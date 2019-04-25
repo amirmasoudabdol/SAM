@@ -13,7 +13,7 @@
 #include <iostream>
 #include "TestStrategy.h"
 
-#include "main.h"
+#include "sam.h"
 
 using namespace arma;
 

@@ -7,8 +7,6 @@
 #include <iomanip>
 #include <stdexcept>
 
-//#include "main.h"
-
 extern bool VERBOSE;
 
 

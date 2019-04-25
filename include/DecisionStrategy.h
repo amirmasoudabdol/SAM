@@ -194,8 +194,8 @@ class HonestDecisionMaker : public DecisionStrategy {
 
 public:
 
-    HonestDecisionMaker(int pre_registered_group){
-        pre_registered_group = pre_registered_group;
+    HonestDecisionMaker(int prg){
+        pre_registered_group = prg;
     };
     
     virtual bool verdict(Experiment &experiment, DecisionStage stage) {

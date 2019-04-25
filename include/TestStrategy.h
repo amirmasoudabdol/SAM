@@ -80,7 +80,8 @@ private:
 public:
     TTest() = default;
     
-    TTest(TestSide side, double alpha) :
+    TTest(TestSide side = TestSide::TwoSide,
+          double alpha = 0.05) :
         side(side), alpha(alpha)
     {};
     

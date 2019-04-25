@@ -31,9 +31,9 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
         
     if (config["data-strategy"].is_null()){
-        throw std::invalid_argument("The \"data-strategy\" parameter is not provided. Check README.md for more info.");
+        throw std::invalid_argument("The Data Strategy parameter is not provided. Check the documentation for more info.");
     }else if (stringToExperimentType.find(config["data-strategy"]) == stringToExperimentType.end()){
-        throw std::invalid_argument("Unrecognized \"data-strategy\". See README.md.");
+        throw std::invalid_argument("Unknown Data Strategy.");
     }
     experimentType = stringToExperimentType.find(config["data-strategy"])->second;
     

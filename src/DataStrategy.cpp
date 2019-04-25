@@ -208,10 +208,6 @@ DataStrategy *DataStrategy::build(ExperimentSetup &setup){
 
         case ExperimentType::LatentModel:
             return new LatentDataStrategy(setup);
-            
-        default:
-            // TODO: Throw a warning, or something here!
-            return new LinearModelStrategy(setup);
             break;
     }
 }

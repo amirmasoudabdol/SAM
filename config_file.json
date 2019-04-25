@@ -1,58 +1,71 @@
 {
-  "SimulationParameters":{
-    "debug": false,
-    "verbose": true,
-    "progress": false,
-    "n-sims": 1,
-    "master-seed": 42,
-    "output-path": "outputs/",
-    "output-prefix": "auto"
-  },
-  "ExperimentParameters": {
-    "data-strategy": "LinearModel",
-    "n-conditions": 3,
-    "n-dep-vars": 3,
-    "n-items": 3,
-    "n-obs": [[10,25,50,100],[0.75,0,0.25]],
-    "means": 0.1,
-    "vars": 1,
-    "covs": 0.00,
-    "loadings": 0.7,
-    "err-vars": 0.01,
-    "err-covs": 0.001,
-    "test-strategy": {
-      "name": "TTest",
-      "side": "TwoSide",
-      "alpha": 0.05
+    "ExperimentParameters": {
+        "covs": 0.0,
+        "data-strategy": "LinearModel",
+        "effect-estimators": [
+            "CohensD"
+        ],
+        "err-covs": 0.001,
+        "err-vars": 0.01,
+        "loadings": 0.7,
+        "means": 0.1,
+        "n-conditions": 3,
+        "n-dep-vars": 3,
+        "n-items": 3,
+        "n-obs": [
+            [
+                10,
+                25,
+                50,
+                100
+            ],
+            [
+                0.75,
+                0,
+                0.25
+            ]
+        ],
+        "test-strategy": {
+            "alpha": 0.05,
+            "name": "TTest",
+            "side": "TwoSide"
+        },
+        "vars": 1
     },
-    "effect-estimators": [
-      "CohensD"    ]
-  },
-  "JournalParameters" :{
-    "max-pubs": 20,
-    "selection-strategy": {
-      "name": "SignificantSelection",
-      "pub-bias": 0.95,
-      "alpha": 0.05,
-      "side": 0
+    "JournalParameters": {
+        "max-pubs": 20,
+        "selection-strategy": {
+            "alpha": 0.05,
+            "name": "SignificantSelection",
+            "pub-bias": 0.95,
+            "side": 0
+        }
+    },
+    "ResearcherParameters": {
+        "decision-strategy": {
+            "name": "PatientDecisionMaker",
+            "preference": "MinPvalue"
+        },
+        "hacking-strategies": [
+            [
+                {
+                    "level": "dv",
+                    "max_attempts": 10,
+                    "n_attempts": 3,
+                    "name": "OptionalStopping",
+                    "num": 10
+                }
+            ]
+        ],
+        "is-phacker": true
+    },
+    "SimulationParameters": {
+        "debug": false,
+        "master-seed": 42,
+        "n-sims": 1,
+        "output-path": "../outputs/",
+        "output-prefix": "",
+        "progress": false,
+        "verbose": true
     }
-  },
-  "ResearcherParameters": {
-    "is-phacker": true,
-    "hacking-strategies": [
-        [
-          {
-            "name": "OptionalStopping",
-            "level": "dv",
-            "num": 10,
-            "n_attempts": 3,
-            "max_attempts": 10
-          }
-        ]
-    ],
-    "decision-strategy": {
-      "name": "PatientDecisionMaker",
-      "preference": "MinPvalue"
-    }
-  }
 }

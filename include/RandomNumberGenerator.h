@@ -35,8 +35,8 @@ public:
 
     };
 
-    void setSeed(int seed) {
-        seed = seed;
+    void setSeed(int s) {
+        seed = s;
     };
     int getSeed() {
         return seed;

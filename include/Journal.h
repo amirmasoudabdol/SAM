@@ -63,8 +63,6 @@ public:
 
 private:
     double max_pubs;
-//    double pub_bias;
-//    double alpha;
 
     bool still_accepting = true;
 

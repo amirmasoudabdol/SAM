@@ -6,7 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include "main.h"
+#include "sam.h"
 
 // most frequently you implement test cases as a free functions with automatic registration
 BOOST_AUTO_TEST_CASE( test1 )
