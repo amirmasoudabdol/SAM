@@ -14,6 +14,7 @@ std::ostream& operator<<(std::ostream& os, const Submission& s){
     s.inx << "," <<
     s.nobs << "," <<
     s.yi << "," <<
+    s.vi << "," <<
     s.sei << "," <<
     s.statistic << "," <<
     s.pvalue << ",";
@@ -36,7 +37,7 @@ std::string Submission::header(const json &effectslist) {
     // FIXME: There is something wrong with this function! For some reason, if I change
     // it, cmake just ignores it and the changes do not reflect to the code!
     
-    std::string header{"simid,pid,inx,nobs,yi,sei,statistic,pvalue,"};
+    std::string header{"simid,pid,inx,nobs,yi,vi,sei,statistic,pvalue,"};
     
     for (auto &estimator : effectslist){
         header += estimator;

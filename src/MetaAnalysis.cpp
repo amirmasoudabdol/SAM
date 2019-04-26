@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <algorithm>
 
 #include "MetaAnalysis.h"
 
@@ -18,48 +19,29 @@ using namespace mlpack::regression;
 using namespace sam;
 using namespace std;
 
-void MetaAnalysis::test() {
-    // Predictors and points are 10x3 matrices.
-    arma::mat predictors(3, 10);
-    arma::mat points(3, 10);
 
-    // Responses is the "correct" value for each point in predictors and points.
-    arma::rowvec responses(10);
-
-    // The values we get back when we predict for points.
-    arma::rowvec predictions(10);
-
-    // We'll randomly select some coefficients for the linear response.
-    arma::vec coeffs;
-    coeffs.randu(4);
-
-    // Now generate each point.
-    for (size_t row = 0; row < 3; row++)
-        predictors.row(row) = arma::linspace<arma::rowvec>(0, 9, 10);
-
-    points = predictors;
-
-    // Now add a small amount of noise to each point.
-    for (size_t elem = 0; elem < points.n_elem; elem++)
-    {
-        // Max added noise is 0.02.
-        points[elem] += math::Random() / 50.0;
-        predictors[elem] += math::Random() / 50.0;
+arma::vec FixedEffectEstimator::estimate(vector<Submission> publications) {
+    
+    arma::rowvec predictors(publications.size());
+    
+    arma::rowvec responses(publications.size());
+    arma::rowvec weights(publications.size());
+    arma::rowvec predictions(publications.size());
+    
+    for (int i = 0; i < publications.size(); i++) {
+        predictors(i) = 0;
+        responses(i) = publications[i].yi;
+        weights(i) = 1. / publications[i].vi;
     }
-
-    // Generate responses.
-    for (size_t elem = 0; elem < responses.n_elem; elem++)
-        responses[elem] = coeffs[0] +
-                          dot(coeffs.rows(1, 3), arma::ones<arma::rowvec>(3) * elem);
-
-    // Initialize and predict.
-    LinearRegression lr(predictors, responses);
-    lr.Predict(points, predictions);
-
-    // Output result and verify we have less than 5% error from "correct" value
-    // for each point.
-    for (size_t i = 0; i < predictions.n_cols; ++i)
-        cout << predictions(i) - responses(i) << endl;
-
+    
+    LinearRegression fixed_model(predictors, responses, weights);
+    
+    return fixed_model.Parameters();
+    
 }
 
+
+arma::vec RandomEffectEstimator::estimate(vector<Submission> publications) {
+    
+    return arma::vec();
+}

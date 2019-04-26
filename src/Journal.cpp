@@ -7,6 +7,10 @@
 #include <iomanip>
 #include <stdexcept>
 
+#include "MetaAnalysis.h"
+
+using namespace sam;
+
 extern bool VERBOSE;
 
 
@@ -69,3 +73,9 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
     }
 }
 
+
+void Journal::testMeta() {
+    FixedEffectEstimator fes;
+    
+    cerr << fes.estimate(publicationList);
+}

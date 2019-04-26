@@ -22,6 +22,7 @@ public:
     int inx;
     int nobs;               ///< Number of observation in submitted group
     double yi;              ///< Effect size of the submitted group
+    double vi;
     double sei;             ///< Standard error of the submitted group
     double statistic;       ///< Corresponding statistics of the submitted group
     double pvalue;          ///< _P_-value of the submitted group
@@ -50,6 +51,7 @@ public:
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         yi = e.means[index];
+        vi = e.vars[index];
         sei = e.ses[index];
 
         statistic = e.statistics[index];

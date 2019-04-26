@@ -60,6 +60,8 @@ public:
     }
 
     void saveSubmissions(int simid, std::ofstream& writer);
+    
+    void testMeta();
 
 private:
     double max_pubs;
