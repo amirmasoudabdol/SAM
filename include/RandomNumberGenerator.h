@@ -21,8 +21,8 @@ public:
     std::piecewise_constant_distribution<> piecewiseConstDist;
     
 
-    RandomNumberGenerator(int seed) :
-        seed(seed)
+    RandomNumberGenerator(int s) :
+        seed(s)
     {
         gen = std::mt19937(rd());
         gen.seed(seed);
