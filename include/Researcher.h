@@ -38,6 +38,8 @@ namespace sam {
         
         //! A Submission record that Researcher is going to submit to the Journal
         Submission submission_record;
+        
+        Researcher();
 
         Researcher(json& config);
         
@@ -100,14 +102,13 @@ namespace sam {
 
 
     /**
-     Builder class for Researcher. This takes care of eveyrthing and return a fully
-     initialized Researcher.
+     Builder class for Researcher. This takes care of eveyrthing and return a
+     fully initialized Researcher after calling `.build()` method.
      */
     class Researcher::Builder {
-    private:
+
         json config;
         
-
         ExperimentSetup* experiment_setup;
         Experiment* experiment;
         Journal* journal;
@@ -129,6 +130,38 @@ namespace sam {
             return *this;
         };
         
+        
+        /**
+         Build a researcher entirely based on the given config file. This is
+         not the best implementation still but I think it's more readable and
+         reasonable for some usecases.
+
+         @param config A JSON object
+         @return Return an instance of itself
+         */
+        Builder& makeResearcherFromConfig(json& config) {
+            this->config = config;
+            this->experiment = new Experiment(config);
+            this->journal = new Journal(config["JournalParameters"]);
+            this->decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
+            this->is_hacker = config["ResearcherParameters"]["is-phacker"];
+            if (this->is_hacker){
+                for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
+                    
+                    this->hacking_strategies.push_back({});
+                    
+                    for (auto &item : set) {
+                        
+                        this->hacking_strategies.back().push_back(HackingStrategy::build(item));
+                        
+                    }
+                    
+                }
+            }
+            return *this;
+        }
+        
+        // Experiment's constructor also prepares the ExperimentSetup!
         Builder& makeExperimentSetup();
         
         Builder& makeExperiment() {
@@ -258,9 +291,17 @@ namespace sam {
             return *this;
         };
         
-        
+        /**
+         Build and return a new Researcher.
+         
+         @note Be aware that this needs to be called after you set all aspects
+         of the Researcher
 
+         @return A new Researcher
+         */
         Researcher build() {
+            // TODO: I can make a researcher and set all its parameters using set* methods
+            
             return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
         };
     };
