@@ -178,16 +178,20 @@ namespace sam {
         
         Builder& setExperimentSetup(ExperimentSetup);
         Builder& setExperiment(Experiment);
-        Builder& setDataStrategy(DataStrategy *dgs){
+        Builder& setDataStrategy(DataStrategy *dgs) {
             this->experiment->data_strategy = dgs;
             return *this;
         }
-        Builder& setTestStrategy(TestStrategy *ts){
+        Builder& setTestStrategy(TestStrategy *ts) {
             this->experiment->test_strategy = ts;
             return *this;
         };
-        Builder& setJournal(Journal j){
+        Builder& setJournal(Journal j) {
             this->journal = &j;
+            return *this;
+        };
+        Builder& setJournalSelectionStrategy(SelectionStrategy *ss) {
+            this->journal->setSelectionStrategy(ss);
             return *this;
         };
         Builder& setDecisionStrategy(DecisionStrategy *ds);

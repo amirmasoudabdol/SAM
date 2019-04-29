@@ -18,7 +18,7 @@ stopping hacking-strategies-optional-stopping` where
 started from.
 
 You can select the type of your model by setting ``--data-strategy``
-parameters of the :ref:`config file <chap-config-file`.
+parameters of the :ref:`config file chap-config-file`.
 Two available options are *Linear Model* and *Latent Model*. Based on
 your model of choice, SAM only uses fractions of parameters provided in
 the configuration file. In this section, we discuss how SAM uses the

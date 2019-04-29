@@ -14,8 +14,8 @@
 namespace sam {
 
     /**
-     DecisionStage enum indicates on what stages of the _research_ the Researcher is
-     making decision in.
+     DecisionStage enum indicates on what stages of the _research_ the
+     Researcher is making decision in.
      
      */
     enum class DecisionStage {

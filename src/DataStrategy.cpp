@@ -14,7 +14,7 @@ DataStrategy::~DataStrategy() {
 }
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
-    experiment->measurements = this->mainRngStream->mvnorm(experiment->setup.true_means,
+    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.true_means,
                                                            experiment->setup.true_sigma,
                                                            experiment->setup.true_nobs);
 }
@@ -22,7 +22,7 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     
-    return this->secRngStream->mvnorm(experiment->setup.true_means,
+    return this->sec_rng_stream->mvnorm(experiment->setup.true_means,
                                       experiment->setup.true_sigma,
                                       n_new_obs);
 }
@@ -79,7 +79,7 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
 
-   auto factorScores = this->mainRngStream->mvnorm(experiment->setup.true_means, 
+   auto factorScores = this->main_rng_stream->mvnorm(experiment->setup.true_means, 
                                                    experiment->setup.true_sigma, 
                                                    experiment->setup.true_nobs);
 
@@ -96,7 +96,7 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
 
-   auto allErrors = this->mainRngStream->mvnorm(experiment->setup.errorMeans,
+   auto allErrors = this->main_rng_stream->mvnorm(experiment->setup.errorMeans,
                                                 experiment->setup.errorCov,
                                                 nrows);
 

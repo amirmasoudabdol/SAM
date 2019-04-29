@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-#include <SelectionStrategies.h>
+#include <SelectionStrategy.h>
 
 using namespace sam;
 

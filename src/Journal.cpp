@@ -22,10 +22,6 @@ Journal::Journal(json& config){
     this->selection_strategy = SelectionStrategy::build(config["selection-strategy"]);
 }
 
-void Journal::setSelectionStrategy(SelectionStrategy *s) {
-    selection_strategy = s;
-}
-
 bool Journal::review(Submission &s) {
     
     bool decision = this->selection_strategy->review(s);
@@ -50,11 +46,6 @@ void Journal::accept(Submission s) {
 
 void Journal::reject(Submission &s) {
     
-}
-
-void Journal::clear() {
-    publications_list.clear();
-    still_accepting = true;
 }
 
 void Journal::saveSubmissions(int simid, std::ofstream& writer) {

@@ -22,12 +22,15 @@ namespace sam {
     /**
      @brief Abstract class for Data Strategies
 
-     A DataGenStrategy should at least two methods, `genData` and `genNewObservationForAllGroups`.
-     The former is mainly used to populate a new Experiment while the latter is being used by some
-     hacking strategies, e.g. OptionalStopping, where new data — from the same population — is needed.
+     A DataGenStrategy should at least two methods, `genData` and
+     `genNewObservationForAllGroups`. The former is mainly used to populate a
+     new Experiment while the latter is being used by some hacking strategies,
+     e.g. OptionalStopping, where new data — from the same population — is
+     needed.
 
-     @note Each Data Strategy should have access to an instance of RandomNumberGenerator. This is usually done
-     by creating a desired _random engine_ and passing the pointer to the DataGenStrategy.
+     @note Each Data Strategy should have access to an instance of
+     RandomNumberGenerator. This is usually done by creating a desired
+     _random engine_ and passing the pointer to the DataGenStrategy.
      */
     class DataStrategy {
 
@@ -55,9 +58,34 @@ namespace sam {
 
          @param experiment A pointer to an Experiment object
          */
-        virtual void genData(Experiment* experiment) = 0;
-        virtual std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
-        virtual arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
+        virtual void
+        genData(Experiment* experiment) = 0;
+        
+        
+        /**
+         Generates `n_new_obs` new observations to each group.
+         
+         @note This routine uses the secondary random number stream to avoid
+         conflicting with the main random engine.
+
+         @param experiment The pointer to the current experiment
+         @param n_new_obs The number of new observations to be added
+         @return An array of new observations
+         */
+        virtual std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) = 0;
+        
+        
+        /**
+         Generate `n_new_obs` new observations for `g` group.
+
+         @param experiment The pointer to the experiment
+         @param g The target group
+         @param n_new_obs The number of new observations
+         @return An array of new observations
+         */
+        virtual arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) = 0;
         
         
     };
@@ -74,25 +102,32 @@ namespace sam {
             main_seed = rand();
             sec_seed = rand();
             
-            mainRngStream = new RandomNumberGenerator(main_seed);
-            secRngStream = new RandomNumberGenerator(sec_seed);
+            main_rng_stream = new RandomNumberGenerator(main_seed);
+            sec_rng_stream = new RandomNumberGenerator(sec_seed);
         };
         
-        void genData(Experiment* experiment);
-        std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
-        arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+        void
+        genData(Experiment* experiment);
+        
+        std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+        
+        arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
         int main_seed;
         int sec_seed;
-        RandomNumberGenerator *mainRngStream;
-        RandomNumberGenerator *secRngStream;
+        RandomNumberGenerator *main_rng_stream;
+        RandomNumberGenerator *sec_rng_stream;
     };
 
     /**
-     A Data Strategy for constructing a general [Structural Equaiton Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).
+     A Data Strategy for constructing a general
+     [Structural Equaiton Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).
 
-     @note LatentDataStrategy will generate individual items, therefore it might be slower than other models.
+     @note LatentDataStrategy will generate individual items, therefore it
+     might be slower than other models.
      */
     class LatentDataStrategy : public DataStrategy {
 
@@ -102,19 +137,23 @@ namespace sam {
             main_seed = rand();
             sec_seed = rand();
             
-            mainRngStream = new RandomNumberGenerator(main_seed);
-            secRngStream = new RandomNumberGenerator(sec_seed);
+            main_rng_stream = new RandomNumberGenerator(main_seed);
+            sec_rng_stream = new RandomNumberGenerator(sec_seed);
         }
         
         void genData(Experiment* experiment);
-        std::vector<arma::Row<double> > genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
-        arma::Row<double> genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+        
+        std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+        
+        arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
         int main_seed;
         int sec_seed;
-        RandomNumberGenerator *mainRngStream;
-        RandomNumberGenerator *secRngStream;
+        RandomNumberGenerator *main_rng_stream;
+        RandomNumberGenerator *sec_rng_stream;
         
     };
 

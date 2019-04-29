@@ -9,29 +9,36 @@
 #include <vector>
 #include <fstream>
 
-#include "SelectionStrategies.h"
+#include "SelectionStrategy.h"
 #include "SubmissionRecord.h"
 #include "MetaAnalysis.h"
 
 namespace sam {
 
     class Journal{
+        
+        double max_pubs;
+        
+        bool still_accepting = true;
 
+        //! Journal's Selection Model/Strategy
         SelectionStrategy* selection_strategy;
         
+        //! List of all acceptec Submissions, i.e., publications
         std::vector<Submission> publications_list;
         
     public:
 
-        
         Journal(json& config);
 
-        // Journal(double max_pubs) :
-        //         max_pubs(max_pubs) {
-        //     still_accepting = true;
-        // };
+        /**
+         Point Journal's selection strategy to the given strategy
 
-        void setSelectionStrategy(SelectionStrategy* s);
+         @param s The pointer to the given selection strategy
+         */
+        void setSelectionStrategy(SelectionStrategy *s) {
+            selection_strategy = s;
+        }
 
         /**
          * @brief      Review the Submission by calling
@@ -59,20 +66,27 @@ namespace sam {
          */
         void reject(Submission &s);
 
-        void clear();
-
         bool isStillAccepting() const {
             return still_accepting;
         }
 
+        /**
+         Save enteries of publications_list to a CSV file.
+
+         @param simid The index to be used for the given set.
+         @param writer The output file.
+         */
         void saveSubmissions(int simid, std::ofstream& writer);
         
+        /**
+         Clear the publications_list vector.
+         */
+        void clear() {
+            publications_list.clear();
+            still_accepting = true;
+        }
+        
         void testMeta();
-
-    private:
-        double max_pubs;
-
-        bool still_accepting = true;
 
     };
 
