@@ -20,6 +20,8 @@
 
 extern bool VERBOSE;
 
+using namespace sam;
+
 HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
 };

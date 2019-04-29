@@ -7,6 +7,8 @@
 
 #include "ExperimentSetup.h"
 
+using namespace sam;
+
 std::ostream& operator<<(std::ostream& os, ExperimentType et)
 {
     switch(et)

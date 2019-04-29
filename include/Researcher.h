@@ -17,247 +17,251 @@
 
 #include "nlohmann/json.hpp"
 
-using json = nlohmann::json;
+namespace sam {
 
-class Researcher {
+    using json = nlohmann::json;
 
-public:
+    class Researcher {
 
-    class Builder;
+    public:
 
-    Experiment* experiment;
+        class Builder;
 
-    //! A pointer to the Journal used by researcher for submitting
-    //! the submission or experiment
-	Journal* journal;
-    DecisionStrategy* decision_strategy;
-    std::vector<std::vector<HackingStrategy*>> hacking_strategies;
-    bool is_hacker = false;
-    
-    Submission submission_record;
+        Experiment* experiment;
 
-    Researcher(json& config);
-    
-    Researcher(Experiment* e,
-                    Journal* j,
-                    DecisionStrategy* ds,
-                    std::vector<std::vector<HackingStrategy*>> hs,
-                    bool ish) :
-    experiment(e),
-    journal(j),
-    decision_strategy(ds),
-    hacking_strategies(hs),
-    is_hacker(ish)
-    { };
+        //! A pointer to the Journal used by researcher for submitting
+        //! the submission or experiment
+        Journal* journal;
+        DecisionStrategy* decision_strategy;
+        std::vector<std::vector<HackingStrategy*>> hacking_strategies;
+        bool is_hacker = false;
+        
+        Submission submission_record;
 
-    // This probably needs to be a class of itself as well
-    void registerAHackingStrategy(HackingStrategy* h);
-    void hack();
+        Researcher(json& config);
+        
+        Researcher(Experiment* e,
+                        Journal* j,
+                        DecisionStrategy* ds,
+                        std::vector<std::vector<HackingStrategy*>> hs,
+                        bool ish) :
+        experiment(e),
+        journal(j),
+        decision_strategy(ds),
+        hacking_strategies(hs),
+        is_hacker(ish)
+        { };
 
-    void prepareResearch();
-    void performResearch();
-    void publishResearch();
-    
-    //! By default, a researcher always prefer to return the pre-registered result
-    DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;
-	
-    // This could be renamed to something like, selectThePreferedSubmission()
-    void prepareTheSubmission();
-    void submitToJournal();
-    
-    
+        // This probably needs to be a class of itself as well
+        void registerAHackingStrategy(HackingStrategy* h);
+        void hack();
+
+        void prepareResearch();
+        void performResearch();
+        void publishResearch();
+        
+        //! By default, a researcher always prefer to return the pre-registered result
+        DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;
+        
+        // This could be renamed to something like, selectThePreferedSubmission()
+        void prepareTheSubmission();
+        void submitToJournal();
+        
+        
+        /**
+         Set the decisionStrategy of the researcher.
+
+         @param d The pointer to a Decision Strategy
+         */
+        void setDecisionStrategy(DecisionStrategy* d) {
+            decision_strategy = d;
+        }
+        
+        /**
+         Set the experiment. This can be used to setup several researchers with one
+         experiment.
+         
+         @param e The pointer to an Experiment
+         */
+        void setExperiment(Experiment* e) {
+            experiment = e;
+        };
+        
+        /**
+         @brief      Set the Jouranl
+        
+         @param      j     The pointer to a Journal instance
+         */
+        void setJournal(Journal* j) {
+            journal = j;
+        };
+
+
+    };
+
+
     /**
-     Set the decisionStrategy of the researcher.
-
-     @param d The pointer to a Decision Strategy
+     Builder class for Researcher. This takes care of eveyrthing and return a fully
+     initialized Researcher.
      */
-    void setDecisionStrategy(DecisionStrategy* d) {
-        decision_strategy = d;
-    }
-    
-    /**
-     Set the experiment. This can be used to setup several researchers with one
-     experiment.
-     
-     @param e The pointer to an Experiment
-     */
-    void setExperiment(Experiment* e) {
-        experiment = e;
-    };
-    
-    /**
-     @brief      Set the Jouranl
-    
-     @param      j     The pointer to a Journal instance
-     */
-	void setJournal(Journal* j) {
-        journal = j;
-    };
+    class Researcher::Builder {
+    private:
+        json config;
+        
+
+        ExperimentSetup* experiment_setup;
+        Experiment* experiment;
+        Journal* journal;
+        
+        bool is_hacker;
+        std::vector<std::vector<HackingStrategy*>> hacking_strategies;
+
+        DecisionStrategy* decision_strategy;
+
+        DecisionPreference researcher_preference;
 
 
-};
+    public:
 
+        Builder() = default;
 
-/**
- Builder class for Researcher. This takes care of eveyrthing and return a fully
- initialized Researcher. 
- */
-class Researcher::Builder {
-private:
-    json config;
-    
-
-    ExperimentSetup* experiment_setup;
-    Experiment* experiment;
-    Journal* journal;
-    
-    bool is_hacker;
-    std::vector<std::vector<HackingStrategy*>> hacking_strategies;
-
-    DecisionStrategy* decision_strategy;
-
-    DecisionPreference researcher_preference;
-
-
-public:
-
-    Builder() = default;
-
-    Builder& setConfig(json& config) {
-        this->config = config;
-        return *this;
-    };
-    
-    Builder& makeExperimentSetup();
-    
-    Builder& makeExperiment() {
-        this->experiment = new Experiment(config);
-        return *this;
-    };
-    
-    Builder& makeJournal() {
-        this->journal = new Journal(config["JournalParameters"]);
-        return *this;
-    };
-    
-    Builder& makeDecisionStrategy() {
-        this->decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
-        return *this;
-    };
-    
-    Builder& isHacker() {
-        this->is_hacker = config["ResearcherParameters"]["is-phacker"];
-        return *this;
-    }
-    
-    Builder& makeHackingStrategies(){
-        this->isHacker();
-        if (this->is_hacker){
-            for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
-                
-                this->hacking_strategies.push_back({});
-                
-                for (auto &item : set) {
+        Builder& setConfig(json& config) {
+            this->config = config;
+            return *this;
+        };
+        
+        Builder& makeExperimentSetup();
+        
+        Builder& makeExperiment() {
+            this->experiment = new Experiment(config);
+            return *this;
+        };
+        
+        Builder& makeJournal() {
+            this->journal = new Journal(config["JournalParameters"]);
+            return *this;
+        };
+        
+        Builder& makeDecisionStrategy() {
+            this->decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
+            return *this;
+        };
+        
+        Builder& isHacker() {
+            this->is_hacker = config["ResearcherParameters"]["is-phacker"];
+            return *this;
+        }
+        
+        Builder& makeHackingStrategies(){
+            this->isHacker();
+            if (this->is_hacker){
+                for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
                     
-                    this->hacking_strategies.back().push_back(HackingStrategy::build(item));
+                    this->hacking_strategies.push_back({});
                     
+                    for (auto &item : set) {
+                        
+                        this->hacking_strategies.back().push_back(HackingStrategy::build(item));
+                        
+                    }
+                    
+                }
+            }
+            return *this;
+        };
+
+
+        Builder& setResearcherPreference(DecisionPreference pref){
+            // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
+            this->researcher_preference = pref;
+            return *this;
+        };
+        
+        Builder& setExperimentSetup(ExperimentSetup);
+        Builder& setExperiment(Experiment);
+        Builder& setDataStrategy(DataStrategy *dgs){
+            this->experiment->dataStrategy = dgs;
+            return *this;
+        }
+        Builder& setTestStrategy(TestStrategy *ts){
+            this->experiment->testStrategy = ts;
+            return *this;
+        };
+        Builder& setJournal(Journal j){
+            this->journal = &j;
+            return *this;
+        };
+        Builder& setDecisionStrategy(DecisionStrategy *ds);
+        Builder& setHackingStrategy(HackingStrategy *hs);
+        Builder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
+        
+        
+        /**
+         Prepare a set of hacking strategies groups by populating each group from
+         the given `hacking_strategies_pool`
+
+         @param hacking_strategies_pool A set of hacking strategy methods use to
+         prepare researcher's hacking startegies
+         @param n_group The number of hacking strategies groups
+         @param m_strategies The number of hacking startegies in each group
+         @return Return an instance of itself where hacking_strategies has been
+         initialized accordingly.
+         */
+        Builder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
+            
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> uniform(0, hacking_strategies_pool.size() - 1);
+            
+            for (auto &group : hacking_strategies) {
+                
+                for (int i = 0; i < m_strategies; i++) {
+                    group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
                 }
                 
             }
-        }
-        return *this;
-    };
-
-
-    Builder& setResearcherPreference(DecisionPreference pref){
-        // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
-        this->researcher_preference = pref;
-        return *this;
-    };
-    
-    Builder& setExperimentSetup(ExperimentSetup);
-    Builder& setExperiment(Experiment);
-    Builder& setDataStrategy(DataStrategy *dgs){
-        this->experiment->dataStrategy = dgs;
-        return *this;
-    }
-    Builder& setTestStrategy(TestStrategy *ts){
-        this->experiment->testStrategy = ts;
-        return *this;
-    };
-    Builder& setJournal(Journal j){
-        this->journal = &j;
-        return *this;
-    };
-    Builder& setDecisionStrategy(DecisionStrategy *ds);
-    Builder& setHackingStrategy(HackingStrategy *hs);
-    Builder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
-    
-    
-    /**
-     Prepare a set of hacking strategies groups by populating each group from
-     the given `hacking_strategies_pool`
-
-     @param hacking_strategies_pool A set of hacking strategy methods use to
-     prepare researcher's hacking startegies
-     @param n_group The number of hacking strategies groups
-     @param m_strategies The number of hacking startegies in each group
-     @return Return an instance of itself where hacking_strategies has been
-     initialized accordingly.
-     */
-    Builder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
-        
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> uniform(0, hacking_strategies_pool.size() - 1);
-        
-        for (auto &group : hacking_strategies) {
             
-            for (int i = 0; i < m_strategies; i++) {
-                group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
+            return *this;
+        };
+        
+        
+        /**
+         Constructs `n_group`'s of hacking strategies, each consisting of maximum
+         `m_strategies`'s or steps. Each startegy is being selected randomly
+         between all available strategies.
+
+         @param n_group Number of groups of hacking strategies
+         @param m_strategies Number of hacking strategies in each group
+         @return Return an instance of itself where hacking_strategies has been
+         initialized accordingly.
+         */
+        Builder& pickRandomHackingStrategies(int n_group, int m_method) {
+            
+            this->isHacker();
+            this->hacking_strategies.resize(n_group);
+            
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> uniform(1, static_cast<int>(HackingMethod::N_HACKING_METHODS) - 1);
+            
+            for (auto &group : hacking_strategies) {
+                
+                for (int i = 0; i < m_method; i++) {
+                    group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
+                }
+                
             }
-            
-        }
+          
+            return *this;
+        };
         
-        return *this;
-    };
-    
-    
-    /**
-     Constructs `n_group`'s of hacking strategies, each consisting of maximum
-     `m_strategies`'s or steps. Each startegy is being selected randomly
-     between all available strategies.
+        
 
-     @param n_group Number of groups of hacking strategies
-     @param m_strategies Number of hacking strategies in each group
-     @return Return an instance of itself where hacking_strategies has been
-     initialized accordingly.
-     */
-    Builder& pickRandomHackingStrategies(int n_group, int m_method) {
-        
-        this->isHacker();
-        this->hacking_strategies.resize(n_group);
-        
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> uniform(1, static_cast<int>(HackingMethod::N_HACKING_METHODS) - 1);
-        
-        for (auto &group : hacking_strategies) {
-            
-            for (int i = 0; i < m_method; i++) {
-                group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
-            }
-            
-        }
-      
-        return *this;
+        Researcher build() {
+            return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
+        };
     };
-    
-    
 
-    Researcher build() {
-        return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
-    };
-};
+}
 
 #endif //SAMPP_RESEARCHER_H

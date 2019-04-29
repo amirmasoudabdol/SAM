@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <armadillo>
 
+using namespace sam;
+
 void Experiment::generateData() {
     dataStrategy->genData(this);
 }

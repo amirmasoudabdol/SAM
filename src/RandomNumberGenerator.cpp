@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <RandomNumberGenerator.h>
 
+using namespace sam;
+
 arma::Row<double>
 RandomNumberGenerator::normal(const double &mean, const double &var, const double &n){
     return var * arma::randn<arma::Row<double>>(n) + mean;

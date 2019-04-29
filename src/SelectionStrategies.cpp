@@ -6,6 +6,7 @@
 
 #include <SelectionStrategies.h>
 
+using namespace sam;
 
 SelectionStrategy::~SelectionStrategy() {
     // Pure deconstructor

@@ -4,6 +4,8 @@
 
 #include "DecisionStrategy.h"
 
+using namespace sam;
+
 /**
  * Pure deconstructor of DecisionStrategy.
  * This is necessary for proper deconstruction of derived

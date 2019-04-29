@@ -7,6 +7,8 @@
 
 #include "Experiment.h"
 
+using namespace sam;
+
 DataStrategy::~DataStrategy() {
     // Pure deconstructor
 }

@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+using namespace sam;
 
 void Researcher::hack() {
     

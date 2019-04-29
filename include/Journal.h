@@ -11,63 +11,69 @@
 #include "SelectionStrategies.h"
 #include "SubmissionRecord.h"
 
-class Journal{
-public:
+namespace sam {
 
-    std::vector<Submission> publicationList;
+    class Journal{
+        
+        
+    public:
 
-    SelectionStrategy* selectionStrategy;
-    
-    Journal(json& config);
+        std::vector<Submission> publicationList;
 
-    // Journal(double max_pubs) :
-    //         max_pubs(max_pubs) {
-    //     still_accepting = true;
-    // };
+        SelectionStrategy* selectionStrategy;
+        
+        Journal(json& config);
 
-    void setSelectionStrategy(SelectionStrategy* s);
+        // Journal(double max_pubs) :
+        //         max_pubs(max_pubs) {
+        //     still_accepting = true;
+        // };
 
-    /**
-     * @brief      Review the Submission by calling
-     * `SelectionStrategy::review()`.
-     *
-     * @param[in]  s     A reference to the Submission
-     *
-     * @return     A boolean indicating whether the Submission should
-     * be accpeted or not.
-     */
-    bool review(Submission &s);
+        void setSelectionStrategy(SelectionStrategy* s);
 
-    /**
-     * @brief      Accept the Submission by adding it to the 
-     * `publicationList`.
-     *
-     * @param[in]  s     A copy of the Submission
-     */
-    void accept(Submission s);
+        /**
+         * @brief      Review the Submission by calling
+         * `SelectionStrategy::review()`.
+         *
+         * @param[in]  s     A reference to the Submission
+         *
+         * @return     A boolean indicating whether the Submission should
+         * be accpeted or not.
+         */
+        bool review(Submission &s);
 
-    /**
-     * @brief      Rejecting the Submission!
-     *
-     * @param[in]  s     A reference to the Submission
-     */
-    void reject(Submission &s);
+        /**
+         * @brief      Accept the Submission by adding it to the
+         * `publicationList`.
+         *
+         * @param[in]  s     A copy of the Submission
+         */
+        void accept(Submission s);
 
-    void clear();
+        /**
+         * @brief      Rejecting the Submission!
+         *
+         * @param[in]  s     A reference to the Submission
+         */
+        void reject(Submission &s);
 
-    bool isStillAccepting() const {
-        return still_accepting;
-    }
+        void clear();
 
-    void saveSubmissions(int simid, std::ofstream& writer);
-    
-    void testMeta();
+        bool isStillAccepting() const {
+            return still_accepting;
+        }
 
-private:
-    double max_pubs;
+        void saveSubmissions(int simid, std::ofstream& writer);
+        
+        void testMeta();
 
-    bool still_accepting = true;
+    private:
+        double max_pubs;
 
-};
+        bool still_accepting = true;
+
+    };
+
+}
 
 #endif //SAMPP_JOURNAL_H
