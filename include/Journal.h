@@ -55,7 +55,7 @@ public:
 
     void clear();
 
-    bool isStillAccepting(){
+    bool isStillAccepting() const {
         return still_accepting;
     }
 

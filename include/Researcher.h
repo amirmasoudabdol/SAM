@@ -6,6 +6,8 @@
 #define SAMPP_RESEARCHER_H
 
 #include <vector>
+#include <random>
+
 #include "Experiment.h"
 #include "TestStrategy.h"
 #include "SubmissionRecord.h"
@@ -24,18 +26,17 @@ public:
     class Builder;
 
     Experiment* experiment;
+
+    //! A pointer to the Journal used by researcher for submitting
+    //! the submission or experiment
 	Journal* journal;
-    DecisionStrategy* decisionStrategy;
-    std::vector<std::vector<HackingStrategy*>> hackingStrategies;
+    DecisionStrategy* decision_strategy;
+    std::vector<std::vector<HackingStrategy*>> hacking_strategies;
     bool is_hacker = false;
     
-    Submission submissionRecord;
+    Submission submission_record;
 
     Researcher(json& config);
-
-    Researcher(Experiment* e) {
-        experiment = e;
-    };
     
     Researcher(Experiment* e,
                     Journal* j,
@@ -44,8 +45,8 @@ public:
                     bool ish) :
     experiment(e),
     journal(j),
-    decisionStrategy(ds),
-    hackingStrategies(hs),
+    decision_strategy(ds),
+    hacking_strategies(hs),
     is_hacker(ish)
     { };
 
@@ -57,20 +58,50 @@ public:
     void performResearch();
     void publishResearch();
     
-    DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;      ///< By default, a researcher always prefer to return the pre-registered result
-    
-    void setDecisionStrategy(DecisionStrategy* d);
+    //! By default, a researcher always prefer to return the pre-registered result
+    DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;
 	
     // This could be renamed to something like, selectThePreferedSubmission()
     void prepareTheSubmission();
     void submitToJournal();
+    
+    
+    /**
+     Set the decisionStrategy of the researcher.
 
-	void setJournal(Journal* j);
+     @param d The pointer to a Decision Strategy
+     */
+    void setDecisionStrategy(DecisionStrategy* d) {
+        decision_strategy = d;
+    }
+    
+    /**
+     Set the experiment. This can be used to setup several researchers with one
+     experiment.
+     
+     @param e The pointer to an Experiment
+     */
+    void setExperiment(Experiment* e) {
+        experiment = e;
+    };
+    
+    /**
+     @brief      Set the Jouranl
+    
+     @param      j     The pointer to a Journal instance
+     */
+	void setJournal(Journal* j) {
+        journal = j;
+    };
 
 
 };
 
 
+/**
+ Builder class for Researcher. This takes care of eveyrthing and return a fully
+ initialized Researcher. 
+ */
 class Researcher::Builder {
 private:
     json config;
@@ -162,7 +193,67 @@ public:
     Builder& setHackingStrategy(HackingStrategy *hs);
     Builder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
     
-    Builder& chooseHackingStrategies(std::vector<HackingStrategy>);
+    
+    /**
+     Prepare a set of hacking strategies groups by populating each group from
+     the given `hacking_strategies_pool`
+
+     @param hacking_strategies_pool A set of hacking strategy methods use to
+     prepare researcher's hacking startegies
+     @param n_group The number of hacking strategies groups
+     @param m_strategies The number of hacking startegies in each group
+     @return Return an instance of itself where hacking_strategies has been
+     initialized accordingly.
+     */
+    Builder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
+        
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> uniform(0, hacking_strategies_pool.size() - 1);
+        
+        for (auto &group : hacking_strategies) {
+            
+            for (int i = 0; i < m_strategies; i++) {
+                group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
+            }
+            
+        }
+        
+        return *this;
+    };
+    
+    
+    /**
+     Constructs `n_group`'s of hacking strategies, each consisting of maximum
+     `m_strategies`'s or steps. Each startegy is being selected randomly
+     between all available strategies.
+
+     @param n_group Number of groups of hacking strategies
+     @param m_strategies Number of hacking strategies in each group
+     @return Return an instance of itself where hacking_strategies has been
+     initialized accordingly.
+     */
+    Builder& pickRandomHackingStrategies(int n_group, int m_method) {
+        
+        this->isHacker();
+        this->hacking_strategies.resize(n_group);
+        
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> uniform(1, static_cast<int>(HackingMethod::N_HACKING_METHODS) - 1);
+        
+        for (auto &group : hacking_strategies) {
+            
+            for (int i = 0; i < m_method; i++) {
+                group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
+            }
+            
+        }
+      
+        return *this;
+    };
+    
+    
 
     Researcher build() {
         return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);

@@ -16,12 +16,13 @@
 using json = nlohmann::json;
 
 // This is a reference for their id as well
-enum class HackingMethod : unsigned int {
+enum class HackingMethod : int {
     NoHack = 0,                 // 0
     OptionalStopping,           // 1
     SDOutlierRemoval,           // 2
     GroupPooling,               // 3
-    ConditionDropping           // 4
+    ConditionDropping,          // 4
+    N_HACKING_METHODS           // 5, only to know the last number
 };
 
 const std::map<std::string, HackingMethod>
@@ -86,6 +87,8 @@ public:
      */
     static HackingStrategy* build(json& config);
     
+    static HackingStrategy* build(HackingMethod method);
+    
 
     /**
      * @brief      Pure deconstuctor of the Base calss. This is important
@@ -108,6 +111,7 @@ public:
     
 class NoHack : public HackingStrategy {
 public:
+
     NoHack() {
         hid = HackingMethod::NoHack;
     };
@@ -173,7 +177,7 @@ private:
  */
 class SDOutlierRemoval : public HackingStrategy {
 public:
-
+    
     SDOutlierRemoval(std::string level = "dv", std::string order = "max first", int num = 3, int n_attempts = 1, int max_attempts = 3, int min_observations = 10, std::vector<double> multipliers = {3}) :
         level(level),
         order(order),

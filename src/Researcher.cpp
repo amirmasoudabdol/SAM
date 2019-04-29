@@ -11,7 +11,7 @@ void Researcher::hack() {
     
     Submission sub;
     
-    for (auto &set : hackingStrategies){
+    for (auto &set : hacking_strategies){
         
         // For each set, we make a copy of the experiment and apply the given
         // set of methods over each other.
@@ -20,15 +20,15 @@ void Researcher::hack() {
         
         for (auto &h : set){
             
-            h->perform(&copiedExpr, decisionStrategy);
+            h->perform(&copiedExpr, decision_strategy);
             copiedExpr.is_hacked = true;
             copiedExpr.hackingHistory.push_back((int)h->hid);
             
-            decisionStrategy->verdict(copiedExpr,
+            decision_strategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);
             
             // If the researcher statisfied, hacking routine will be stopped
-            if (!decisionStrategy->isStillHacking()){
+            if (!decision_strategy->isStillHacking()){
                 break;
             }
             
@@ -36,20 +36,9 @@ void Researcher::hack() {
     }
 }
 
-
-
-void Researcher::setJournal(Journal* j) {
-	journal = j;
-}
-
 void Researcher::registerAHackingStrategy(HackingStrategy *h) {
     // TODO: The register builder needs some work, especially for hacking methods
 //    hackingStrategies.push_back({h});
-}
-
-
-void Researcher::setDecisionStrategy(DecisionStrategy* d) {
-    decisionStrategy = d;
 }
 
 
@@ -90,7 +79,7 @@ void Researcher::performResearch(){
     this->experiment->runTest();
 
     // 
-    bool willHack = this->decisionStrategy->verdict(*this->experiment,
+    bool willHack = this->decision_strategy->verdict(*this->experiment,
                                                          DecisionStage::Initial);
     
     if (this->is_hacker && willHack){
@@ -107,9 +96,9 @@ void Researcher::publishResearch(){
     
     // hack 3
     
-    this->decisionStrategy->verdict(*this->experiment,
+    this->decision_strategy->verdict(*this->experiment,
                                     DecisionStage::Final);
 
-    this->journal->review(this->decisionStrategy->final_submission);
+    this->journal->review(this->decision_strategy->final_submission);
     
 }

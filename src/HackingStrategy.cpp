@@ -61,6 +61,30 @@ HackingStrategy *HackingStrategy::build(json &config) {
     
 }
 
+HackingStrategy *HackingStrategy::build(HackingMethod method) {
+    switch (method) {
+        
+        case HackingMethod::NoHack:
+            return new NoHack();
+            break;
+        case HackingMethod::OptionalStopping:
+            return new OptionalStopping();
+            break;
+        case HackingMethod::SDOutlierRemoval:
+            return new SDOutlierRemoval();
+            break;
+        case HackingMethod::GroupPooling:
+            return new GroupPooling();
+            break;
+        case HackingMethod::ConditionDropping:
+            return new ConditionDropping();
+            break;
+        default:
+            return new NoHack();
+            break;
+    }
+}
+
 std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)
