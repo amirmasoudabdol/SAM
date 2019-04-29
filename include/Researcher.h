@@ -36,6 +36,7 @@ namespace sam {
         std::vector<std::vector<HackingStrategy*>> hacking_strategies;
         bool is_hacker = false;
         
+        //! A Submission record that Researcher is going to submit to the Journal
         Submission submission_record;
 
         Researcher(json& config);
@@ -52,8 +53,6 @@ namespace sam {
         is_hacker(ish)
         { };
 
-        // This probably needs to be a class of itself as well
-        void registerAHackingStrategy(HackingStrategy* h);
         void hack();
 
         void prepareResearch();

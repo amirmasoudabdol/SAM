@@ -43,7 +43,7 @@
     },
     "ResearcherParameters": {
         "decision-strategy": {
-            "name": "PatientDecisionMaker",
+            "name": "ImpatientDecisionMaker",
             "preference": "MinPvalue"
         },
         "hacking-strategies": [

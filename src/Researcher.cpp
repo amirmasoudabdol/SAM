@@ -2,9 +2,9 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
-#include <Researcher.h>
-
 #include <iostream>
+
+#include "Researcher.h"
 
 using namespace sam;
 
@@ -37,69 +37,65 @@ void Researcher::hack() {
     }
 }
 
-void Researcher::registerAHackingStrategy(HackingStrategy *h) {
-    // TODO: The register builder needs some work, especially for hacking methods
-//    hackingStrategies.push_back({h});
-}
-
-
 /**
- * @brief      Prepares the research by cleaning up the memeory, 
- * randomizing the ExperimentSetup parameters, allocating data and 
- * finally generating the data using the DataGenStrategy
+ Prepares the research by cleaning up the memeory, randomizing the
+ ExperimentSetup parameters, allocating data and finally generating the data
+ using the DataGenStrategy
  */
 void Researcher::prepareResearch() {
     
     // Randomize if necessary
     // TODO: I need to handle this better because nobs is being assigned in the
     // ExperimentSetup before this as well, when reading other parameteres.
-    if (this->experiment->setup.is_n_randomized){
-        this->experiment->randomize();
+    if (experiment->setup.is_n_randomized){
+        experiment->randomize();
     }
     
     // Allocating memory
-    this->experiment->initResources(experiment->setup.ng);
+    experiment->initResources(experiment->setup.ng);
     
     // Generating data using the dataStrategy
-    this->experiment->generateData();
+    experiment->generateData();
 }
 
 /**
- * @brief      Performs the research by calculating the statistics, calculating the effects,
- * and running the test. In the case where the researcher is a hacker, the researcher will 
- * apply the hacking methods on the `experiment`.
+ Performs the research by calculating the statistics, calculating the effects,
+ and running the test. In the case where the researcher is a hacker, the
+ researcher will apply the hacking methods on the `experiment`.
  */
 void Researcher::performResearch(){
+        
+    experiment->calculateStatistics();
     
-    // hack 1
+    experiment->calculateEffects();
     
-    this->experiment->calculateStatistics();
-    
-    this->experiment->calculateEffects();
-    
-    this->experiment->runTest();
+    experiment->runTest();
 
     // 
-    bool willHack = this->decision_strategy->verdict(*this->experiment,
+    bool willHack = decision_strategy->verdict(*experiment,
                                                          DecisionStage::Initial);
     
-    if (this->is_hacker && willHack){
-        this->hack();
+    if (is_hacker && willHack){
+        hack();
     }    
 }
 
 /**
- * @brief      Prepares the submission record by asking the `decisionStrategy` to pick
- * his prefered submission record from the list of available submission, `submissionsList`.
- * AFter than, it'll submit the submission record to the selected `journal`.
+ Prepares the submission record by asking the `decisionStrategy` to pick
+ his prefered submission record from the list of available submission,
+ `submissionsList`. After than, it'll submit the submission record to the
+ selected `journal`.
  */
 void Researcher::publishResearch(){
     
-    // hack 3
+    // Ask for the final decision    
+    decision_strategy->verdict(*experiment,
+                                      DecisionStage::Final);
     
-    this->decision_strategy->verdict(*this->experiment,
-                                    DecisionStage::Final);
+    // Setting researcher's submission record
+    submission_record = decision_strategy->final_submission;
 
-    this->journal->review(this->decision_strategy->final_submission);
+    // Submit the final submission to the Jouranl
+    journal->review(decision_strategy->final_submission);
     
 }

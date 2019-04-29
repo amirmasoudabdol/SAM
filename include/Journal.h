@@ -5,22 +5,24 @@
 #ifndef SAMPP_JOURNAL_H
 #define SAMPP_JOURNAL_H
 
+#include <map>
 #include <vector>
 #include <fstream>
 
 #include "SelectionStrategies.h"
 #include "SubmissionRecord.h"
+#include "MetaAnalysis.h"
 
 namespace sam {
 
     class Journal{
+
+        SelectionStrategy* selection_strategy;
         
+        std::vector<Submission> publications_list;
         
     public:
 
-        std::vector<Submission> publications_list;
-
-        SelectionStrategy* selection_strategy;
         
         Journal(json& config);
 

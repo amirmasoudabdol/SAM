@@ -126,9 +126,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
     
     for (int t = 0; t < n_attempts && t < max_attempts ; t++) {
         
-        
         addObservations(experiment, num);
-        
         
         // TODO: This can still be done nicer
         experiment->calculateStatistics();
