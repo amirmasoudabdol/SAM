@@ -29,8 +29,6 @@ HackingStrategy::~HackingStrategy() {
 /**
  A Factory method for building hacking strategies
  
- \sa README.md
- 
  @param config A JSON object defining a hacking strategy, and its parameters
  @return Pointer to a HackingStrategy
  */
@@ -115,9 +113,12 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
 /**
  @brief Implementation of optional stopping.
  
- This will use two parameters set at construction of the OptionalStopping class, `n_trials` and `n_new_obs`
- for every trial, the routine will add `n_new_obs` to all groups, recalculate the statistics, and run the test. It will then select an outcome based on researcher's preference and check it's significance. If
- the results is significant, it'll not make a new attempt to add more data, and will return to the hack() routine.
+ This will use two parameters set at construction of the OptionalStopping class,
+ `n_trials` and `n_new_obs` for every trial, the routine will add `n_new_obs`
+ to all groups, recalculate the statistics, and run the test. It will then
+ select an outcome based on researcher's preference and check it's significance.
+ If the results is significant, it'll not make a new attempt to add more data,
+ and will return to the hack() routine.
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
     
@@ -143,7 +144,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
 }
 
 void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
-    auto new_observations = experiment->dataStrategy->genNewObservationsForAllGroups(experiment, n);
+    auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
     
     int i = 0;
     std::for_each(experiment->measurements.begin(), experiment->measurements.end(),

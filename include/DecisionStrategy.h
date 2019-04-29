@@ -61,10 +61,10 @@ namespace sam {
         
     protected:
         //! List of selected Submission by the researcher.
-        std::vector<Submission> submissionsPool;
+        std::vector<Submission> submissions_pool;
 
         //! List of selected Experiment by the researcher.
-        std::vector<Experiment> experimentsPool;
+        std::vector<Experiment> experiments_pool;
 
         //! If `true`, the Researcher will continue traversing through the
         //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -86,7 +86,7 @@ namespace sam {
         /*
          * The default get method for is_still_hacking
          */
-        bool isStillHacking() {
+        bool isStillHacking() const {
             return is_still_hacking;
         }
         
@@ -103,8 +103,8 @@ namespace sam {
          Clear the list of submissions and experiments
          */
         void clearHistory(){
-            submissionsPool.clear();
-            experimentsPool.clear();
+            submissions_pool.clear();
+            experiments_pool.clear();
         }
         
         /**
@@ -155,7 +155,7 @@ namespace sam {
             selectionPref = selection_pref;
         };
         
-        bool isPublishable(const Submission &sub){
+        bool isPublishable(const Submission &sub) const {
             return sub.isSig();
         }
         
@@ -177,7 +177,7 @@ namespace sam {
             selectionPref = selection_pref;
         };
         
-        bool isPublishable(const Submission &sub){
+        bool isPublishable(const Submission &sub) const {
             return sub.isSig();
         };
         
@@ -196,7 +196,7 @@ namespace sam {
 
     public:
 
-        HonestDecisionMaker(int prg){
+        HonestDecisionMaker(int prg) {
             pre_registered_group = prg;
         };
         

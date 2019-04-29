@@ -56,8 +56,8 @@ namespace sam {
 
     public:
         
-        ExperimentType experimentType;
-        TestMethod testMethod;
+        ExperimentType experiment_type;
+        TestMethod test_method;
         
         //! Number of experimental conditions, e.g., treatment 1, treatment 2.
         int nc = 1;

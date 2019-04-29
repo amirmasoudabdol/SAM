@@ -203,7 +203,7 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
 }
 
 DataStrategy *DataStrategy::build(ExperimentSetup &setup){
-    switch (setup.experimentType) {
+    switch (setup.experiment_type) {
         case ExperimentType::LinearModel:
             return new LinearModelStrategy(setup);
             break;

@@ -17,7 +17,6 @@ namespace sam {
 
     using json = nlohmann::json;
 
-    // This is a reference for their id as well
     enum class HackingMethod : int {
         NoHack = 0,                 // 0
         OptionalStopping,           // 1
@@ -74,7 +73,7 @@ namespace sam {
         //! asked to rate the defensibility of different QRPs.
         double defensibility;
         
-        HackingStage hackingStage = HackingStage::DataProcessing;
+        HackingStage hacking_stage = HackingStage::DataProcessing;
         
         HackingMethod hid;
         

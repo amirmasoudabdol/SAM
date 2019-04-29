@@ -56,14 +56,14 @@ namespace sam {
         
         Experiment(ExperimentSetup& e) : setup(e) { };
 
-        TestStrategy* testStrategy;
+        TestStrategy* test_strategy;
         void setTestStrategy(TestStrategy* t);
         void runTest();
 
-        DataStrategy* dataStrategy;
+        DataStrategy* data_strategy;
         void setDataStrategy(DataStrategy* d);
         
-        std::vector<EffectSizeEstimator *> effectSizeEstimators;
+        std::vector<EffectSizeEstimator *> effect_size_estimators;
         void setEffectSizeEstimator(EffectSizeEstimator *efs);
 
         // Initialize the Experiment/**/

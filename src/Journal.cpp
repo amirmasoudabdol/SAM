@@ -19,16 +19,16 @@ Journal::Journal(json& config){
     max_pubs = config["max-pubs"];
     
     // Setting up the SelectionStrategy
-    this->selectionStrategy = SelectionStrategy::build(config["selection-strategy"]);
+    this->selection_strategy = SelectionStrategy::build(config["selection-strategy"]);
 }
 
 void Journal::setSelectionStrategy(SelectionStrategy *s) {
-    selectionStrategy = s;
+    selection_strategy = s;
 }
 
 bool Journal::review(Submission &s) {
     
-    bool decision = this->selectionStrategy->review(s);
+    bool decision = this->selection_strategy->review(s);
     
     if (decision){
         accept(s);
@@ -40,9 +40,9 @@ bool Journal::review(Submission &s) {
 
 void Journal::accept(Submission s) {
     
-    publicationList.push_back(s);
+    publications_list.push_back(s);
     
-    if (publicationList.size() == max_pubs){
+    if (publications_list.size() == max_pubs){
         still_accepting = false;
     }
     
@@ -53,14 +53,14 @@ void Journal::reject(Submission &s) {
 }
 
 void Journal::clear() {
-    publicationList.clear();
+    publications_list.clear();
     still_accepting = true;
 }
 
 void Journal::saveSubmissions(int simid, std::ofstream& writer) {
     
     int i = 0;
-    for (auto& p : publicationList) {
+    for (auto& p : publications_list) {
         p.simid = simid;
         p.pubid = i++;
         
@@ -77,5 +77,5 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
 void Journal::testMeta() {
     FixedEffectEstimator fes;
     
-    cerr << fes.estimate(publicationList);
+    cerr << fes.estimate(publications_list);
 }

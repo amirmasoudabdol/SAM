@@ -14,19 +14,19 @@
 using namespace sam;
 
 void Experiment::generateData() {
-    dataStrategy->genData(this);
+    data_strategy->genData(this);
 }
 
 void Experiment::setDataStrategy(DataStrategy* d) {
-    dataStrategy = d;
+    data_strategy = d;
 }
 
 void Experiment::setTestStrategy(TestStrategy *t){
-    testStrategy = t;
+    test_strategy = t;
 }
 
 void Experiment::runTest(){
-    testStrategy->run(this);
+    test_strategy->run(this);
 }
 
 void Experiment::initExperiment() {
@@ -47,7 +47,7 @@ void Experiment::initResources(int len) {
     pvalues.zeros(len);
 //    effects.zeros(len);
     
-    for (auto &estimator : effectSizeEstimators) {
+    for (auto &estimator : effect_size_estimators) {
         effects[estimator->name].zeros(len);
     }
     
@@ -68,7 +68,7 @@ void Experiment::calculateStatistics() {
 
 void Experiment::calculateEffects() {
 //    effects = means;
-    for (auto &estimator : effectSizeEstimators){
+    for (auto &estimator : effect_size_estimators){
         estimator->computeEffects(this);
     }
 //    effectSizeEstimator->computeEffects(this);
@@ -90,12 +90,12 @@ Experiment::Experiment(json &config) {
     // TODO: This should initialize everything, also set TestStrategy, ...
     this->setup = ExperimentSetup(config["ExperimentParameters"]);
 
-    this->dataStrategy = DataStrategy::build(setup);
+    this->data_strategy = DataStrategy::build(setup);
     
-    this->testStrategy = TestStrategy::build(config["ExperimentParameters"]["test-strategy"]);
+    this->test_strategy = TestStrategy::build(config["ExperimentParameters"]["test-strategy"]);
     
     for (auto &estimator : config["ExperimentParameters"]["effect-estimators"]){
-        this->effectSizeEstimators.push_back(EffectSizeEstimator::build(estimator));
+        this->effect_size_estimators.push_back(EffectSizeEstimator::build(estimator));
     }
     
 }

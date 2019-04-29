@@ -59,7 +59,7 @@ namespace sam {
             statistic = e.statistics[index];
             pvalue = e.pvalues[index];
             
-            for (auto &estimator : e.effectSizeEstimators){
+            for (auto &estimator : e.effect_size_estimators){
                 effects.push_back(e.effects[estimator->name][index]);
             }
             

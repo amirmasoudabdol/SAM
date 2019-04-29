@@ -18,9 +18,9 @@ namespace sam {
         
     public:
 
-        std::vector<Submission> publicationList;
+        std::vector<Submission> publications_list;
 
-        SelectionStrategy* selectionStrategy;
+        SelectionStrategy* selection_strategy;
         
         Journal(json& config);
 

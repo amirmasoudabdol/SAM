@@ -108,11 +108,11 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
         case DecisionPreference::MinPvalue:
             {
                 std::vector<double> pvalues;
-                std::transform(submissionsPool.begin(), submissionsPool.end(), std::back_inserter(pvalues), [](const Submission &s) {return s.pvalue;} );
+                std::transform(submissions_pool.begin(), submissions_pool.end(), std::back_inserter(pvalues), [](const Submission &s) {return s.pvalue;} );
                 int min_pvalue_inx = std::distance(pvalues.begin(),
                                                    std::min_element(pvalues.begin(),
                                                                     pvalues.end()));
-                return submissionsPool[min_pvalue_inx];
+                return submissions_pool[min_pvalue_inx];
             }
             break;
             
@@ -133,7 +133,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
             break;
     }
 
-    return submissionsPool.back();
+    return submissions_pool.back();
     
 }
 
@@ -142,8 +142,8 @@ bool ImpatientDecisionMaker::initDecision(Experiment &experiment){
     Submission sub = selectOutcome(experiment);
     
     // Preparing pools anyway
-    experimentsPool.push_back(experiment);
-    submissionsPool.push_back(sub);
+    experiments_pool.push_back(experiment);
+    submissions_pool.push_back(sub);
         
     return !isPublishable(sub);
 }
@@ -159,8 +159,8 @@ bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
                 
         
     if (isPublishable(sub)){
-        experimentsPool.push_back(experiment);
-        submissionsPool.push_back(sub);
+        experiments_pool.push_back(experiment);
+        submissions_pool.push_back(sub);
         
         is_still_hacking = false;
     }else{
@@ -173,7 +173,7 @@ bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
 bool ImpatientDecisionMaker::finalDecision(Experiment &experiment){
     // TODO: This can be implemented differenly if necessary
 
-    final_submission = submissionsPool.back();
+    final_submission = submissions_pool.back();
     
     clearHistory();
     
@@ -206,8 +206,8 @@ bool ImpatientDecisionMaker::verdict(Experiment &experiment, DecisionStage stage
 bool PatientDecisionMaker::initDecision(Experiment &experiment) {
     Submission sub = selectOutcome(experiment);
         
-    experimentsPool.push_back(experiment);
-    submissionsPool.push_back(sub);
+    experiments_pool.push_back(experiment);
+    submissions_pool.push_back(sub);
     
     is_still_hacking = !isPublishable(sub);
     return is_still_hacking;
@@ -224,8 +224,8 @@ bool PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
     Submission sub = selectOutcome(experiment);
     
     if (isPublishable(sub)){
-        experimentsPool.push_back(experiment);
-        submissionsPool.push_back(sub);
+        experiments_pool.push_back(experiment);
+        submissions_pool.push_back(sub);
     }
     
     is_still_hacking = !isPublishable(sub);

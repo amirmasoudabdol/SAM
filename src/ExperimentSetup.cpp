@@ -37,7 +37,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else if (stringToExperimentType.find(config["data-strategy"]) == stringToExperimentType.end()){
         throw std::invalid_argument("Unknown Data Strategy.");
     }
-    experimentType = stringToExperimentType.find(config["data-strategy"])->second;
+    experiment_type = stringToExperimentType.find(config["data-strategy"])->second;
     
     nc = config["n-conditions"];
     nd = config["n-dep-vars"];

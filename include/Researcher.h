@@ -61,7 +61,7 @@ namespace sam {
         void publishResearch();
         
         //! By default, a researcher always prefer to return the pre-registered result
-        DecisionPreference selectionPref = DecisionPreference::PreRegisteredOutcome;
+        DecisionPreference selection_pref = DecisionPreference::PreRegisteredOutcome;
         
         // This could be renamed to something like, selectThePreferedSubmission()
         void prepareTheSubmission();
@@ -180,11 +180,11 @@ namespace sam {
         Builder& setExperimentSetup(ExperimentSetup);
         Builder& setExperiment(Experiment);
         Builder& setDataStrategy(DataStrategy *dgs){
-            this->experiment->dataStrategy = dgs;
+            this->experiment->data_strategy = dgs;
             return *this;
         }
         Builder& setTestStrategy(TestStrategy *ts){
-            this->experiment->testStrategy = ts;
+            this->experiment->test_strategy = ts;
             return *this;
         };
         Builder& setJournal(Journal j){
