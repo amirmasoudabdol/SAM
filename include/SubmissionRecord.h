@@ -84,7 +84,7 @@ namespace sam {
         /**
          @return `true` if the Submission is significant, `false` otherwise
          */
-        const bool isSig() const {
+        bool isSig() const {
             return sig;
         }
 

@@ -138,7 +138,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
 }
 
 
-bool ImpatientDecisionMaker::initDecision(Experiment &experiment){
+bool ImpatientDecisionMaker::initDecision(Experiment &experiment) {
     Submission sub = selectOutcome(experiment);
     
     // Preparing pools anyway
@@ -148,13 +148,13 @@ bool ImpatientDecisionMaker::initDecision(Experiment &experiment){
     return !isPublishable(sub);
 }
 
-bool ImpatientDecisionMaker::intermediateDecision(Experiment &experiment){
+bool ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
     is_still_hacking = !isPublishable(selectOutcome(experiment));
     return is_still_hacking;
 }
 
-bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
+bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
     Submission sub = selectOutcome(experiment);
                 
         
@@ -170,7 +170,7 @@ bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment){
     return is_still_hacking;
 }
 
-bool ImpatientDecisionMaker::finalDecision(Experiment &experiment){
+bool ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
     // TODO: This can be implemented differenly if necessary
 
     final_submission = submissions_pool.back();
