@@ -6,7 +6,7 @@
 #define SAMPP_HACKINGSTRATEGIES_H
 
 #include "Experiment.h"
-#include "SubmissionRecord.h"
+#include "Submission.h"
 #include "DecisionStrategy.h"
 #include <string>
 #include <map>

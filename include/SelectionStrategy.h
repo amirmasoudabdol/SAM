@@ -5,7 +5,7 @@
 #ifndef SAMPP_SELECTIONSTRATEGIES_H
 #define SAMPP_SELECTIONSTRATEGIES_H
 
-#include "SubmissionRecord.h"
+#include "Submission.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"

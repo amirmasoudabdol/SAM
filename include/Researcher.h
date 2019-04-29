@@ -10,7 +10,7 @@
 
 #include "Experiment.h"
 #include "TestStrategy.h"
-#include "SubmissionRecord.h"
+#include "Submission.h"
 #include "HackingStrategy.h"
 #include "Journal.h"
 #include "DecisionStrategy.h"

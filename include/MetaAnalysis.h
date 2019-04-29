@@ -9,7 +9,7 @@
 #include <armadillo>
 
 #include "Experiment.h"
-#include "SubmissionRecord.h"
+#include "Submission.h"
 
 namespace sam {
     

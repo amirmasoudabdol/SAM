@@ -8,7 +8,7 @@
 #include <vector>
 #include <armadillo>
 
-#include "SubmissionRecord.h"
+#include "Submission.h"
 #include "Experiment.h"
 
 namespace sam {

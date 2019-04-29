@@ -10,7 +10,7 @@
 #include <fstream>
 
 #include "SelectionStrategy.h"
-#include "SubmissionRecord.h"
+#include "Submission.h"
 #include "MetaAnalysis.h"
 
 namespace sam {
