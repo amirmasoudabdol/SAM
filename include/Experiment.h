@@ -56,12 +56,20 @@ namespace sam {
         
         Experiment(ExperimentSetup& e) : setup(e) { };
 
-        TestStrategy* test_strategy;
-        void setTestStrategy(TestStrategy* t);
+        
         void runTest();
+        
+        TestStrategy* test_strategy;
+        
+        void setTestStrategy(TestStrategy *t){
+            test_strategy = t;
+        }
 
         DataStrategy* data_strategy;
-        void setDataStrategy(DataStrategy* d);
+        
+        void setDataStrategy(DataStrategy* d) {
+            data_strategy = d;
+        }
         
         std::vector<EffectSizeEstimator *> effect_size_estimators;
         void setEffectSizeEstimator(EffectSizeEstimator *efs);
@@ -80,7 +88,7 @@ namespace sam {
 
         //! Indicates if any hacking routine has been applied on the experiment
         bool is_hacked = false;
-        std::vector<int> hackingHistory;
+        std::vector<int> hacks_history;
         
 
         

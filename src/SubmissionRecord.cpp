@@ -36,7 +36,7 @@ namespace sam {
         
         isHacked = e.is_hacked;
         
-        hHistory = e.hackingHistory;
+        hHistory = e.hacks_history;
     };
 
     std::ostream& operator<<(std::ostream& os, const Submission& s){

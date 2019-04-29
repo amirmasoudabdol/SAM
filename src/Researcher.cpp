@@ -23,7 +23,7 @@ void Researcher::hack() {
             
             h->perform(&copiedExpr, decision_strategy);
             copiedExpr.is_hacked = true;
-            copiedExpr.hackingHistory.push_back((int)h->hid);
+            copiedExpr.hacks_history.push_back((int)h->hid);
             
             decision_strategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);

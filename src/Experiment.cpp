@@ -17,14 +17,6 @@ void Experiment::generateData() {
     data_strategy->genData(this);
 }
 
-void Experiment::setDataStrategy(DataStrategy* d) {
-    data_strategy = d;
-}
-
-void Experiment::setTestStrategy(TestStrategy *t){
-    test_strategy = t;
-}
-
 void Experiment::runTest(){
     test_strategy->run(this);
 }
