@@ -60,6 +60,9 @@ namespace sam {
     class DecisionStrategy {
         
     protected:
+        
+        Submission current_submission;
+        
         //! List of selected Submission by the researcher.
         std::vector<Submission> submissions_pool;
 
@@ -72,6 +75,8 @@ namespace sam {
         //! verdict(). Basically verdict() decides if the Researcher is
         //! happy with the submission record or not.
         bool is_still_hacking = true;
+        
+        bool will_be_submitting = false;
         
     public:
         
@@ -120,11 +125,45 @@ namespace sam {
          */
         virtual bool verdict(Experiment& experiment, DecisionStage stage) = 0;
         
-        // Decision Stages
-        virtual bool initDecision(Experiment &experiment) = 0;
-        virtual bool intermediateDecision(Experiment &experiment) = 0;
-        virtual bool afterhackDecision(Experiment &experiment) = 0;
-        virtual bool finalDecision(Experiment &experiment) = 0;
+        
+            /**
+             A method implementing the Initial decision making logic.
+             
+             @return A boolean indicating whether the researcher should proceed
+             with the hacking or not.
+             */
+            virtual bool initDecision(Experiment &experiment) = 0;
+        
+            /**
+             A method implementing the Intermediate decision making logic.
+             
+             @return A boolean indicating whether the researcher should stop the
+             hacking procedude or not. E.g., in the case of Optional Stopping this
+             routine will decide whether researcher should stop after each attempt
+             or continue further.
+             */
+            virtual bool intermediateDecision(Experiment &experiment) = 0;
+        
+            /**
+             A method implementing the decision making routine after completely
+             applying a hacking strategy on an experiment.
+             
+             @return A boolean indicating whether the researcher should proceed to
+             the _next_ hacking strategy.
+             */
+            virtual bool afterhackDecision(Experiment &experiment) = 0;
+        
+            /**
+             A method implementing the Final decision making logic.
+             
+             @note In the case where the Decision Making should look back at the
+             history of hacking, this routine will also prepare the `final_submission`.
+             
+             @return A boolean indicating whether the researcher should proceed
+             with submitting the final submission to the Journal or not.
+             */
+            virtual bool finalDecision(Experiment &experiment) = 0;
+         
         
         /**
          * @brief      Based on the DecisionPreference, it'll select the outcome

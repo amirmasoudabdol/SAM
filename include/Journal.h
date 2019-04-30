@@ -9,6 +9,8 @@
 #include <vector>
 #include <fstream>
 
+#include "csv/writer.hpp"
+
 #include "SelectionStrategy.h"
 #include "Submission.h"
 #include "MetaAnalysis.h"

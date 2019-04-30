@@ -73,7 +73,7 @@ void Researcher::performResearch(){
 
     // 
     bool willHack = decision_strategy->verdict(*experiment,
-                                                         DecisionStage::Initial);
+                                               DecisionStage::Initial);
     
     if (is_hacker && willHack){
         hack();
