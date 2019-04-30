@@ -11,6 +11,7 @@
 
 #include <armadillo>
 
+#include "TestStrategy.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
@@ -27,14 +28,6 @@ namespace sam {
         LatentModel     ///< Latent Model or Structural Equation Model
     };
 
-    /**
-     * @brief      Specifying the significant testing method
-     */
-    enum class TestMethod {
-        TTest,           ///< T-test
-        FTest            ///< F-test
-    };
-
     const std::map<std::string, ExperimentType>
     stringToExperimentType = {
         {"LinearModel", ExperimentType::LinearModel},
@@ -45,14 +38,13 @@ namespace sam {
     /**
      @brief Define a class for ExperimentSetup.
      
-     ExperimentSetup contains the necessary parameters for initiating and generating
-     the data needed for the Experiment.
+     ExperimentSetup contains the necessary parameters for initiating and
+     generating the data needed for the Experiment.
      */
     class ExperimentSetup {
         
-    private:
+        //! Main random number stream used by the class to randomize `true_nobs`, etc.
         RandomNumberGenerator *rng_stream;
-
 
     public:
         

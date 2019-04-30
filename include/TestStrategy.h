@@ -18,7 +18,16 @@
 namespace sam {
 
     using json = nlohmann::json;
+    
+    /**
+     * @brief      Specifying the significant testing method
+     */
+    enum class TestMethod {
+        TTest,           ///< T-test
+        FTest            ///< F-test
+    };
 
+    
     enum class TestSide {
         Less,
         Greater,
