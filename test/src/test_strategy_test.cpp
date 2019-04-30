@@ -39,8 +39,8 @@ BOOST_AUTO_TEST_CASE( one_sample_test )
     
     TestResult res = t_test(0., 0., 0., mean(a), stddev(a), a.size(), 0.05, TestSide::TwoSide, true);
     
-    std::cout << "r: " << r_p_value << "\n";
-    std::cout << "sam: " << res.pvalue << "\n";
+    // std::cerr << "r: " << r_p_value << "\n";
+    // std::cerr << "sam: " << res.pvalue << "\n";
     
     BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
 }
@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE( two_equal_var_test )
                             mean(b), stddev(b), b.size(),
                             0.05, TestSide::TwoSide, true);
     
-    std::cout << "r: " << r_p_value << "\n";
-    std::cout << "sam: " << res.pvalue << "\n";
+    // std::cerr << "r: " << r_p_value << "\n";
+    // std::cerr << "sam: " << res.pvalue << "\n";
 
     BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
 }
@@ -105,8 +105,8 @@ BOOST_AUTO_TEST_CASE( two_unequal_var_test )
                             mean(b), stddev(b), b.size(),
                             0.05, TestSide::TwoSide, false);
     
-    std::cout << "r: " << r_p_value << "\n";
-    std::cout << "sam: " << res.pvalue << "\n";
+    // std::cerr << "r: " << r_p_value << "\n";
+    // std::cerr << "sam: " << res.pvalue << "\n";
     
     BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
 }

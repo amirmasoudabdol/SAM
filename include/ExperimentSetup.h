@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include <functional>
+#include <cmath>
 
 #include <armadillo>
 
@@ -64,31 +65,40 @@ namespace sam {
         //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
         //! variables, \f$n_g = n_c \times n_d \times n_i\f$
         int ng_;
-        void updateNumGroups() {
-            ng_ = nc_ * nd_;
-        }
         
         //! Total number of groups in the case of latent experiment.
         //! This is a helper variable and doesn't mean anything conceptually
         int nrows_;
-        void updateNumRows() {
+        
+        void updateExperimentSize() {
+            ng_ = nc_ * nd_;
             nrows_ = ng_ * ni_;
+            
+            initializeMemory();
         }
         
         std::unordered_map<std::string, arma::Mat<double>> true_parameters_;
         
         void initializeMemory() {
-            true_parameters_["nobs"] = arma::Row<double>(ng_);
-            true_parameters_["means"] = arma::Row<double>(ng_);
-            true_parameters_["vars"] = arma::Row<double>(ng_);
-            true_parameters_["covs"] = arma::Row<double>(ng_);
+            true_parameters_["nobs"] = arma::Row<double>(ng_, arma::fill::zeros);
+            true_parameters_["means"] = arma::Row<double>(ng_, arma::fill::zeros);
+            true_parameters_["vars"] = arma::Row<double>(ng_, arma::fill::zeros);
+            true_parameters_["sigma"] = arma::Mat<double>(ng_, ng_, arma::fill::zeros);
             
-            true_parameters_["sigma"] = arma::Mat<double>(ng_, ng_);
+            true_parameters_["loadings"] = arma::Row<double>(ni_, arma::fill::zeros);
+            true_parameters_["error_means"] = arma::Row<double>(nrows_, arma::fill::zeros);
+            true_parameters_["error_vars"] = arma::Row<double>(nrows_, arma::fill::zeros);
+            true_parameters_["error_sigma"] = arma::Row<double>(nrows_, arma::fill::zeros);
             
-            true_parameters_["loadings"] = arma::Row<double>(ni_);
-            true_parameters_["error_means"] = arma::Row<double>(nrows_);
-            true_parameters_["error_vars"] = arma::Row<double>(nrows_);
-            true_parameters_["error_cov"] = arma::Mat<double>(nrows_, nrows_);
+            // These two are arbitraty and only being used to generalize the setup
+            true_parameters_["covs"] = arma::Row<double>(ng_, arma::fill::zeros);
+            true_parameters_["error_cov"] = arma::Mat<double>(nrows_, nrows_, arma::fill::zeros);
+        }
+        
+        
+        void is_valid_parameter_name(const std::string &pname) {
+            if (true_parameters_.count(pname) == 0)
+                throw std::invalid_argument("Unknown parameter.");
         }
         
     public:
@@ -99,20 +109,77 @@ namespace sam {
         //! Indicates whether `nobs` is should be selected as random
         bool is_n_randomized = false;
         
-        ExperimentSetup() = default;
+        explicit ExperimentSetup() {
+            
+            updateExperimentSize();
+            
+            initializeMemory();
+        };
         
         ExperimentSetup(json& config);
         
         ExperimentSetup(int nc, int nd, int ni = 0)
             : nc_(nc), nd_(nd), ni_(ni) {
                 
-                updateNumGroups();
-                updateNumRows();
+            updateExperimentSize();
             
-                initializeMemory();
-                
-                
-            };
+        };
+        
+        ExperimentSetup(int nc, int nd,
+                        int nobs, double means, double vars, double covs = 0.0)
+        : nc_(nc), nd_(nd) {
+            
+            updateExperimentSize();
+            
+            setValueOf("nobs", nobs);
+            setValueOf("means", means);
+            setValueOf("vars", vars);
+            
+            auto sigma = constructCovMatrix(vars, covs);
+            setValueOf("sigma", sigma);
+
+        };
+        
+        
+        ExperimentSetup(int nc, int nd,
+                        arma::Row<double> nobs, arma::Row<double> means,
+                        arma::Row<double> vars, double covs = 0.0)
+        : nc_(nc), nd_(nd) {
+            
+            updateExperimentSize();
+            
+            if (nobs.n_cols != ng() || means.n_cols != ng() || vars.n_cols != ng())
+                throw std::length_error("Sizes do not match!");
+            
+            setValueOf("nobs", nobs);
+            setValueOf("means", means);
+            setValueOf("vars", vars);
+            
+            auto sigma = constructCovMatrix(vars, covs);
+            setValueOf("sigma", sigma);
+            
+            
+        }
+        
+        ExperimentSetup(int nc, int nd,
+                        arma::Row<double> nobs, arma::Row<double> means,
+                        arma::Mat<double> sigma)
+        : nc_(nc), nd_(nd) {
+            
+            updateExperimentSize();
+            
+            if (nobs.n_cols != ng() || means.n_cols != ng()
+                || sigma.n_rows != ng() || sigma.n_cols != ng())
+                throw std::length_error("Sizes do not match!");
+            
+            arma::vec vars = sigma.diag();
+            
+            setValueOf("nobs", nobs);
+            setValueOf("means", means);
+            setValueOf("vars", vars);
+            setValueOf("sigma", sigma);
+        }
+        
         
 
         
@@ -125,27 +192,19 @@ namespace sam {
         std::vector<double> weights;
         
         
-        int nc() const { return nc_; };
-        int nd() const { return nd_; };
-        int ni() const { return ni_; };
-        int ng() const { return ng_; };
-        int nrows() const { return nrows_; };
+        const int nc() const { return nc_; };
+        const int nd() const { return nd_; };
+        const int ni() const { return ni_; };
+        const int ng() const { return ng_; };
+        const int nrows() const { return nrows_; };
         
-        void setExperimentSize(int nc, int nd, int ni = 0) {
-            
-            nc_ = nc;
-            nd_ = nd;
-            updateNumGroups();
-            
-            // If ExperimentType == LatentModel
-            ni_ = ni;
-            updateNumRows();
-            
-            initializeMemory();
+        void setSeed(int s) {
+            rng_stream->setSeed(s);
         }
         
-
         
+        arma::Mat<double> constructCovMatrix(double var, double cov);
+        arma::Mat<double> constructCovMatrix(arma::Row<double> vars, double cov);
         
         /**
          Set values of `pname` to a constant value
@@ -191,6 +250,8 @@ namespace sam {
          @return A const reference to the value
          */
         const arma::Mat<double>& getValueOf(std::string pname) {
+            is_valid_parameter_name(pname);
+            
             return true_parameters_[pname];
         }
         

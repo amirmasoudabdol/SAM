@@ -25,24 +25,52 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
     return os;
 }
 
+arma::Mat<double>
+ExperimentSetup::constructCovMatrix(double var, double cov) {
+    arma::Row<double> vars(ng_);
+    vars.fill(var);
+    return constructCovMatrix(vars, cov);
+}
+
+arma::Mat<double>
+ExperimentSetup::constructCovMatrix(arma::Row<double> vars, double cov) {
+    arma::Mat<double> cov_matrix(ng_, ng_);
+    
+    cov_matrix.fill(cov);
+    cov_matrix.diag() = vars;
+    
+    return cov_matrix;
+}
 
 void ExperimentSetup::setValueOf(std::string pname, double val) {
+    
+    is_valid_parameter_name(pname);
+    
     std::fill(true_parameters_[pname].begin(),
               true_parameters_[pname].end(),
               val);
 };
 
 void ExperimentSetup::setValueOf(std::string pname, arma::Mat<double>& val_v) {
+    
+    is_valid_parameter_name(pname);
+    
     true_parameters_[pname] = val_v;
 };
 
 void ExperimentSetup::setValueOf(std::string pname, int min, int max) {
+    
+    is_valid_parameter_name(pname);
     
     true_parameters_[pname].imbue( [this, min, max]() { return rng_stream->uniform(min, max); } );
     
 };
 
 void ExperimentSetup::setValueOf(std::string pname, std::function<double(void)> fun) {
+    
+    if (true_parameters_.count(pname) == 0) {
+        throw std::invalid_argument("Unknown parameter.");
+    }
     
     true_parameters_[pname].imbue( [fun](){return fun(); });
     
