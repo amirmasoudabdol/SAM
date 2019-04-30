@@ -16,8 +16,8 @@
 using namespace mlpack;
 using namespace mlpack::regression;
 
-using namespace sam;
 using namespace std;
+using namespace sam;
 
 
 arma::vec FixedEffectEstimator::estimate(vector<Submission> publications) {

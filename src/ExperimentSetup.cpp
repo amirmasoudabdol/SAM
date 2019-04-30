@@ -29,7 +29,7 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 ExperimentSetup::ExperimentSetup(json& config) {
     
     // Setting the seed for number of observation
-    RNGEngine = new RandomNumberGenerator(rand());
+    rng_stream = new RandomNumberGenerator(rand());
     
         
     if (config["data-strategy"].is_null()){
@@ -51,7 +51,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     if (config["n-obs"].is_array() && config["n-obs"][0].is_array()){
         intervals = config["n-obs"][0].get<std::vector<double>>();
         weights = config["n-obs"][1].get<std::vector<double>>();
-        int nobs = RNGEngine->genSampleSize(intervals, weights);
+        int nobs = rng_stream->genSampleSize(intervals, weights);
         std::fill(true_nobs.begin(), true_nobs.end(), nobs);
         is_n_randomized = true;
 //    }else if (config["n-obs"] == "random"){
@@ -186,7 +186,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
 
 void ExperimentSetup::randomize_nObs() {
 //    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
-    nobs = RNGEngine->genSampleSize(intervals, weights);
-    std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+    int n = rng_stream->genSampleSize(intervals, weights);
+    std::fill(true_nobs.begin(), true_nobs.end(), n);
 }
 

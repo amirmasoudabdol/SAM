@@ -51,7 +51,7 @@ namespace sam {
     class ExperimentSetup {
         
     private:
-        RandomNumberGenerator *RNGEngine;
+        RandomNumberGenerator *rng_stream;
 
 
     public:
@@ -68,14 +68,14 @@ namespace sam {
         //! Number of items for each latent variable, if `isFactorModel` is `true`.
         int ni = 0;
         
-        //! Total number of groups. Always calculated as \f$n_g = n_c \times n_d\f$,
-        //! unless the simulation contains latent variables, \f$n_g = n_c \times n_d \times n_i\f$
+        //! Total number of groups. Always calculated as
+        //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
+        //! variables, \f$n_g = n_c \times n_d \times n_i\f$
         int ng;
         
+        //! Total number of groups in the case of latent experiment.
+        //! This is a helper variable and doesn't mean anything conceptually
         int nrows;
-
-        //! Number of observations in each group
-        int nobs;
         
         //! Indicates whether `nobs` is should be selected as random
         bool is_n_randomized = false;
@@ -103,10 +103,10 @@ namespace sam {
         arma::Mat<double> true_sigma;
         
         // Latent Experiments
-        arma::Row<double> factorLoadings;                 ///< \lambda
+        arma::Row<double> factorLoadings;
         arma::Row<double> errorMeans;
         arma::Row<double> errorVars;
-        arma::Mat<double> errorCov;          ///<
+        arma::Mat<double> errorCov;
         
         
         std::vector<double> intervals;

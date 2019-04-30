@@ -16,6 +16,7 @@
 #include "sam.h"
 
 using namespace arma;
+using namespace sam;
 
 BOOST_AUTO_TEST_CASE( one_sample_test )
 {
