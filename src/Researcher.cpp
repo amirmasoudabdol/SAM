@@ -52,7 +52,7 @@ void Researcher::prepareResearch() {
     }
     
     // Allocating memory
-    experiment->initResources(experiment->setup.ng);
+    experiment->initResources(experiment->setup.ng());
     
     // Generating data using the dataStrategy
     experiment->generateData();

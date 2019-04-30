@@ -30,7 +30,7 @@ namespace sam {
     public:
         ExperimentSetup setup;
 
-        arma::Row<int> nobs;
+        arma::Row<double> nobs;
         arma::Row<double> means;
         arma::Row<double> vars;
         arma::Row<double> ses;

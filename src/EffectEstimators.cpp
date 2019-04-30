@@ -26,9 +26,9 @@ void CohensD::computeEffects(Experiment *experiment){
 //    experiment->effects[this->name].resize(experiment->setup.ng);
 //
     for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[this->name][i] = cohens_d(experiment->setup.true_means[i],
-                                                      sqrt(experiment->setup.true_vars[i]),
-                                                      experiment->setup.true_nobs[i],
+        experiment->effects[this->name][i] = cohens_d(experiment->setup.getValueOf("means")[i],
+                                                      sqrt(experiment->setup.getValueOf("vars")[i]),
+                                                      experiment->setup.getValueOf("nobs")[i],
                                                       experiment->means[i],
                                                       experiment->vars[i],
                                                       experiment->measurements[i].size());
@@ -40,9 +40,9 @@ void HedgesG::computeEffects(Experiment *experiment){
     //    experiment->effects[this->name].resize(experiment->setup.ng);
     //
     for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[this->name][i] = hedges_g(experiment->setup.true_means[i],
-                                                        sqrt(experiment->setup.true_vars[i]),
-                                                        experiment->setup.true_nobs[i],
+        experiment->effects[this->name][i] = hedges_g(experiment->setup.getValueOf("means")[i],
+                                                        sqrt(experiment->setup.getValueOf("vars")[i]),
+                                                        experiment->setup.getValueOf("nobs")[i],
                                                         experiment->means[i],
                                                         experiment->vars[i],
                                                         experiment->measurements[i].size());

@@ -2,23 +2,22 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
-#include "RandomNumberGenerator.h"
-
 #include <numeric>
 #include <algorithm>
-#include <RandomNumberGenerator.h>
+
+#include "RandomNumberGenerator.h"
 
 using namespace sam;
 
-arma::Row<double>
-RandomNumberGenerator::normal(const double &mean, const double &var, const double &n){
-    return var * arma::randn<arma::Row<double>>(n) + mean;
+arma::Mat<double>
+RandomNumberGenerator::normal(const double mean, const double var, const double n){
+    return var * arma::randn<arma::Mat<double>>(n) + mean;
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::normal(const arma::Row<double>& means, const arma::Row<double>& vars, const int &n) {
+RandomNumberGenerator::normal(const arma::Mat<double>& means, const arma::Mat<double>& vars, const int n) {
 
-    std::vector<arma::Row<double>> rns;
+    std::vector<arma::Row<double> > rns;
 
     for (int i = 0; i < means.size(); ++i){
         rns.push_back(normal(means[i], vars[i], n));
@@ -27,23 +26,23 @@ RandomNumberGenerator::normal(const arma::Row<double>& means, const arma::Row<do
     return rns;
 }
 
-std::vector<arma::Row<double>>
-RandomNumberGenerator::normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs){
-    std::vector<arma::Row<double>> rns;
+std::vector<arma::Row<double> >
+RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<double> &nobs){
+    std::vector<arma::Row<double> > rns;
     
     // TODO: Replace the for loop with a stl algorithm
     for (int i = 0; i < means.size(); ++i){
 //        rns[i] = arma::randn(nobs[i]);
-        // rns.push_back(sds[i] * arma::randn<arma::Row<double>>(nobs[i]) + means[i]);
-        rns.push_back(normal(means[i], vars[i], nobs[i]));
+        // rns.push_back(sds[i] * arma::randn<arma::Mat<double>>(nobs[i]) + means[i]);
+        rns.push_back(normal(means[i], vars[i], static_cast<int>(nobs[i])));
     }
     
     return rns;
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int &n){
-    arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, n);
+RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const int n){
+    arma::mat rans_mat = arma::mvnrnd(means, sigma, n);
     
     std::vector<arma::Row<double> > rans;
     for (int i = 0 ; i < means.size(); i ++) {
@@ -54,10 +53,10 @@ RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<do
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs){
+RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const arma::Mat<double> &nobs){
     
     // TODO: This can be optimized by some STL algorithm as well
-    arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, arma::max(nobs));
+    arma::mat rans_mat = arma::mvnrnd(means, sigma, nobs.max());
     
     std::vector<arma::Row<double> > rans;
     for (int i = 0 ; i < means.size(); i ++) {
@@ -71,7 +70,7 @@ double RandomNumberGenerator::uniform() {
     return uniform(0, 1);
 }
 
-double RandomNumberGenerator::uniform(const double &min, const double &max){
+double RandomNumberGenerator::uniform(const double min, const double max){
     uniformDist.param(std::uniform_real_distribution<double>::param_type(min, max));
     return uniformDist(gen);
 }
@@ -90,7 +89,7 @@ double RandomNumberGenerator::uniform(const double &min, const double &max){
  */
 
 
-int RandomNumberGenerator::genSampleSize(const double &p, const double &a, const double &b, const double &c){
+int RandomNumberGenerator::genSampleSize(const double p, const double a, const double b, const double c){
     bernoulliDist.param(std::bernoulli_distribution::param_type(p));
     if (bernoulliDist(gen)) {
         return uniform(a, b);

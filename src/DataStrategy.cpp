@@ -2,10 +2,11 @@
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
 
-#include <DataStrategy.h>
 #include <iostream>
+#include <armadillo>
 
 #include "Experiment.h"
+#include "DataStrategy.h"
 
 using namespace sam;
 
@@ -14,17 +15,17 @@ DataStrategy::~DataStrategy() {
 }
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
-    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.true_means,
-                                                           experiment->setup.true_sigma,
-                                                           experiment->setup.true_nobs);
+    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.getValueOf("means"),
+                                                             experiment->setup.getValueOf("sigma"),
+                                                             experiment->setup.getValueOf("nobs") );
 }
 
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     
-    return this->sec_rng_stream->mvnorm(experiment->setup.true_means,
-                                      experiment->setup.true_sigma,
-                                      n_new_obs);
+    return this->sec_rng_stream->mvnorm(experiment->setup.getValueOf("means"),
+                                          experiment->setup.getValueOf("sigma"),
+                                          n_new_obs);
 }
 
 arma::Row<double>
@@ -47,15 +48,15 @@ LinearModelStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_
  */
 void LatentDataStrategy::genData(Experiment *experiment)  {
 
-   int ni = experiment->setup.ni;
-   int nc = experiment->setup.nc;
-   int nd = experiment->setup.nd;
-   int ng = experiment->setup.ng;                  // nc * nd
-   int nrows = experiment->setup.nrows;            // nc * nd * ni
+//   int ni = experiment->setup.ni_;
+//   int nc = experiment->setup.nc_;
+//   int nd = experiment->setup.nd_;
+//   int ng = experiment->setup.ng_;                  // nc * nd
+//   int nrows = experiment->setup.nrows_;            // nc * nd * ni
 
 
    // TODO: Check Me!
-   int nobs = experiment->setup.true_nobs.max();
+//   int nobs = experiment->setup.getTrueValueOf("nobs.ma")();
 //
 //    // This is correct, you have one a for each item.
 //    gsl_vector* lambda = gsl_vector_alloc(ni);
@@ -66,11 +67,11 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //    // Mean of each dv
 //    gsl_vector* dvMeans = gsl_vector_calloc(ng);
 //    // FIXME: Commented during the migration
-////    dvMeans->data = experiment->setup.true_means.data();
+////    dvMeans->data = experiment->setup.getTrueValueOf("means.dat")();
 //
 //    gsl_matrix* dvSigma = gsl_matrix_alloc(ng, ng);
 //    // FIXME: Commented during the migration
-////    dvSigma->data = flatten(experiment->setup.true_sigma).data();
+////    dvSigma->data = flatten(experiment->setup.getTrueValueOf("sigm")).data();
 //    // ------------------------------------------------
 //
 //    gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
@@ -79,9 +80,9 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
 
-   auto factorScores = this->main_rng_stream->mvnorm(experiment->setup.true_means, 
-                                                   experiment->setup.true_sigma, 
-                                                   experiment->setup.true_nobs);
+//   auto factorScores = this->main_rng_stream->mvnorm(experiment->setup.getTrueValueOf("mean"),
+//                                                   experiment->setup.getTrueValueOf("sigm"),
+//                                                   experiment->setup.getTrueValueOf("nob"));
 
 //
 //    gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
@@ -96,18 +97,18 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
 
-   auto allErrors = this->main_rng_stream->mvnorm(experiment->setup.errorMeans,
-                                                experiment->setup.errorCov,
-                                                nrows);
+//   auto allErrors = this->main_rng_stream->mvnorm(experiment->setup.errorMeans,
+//                                                experiment->setup.errorCov,
+//                                                nrows);
 
 
 
 //
 //    gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
 
-   arma::Mat<double> allScores(nrows, nobs);
+//   arma::Mat<double> allScores(nrows, nobs);
 
-   // allScores = experiment->setup.true_means.t() + 
+   // allScores = experiment->setup.getTrueValueOf("means.)]() +
 
    //                              experiment->setup.loadings.t() + 
    //                              allErrors
@@ -192,7 +193,7 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 std::vector<arma::Row<double> >
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     // FIXME: Commented during the migration
-//    return this->secRngStream->mvnorm(experiment->setup.true_means, experiment->setup.true_sigma, n_new_obs);
+//    return this->secRngStream->mvnorm(experiment->setup.getTrueValueOf("mean"), experiment->setup.getTrueValueOf("sigm"), n_new_obs);
     return std::vector<arma::Row<double>>();
 }
 

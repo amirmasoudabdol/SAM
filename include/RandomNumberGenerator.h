@@ -45,24 +45,24 @@ class RandomNumberGenerator {
         };
 
         double uniform();
-        double uniform(const double &min, const double &max);
+        double uniform(const double min, const double max);
         
-        int genSampleSize(const double &, const double &, const double &, const double &);
+        int genSampleSize(const double, const double, const double, const double);
         int genSampleSize(const std::vector<double> &intervals, const std::vector<double> &weights);
         
         // normal distribution
-        arma::Row<double>
-        normal(const double &mean, const double &var, const double &n);
+        arma::Mat<double>
+        normal(const double mean, const double var, const double n);
         std::vector<arma::Row<double> >
-        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const int &n);
+        normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const int n);
         std::vector<arma::Row<double> >
-        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs);
+        normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<double> &nobs);
 
         // multivariate normal distribution
         std::vector<arma::Row<double> >
-        mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int &n);
+        mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const int n);
         std::vector<arma::Row<double> >
-        mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs);
+        mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const arma::Mat<double> &nobs);
         
 
     private:

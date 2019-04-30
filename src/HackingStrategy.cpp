@@ -260,7 +260,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     
     if (VERBOSE) std::cout << "Group Pooling...\n";
     
-    if (experiment->setup.nc < 2){
+    if (experiment->setup.nc() < 2){
         throw std::domain_error("There is not enough groups for pooling.");
     }
     
@@ -287,7 +287,7 @@ void GroupPooling::pool(Experiment *experiment, int r){
     //    const int r = _num;
     
     // Original number of conditions
-    const int n = experiment->setup.nc;
+    const int n = experiment->setup.nc();
     
     // Filling a range(0, n)
     std::vector<int> v(n);
@@ -303,7 +303,7 @@ void GroupPooling::pool(Experiment *experiment, int r){
     std::vector<arma::Row<double>> pooled_groups;
     for (auto &per : permutations) {
         
-        for (int d = 0; d < experiment->setup.nd; d++) {
+        for (int d = 0; d < experiment->setup.nd(); d++) {
             
             // Creating an empty new group
             experiment->measurements.push_back(arma::Row<double>());

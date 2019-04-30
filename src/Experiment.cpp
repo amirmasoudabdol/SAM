@@ -22,7 +22,7 @@ void Experiment::runTest(){
 }
 
 void Experiment::initExperiment() {
-    initResources(setup.ng);
+    initResources(setup.ng());
     generateData();
     calculateStatistics();
     calculateEffects();

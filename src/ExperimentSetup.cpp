@@ -26,6 +26,29 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 }
 
 
+void ExperimentSetup::setValueOf(std::string pname, double val) {
+    std::fill(true_parameters_[pname].begin(),
+              true_parameters_[pname].end(),
+              val);
+};
+
+void ExperimentSetup::setValueOf(std::string pname, arma::Mat<double>& val_v) {
+    true_parameters_[pname] = val_v;
+};
+
+void ExperimentSetup::setValueOf(std::string pname, int min, int max) {
+    
+    true_parameters_[pname].imbue( [this, min, max]() { return rng_stream->uniform(min, max); } );
+    
+};
+
+void ExperimentSetup::setValueOf(std::string pname, std::function<double(void)> fun) {
+    
+    true_parameters_[pname].imbue( [fun](){return fun(); });
+    
+};
+
+
 ExperimentSetup::ExperimentSetup(json& config) {
     
     // Setting the seed for number of observation
@@ -39,118 +62,120 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }
     experiment_type = stringToExperimentType.find(config["data-strategy"])->second;
     
-    nc = config["n-conditions"];
-    nd = config["n-dep-vars"];
-    ni = config["n-items"];
-    ng = nc * nd;
-    nrows = ng * ni;
-
+    nc_ = config["n-conditions"];
+    nd_ = config["n-dep-vars"];
+    ni_ = config["n-items"];
+    ng_ = nc_ * nd_;
+    nrows_ = ng_ * ni_;
     
+    initializeMemory();
     
-    true_nobs.resize(ng);
+    // true_parameters_["nobs"].resize(ng_);
     if (config["n-obs"].is_array() && config["n-obs"][0].is_array()){
         intervals = config["n-obs"][0].get<std::vector<double>>();
         weights = config["n-obs"][1].get<std::vector<double>>();
         int nobs = rng_stream->genSampleSize(intervals, weights);
-        std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+        std::fill(true_parameters_["nobs"].begin(), true_parameters_["nobs"].end(), nobs);
         is_n_randomized = true;
 //    }else if (config["n-obs"] == "random"){
 //        isNRandomized = true;
 //        int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
-//        std::fill(true_nobs.begin(), true_nobs.end(), nobs);
+//        std::fill(true_parameters_["nob"].begin(), true_parameters_["nob"].end(), nobs);
 //
 //        config["n-obs"] = nobs;
     }else{
         if (config["n-obs"].is_array()){
-            if (config["n-obs"].size() != ng){
+            if (config["n-obs"].size() != ng_){
                 throw std::invalid_argument( "Size of --n-obs does not match the size of the experiment.");
             }
-            true_nobs = config["n-obs"].get<std::vector<int>>();
+            true_parameters_["nobs"] = config["n-obs"].get<std::vector<double>>();
         }else if (config["n-obs"].is_number()){
             // Broadcase the given --n-obs to a vector of length `ng`
-            true_nobs = std::vector<int>(ng, config["n-obs"]);
+            true_parameters_["nobs"] = std::vector<double>(ng_, config["n-obs"]);
         }
     }
 
     
     if (config["means"].is_array()){
-        if (config["means"].size() != ng){
+        if (config["means"].size() != ng_){
             throw std::invalid_argument( "Size of --means does not match the size of the experiment.");
         }
-        true_means = config["means"].get<std::vector<double>>();
+        true_parameters_["means"] = config["means"].get<std::vector<double>>();
     }else if (config["means"].is_number()){
         // Broadcase the given --means to a vector of length `ng`
-        true_means = std::vector<double>(ng, config["means"]);
+        true_parameters_["means"] = std::vector<double>(ng_, config["means"]);
     }else{
         throw std::invalid_argument("means is invalid or not provided.");
     }
+
+    std::cout << true_parameters_["means"] << std::endl;
     
     if (config["vars"].is_array()){
-        if (config["vars"].size() != ng){
+        if (config["vars"].size() != ng_){
             throw std::invalid_argument( "Size of --vars does not match the size of the experiment.");
         }
-        true_vars = config["vars"].get<std::vector<double>>();
+        true_parameters_["vars"] = config["vars"].get<std::vector<double>>();
     }else if (config["vars"].is_number()){
         // Broadcast the given --vars to a vector of length `ng`
-        true_vars = std::vector<double>(ng, config["vars"]);
+        true_parameters_["vars"] = std::vector<double>(ng_, config["vars"]);
     }else{
         throw std::invalid_argument("vars is invalid or not provided.");
     }
-    // std::cout << true_vars;
+    // std::cout << true_parameters_["var"];
     
 
     
     if (config["covs"].is_array()){
-        if (config["covs"].size() != ng){
+        if (config["covs"].size() != ng_){
             throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
         }
         // DOC: Notify the user that the `sds` will be discarded.
         auto sigma = config["covs"].get<std::vector<std::vector<double>>>();
         for (int i = 0; i < sigma.size(); i++) {
-            true_sigma.row(i) = arma::rowvec(sigma[i]);
+            true_parameters_["sigma"].row(i) = arma::rowvec(sigma[i]);
         }
     }else if (config["covs"].is_number()){
         // Broadcase the --covs to the a matrix, and replace the diagonal values with
         // the value already given by --vars.
         double cov = config["covs"];
 
-        true_sigma.zeros(ng, ng);
-        true_sigma.fill(cov);
-        true_sigma.diag() = true_vars;
+        true_parameters_["sigma"].zeros(ng_, ng_);
+        true_parameters_["sigma"].fill(cov);
+        true_parameters_["sigma"].diag() = true_parameters_["vars"];
     }else{
         throw std::invalid_argument("covs is invalid or not provided.");
     }
 //    }
-    // std::cout << true_sigma << std::endl;
+    // std::cout << true_parameters_["sigm"] << std::endl;
 
     // Factor Loading ...
     // CHECK: I think there are `ni` of these,
     // CHECK: I think they should be `nrows`
     if (config["loadings"].is_array()){
-        if (config["loadings"].size() != ni){
+        if (config["loadings"].size() != ni_){
             throw std::invalid_argument( "Size of --loadings does not match the size of the experiment.");
         }
-        factorLoadings = config["loadings"].get<std::vector<double>>();
+        true_parameters_["loadings"] = config["loadings"].get<std::vector<double>>();
     }else if (config["loadings"].is_number()){
         // Broadcast the given --loadings to a vector of length `ng`
-        factorLoadings = std::vector<double>(ni, config["loadings"]);
+        true_parameters_["loadings"] = std::vector<double>(ni_, config["loadings"]);
     }else{
         throw std::invalid_argument("loadings is invalid or not provided.");
     }
     
     // TODO: Maybe add me to the config file
-    errorMeans.resize(nrows);
-    errorMeans.fill(0);
+    // true_parameters["error_means"].resize(nrows_);
+    true_parameters_["error_means"].fill(0);
     
     // Error's Standard Deviations
     if (config["err-vars"].is_array()){
-        if (config["err-vars"].size() != nrows){
+        if (config["err-vars"].size() != nrows_){
             throw std::invalid_argument( "Size of --err-vars does not match the size of the experiment.");
         }
-        errorVars = config["err-vars"].get<std::vector<double>>();
+        true_parameters_["error_vars"] = config["err-vars"].get<std::vector<double>>();
     }else if (config["err-vars"].is_number()){
         // Broadcast the given --err-vars to a vector of length `nrows`
-        errorVars = std::vector<double>(nrows, config["err-vars"]);
+        true_parameters_["error_vars"] = std::vector<double>(nrows_, config["err-vars"]);
     }else{
         throw std::invalid_argument("err-vars is invalid or not provided.");
     }
@@ -158,12 +183,12 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     // Error's Covariant Matrix
     if (config["err-covs"].is_array()){
-        if (config["err-covs"].size() != nrows){
+        if (config["err-covs"].size() != nrows_){
             throw std::invalid_argument( "Size of --err-covs does not match the size of the experiment.");
         }
         auto covs = config["err-covs"].get<std::vector<std::vector<double>>>();
         for (int i = 0; i < covs.size(); i++) {
-            errorCov.row(i) = arma::rowvec(covs[i]);
+            true_parameters_["error_cov"].row(i) = arma::rowvec(covs[i]);
         }
         
     }else if (config["err-covs"].is_number()){
@@ -174,9 +199,9 @@ ExperimentSetup::ExperimentSetup(json& config) {
 //            errorCov.push_back(std::vector<double>(nrows, cov));
 //            errorCov[r][r] = errorVars[r];
 //        }
-        errorCov.zeros(nrows, nrows);
-        errorCov.fill(cov);
-        errorCov.diag() = errorVars;
+        true_parameters_["error_cov"].zeros(nrows_, nrows_);
+        true_parameters_["error_cov"].fill(cov);
+        true_parameters_["error_cov"].diag() = true_parameters_["error_vars"];
     }else{
         throw std::invalid_argument("err-covs is invalid or not provided.");
     }
@@ -187,6 +212,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
 void ExperimentSetup::randomize_nObs() {
 //    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
     int n = rng_stream->genSampleSize(intervals, weights);
-    std::fill(true_nobs.begin(), true_nobs.end(), n);
+    std::fill(true_parameters_["nobs"].begin(), true_parameters_["nobs"].end(), n);
 }
 

@@ -8,9 +8,9 @@ namespace sam {
 
     Submission::Submission(Experiment& e, const int &index) {
             
-       tnobs = e.setup.true_nobs[index];
-//        tyi = e.setup.true_means[index];
-//        tvi = e.setup.true_vars[index];
+       tnobs = static_cast<int>(e.setup.getValueOf("nobs")[index]);
+//        tyi = e.setup.getTrueValueOf("mean")[index];
+//        tvi = e.setup.getTrueValueOf("var")[index];
 //
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
@@ -32,7 +32,7 @@ namespace sam {
         // storing latent means, vars with different names. **This is just not a good idea**.
         // Submission should be self-contained and I shouldn't look into another object
         // FIXME: This is fishy!
-        side = std::copysign(1.0, yi - e.setup.true_means[index]);
+        side = std::copysign(1.0, yi - e.setup.getValueOf("means")[index]);
         
         isHacked = e.is_hacked;
         
