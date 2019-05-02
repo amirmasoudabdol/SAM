@@ -38,7 +38,7 @@
             "alpha": 0.05,
             "name": "SignificantSelection",
             "pub-bias": 0.95,
-            "selection-seed": 2095673201,
+            "selection-seed": 565444343,
             "side": 0
         }
     },

@@ -27,7 +27,7 @@ RandomNumberGenerator::normal(const arma::Mat<double>& means, const arma::Mat<do
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<double> &nobs){
+RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<int> &nobs){
     std::vector<arma::Row<double> > rns;
     
     // TODO: Replace the for loop with a stl algorithm
@@ -42,7 +42,7 @@ RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<do
 
 std::vector<arma::Row<double> >
 RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const int n){
-    arma::mat rans_mat = arma::mvnrnd(means, sigma, n);
+    arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, n);
     
     std::vector<arma::Row<double> > rans;
     for (int i = 0 ; i < means.size(); i ++) {
@@ -53,10 +53,10 @@ RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<do
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const arma::Mat<double> &nobs){
+RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const arma::Mat<int> &nobs){
     
     // TODO: This can be optimized by some STL algorithm as well
-    arma::mat rans_mat = arma::mvnrnd(means, sigma, nobs.max());
+    arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, nobs.max());
     
     std::vector<arma::Row<double> > rans;
     for (int i = 0 ; i < means.size(); i ++) {

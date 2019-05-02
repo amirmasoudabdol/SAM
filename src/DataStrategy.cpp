@@ -15,16 +15,16 @@ DataStrategy::~DataStrategy() {
 }
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
-    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.getValueOf("means"),
-                                                             experiment->setup.getValueOf("sigma"),
-                                                             experiment->setup.getValueOf("nobs") );
+    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),
+                                                             experiment->setup.sigma(),
+                                                             experiment->setup.nobs() );
 }
 
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     
-    return this->sec_rng_stream->mvnorm(experiment->setup.getValueOf("means"),
-                                          experiment->setup.getValueOf("sigma"),
+    return this->sec_rng_stream->mvnorm(experiment->setup.means(),
+                                          experiment->setup.sigma(),
                                           n_new_obs);
 }
 

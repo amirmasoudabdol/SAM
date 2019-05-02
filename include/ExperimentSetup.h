@@ -70,37 +70,20 @@ namespace sam {
         //! This is a helper variable and doesn't mean anything conceptually
         int nrows_;
         
+        
+        arma::Row<int> nobs_;
+        arma::Row<double> means_;
+        arma::Row<double> vars_;
+        arma::Mat<double> sigma_;
+        
+        arma::Row<double> loadings_;
+        arma::Row<double> error_means_;
+        arma::Row<double> error_vars_;
+        arma::Mat<double> error_sigma_;
+        
         void updateExperimentSize() {
             ng_ = nc_ * nd_;
             nrows_ = ng_ * ni_;
-            
-            initializeMemory();
-        }
-        
-        std::unordered_map<std::string, arma::Mat<double>> true_parameters_;
-        
-        void initializeMemory() {
-            true_parameters_["nobs"] = arma::Row<double>(ng_, arma::fill::zeros);
-            true_parameters_["means"] = arma::Row<double>(ng_, arma::fill::zeros);
-            true_parameters_["vars"] = arma::Row<double>(ng_, arma::fill::zeros);
-            true_parameters_["sigma"] = arma::Mat<double>(ng_, ng_, arma::fill::zeros);
-            
-            true_parameters_["loadings"] = arma::Row<double>(ni_, arma::fill::zeros);
-            true_parameters_["error_means"] = arma::Row<double>(nrows_, arma::fill::zeros);
-            true_parameters_["error_vars"] = arma::Row<double>(nrows_, arma::fill::zeros);
-            true_parameters_["error_sigma"] = arma::Row<double>(nrows_, arma::fill::zeros);
-            
-            // These two are arbitraty and only being used to generalize the setup
-            true_parameters_["covs"] = arma::Row<double>(ng_, arma::fill::zeros);
-            true_parameters_["error_covs"] = arma::Mat<double>(nrows_, nrows_, arma::fill::zeros);
-            
-            rng_stream = new RandomNumberGenerator(rand());
-        }
-        
-        
-        void is_valid_parameter_name(const std::string &pname) {
-            if (true_parameters_.count(pname) == 0)
-                throw std::invalid_argument("Unknown parameter.");
         }
         
     public:
@@ -114,8 +97,6 @@ namespace sam {
         explicit ExperimentSetup() {
             
             updateExperimentSize();
-            
-            initializeMemory();
         };
         
         ExperimentSetup(json& config);
@@ -133,18 +114,18 @@ namespace sam {
             
             updateExperimentSize();
             
-            setValueOf("nobs", nobs);
-            setValueOf("means", means);
-            setValueOf("vars", vars);
+            nobs_ = nobs;
+            means_ = means;
+            vars_ = vars;
             
             auto sigma = constructCovMatrix(vars, covs);
-            setValueOf("sigma", sigma);
+            sigma_ = sigma;
 
         };
         
         
         ExperimentSetup(int nc, int nd,
-                        arma::Row<double> nobs, arma::Row<double> means,
+                        arma::Row<int> nobs, arma::Row<double> means,
                         arma::Row<double> vars, double covs = 0.0)
         : nc_(nc), nd_(nd) {
             
@@ -153,18 +134,18 @@ namespace sam {
             if (nobs.n_cols != ng() || means.n_cols != ng() || vars.n_cols != ng())
                 throw std::length_error("Sizes do not match!");
             
-            setValueOf("nobs", nobs);
-            setValueOf("means", means);
-            setValueOf("vars", vars);
+            nobs_ = nobs;
+            means_ = means;
+            vars_ = vars;
             
             auto sigma = constructCovMatrix(vars, covs);
-            setValueOf("sigma", sigma);
+            sigma_ = sigma;
             
             
         }
         
         ExperimentSetup(int nc, int nd,
-                        arma::Row<double> nobs, arma::Row<double> means,
+                        arma::Row<int> nobs, arma::Row<double> means,
                         arma::Mat<double> sigma)
         : nc_(nc), nd_(nd) {
             
@@ -176,10 +157,10 @@ namespace sam {
             
             arma::vec vars = sigma.diag();
             
-            setValueOf("nobs", nobs);
-            setValueOf("means", means);
-            setValueOf("vars", vars);
-            setValueOf("sigma", sigma);
+            nobs_ = nobs;
+            means_ = means;
+            vars_ = vars;
+            sigma_ = sigma;
         }
         
         
@@ -200,6 +181,24 @@ namespace sam {
         const int ng() const { return ng_; };
         const int nrows() const { return nrows_; };
         
+        const arma::Row<int>& nobs() { return nobs_; };
+        void set_nobs(arma::Row<int>& val) {nobs_ = val; };
+        const arma::Row<double>& means() { return means_; };
+        void set_means(arma::Row<double>& val) {means_ = val; };
+        const arma::Row<double>& vars() { return vars_; };
+        void set_vars(arma::Row<double>& val) {vars_ = val; };
+        const arma::Mat<double>& sigma() { return sigma_; };
+        void set_sigma(arma::Mat<double>& val) {sigma_ = val; };
+        
+        const arma::Row<double>& loadings() { return loadings_; };
+        void set_loadings(arma::Row<double>& val) {loadings_ = val; };
+        const arma::Row<double>& error_means() { return error_means_; };
+        void set_error_means(arma::Row<double>& val) {error_means_ = val; };
+        const arma::Row<double>& error_vars() { return error_vars_; };
+        void set_error_vars(arma::Row<double>& val) {error_vars_ = val; };
+        const arma::Row<double>& error_sigma() { return error_sigma_; };
+        void set_error_sigma(arma::Row<double>& val) {error_sigma_ = val; };
+        
         void setSeed(int s) {
             rng_stream->setSeed(s);
         }
@@ -207,55 +206,6 @@ namespace sam {
         
         arma::Mat<double> constructCovMatrix(double var, double cov);
         arma::Mat<double> constructCovMatrix(arma::Row<double> vars, double cov);
-        
-        /**
-         Set values of `pname` to a constant value
-
-         @param pname The parameter name
-         @param val   A constant value
-         */
-        void setValueOf(std::string pname, double val);
-        
-        
-        /**
-         Replace values of `pname` with the given matrix
-
-         @param pname The parameter name
-         @param val_v A matrix
-         */
-        void setValueOf(std::string pname, arma::Mat<double>& val_v);
-        
-        
-        /**
-         Set values of `pname` by drawing from a uniform_int(min, max)
-
-         @param pname The parameter name
-         @param min The lower bound of the uniform distribution
-         @param max The upper bound of the uniform distirbution
-         */
-        void setValueOf(std::string pname, int min, int max);
-        
-        
-        /**
-         Set values of `pname` using the given function
-
-         @param pname The parameter name
-         @param std::function<double(void)> A function returning a double
-         */
-        void setValueOf(std::string pname, std::function<double(void)> fun);
-        
-        
-        /**
-         Return values of the selected parameter
-
-         @param pname The name of the parameter
-         @return A const reference to the value
-         */
-        const arma::Mat<double>& getValueOf(std::string pname) {
-            is_valid_parameter_name(pname);
-            
-            return true_parameters_[pname];
-        }
         
     };
 
