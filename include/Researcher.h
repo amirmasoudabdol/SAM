@@ -109,7 +109,7 @@ namespace sam {
 
         json config;
         
-        ExperimentSetup* experiment_setup;
+        ExperimentSetup experiment_setup;
         Experiment* experiment;
         Journal* journal;
         
@@ -140,10 +140,15 @@ namespace sam {
          @return Return an instance of itself
          */
         Builder& makeResearcherFromConfig(json& config) {
+            
             this->config = config;
+            
             this->experiment = new Experiment(config);
+            
             this->journal = new Journal(config["JournalParameters"]);
+            
             this->decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
+            
             this->is_hacker = config["ResearcherParameters"]["is-phacker"];
             if (this->is_hacker){
                 for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
@@ -158,6 +163,7 @@ namespace sam {
                     
                 }
             }
+            
             return *this;
         }
         
@@ -170,35 +176,22 @@ namespace sam {
         };
         
         Builder& makeJournal() {
-            this->journal = new Journal(config["JournalParameters"]);
+            
             return *this;
         };
         
         Builder& makeDecisionStrategy() {
-            this->decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
+            
             return *this;
         };
         
         Builder& isHacker() {
-            this->is_hacker = config["ResearcherParameters"]["is-phacker"];
+            
             return *this;
         }
         
         Builder& makeHackingStrategies(){
-            this->isHacker();
-            if (this->is_hacker){
-                for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
-                    
-                    this->hacking_strategies.push_back({});
-                    
-                    for (auto &item : set) {
-                        
-                        this->hacking_strategies.back().push_back(HackingStrategy::build(item));
-                        
-                    }
-                    
-                }
-            }
+            
             return *this;
         };
 
@@ -209,13 +202,30 @@ namespace sam {
             return *this;
         };
         
-        Builder& setExperimentSetup(ExperimentSetup);
-        Builder& setExperiment(Experiment);
-        Builder& setDataStrategy(DataStrategy *dgs) {
+        Builder& setExperimentSetup(ExperimentSetup es) {
+            this->experiment_setup = es;
+            this->experiment = new Experiment(experiment_setup);
+            return *this;
+        };
+        
+        
+        /**
+         ....
+         
+         @note: This will overwrite the current Experiment Setup if exists.
+
+         @param exp <#exp description#>
+         @return <#return value description#>
+         */
+        Builder& setExperiment(Experiment *exp) {
+            this->experiment = exp;
+            return *this;
+        };
+        Builder& setDataStrategy(std::shared_ptr<DataStrategy> dgs) {
             this->experiment->data_strategy = dgs;
             return *this;
         }
-        Builder& setTestStrategy(TestStrategy *ts) {
+        Builder& setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
             this->experiment->test_strategy = ts;
             return *this;
         };

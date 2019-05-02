@@ -22,7 +22,7 @@ namespace sam {
     /**
      * @brief      Specifying the significant testing method
      */
-    enum class TestMethod {
+    enum class TestType {
         TTest,           ///< T-test
         FTest            ///< F-test
     };
@@ -33,6 +33,13 @@ namespace sam {
         Greater,
         TwoSide
     };
+    
+    struct TestTypeProperty {
+        TestType type;
+        TestSide side;
+        double alpha;
+    };
+
 
     struct TestResult {
         double statistic = 0;
@@ -64,7 +71,9 @@ namespace sam {
 
     public:
         
-        static TestStrategy* build(json &config);
+        static std::shared_ptr<TestStrategy> build(json &config);
+        
+        static std::shared_ptr<TestStrategy> build(ExperimentSetup &setup);
         
         virtual ~TestStrategy() = 0;
         
@@ -89,7 +98,7 @@ namespace sam {
         double alpha;
         
     public:
-        TTest() = default;
+//        TTest() = default;
         
         TTest(TestSide side = TestSide::TwoSide,
               double alpha = 0.05) :

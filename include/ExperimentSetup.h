@@ -17,6 +17,7 @@
 
 #include <armadillo>
 
+#include "DataStrategy.h"
 #include "TestStrategy.h"
 #include "RandomNumberGenerator.h"
 
@@ -25,7 +26,7 @@
 namespace sam {
 
     using json = nlohmann::json;
-
+    
     /**
      * @brief      Specifying different type of expeirments.
      */
@@ -33,13 +34,12 @@ namespace sam {
         LinearModel,    ///< Linear Model, with or without covarinace
         LatentModel     ///< Latent Model or Structural Equation Model
     };
-
+    
     const std::map<std::string, ExperimentType>
     stringToExperimentType = {
         {"LinearModel", ExperimentType::LinearModel},
         {"LatentModel", ExperimentType::LatentModel}
     };
-
 
     /**
      @brief Define a class for ExperimentSetup.
@@ -88,8 +88,11 @@ namespace sam {
         
     public:
         
-        ExperimentType experiment_type;
-        TestMethod test_method;
+        // TODO: We are not properly initialized, fix us!
+        ExperimentType experiment_type = ExperimentType::LinearModel;
+        TestType test_method = TestType::TTest;
+
+        TestTypeProperty test_type;
         
         //! Indicates whether `nobs` is should be selected as random
         bool is_n_randomized = false;

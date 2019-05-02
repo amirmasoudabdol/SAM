@@ -18,6 +18,7 @@ namespace sam {
     using json = nlohmann::json;
     
     class Experiment;
+    class ExperimentSetup;
 
     /**
      @brief Abstract class for Data Strategies
@@ -43,7 +44,7 @@ namespace sam {
          @param setup An instance of ExperimentSetup
          @return a new DataStrategy
          */
-        static DataStrategy* build(ExperimentSetup &setup);
+        static std::shared_ptr<DataStrategy> build(ExperimentSetup &setup);
         
         
         /**
@@ -98,7 +99,7 @@ namespace sam {
 
     public:
         
-        LinearModelStrategy(ExperimentSetup& setup) {
+        LinearModelStrategy() {
             main_seed = rand();
             sec_seed = rand();
             
@@ -133,7 +134,7 @@ namespace sam {
 
     public:
         
-        LatentDataStrategy(ExperimentSetup& setup){
+        LatentDataStrategy(){
             main_seed = rand();
             sec_seed = rand();
             

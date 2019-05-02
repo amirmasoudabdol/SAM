@@ -203,14 +203,14 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
     return arma::Row<double>();
 }
 
-DataStrategy *DataStrategy::build(ExperimentSetup &setup){
+std::shared_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup){
     switch (setup.experiment_type) {
         case ExperimentType::LinearModel:
-            return new LinearModelStrategy(setup);
+            return std::make_shared<LinearModelStrategy>();
             break;
 
         case ExperimentType::LatentModel:
-            return new LatentDataStrategy(setup);
+            return std::make_shared<LatentDataStrategy>();
             break;
     }
 }

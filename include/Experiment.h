@@ -26,11 +26,15 @@ namespace sam {
      for each type of experiment
      */
     class Experiment {
+        
+
 
     public:
         ExperimentSetup setup;
+        std::shared_ptr<DataStrategy> data_strategy;
+        std::shared_ptr<TestStrategy> test_strategy;
 
-        arma::Row<double> nobs;
+        arma::Row<int> nobs;
         arma::Row<double> means;
         arma::Row<double> vars;
         arma::Row<double> ses;
@@ -47,6 +51,7 @@ namespace sam {
         arma::Row<double> latent_variances;
     //    std::vector<std::vector<double>> latent_cov_matrix;
 
+        
         ~Experiment() {
             // TODO: Use shared_ptr<> to make sure that I don't have
             // to do cleanup
@@ -55,19 +60,28 @@ namespace sam {
         Experiment(json& config);
         
         Experiment(ExperimentSetup& e) : setup(e) { };
+        
+        Experiment(ExperimentSetup &e,
+                   std::shared_ptr<DataStrategy> &ds,
+                   std::shared_ptr<TestStrategy> &ts)
+        {
+            setup = e;
+            data_strategy = ds;
+            test_strategy = ts;
+        };
 
         
         void runTest();
         
-        TestStrategy* test_strategy;
+
         
-        void setTestStrategy(TestStrategy *t){
+        void setTestStrategy(std::shared_ptr<TestStrategy> &t){
             test_strategy = t;
         }
 
-        DataStrategy* data_strategy;
         
-        void setDataStrategy(DataStrategy* d) {
+        
+        void setDataStrategy(std::shared_ptr<DataStrategy> &d) {
             data_strategy = d;
         }
         
