@@ -92,7 +92,7 @@ namespace sam {
             
             // These two are arbitraty and only being used to generalize the setup
             true_parameters_["covs"] = arma::Row<double>(ng_, arma::fill::zeros);
-            true_parameters_["error_cov"] = arma::Mat<double>(nrows_, nrows_, arma::fill::zeros);
+            true_parameters_["error_covs"] = arma::Mat<double>(nrows_, nrows_, arma::fill::zeros);
             
             rng_stream = new RandomNumberGenerator(rand());
         }

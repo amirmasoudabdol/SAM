@@ -216,7 +216,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
         }
         auto covs = config["err-covs"].get<std::vector<std::vector<double>>>();
         for (int i = 0; i < covs.size(); i++) {
-            true_parameters_["error_cov"].row(i) = arma::rowvec(covs[i]);
+            true_parameters_["error_covs"].row(i) = arma::rowvec(covs[i]);
         }
         
     }else if (config["err-covs"].is_number()){
@@ -227,9 +227,9 @@ ExperimentSetup::ExperimentSetup(json& config) {
 //            errorCov.push_back(std::vector<double>(nrows, cov));
 //            errorCov[r][r] = errorVars[r];
 //        }
-        true_parameters_["error_cov"].zeros(nrows_, nrows_);
-        true_parameters_["error_cov"].fill(cov);
-        true_parameters_["error_cov"].diag() = true_parameters_["error_vars"];
+        true_parameters_["error_covs"].zeros(nrows_, nrows_);
+        true_parameters_["error_covs"].fill(cov);
+        true_parameters_["error_covs"].diag() = true_parameters_["error_vars"];
     }else{
         throw std::invalid_argument("err-covs is invalid or not provided.");
     }
