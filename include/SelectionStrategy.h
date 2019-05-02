@@ -78,7 +78,7 @@ namespace sam {
 
     public:
         SignigicantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42):
-            alpha(alpha),  pub_bias(pub_bias), side(side), seed(seed) {
+            alpha(alpha),  pub_bias(pub_bias), side(side) {
             
             id = SelectionType::SignificantSelection;
 
@@ -98,9 +98,6 @@ namespace sam {
         //! Indicates the _selection stratgy_'s preference toward positive, `1`,
         //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
         int side;
-        
-        //! Selection seed
-        int seed;
     };
 
     /**
