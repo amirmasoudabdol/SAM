@@ -114,9 +114,9 @@ namespace sam {
             
             updateExperimentSize();
             
-            nobs_ = nobs;
-            means_ = means;
-            vars_ = vars;
+            nobs_ = arma::Row<int>(ng_).fill(nobs);
+            means_ = arma::Row<double>(ng_).fill(means);
+            vars_ = arma::Row<double>(ng_).fill(vars);
             
             auto sigma = constructCovMatrix(vars, covs);
             sigma_ = sigma;
@@ -154,12 +154,10 @@ namespace sam {
             if (nobs.n_cols != ng() || means.n_cols != ng()
                 || sigma.n_rows != ng() || sigma.n_cols != ng())
                 throw std::length_error("Sizes do not match!");
-            
-            arma::vec vars = sigma.diag();
-            
+                        
             nobs_ = nobs;
             means_ = means;
-            vars_ = vars;
+            vars_ = sigma.diag().t();
             sigma_ = sigma;
         }
         
@@ -182,22 +180,22 @@ namespace sam {
         const int nrows() const { return nrows_; };
         
         const arma::Row<int>& nobs() { return nobs_; };
-        void set_nobs(arma::Row<int>& val) {nobs_ = val; };
+        void set_nobs(arma::Mat<int>& val) {nobs_ = val; };
         const arma::Row<double>& means() { return means_; };
-        void set_means(arma::Row<double>& val) {means_ = val; };
+        void set_means(arma::Mat<double>& val) {means_ = val; };
         const arma::Row<double>& vars() { return vars_; };
-        void set_vars(arma::Row<double>& val) {vars_ = val; };
+        void set_vars(arma::Mat<double>& val) {vars_ = val; };
         const arma::Mat<double>& sigma() { return sigma_; };
         void set_sigma(arma::Mat<double>& val) {sigma_ = val; };
         
         const arma::Row<double>& loadings() { return loadings_; };
-        void set_loadings(arma::Row<double>& val) {loadings_ = val; };
+        void set_loadings(arma::Mat<double>& val) {loadings_ = val; };
         const arma::Row<double>& error_means() { return error_means_; };
-        void set_error_means(arma::Row<double>& val) {error_means_ = val; };
+        void set_error_means(arma::Mat<double>& val) {error_means_ = val; };
         const arma::Row<double>& error_vars() { return error_vars_; };
-        void set_error_vars(arma::Row<double>& val) {error_vars_ = val; };
-        const arma::Row<double>& error_sigma() { return error_sigma_; };
-        void set_error_sigma(arma::Row<double>& val) {error_sigma_ = val; };
+        void set_error_vars(arma::Mat<double>& val) {error_vars_ = val; };
+        const arma::Mat<double>& error_sigma() { return error_sigma_; };
+        void set_error_sigma(arma::Mat<double>& val) {error_sigma_ = val; };
         
         void setSeed(int s) {
             rng_stream->setSeed(s);
