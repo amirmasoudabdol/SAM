@@ -1,0 +1,47 @@
+#########################
+# project configuration #
+#########################
+
+# C++ project
+language: cpp
+
+
+################
+# build matrix #
+################
+
+matrix:
+  include:
+  
+  - os: osx
+    osx_image: xcode10.1
+
+
+
+################
+# build script #
+################
+
+  # get CMake and Ninja (only for systems with brew - macOS)
+  - |
+     if [[ (-x $(which brew)) ]]; then
+       brew update
+       brew install cmake, boost, armadillo
+       brew upgrade cmake
+       cmake --version
+     fi
+
+  # make sure CXX is correctly set
+  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+  # by default, use the single-header version
+  - if [[ "${MULTIPLE_HEADERS}" == "" ]]; then export MULTIPLE_HEADERS=OFF; fi
+
+  # show OS/compiler version
+  - uname -a
+  - $CXX --version
+
+  # compile and execute unit tests
+  - mkdir -p build && cd build
+  - cmake .. _DENABLE_TESTS=ON && cmake --build . --config Release
+  - ctest -C Release -V -j
+  - cd ..
