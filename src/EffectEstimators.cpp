@@ -11,11 +11,11 @@ EffectSizeEstimator::~EffectSizeEstimator() {
     // Pure deconstructor
 };
 
-EffectSizeEstimator *EffectSizeEstimator::build(const std::string &name){
+std::shared_ptr<EffectSizeEstimator>EffectSizeEstimator::build(const std::string &name){
     if (name == "CohensD") {
-        return new CohensD();
+        return std::make_shared<CohensD>();
     }else if (name == "HedgesG"){
-        return new HedgesG();
+        return std::make_shared<HedgesG>();
     }else{
         throw std::invalid_argument("Uknown effect size estimator.\n");
     }
@@ -23,8 +23,6 @@ EffectSizeEstimator *EffectSizeEstimator::build(const std::string &name){
 
 void CohensD::computeEffects(Experiment *experiment){
     
-//    experiment->effects[this->name].resize(experiment->setup.ng);
-//
     for (int i = 0; i < experiment->means.size(); i++) {
         experiment->effects[this->name][i] = cohens_d(experiment->setup.means()[i],
                                                       sqrt(experiment->setup.vars()[i]),
@@ -37,8 +35,6 @@ void CohensD::computeEffects(Experiment *experiment){
 
 void HedgesG::computeEffects(Experiment *experiment){
     
-    //    experiment->effects[this->name].resize(experiment->setup.ng);
-    //
     for (int i = 0; i < experiment->means.size(); i++) {
         experiment->effects[this->name][i] = hedges_g(experiment->setup.means()[i],
                                                         sqrt(experiment->setup.vars()[i]),

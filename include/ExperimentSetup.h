@@ -104,7 +104,7 @@ namespace sam {
 
 
         
-        //! Indicates whether `nobs` is should be selected as random
+        //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
         
         explicit ExperimentSetup() {

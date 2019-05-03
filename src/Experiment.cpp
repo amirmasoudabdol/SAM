@@ -28,16 +28,14 @@ void Experiment::initExperiment() {
     calculateEffects();
 }
 
+// TODO: Still not happy with this!
 void Experiment::initResources(int len) {
-    // TODO: There is an issue with the allocation;
-    // TODO: I either need to initiate or push_back
-    // FIXME: This is very error prune, since it's fixed number
+
     means.zeros(len);
     vars.zeros(len);
     ses.zeros(len);
     statistics.zeros(len);
     pvalues.zeros(len);
-//    effects.zeros(len);
     
     for (auto &estimator : effect_size_estimators) {
         effects[estimator->name].zeros(len);
@@ -54,16 +52,14 @@ void Experiment::calculateStatistics() {
         ses[i] = sqrt(vars[i] / measurements[i].size());
     }
     
-//    ses = sqrt(vars / nobs);
-    
 }
 
 void Experiment::calculateEffects() {
-//    effects = means;
+
     for (auto &estimator : effect_size_estimators){
         estimator->computeEffects(this);
     }
-//    effectSizeEstimator->computeEffects(this);
+
 }
 
 
@@ -78,17 +74,23 @@ void Experiment::recalculateEverything() {
 }
 
 
-Experiment::Experiment(json &config) { 
-    // TODO: This should initialize everything, also set TestStrategy, ...
-    this->setup = ExperimentSetup(config["ExperimentParameters"]);
+Experiment::Experiment(json &experiment_config) { 
+    
+    // Setup the Experiment
+    this->setup = ExperimentSetup(experiment_config["ExperimentParameters"]);
 
+    // Setup the Data Strategy
     this->data_strategy = DataStrategy::build(setup);
     
-    this->test_strategy = TestStrategy::build(config["ExperimentParameters"]["test-strategy"]);
+    // Setup the Test Strategy
+    this->test_strategy = TestStrategy::build(experiment_config["ExperimentParameters"]["test-strategy"]);
     
-    for (auto &estimator : config["ExperimentParameters"]["effect-estimators"]){
+    for (auto &estimator : experiment_config["ExperimentParameters"]["effect-estimators"]){
         this->effect_size_estimators.push_back(EffectSizeEstimator::build(estimator));
     }
+    
+    // Initializing the memory
+    initResources(setup.ng());
     
 }
 

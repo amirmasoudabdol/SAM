@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <armadillo>
+#include <functional>
 
 #include "DataStrategy.h"
 #include "ExperimentSetup.h"
@@ -33,6 +34,7 @@ namespace sam {
         ExperimentSetup setup;
         std::shared_ptr<DataStrategy> data_strategy;
         std::shared_ptr<TestStrategy> test_strategy;
+        std::vector<std::shared_ptr<EffectSizeEstimator>> effect_size_estimators;
 
         arma::Row<int> nobs;
         arma::Row<double> means;
@@ -40,7 +42,7 @@ namespace sam {
         arma::Row<double> ses;
         arma::Row<double> statistics;
         arma::Row<double> pvalues;
-        std::map<std::string, arma::Row<double>> effects;
+        std::unordered_map<std::string, arma::Row<double>> effects;
         arma::Row<short> sigs;
         
         std::vector<arma::Row<double> > measurements;
@@ -49,50 +51,95 @@ namespace sam {
         std::vector<arma::Row<double> > items;
         arma::Row<double> latent_means;
         arma::Row<double> latent_variances;
-    //    std::vector<std::vector<double>> latent_cov_matrix;
-
+        std::vector<std::vector<double>> latent_cov_matrix;
         
-        ~Experiment() {
-            // TODO: Use shared_ptr<> to make sure that I don't have
-            // to do cleanup
+        //! A function for computing the latent variable
+        //! This is rather new and I still need to implement it. It's going to
+        //! use std::function, it's basically more efficient and less verbose
+        //! Strategy Pattern ;P
+        void latent_function(std::function<void(Experiment *)>);
+        
+        Experiment(json& experiment_config);
+        
+        Experiment(ExperimentSetup& e) : setup(e) {
+            
+            initResources(setup.ng());
         };
-        
-        Experiment(json& config);
-        
-        Experiment(ExperimentSetup& e) : setup(e) { };
         
         Experiment(ExperimentSetup &e,
                    std::shared_ptr<DataStrategy> &ds,
-                   std::shared_ptr<TestStrategy> &ts)
+                   std::shared_ptr<TestStrategy> &ts,
+                   std::vector<std::shared_ptr<EffectSizeEstimator>> &efs)
         {
             setup = e;
             data_strategy = ds;
             test_strategy = ts;
+            effect_size_estimators = efs;
+            
+            initResources(setup.ng());
         };
 
         
+        
+        /**
+         Runs the Test Strategy
+         */
         void runTest();
         
 
         
+        /**
+         Set or re-set the Test Strategy
+
+         @param t A reference to a Test Strategy instance
+         */
         void setTestStrategy(std::shared_ptr<TestStrategy> &t){
             test_strategy = t;
         }
 
-        
-        
+        /**
+         Set or re-set the Data Strategy
+
+         @param d A reference to a Data Strategy instance
+         */
         void setDataStrategy(std::shared_ptr<DataStrategy> &d) {
             data_strategy = d;
         }
         
-        std::vector<EffectSizeEstimator *> effect_size_estimators;
-        void setEffectSizeEstimator(EffectSizeEstimator *efs);
 
-        // Initialize the Experiment/**/
+        void setEffectSizeEstimator(std::vector<std::shared_ptr<EffectSizeEstimator>> efs);
+
+        // Initialize the Experiment
         void initResources(int len);
+        
+        
+        /**
+         Helper function for the Researcher to fully initilize the experiment
+         by generating the data, calculating the statistics and effects, as
+         well as running the test.
+         */
         void initExperiment();
+        
+        /**
+         Use the `data_strategy` to generate the data.
+         
+         @note The `data_strategy` takes over the entire experiment and
+         populate the `measurements` based on `setup`'s parameters.
+         */
         void generateData();
+        
+        
+        /**
+         Calculate the statistics by sending the `experiment` to the
+         `test_strategy`.
+         */
         void calculateStatistics();
+        
+        
+        /**
+         Iterates over the list of EffectSizeEstimators, and calculate different
+         different estimates accordingly.
+         */
         void calculateEffects();
 
         void recalculateEverything();

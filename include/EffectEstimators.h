@@ -20,7 +20,7 @@ namespace sam {
 
     public:
         
-        static EffectSizeEstimator *build(const std::string &name);
+        static std::shared_ptr<EffectSizeEstimator>build(const std::string &name);
         
         virtual ~EffectSizeEstimator() = 0;
 
@@ -96,6 +96,7 @@ namespace sam {
 
 
 
+    void cohens_d(Experiment *expr);
 
 
     double cohens_d(double Sm1, double Sd1, double Sn1,
@@ -106,11 +107,6 @@ namespace sam {
     double glass_delta(double Sm1, double Sd1, double Sn1,
                         double Sm2, double Sd2, double Sn2);
 
-    //class StandardMeanDiffEffectEstimator : public EffectEstimators {
-    //public:
-    //    void computeEffectFromStats(double mean1, double sd1, double nobs1, double mean2, double sd2, double nobs2);
-    //    void computeEffectFromData(std::vector<double> dts1, std::vector<double> dts2);
-    //};
 
 }
 
