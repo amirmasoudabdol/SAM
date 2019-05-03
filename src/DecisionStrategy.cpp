@@ -15,12 +15,12 @@ DecisionStrategy::~DecisionStrategy() {
     // pure deconstructor
 };
 
-DecisionStrategy *DecisionStrategy::build(json &config) {
+DecisionStrategy *DecisionStrategy::build(json &decision_strategy_config) {
 
-    if (config["name"] == "ImpatientDecisionMaker"){
-        return new ImpatientDecisionMaker(stringToResearcherPreference.find(config["preference"])->second);
-    }else if (config["name"] == "PatientDecisionMaker"){
-        return new PatientDecisionMaker(stringToResearcherPreference.find(config["preference"])->second);
+    if (decision_strategy_config["name"] == "ImpatientDecisionMaker"){
+        return new ImpatientDecisionMaker(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
+    }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
+        return new PatientDecisionMaker(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
     }else{
         throw std::invalid_argument("Unknown DecisionStrategy");
     }

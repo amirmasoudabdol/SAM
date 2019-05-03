@@ -22,33 +22,37 @@
 using namespace arma;
 using namespace sam;
 
-BOOST_AUTO_TEST_CASE( linear_experiment )
-{
-    int nc = 2;
-    int nd = 3;
-    int ng = nc * nd;
+BOOST_AUTO_TEST_SUITE( constructors )
 
-    TestStrategyParameters test_params;
-    test_params.name = TestType::TTest;
-    test_params.side = TestSide::TwoSide;
-    test_params.alpha = 0.05;
+	BOOST_AUTO_TEST_CASE( linear_experiment )
+	{
+	    int nc = 2;
+	    int nd = 3;
+	    int ng = nc * nd;
 
-    DataStrategyParameters data_params;
-    data_params.name = ExperimentType::LinearModel;
+	    TestStrategyParameters test_params;
+	    test_params.name = TestType::TTest;
+	    test_params.side = TestSide::TwoSide;
+	    test_params.alpha = 0.05;
 
-    ExperimentSetup es(nc, nd, 
-                          20, .147, 1.0, 0.1,
-                          test_params, data_params);
+	    DataStrategyParameters data_params;
+	    data_params.name = ExperimentType::LinearModel;
 
-
-    auto ts = TestStrategy::build(es);
-
-    auto ds = DataStrategy::build(es);
-
-    
-    Experiment exp(es, ds, ts);
-
-    BOOST_TEST(exp.setup.ng() == ng);
+	    ExperimentSetup es(nc, nd, 
+	                          20, .147, 1.0, 0.1,
+	                          test_params, data_params);
 
 
-}
+	    auto ts = TestStrategy::build(es);
+
+	    auto ds = DataStrategy::build(es);
+
+	    
+	    Experiment exp(es, ds, ts);
+
+	    BOOST_TEST(exp.setup.ng() == ng);
+
+	    BOOST_TEST(exp.setup.test_strategy_parameters_.name == TestType::TTest);
+	}
+
+BOOST_AUTO_TEST_SUITE_END()

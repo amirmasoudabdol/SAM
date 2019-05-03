@@ -31,7 +31,7 @@ namespace sam {
         
     public:
 
-        Journal(json& config);
+        Journal(json& journal_config);
 
         /**
          Point Journal's selection strategy to the given strategy

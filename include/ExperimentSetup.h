@@ -65,9 +65,6 @@ namespace sam {
         //! Number of items for each latent variable, if `isFactorModel` is `true`.
         int ni_ = 0;
         
-        TestStrategyParameters test_strategy_parameters_;
-        DataStrategyParameters data_strategy_parameters_;
-        
         //! Total number of groups. Always calculated as
         //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
         //! variables, \f$n_g = n_c \times n_d \times n_i\f$
@@ -77,7 +74,7 @@ namespace sam {
         //! This is a helper variable and doesn't mean anything conceptually
         int nrows_;
         
-        
+        // Experiment Parameters
         arma::Row<int> nobs_;
         arma::Row<double> means_;
         arma::Row<double> vars_;
@@ -94,6 +91,12 @@ namespace sam {
         }
         
     public:
+        
+        //! Test Strategy Parameters
+        TestStrategyParameters test_strategy_parameters_;
+        
+        //! Data Strategy Parameters
+        DataStrategyParameters data_strategy_parameters_;
         
         // TODO: We are not properly initialized, fix us!
         ExperimentType experiment_type = ExperimentType::LinearModel;
@@ -124,7 +127,8 @@ namespace sam {
         ExperimentSetup(int nc, int nd,
                         int nobs, double means, double vars, double covs,
                         TestStrategyParameters test_params, DataStrategyParameters data_params)
-        : nc_(nc), nd_(nd), ni_(0), test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+        : nc_(nc), nd_(nd), ni_(0),
+          test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
         {
             updateExperimentSize();
             
@@ -142,7 +146,8 @@ namespace sam {
                         arma::Row<int> nobs, arma::Row<double> means,
                         arma::Row<double> vars, double covs,
                         TestStrategyParameters test_params, DataStrategyParameters data_params)
-        : nc_(nc), nd_(nd), ni_(0), test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+        : nc_(nc), nd_(nd), ni_(0),
+          test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
         {
             updateExperimentSize();
             
@@ -163,7 +168,8 @@ namespace sam {
                         arma::Row<int> nobs, arma::Row<double> means,
                         arma::Mat<double> sigma,
                         TestStrategyParameters test_params, DataStrategyParameters data_params)
-        : nc_(nc), nd_(nd), ni_(0), test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+        : nc_(nc), nd_(nd), ni_(0),
+          test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
         {
             updateExperimentSize();
             

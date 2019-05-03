@@ -14,12 +14,12 @@ using namespace sam;
 extern bool VERBOSE;
 
 
-Journal::Journal(json& config){
+Journal::Journal(json& journal_config){
     
-    max_pubs = config["max-pubs"];
+    max_pubs = journal_config["max-pubs"];
     
     // Setting up the SelectionStrategy
-    this->selection_strategy = SelectionStrategy::build(config["selection-strategy"]);
+    this->selection_strategy = SelectionStrategy::build(journal_config["selection-strategy"]);
 }
 
 bool Journal::review(Submission &s) {

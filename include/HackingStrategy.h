@@ -86,7 +86,7 @@ namespace sam {
          *
          * @return     A new HackingStrategy
          */
-        static HackingStrategy* build(json& config);
+        static HackingStrategy* build(json& hacking_strategy_config);
         
         static HackingStrategy* build(HackingMethod method);
         

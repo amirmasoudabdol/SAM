@@ -44,11 +44,11 @@ void TTest::run(Experiment* experiment) {
     }
 }
 
-std::shared_ptr<TestStrategy> TestStrategy::build(json &config){
+std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
-    if (config["name"] == "TTest"){
-        return std::make_shared<TTest>(stringToTestSide.find(config["side"])->second,
-                         config["alpha"]);
+    if (test_strategy_config["name"] == "TTest"){
+        return std::make_shared<TTest>(stringToTestSide.find(test_strategy_config["side"])->second,
+                                        test_strategy_config["alpha"]);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
@@ -57,8 +57,9 @@ std::shared_ptr<TestStrategy> TestStrategy::build(json &config){
 
 std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
     
-    if (setup.test_method == TestType::TTest){
-        return std::make_shared<TTest>(TestSide::TwoSide, 0.05);
+    if (setup.test_strategy_parameters_.name == TestType::TTest){
+        return std::make_shared<TTest>(setup.test_strategy_parameters_.side,
+                                        setup.test_strategy_parameters_.alpha);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }

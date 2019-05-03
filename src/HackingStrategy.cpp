@@ -32,28 +32,28 @@ HackingStrategy::~HackingStrategy() {
  @param config A JSON object defining a hacking strategy, and its parameters
  @return Pointer to a HackingStrategy
  */
-HackingStrategy *HackingStrategy::build(json &config) {
+HackingStrategy *HackingStrategy::build(json &hacking_strategy_config) {
     
-    if (config["name"] == "OptionalStopping"){
-        return new OptionalStopping(config["level"],
-                                    config["num"],
-                                    config["n_attempts"],
-                                    config["max_attempts"]);
+    if (hacking_strategy_config["name"] == "OptionalStopping"){
+        return new OptionalStopping(hacking_strategy_config["level"],
+                                    hacking_strategy_config["num"],
+                                    hacking_strategy_config["n_attempts"],
+                                    hacking_strategy_config["max_attempts"]);
         
-    }else if (config["name"] == "SDOutlierRemoval") {
-        return new SDOutlierRemoval(config["level"],
-                                    config["order"],
-                                    config["num"],
-                                    config["n_attempts"],
-                                    config["max_attempts"],
-                                    config["min_observations"],
-                                    config["multipliers"]);
+    }else if (hacking_strategy_config["name"] == "SDOutlierRemoval") {
+        return new SDOutlierRemoval(hacking_strategy_config["level"],
+                                    hacking_strategy_config["order"],
+                                    hacking_strategy_config["num"],
+                                    hacking_strategy_config["n_attempts"],
+                                    hacking_strategy_config["max_attempts"],
+                                    hacking_strategy_config["min_observations"],
+                                    hacking_strategy_config["multipliers"]);
         
-    }else if (config["name"] == "GroupPooling") {
-        return new GroupPooling(config["nums"]);
-    }else if (config["name"] == "ConditionDropping") {
+    }else if (hacking_strategy_config["name"] == "GroupPooling") {
+        return new GroupPooling(hacking_strategy_config["nums"]);
+    }else if (hacking_strategy_config["name"] == "ConditionDropping") {
         return new ConditionDropping();
-    }else if (config["name"] == "NoHack") {
+    }else if (hacking_strategy_config["name"] == "NoHack") {
         return new NoHack();
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");

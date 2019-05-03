@@ -44,7 +44,7 @@ namespace sam {
          *
          * @return     A new SelectionStrategy
          */
-        static SelectionStrategy* build(json &config);
+        static SelectionStrategy* build(json &selection_straregy_config);
         
         /**
          * @brief      Pure deconstructor of the base class

@@ -12,17 +12,17 @@ SelectionStrategy::~SelectionStrategy() {
     // Pure deconstructor
 }
 
-SelectionStrategy *SelectionStrategy::build(json &config) {
+SelectionStrategy *SelectionStrategy::build(json &selection_strategy_config) {
     
     int selection_seed = rand();
-    if (config["name"] == "SignificantSelection") {
+    if (selection_strategy_config["name"] == "SignificantSelection") {
         
-        config["selection-seed"] = selection_seed;
-        return new SignigicantSelection(config["alpha"], config["pub-bias"], config["side"], selection_seed);
+        selection_strategy_config["selection-seed"] = selection_seed;
+        return new SignigicantSelection(selection_strategy_config["alpha"], selection_strategy_config["pub-bias"], selection_strategy_config["side"], selection_seed);
         
-    }else if(config["name"] == "RandomSelection") {
+    }else if(selection_strategy_config["name"] == "RandomSelection") {
         
-        config["selection-seed"] = selection_seed;
+        selection_strategy_config["selection-seed"] = selection_seed;
         return new RandomSelection(selection_seed);
         
     }else{

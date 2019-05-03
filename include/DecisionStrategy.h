@@ -80,7 +80,7 @@ namespace sam {
         
     public:
         
-        static DecisionStrategy* build(json &config);
+        static DecisionStrategy* build(json &decision_strategy_config);
         
         virtual ~DecisionStrategy() = 0;
         
