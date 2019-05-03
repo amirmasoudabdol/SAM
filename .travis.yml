@@ -22,6 +22,7 @@ matrix:
 # build script #
 ################
 
+script:
   # get CMake and Ninja (only for systems with brew - macOS)
   - |
      if [[ (-x $(which brew)) ]]; then
