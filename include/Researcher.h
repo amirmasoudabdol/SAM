@@ -108,6 +108,7 @@ namespace sam {
     class Researcher::Builder {
 
         json config;
+        bool build_from_config = false;
         
         ExperimentSetup experiment_setup;
         Experiment* experiment;
@@ -125,12 +126,6 @@ namespace sam {
 
         Builder() = default;
 
-        Builder& setConfig(json& config) {
-            this->config = config;
-            return *this;
-        };
-        
-        
         /**
          Build a researcher entirely based on the given config file. This is
          not the best implementation still but I think it's more readable and
@@ -163,6 +158,8 @@ namespace sam {
                     
                 }
             }
+            
+            build_from_config = true;
             
             return *this;
         }
@@ -312,7 +309,13 @@ namespace sam {
         Researcher build() {
             // TODO: I can make a researcher and set all its parameters using set* methods
             
-            return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
+            if (build_from_config) {
+                return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
+            }else{
+                // I need to carefully build every item and then pass it to the Researcher constructor
+                return Researcher(experiment, journal, decision_strategy, hacking_strategies, is_hacker);
+            }
+            
         };
     };
 

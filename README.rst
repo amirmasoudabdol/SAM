@@ -22,7 +22,6 @@ SAM uses a few well known C++ libraries to perform certain tasks.
 
 -  `Boost <https://github.com/docopt/docopt.cpp>`__, General purpose C++
    library
--  `docopt <https://github.com/docopt/docopt.cpp>`__, CLI library
 -  `Armadillo <http://arma.sourceforge.net/>`__, C++ library for linear
    algebra & scientific computing
 -  `nlohmanh/json <https://github.com/nlohmann/json>`__, JSON for Modern
