@@ -27,8 +27,9 @@ script:
   - |
      if [[ (-x $(which brew)) ]]; then
        brew update
-       brew install cmake boost armadillo
-       brew upgrade cmake boost armadillo
+       brew tap nlohmann/json
+       brew install cmake boost armadillo nlohmann_json
+       brew upgrade cmake boost armadillo nlohmann_json
        cmake --version
      fi
 
