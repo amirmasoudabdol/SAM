@@ -34,10 +34,10 @@ namespace sam {
         TwoSide
     };
     
-    struct TestTypeProperty {
-        TestType type;
-        TestSide side;
-        double alpha;
+    struct TestStrategyParameters {
+        TestType name;
+        TestSide side = TestSide::TwoSide;
+        double alpha = 0.05;
     };
 
 

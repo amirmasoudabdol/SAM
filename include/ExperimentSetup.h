@@ -40,6 +40,10 @@ namespace sam {
         {"LinearModel", ExperimentType::LinearModel},
         {"LatentModel", ExperimentType::LatentModel}
     };
+    
+    struct DataStrategyParameters {
+        ExperimentType name;
+    };
 
     /**
      @brief Define a class for ExperimentSetup.
@@ -60,6 +64,9 @@ namespace sam {
         
         //! Number of items for each latent variable, if `isFactorModel` is `true`.
         int ni_ = 0;
+        
+        TestStrategyParameters test_strategy_parameters_;
+        DataStrategyParameters data_strategy_parameters_;
         
         //! Total number of groups. Always calculated as
         //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
@@ -92,7 +99,7 @@ namespace sam {
         ExperimentType experiment_type = ExperimentType::LinearModel;
         TestType test_method = TestType::TTest;
 
-        TestTypeProperty test_type;
+
         
         //! Indicates whether `nobs` is should be selected as random
         bool is_n_randomized = false;
@@ -105,16 +112,20 @@ namespace sam {
         ExperimentSetup(json& config);
         
         ExperimentSetup(int nc, int nd, int ni = 0)
-            : nc_(nc), nd_(nd), ni_(ni) {
+            : nc_(nc), nd_(nd), ni_(ni)
+        {
                 
             updateExperimentSize();
             
+            test_strategy_parameters_.name = TestType::TTest;
+            data_strategy_parameters_.name = ExperimentType::LinearModel;
         };
         
         ExperimentSetup(int nc, int nd,
-                        int nobs, double means, double vars, double covs = 0.0)
-        : nc_(nc), nd_(nd) {
-            
+                        int nobs, double means, double vars, double covs,
+                        TestStrategyParameters test_params, DataStrategyParameters data_params)
+        : nc_(nc), nd_(nd), ni_(0), test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+        {
             updateExperimentSize();
             
             nobs_ = arma::Row<int>(ng_).fill(nobs);
@@ -123,15 +134,16 @@ namespace sam {
             
             auto sigma = constructCovMatrix(vars, covs);
             sigma_ = sigma;
-
+            
         };
         
         
         ExperimentSetup(int nc, int nd,
                         arma::Row<int> nobs, arma::Row<double> means,
-                        arma::Row<double> vars, double covs = 0.0)
-        : nc_(nc), nd_(nd) {
-            
+                        arma::Row<double> vars, double covs,
+                        TestStrategyParameters test_params, DataStrategyParameters data_params)
+        : nc_(nc), nd_(nd), ni_(0), test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+        {
             updateExperimentSize();
             
             if (nobs.n_cols != ng() || means.n_cols != ng() || vars.n_cols != ng())
@@ -149,9 +161,10 @@ namespace sam {
         
         ExperimentSetup(int nc, int nd,
                         arma::Row<int> nobs, arma::Row<double> means,
-                        arma::Mat<double> sigma)
-        : nc_(nc), nd_(nd) {
-            
+                        arma::Mat<double> sigma,
+                        TestStrategyParameters test_params, DataStrategyParameters data_params)
+        : nc_(nc), nd_(nd), ni_(0), test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+        {
             updateExperimentSize();
             
             if (nobs.n_cols != ng() || means.n_cols != ng()

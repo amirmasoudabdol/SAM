@@ -14,9 +14,11 @@ namespace tt = boost::test_tools;
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "ExperimentSetup.h"
+
 
 #include "sam.h"
+#include "Experiment.h"
+#include "ExperimentSetup.h"
 
 using namespace arma;
 using namespace sam;
@@ -48,8 +50,18 @@ BOOST_AUTO_TEST_SUITE( constructors )
 
     BOOST_AUTO_TEST_CASE ( linear_setup_constructor )
     {
+
+        TestStrategyParameters test_params;
+        test_params.name = TestType::TTest;
+        test_params.side = TestSide::TwoSide;
+        test_params.alpha = 0.05;
+
+        DataStrategyParameters data_params;
+        data_params.name = ExperimentType::LinearModel;
+
         ExperimentSetup setup(2, 3, 
-                              20, .147, 1.0, 0.1);
+                              20, .147, 1.0, 0.1,
+                              test_params, data_params);
 
         BOOST_TEST(setup.ng() == 6);
         BOOST_TEST(setup.ni() == 0);
@@ -77,8 +89,17 @@ BOOST_AUTO_TEST_SUITE( constructors )
         int nd = 3;
         int ng = nc * nd;
 
+        TestStrategyParameters test_params;
+        test_params.name = TestType::TTest;
+        test_params.side = TestSide::TwoSide;
+        test_params.alpha = 0.05;
+
+        DataStrategyParameters data_params;
+        data_params.name = ExperimentType::LinearModel;
+
         ExperimentSetup setup(nc, nd, 
-                              20, .147, 1.0, 0.1);
+                              20, .147, 1.0, 0.1,
+                              test_params, data_params);
 
         rowvec v = rowvec(ng).fill(25);
         // setup.set_nobs(v); // ", 25);)
@@ -132,8 +153,17 @@ BOOST_AUTO_TEST_SUITE( constructors )
         sigma.fill(covs);
         sigma.diag() = vars;
 
+        TestStrategyParameters test_params;
+        test_params.name = TestType::TTest;
+        test_params.side = TestSide::TwoSide;
+        test_params.alpha = 0.05;
+
+        DataStrategyParameters data_params;
+        data_params.name = ExperimentType::LinearModel;
+
         ExperimentSetup setup(nc, nd, 
-                              nobs, means, vars, covs);
+                              nobs, means, vars, covs,
+                              test_params, data_params);
 
         BOOST_TEST(setup.ng() = ng);
 
@@ -160,8 +190,17 @@ BOOST_AUTO_TEST_SUITE( constructors )
         rowvec vars = linspace<rowvec>(0, 1, 10);
         mat sigma(ng, ng); sigma.randn();
 
+        TestStrategyParameters test_params;
+        test_params.name = TestType::TTest;
+        test_params.side = TestSide::TwoSide;
+        test_params.alpha = 0.05;
+
+        DataStrategyParameters data_params;
+        data_params.name = ExperimentType::LinearModel;
+
         ExperimentSetup setup(nc, nd, 
-                              nobs, means, sigma);
+                              nobs, means, sigma,
+                              test_params, data_params);
 
         BOOST_TEST(setup.ng() = ng);
 

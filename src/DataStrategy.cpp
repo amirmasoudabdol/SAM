@@ -14,6 +14,19 @@ DataStrategy::~DataStrategy() {
     // Pure deconstructor
 }
 
+std::shared_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup){
+    switch (setup.experiment_type) {
+        case ExperimentType::LinearModel:
+            return std::make_shared<LinearModelStrategy>();
+            break;
+            
+        case ExperimentType::LatentModel:
+            return std::make_shared<LatentDataStrategy>();
+            break;
+    }
+}
+
+
 void LinearModelStrategy::genData(Experiment* experiment)  {
     experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),
                                                              experiment->setup.sigma(),
@@ -203,14 +216,3 @@ LatentDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_n
     return arma::Row<double>();
 }
 
-std::shared_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup){
-    switch (setup.experiment_type) {
-        case ExperimentType::LinearModel:
-            return std::make_shared<LinearModelStrategy>();
-            break;
-
-        case ExperimentType::LatentModel:
-            return std::make_shared<LatentDataStrategy>();
-            break;
-    }
-}
