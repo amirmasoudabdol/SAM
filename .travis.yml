@@ -26,15 +26,10 @@ matrix:
   - |
      if [[ (-x $(which brew)) ]]; then
        brew update
-       brew install cmake, boost, armadillo
-       brew upgrade cmake
+       brew install cmake boost armadillo
+       brew upgrade cmake boost armadillo
        cmake --version
      fi
-
-  # make sure CXX is correctly set
-  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
-  # by default, use the single-header version
-  - if [[ "${MULTIPLE_HEADERS}" == "" ]]; then export MULTIPLE_HEADERS=OFF; fi
 
   # show OS/compiler version
   - uname -a
@@ -42,6 +37,7 @@ matrix:
 
   # compile and execute unit tests
   - mkdir -p build && cd build
-  - cmake .. _DENABLE_TESTS=ON && cmake --build . --config Release
+  - cmake -DENABLE_TESTS=ON ..
+  - cmake --build . --config Release
   - ctest -C Release -V -j
   - cd ..
