@@ -60,7 +60,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     ni_ = config["n-items"];
     ng_ = nc_ * nd_;
     nrows_ = ng_ * ni_;
-    
+        
      nobs_.resize(ng_);
     if (config["n-obs"].is_array() && config["n-obs"][0].is_array()){
         intervals = config["n-obs"][0].get<std::vector<double>>();
@@ -178,6 +178,77 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else{
         throw std::invalid_argument("err-covs is invalid or not provided.");
     }    
+}
+
+ExperimentSetup::ExperimentSetup(const int nc, const int nd, const int ni = 0)
+    : nc_(nc), nd_(nd), ni_(ni)
+{
+        
+    updateExperimentSize();
+    
+    test_strategy_parameters_.name = TestStrategy::TestType::TTest;
+    data_strategy_parameters_.name = ExperimentType::LinearModel;
+}
+
+ExperimentSetup::ExperimentSetup(const int nc, const int nd,
+                const int nobs, const double means, const double vars, const double covs,
+                const TestStrategy::TestStrategyParameters test_params,
+                const DataStrategyParameters data_params)
+: nc_(nc), nd_(nd), ni_(0),
+  test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+{
+    updateExperimentSize();
+    
+    nobs_ = arma::Row<int>(ng_).fill(nobs);
+    means_ = arma::Row<double>(ng_).fill(means);
+    vars_ = arma::Row<double>(ng_).fill(vars);
+    
+    auto sigma = constructCovMatrix(vars, covs);
+    sigma_ = sigma;
+    
+}
+
+
+ExperimentSetup::ExperimentSetup(const int nc, const int nd,
+                const arma::Row<int> nobs, const arma::Row<double> means,
+                const arma::Row<double> vars, const double covs,
+                const TestStrategy::TestStrategyParameters test_params,
+                const DataStrategyParameters data_params)
+: nc_(nc), nd_(nd), ni_(0),
+  test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+{
+    updateExperimentSize();
+    
+    if (nobs.n_cols != ng() || means.n_cols != ng() || vars.n_cols != ng())
+        throw std::length_error("Sizes do not match!");
+    
+    nobs_ = nobs;
+    means_ = means;
+    vars_ = vars;
+    
+    auto sigma = constructCovMatrix(vars, covs);
+    sigma_ = sigma;
+    
+    
+}
+
+ExperimentSetup::ExperimentSetup(const int nc, const int nd,
+                const arma::Row<int> nobs, const arma::Row<double> means,
+                const arma::Mat<double> sigma,
+                const TestStrategy::TestStrategyParameters test_params, const DataStrategyParameters data_params)
+: nc_(nc), nd_(nd), ni_(0),
+  test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+{
+    updateExperimentSize();
+    
+    if (nobs.n_cols != ng() || means.n_cols != ng()
+        || sigma.n_rows != ng() || sigma.n_cols != ng())
+        throw std::length_error("Sizes do not match!");
+                
+    nobs_ = nobs;
+    means_ = means;
+    vars_ = sigma.diag().t();
+    sigma_ = sigma;
 }
 
 void ExperimentSetup::randomize_nObs() {

@@ -101,8 +101,6 @@ namespace sam {
         // TODO: We are not properly initialized, fix us!
         ExperimentType experiment_type = ExperimentType::LinearModel;
         TestStrategy::TestType test_method = TestStrategy::TestType::TTest;
-
-
         
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
@@ -116,17 +114,19 @@ namespace sam {
         
         ExperimentSetup(json& config);
         
-        ExperimentSetup(const int nc, const int nd, const int ni = 0);
+        ExperimentSetup(const int nc, const int nd, const int ni);
         
         ExperimentSetup(const int nc, const int nd,
                         const int nobs, const double means, const double vars, const double covs,
-                        const TestStrategy::TestStrategyParameters test_params, DataStrategyParameters data_params);
+                        const TestStrategy::TestStrategyParameters test_params,
+                        const DataStrategyParameters data_params);
         
         
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Row<double> vars, const double covs,
-                        const TestStrategy::TestStrategyParameters test_params, DataStrategyParameters data_params);
+                        const TestStrategy::TestStrategyParameters test_params,
+                        const DataStrategyParameters data_params);
         
         
         ExperimentSetup(const int nc, const int nd,
