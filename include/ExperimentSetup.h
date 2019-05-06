@@ -107,84 +107,33 @@ namespace sam {
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
         
+
+        //! This is just a handy default constructor that I should remove at
+        //! some point!
         explicit ExperimentSetup() {
-            
             updateExperimentSize();
         };
         
         ExperimentSetup(json& config);
         
-        ExperimentSetup(const int nc, const int nd, const int ni = 0)
-            : nc_(nc), nd_(nd), ni_(ni)
-        {
-                
-            updateExperimentSize();
-            
-            test_strategy_parameters_.name = TestType::TTest;
-            data_strategy_parameters_.name = ExperimentType::LinearModel;
-        };
+        ExperimentSetup(const int nc, const int nd, const int ni = 0);
         
         ExperimentSetup(const int nc, const int nd,
                         const int nobs, const double means, const double vars, const double covs,
-                        const TestStrategyParameters test_params, DataStrategyParameters data_params)
-        : nc_(nc), nd_(nd), ni_(0),
-          test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
-        {
-            updateExperimentSize();
-            
-            nobs_ = arma::Row<int>(ng_).fill(nobs);
-            means_ = arma::Row<double>(ng_).fill(means);
-            vars_ = arma::Row<double>(ng_).fill(vars);
-            
-            auto sigma = constructCovMatrix(vars, covs);
-            sigma_ = sigma;
-            
-        };
+                        const TestStrategyParameters test_params, DataStrategyParameters data_params);
         
         
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Row<double> vars, const double covs,
-                        const TestStrategyParameters test_params, DataStrategyParameters data_params)
-        : nc_(nc), nd_(nd), ni_(0),
-          test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
-        {
-            updateExperimentSize();
-            
-            if (nobs.n_cols != ng() || means.n_cols != ng() || vars.n_cols != ng())
-                throw std::length_error("Sizes do not match!");
-            
-            nobs_ = nobs;
-            means_ = means;
-            vars_ = vars;
-            
-            auto sigma = constructCovMatrix(vars, covs);
-            sigma_ = sigma;
-            
-            
-        }
+                        const TestStrategyParameters test_params, DataStrategyParameters data_params);
+        
         
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Mat<double> sigma,
-                        const TestStrategyParameters test_params, const DataStrategyParameters data_params)
-        : nc_(nc), nd_(nd), ni_(0),
-          test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
-        {
-            updateExperimentSize();
-            
-            if (nobs.n_cols != ng() || means.n_cols != ng()
-                || sigma.n_rows != ng() || sigma.n_cols != ng())
-                throw std::length_error("Sizes do not match!");
-                        
-            nobs_ = nobs;
-            means_ = means;
-            vars_ = sigma.diag().t();
-            sigma_ = sigma;
-        }
+                        const TestStrategyParameters test_params, const DataStrategyParameters data_params);
         
-        
-
         
         ~ExperimentSetup() = default;
         

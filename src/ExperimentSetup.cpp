@@ -61,8 +61,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     ng_ = nc_ * nd_;
     nrows_ = ng_ * ni_;
     
-    // initializeMemory();
-    
      nobs_.resize(ng_);
     if (config["n-obs"].is_array() && config["n-obs"][0].is_array()){
         intervals = config["n-obs"][0].get<std::vector<double>>();
@@ -70,12 +68,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
         int nobs = rng_stream->genSampleSize(intervals, weights);
         std::fill(nobs_.begin(), nobs_.end(), nobs);
         is_n_randomized = true;
-//    }else if (config["n-obs"] == "random"){
-//        isNRandomized = true;
-//        int nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
-//        std::fill(nob_.begin(), nob_.end(), nobs);
-//
-//        config["n-obs"] = nobs;
     }else{
         if (config["n-obs"].is_array()){
             if (config["n-obs"].size() != ng_){
@@ -100,8 +92,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else{
         throw std::invalid_argument("means is invalid or not provided.");
     }
-
-    std::cout << means_ << std::endl;
     
     if (config["vars"].is_array()){
         if (config["vars"].size() != ng_){
@@ -113,9 +103,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
         vars_ = std::vector<double>(ng_, config["vars"]);
     }else{
         throw std::invalid_argument("vars is invalid or not provided.");
-    }
-    // std::cout << var_;
-    
+    }    
 
     
     if (config["covs"].is_array()){
@@ -138,8 +126,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else{
         throw std::invalid_argument("covs is invalid or not provided.");
     }
-//    }
-    // std::cout << sigm_ << std::endl;
 
     // Factor Loading ...
     // CHECK: I think there are `ni` of these,
@@ -170,9 +156,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
         error_vars_ = std::vector<double>(nrows_, config["err-vars"]);
     }else{
         throw std::invalid_argument("err-vars is invalid or not provided.");
-    }
-    // std::cout << errorVars << std::endl;
-    
+    }    
     // Error's Covariant Matrix
     if (config["err-covs"].is_array()){
         if (config["err-covs"].size() != nrows_){
@@ -187,18 +171,13 @@ ExperimentSetup::ExperimentSetup(json& config) {
         // Broadcase the --err-covs to the a matrix, and replace the diagonal values with
         // the value already given by --vars.
         double cov = config["err-covs"];
-//        for (int r = 0; r < nrows; r++) {
-//            errorCov.push_back(std::vector<double>(nrows, cov));
-//            errorCov[r][r] = errorVars[r];
-//        }
+
         error_sigma_.zeros(nrows_, nrows_);
         error_sigma_.fill(cov);
         error_sigma_.diag() = error_vars_;
     }else{
         throw std::invalid_argument("err-covs is invalid or not provided.");
-    }
-    // std::cout << errorCov << std::endl;
-    
+    }    
 }
 
 void ExperimentSetup::randomize_nObs() {
