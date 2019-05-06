@@ -171,7 +171,6 @@ bool ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 }
 
 bool ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
-    // TODO: This can be implemented differenly if necessary
 
     final_submission = submissions_pool.back();
     

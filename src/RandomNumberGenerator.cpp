@@ -28,20 +28,25 @@ RandomNumberGenerator::normal(const arma::Mat<double>& means, const arma::Mat<do
 
 std::vector<arma::Row<double> >
 RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<int> &nobs){
+
     std::vector<arma::Row<double> > rns;
+//    std::vector<arma::Row<double> > rns(means.size());
     
     // TODO: Replace the for loop with a stl algorithm
     for (int i = 0; i < means.size(); ++i){
 //        rns[i] = arma::randn(nobs[i]);
         // rns.push_back(sds[i] * arma::randn<arma::Mat<double>>(nobs[i]) + means[i]);
-        rns.push_back(normal(means[i], vars[i], static_cast<int>(nobs[i])));
+        rns.push_back(normal(means[i], vars[i], nobs[i]));
     }
+
+//    std::generate(rns.begin(), rns.end(), [&, i = 10]() mutable { i++; return normal(means[i], vars[i], nobs[i]); } );
     
     return rns;
 }
 
 std::vector<arma::Row<double> >
 RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const int n){
+    
     arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, n);
     
     std::vector<arma::Row<double> > rans;

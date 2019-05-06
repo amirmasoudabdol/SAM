@@ -114,7 +114,7 @@ namespace sam {
         
         ExperimentSetup(json& config);
         
-        ExperimentSetup(int nc, int nd, int ni = 0)
+        ExperimentSetup(const int nc, const int nd, const int ni = 0)
             : nc_(nc), nd_(nd), ni_(ni)
         {
                 
@@ -124,9 +124,9 @@ namespace sam {
             data_strategy_parameters_.name = ExperimentType::LinearModel;
         };
         
-        ExperimentSetup(int nc, int nd,
-                        int nobs, double means, double vars, double covs,
-                        TestStrategyParameters test_params, DataStrategyParameters data_params)
+        ExperimentSetup(const int nc, const int nd,
+                        const int nobs, const double means, const double vars, const double covs,
+                        const TestStrategyParameters test_params, DataStrategyParameters data_params)
         : nc_(nc), nd_(nd), ni_(0),
           test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
         {
@@ -142,10 +142,10 @@ namespace sam {
         };
         
         
-        ExperimentSetup(int nc, int nd,
-                        arma::Row<int> nobs, arma::Row<double> means,
-                        arma::Row<double> vars, double covs,
-                        TestStrategyParameters test_params, DataStrategyParameters data_params)
+        ExperimentSetup(const int nc, const int nd,
+                        const arma::Row<int> nobs, const arma::Row<double> means,
+                        const arma::Row<double> vars, const double covs,
+                        const TestStrategyParameters test_params, DataStrategyParameters data_params)
         : nc_(nc), nd_(nd), ni_(0),
           test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
         {
@@ -164,10 +164,10 @@ namespace sam {
             
         }
         
-        ExperimentSetup(int nc, int nd,
-                        arma::Row<int> nobs, arma::Row<double> means,
-                        arma::Mat<double> sigma,
-                        TestStrategyParameters test_params, DataStrategyParameters data_params)
+        ExperimentSetup(const int nc, const int nd,
+                        const arma::Row<int> nobs, const arma::Row<double> means,
+                        const arma::Mat<double> sigma,
+                        const TestStrategyParameters test_params, const DataStrategyParameters data_params)
         : nc_(nc), nd_(nd), ni_(0),
           test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
         {
@@ -201,22 +201,22 @@ namespace sam {
         const int ng() const { return ng_; };
         const int nrows() const { return nrows_; };
         
-        const arma::Row<int>& nobs() { return nobs_; };
+        const arma::Row<int>& nobs() const { return nobs_; };
         void set_nobs(arma::Mat<int>& val) {nobs_ = val; };
-        const arma::Row<double>& means() { return means_; };
+        const arma::Row<double>& means() const { return means_; };
         void set_means(arma::Mat<double>& val) {means_ = val; };
-        const arma::Row<double>& vars() { return vars_; };
+        const arma::Row<double>& vars() const { return vars_; };
         void set_vars(arma::Mat<double>& val) {vars_ = val; };
-        const arma::Mat<double>& sigma() { return sigma_; };
+        const arma::Mat<double>& sigma() const { return sigma_; };
         void set_sigma(arma::Mat<double>& val) {sigma_ = val; };
         
-        const arma::Row<double>& loadings() { return loadings_; };
+        const arma::Row<double>& loadings() const { return loadings_; };
         void set_loadings(arma::Mat<double>& val) {loadings_ = val; };
-        const arma::Row<double>& error_means() { return error_means_; };
+        const arma::Row<double>& error_means() const { return error_means_; };
         void set_error_means(arma::Mat<double>& val) {error_means_ = val; };
-        const arma::Row<double>& error_vars() { return error_vars_; };
+        const arma::Row<double>& error_vars() const { return error_vars_; };
         void set_error_vars(arma::Mat<double>& val) {error_vars_ = val; };
-        const arma::Mat<double>& error_sigma() { return error_sigma_; };
+        const arma::Mat<double>& error_sigma() const { return error_sigma_; };
         void set_error_sigma(arma::Mat<double>& val) {error_sigma_ = val; };
         
         void setSeed(int s) {

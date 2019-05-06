@@ -156,8 +156,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
         throw std::invalid_argument("loadings is invalid or not provided.");
     }
     
-    // TODO: Maybe add me to the config file
-    // true_parameters["error_means"].resize(nrows_);
+    // this is always zero anyway
     error_means_.fill(0);
     
     // Error's Standard Deviations

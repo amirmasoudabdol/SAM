@@ -25,6 +25,14 @@ using namespace arma;
 using namespace sam;
 using namespace std;
 
+BOOST_AUTO_TEST_SUITE( constructors )
+
+
+    BOOST_AUTO_TEST_CASE( test1 )
+    {
+        ExperimentSetup ex;
+
+    }
 
 	BOOST_AUTO_TEST_CASE( linear_experiment )
 	{
@@ -106,3 +114,5 @@ using namespace std;
 
 	}
 
+
+BOOST_AUTO_TEST_SUITE_END()

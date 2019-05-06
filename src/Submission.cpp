@@ -8,10 +8,8 @@ namespace sam {
 
     Submission::Submission(Experiment& e, const int &index) {
             
-       tnobs = static_cast<int>(e.setup.nobs()[index]);
-//        tyi = e.setup.getTrueValueOf("mean")[index];
-//        tvi = e.setup.getTrueValueOf("var")[index];
-//
+       tnobs = e.setup.nobs()[index];
+
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         yi = e.means[index];
