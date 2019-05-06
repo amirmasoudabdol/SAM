@@ -41,9 +41,9 @@ BOOST_AUTO_TEST_SUITE( constructors )
         int nd = 3;
         int ng = nc * nd;
 
-        TestStrategyParameters test_params;
-        test_params.name = TestType::TTest;
-        test_params.side = TestSide::TwoSide;
+        TestStrategy::TestStrategyParameters test_params;
+        test_params.name = TestStrategy::TestType::TTest;
+        test_params.side = TestStrategy::TestSide::TwoSide;
         test_params.alpha = 0.05;
 
         DataStrategyParameters data_params;
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_SUITE( constructors )
 
 	    BOOST_TEST(expr.setup.ng() == ng);
 
-//	    BOOST_TEST(expr.setup.test_strategy_parameters_.name == TestType::TTest);
+//	    BOOST_TEST(expr.setup.test_strategy_parameters_.name == TestStrategy::TestType::TTest);
 	}
 
 
@@ -78,9 +78,9 @@ BOOST_AUTO_TEST_SUITE( constructors )
 	    int nd = 3;
 	    int ng = nc * nd;
 
-	    TestStrategyParameters test_params;
-	    test_params.name = TestType::TTest;
-	    test_params.side = TestSide::TwoSide;
+	    TestStrategy::TestStrategyParameters test_params;
+	    test_params.name = TestStrategy::TestType::TTest;
+	    test_params.side = TestStrategy::TestSide::TwoSide;
 	    test_params.alpha = 0.05;
 
 	    DataStrategyParameters data_params;

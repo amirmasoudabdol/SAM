@@ -26,7 +26,7 @@ using namespace std;
 
 BOOST_AUTO_TEST_SUITE( constructors )
 
-    BOOST_AUTO_TEST_CASE( default_explicit_constructor)
+    BOOST_AUTO_TEST_CASE( default_explicit_constructor )
     {
         ExperimentSetup setup;
 
@@ -35,25 +35,12 @@ BOOST_AUTO_TEST_SUITE( constructors )
         BOOST_TEST(accu(setup.means()) == 0);
     }
 
-    BOOST_AUTO_TEST_CASE( experiment_size_constructor )
-    {
-        ExperimentSetup setup(3, 5);
-
-        BOOST_TEST(setup.ng() == 15);
-        BOOST_TEST(setup.ni() == 0);
-        BOOST_TEST(setup.nrows() == 0);
-
-        BOOST_TEST(accu(setup.means()) == 0);
-
-        BOOST_TEST(setup.error_means().size() == 0);
-    }
-
     BOOST_AUTO_TEST_CASE ( linear_setup_constructor )
     {
 
-        TestStrategyParameters test_params;
-        test_params.name = TestType::TTest;
-        test_params.side = TestSide::TwoSide;
+        TestStrategy::TestStrategyParameters test_params;
+        test_params.name = TestStrategy::TestType::TTest;
+        test_params.side = TestStrategy::TestSide::TwoSide;
         test_params.alpha = 0.05;
 
         DataStrategyParameters data_params;
@@ -89,9 +76,9 @@ BOOST_AUTO_TEST_SUITE( constructors )
         int nd = 3;
         int ng = nc * nd;
 
-        TestStrategyParameters test_params;
-        test_params.name = TestType::TTest;
-        test_params.side = TestSide::TwoSide;
+        TestStrategy::TestStrategyParameters test_params;
+        test_params.name = TestStrategy::TestType::TTest;
+        test_params.side = TestStrategy::TestSide::TwoSide;
         test_params.alpha = 0.05;
 
         DataStrategyParameters data_params;
@@ -153,9 +140,9 @@ BOOST_AUTO_TEST_SUITE( constructors )
         sigma.fill(covs);
         sigma.diag() = vars;
 
-        TestStrategyParameters test_params;
-        test_params.name = TestType::TTest;
-        test_params.side = TestSide::TwoSide;
+        TestStrategy::TestStrategyParameters test_params;
+        test_params.name = TestStrategy::TestType::TTest;
+        test_params.side = TestStrategy::TestSide::TwoSide;
         test_params.alpha = 0.05;
 
         DataStrategyParameters data_params;
@@ -190,9 +177,9 @@ BOOST_AUTO_TEST_SUITE( constructors )
         rowvec vars = linspace<rowvec>(0, 1, 10);
         mat sigma(ng, ng); sigma.randn();
 
-        TestStrategyParameters test_params;
-        test_params.name = TestType::TTest;
-        test_params.side = TestSide::TwoSide;
+        TestStrategy::TestStrategyParameters test_params;
+        test_params.name = TestStrategy::TestType::TTest;
+        test_params.side = TestStrategy::TestSide::TwoSide;
         test_params.alpha = 0.05;
 
         DataStrategyParameters data_params;

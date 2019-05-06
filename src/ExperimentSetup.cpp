@@ -180,16 +180,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }    
 }
 
-ExperimentSetup::ExperimentSetup(const int nc, const int nd, const int ni = 0)
-    : nc_(nc), nd_(nd), ni_(ni)
-{
-        
-    updateExperimentSize();
-    
-    test_strategy_parameters_.name = TestStrategy::TestType::TTest;
-    data_strategy_parameters_.name = ExperimentType::LinearModel;
-}
-
 ExperimentSetup::ExperimentSetup(const int nc, const int nd,
                 const int nobs, const double means, const double vars, const double covs,
                 const TestStrategy::TestStrategyParameters test_params,
