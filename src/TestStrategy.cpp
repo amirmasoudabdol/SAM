@@ -13,12 +13,11 @@
 #include <Experiment.h>
 
 using namespace sam;
+using boost::math::students_t;
 
 TestStrategy::~TestStrategy() {
     // Pure deconstructor
 };
-
-using boost::math::students_t;
 
 const std::map<std::string, TestStrategy::TestSide>
 stringToTestSide = {
@@ -44,6 +43,8 @@ void TTest::run(Experiment* experiment) {
     }
 }
 
+
+
 std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
     if (test_strategy_config["name"] == "TTest"){
@@ -60,6 +61,16 @@ std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
     if (setup.test_strategy_parameters_.name == TestType::TTest){
         return std::make_shared<TTest>(setup.test_strategy_parameters_.side,
                                         setup.test_strategy_parameters_.alpha);
+    }else{
+        throw std::invalid_argument("Unknown Test Strategy.");
+    }
+    
+}
+
+std::shared_ptr<TestStrategy> TestStrategy::build(TestStrategyParameters &params){
+    
+    if (params.name == TestType::TTest){
+        return std::make_shared<TTest>(params);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }

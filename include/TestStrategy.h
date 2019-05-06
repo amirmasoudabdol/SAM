@@ -50,7 +50,7 @@ namespace sam {
         };
         
         /**
-         * @brief      Specifying the significant testing method
+         * Specifying the significant testing method
          */
         enum class TestType {
             TTest,           ///< T-test
@@ -66,6 +66,13 @@ namespace sam {
             TwoSide
         };
         
+        
+        /**
+         Contains Test Strategy parameters.
+         
+         @note I'm still experimenting with this while I'm trying to simplify
+         the construction process.
+         */
         struct TestStrategyParameters {
             TestType name;
             TestSide side = TestSide::TwoSide;
@@ -75,6 +82,8 @@ namespace sam {
         static std::shared_ptr<TestStrategy> build(json &config);
         
         static std::shared_ptr<TestStrategy> build(ExperimentSetup &setup);
+        
+        static std::shared_ptr<TestStrategy> build(TestStrategyParameters &params);
         
         virtual ~TestStrategy() = 0;
         
@@ -99,12 +108,12 @@ namespace sam {
         double alpha;
         
     public:
-//        TTest() = default;
         
-        TTest(TestSide side = TestSide::TwoSide,
-              double alpha = 0.05) :
-            side(side), alpha(alpha)
-        {};
+        TTest(TestSide side = TestSide::TwoSide, double alpha = 0.05) :
+            side(side), alpha(alpha) { };
+        
+        TTest(TestStrategyParameters params) :
+            side(params.side), alpha(params.alpha) { };
         
         void run(Experiment* experiment);
         
