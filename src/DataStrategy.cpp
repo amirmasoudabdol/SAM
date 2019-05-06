@@ -4,6 +4,9 @@
 
 #include <iostream>
 #include <armadillo>
+#include <string>
+
+#include "csv/reader.hpp"
 
 #include "Experiment.h"
 #include "DataStrategy.h"
@@ -12,6 +15,29 @@ using namespace sam;
 
 DataStrategy::~DataStrategy() {
     // Pure deconstructor
+}
+
+void DataStrategy::loadRawData(Experiment *expr, const std::string &filename) {
+    csv::Reader csv_file;
+    csv_file.configure_dialect("no headers")
+            .header(false);
+    
+    csv_file.read(filename);
+    auto rows = csv_file.rows();
+    
+    
+    if (expr->setup.ng() != csv_file.cols().size())
+        throw std::length_error("Number of columns in the CSV file doesn't match\
+                                the experiment size.");
+    
+    
+    for (int r = 0; r < rows.size(); r++) {
+        for (auto &col : csv_file.cols()) {
+            expr->measurements[std::stoi(col)][r] = std::stod(rows[r][col]);
+        }
+    }
+    
+    
 }
 
 std::shared_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup){

@@ -52,6 +52,16 @@ namespace sam {
          */
         virtual ~DataStrategy() = 0;
         
+
+        /**
+         Read a CSV file and load the data into the measurement. Each column
+         is considered to be one group, based on the information already
+         provided in the `experiment.setup`.
+
+         @param expr A pointer to the experiment
+         @param filename The CSV filename
+         */
+        void loadRawData(Experiment *expr, const std::string &filename);
         
         /**
          Populates the `experiment->measurements` with data based on the parameters
