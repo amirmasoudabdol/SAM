@@ -93,14 +93,14 @@ namespace sam {
     public:
         
         //! Test Strategy Parameters
-        TestStrategyParameters test_strategy_parameters_;
+        TestStrategy::TestStrategyParameters test_strategy_parameters_;
         
         //! Data Strategy Parameters
         DataStrategyParameters data_strategy_parameters_;
         
         // TODO: We are not properly initialized, fix us!
         ExperimentType experiment_type = ExperimentType::LinearModel;
-        TestType test_method = TestType::TTest;
+        TestStrategy::TestType test_method = TestStrategy::TestType::TTest;
 
 
         
@@ -120,19 +120,19 @@ namespace sam {
         
         ExperimentSetup(const int nc, const int nd,
                         const int nobs, const double means, const double vars, const double covs,
-                        const TestStrategyParameters test_params, DataStrategyParameters data_params);
+                        const TestStrategy::TestStrategyParameters test_params, DataStrategyParameters data_params);
         
         
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Row<double> vars, const double covs,
-                        const TestStrategyParameters test_params, DataStrategyParameters data_params);
+                        const TestStrategy::TestStrategyParameters test_params, DataStrategyParameters data_params);
         
         
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Mat<double> sigma,
-                        const TestStrategyParameters test_params, const DataStrategyParameters data_params);
+                        const TestStrategy::TestStrategyParameters test_params, const DataStrategyParameters data_params);
         
         
         ~ExperimentSetup() = default;

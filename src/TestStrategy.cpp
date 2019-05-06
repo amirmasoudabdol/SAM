@@ -20,11 +20,11 @@ TestStrategy::~TestStrategy() {
 
 using boost::math::students_t;
 
-const std::map<std::string, TestSide>
+const std::map<std::string, TestStrategy::TestSide>
 stringToTestSide = {
-    {"Less", TestSide::Less},
-    {"Greater", TestSide::Greater},
-    {"TwoSide", TestSide::TwoSide}
+    {"Less", TestStrategy::TestSide::Less},
+    {"Greater", TestStrategy::TestSide::Greater},
+    {"TwoSide", TestStrategy::TestSide::TwoSide}
 };
 
 void TTest::run(Experiment* experiment) {
@@ -32,7 +32,7 @@ void TTest::run(Experiment* experiment) {
     using namespace sam;
     
     for (int i = 0; i < experiment->measurements.size(); ++i) {        
-        TestResult res = single_sample_t_test(0,
+        TestStrategy::TestResult res = single_sample_t_test(0,
                                               experiment->means[i],
                                               sqrt(experiment->vars[i]),
                                               experiment->measurements[i].size(),
@@ -87,7 +87,7 @@ namespace sam {
      @param Sn Sample Size.
      */
     std::pair<double, double>
-    confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestSide side)
+    confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side)
     {
 
         using namespace sam;
@@ -113,14 +113,14 @@ namespace sam {
      @param Sm Sample Mean.
      @param Sd Sample Standard Deviation.
      */
-    double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestSide side)
+    double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestStrategy::TestSide side)
     {
         using namespace sam;
         using boost::math::students_t;
         
         // calculate df for one-sided or two-sided test:
         double df = students_t::find_degrees_of_freedom(fabs(M - Sm),
-                                                        (side == TestSide::Greater) ? alpha : alpha / 2. ,
+                                                        (side == TestStrategy::TestSide::Greater) ? alpha : alpha / 2. ,
                                                         alpha,
                                                         Sd);
         
@@ -128,15 +128,15 @@ namespace sam {
         return ceil(df) + 1;
     }
 
-    TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2, double alpha, TestSide side){
+    TestStrategy::TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2, double alpha, TestStrategy::TestSide side){
         return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
                       arma::mean(dt2), arma::stddev(dt2), dt2.size(),
                       alpha, side, true);
     }
 
 
-    TestResult
-    t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestSide side, bool equal_var = false){
+    TestStrategy::TestResult
+    t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestStrategy::TestSide side, bool equal_var = false){
 
         using namespace sam;
 
@@ -166,9 +166,9 @@ namespace sam {
      @param Sd Sample Standard Deviation.
      @param Sn Sample Size.
      @param alpha Significance Level.
-     @return TestResult
+     @return TestStrategy::TestResult
      */
-    TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestSide side)
+    TestStrategy::TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side)
     {
         
         bool sig = false;
@@ -192,7 +192,7 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestSide::TwoSide){
+        if (side == TestStrategy::TestSide::TwoSide){
             // Mean != M
             q = 2 * cdf(complement(dist, fabs(t_stat)));
             if(q < alpha / 2){
@@ -205,7 +205,7 @@ namespace sam {
             }
         }
         
-        if (side == TestSide::Less){
+        if (side == TestStrategy::TestSide::Less){
             // Mean  < M
             q = cdf(complement(dist, t_stat));
             if(q > alpha){
@@ -218,7 +218,7 @@ namespace sam {
             }
         }
         
-        if (side == TestSide::Greater){
+        if (side == TestStrategy::TestSide::Greater){
             // Mean  > M
             q = cdf(dist, t_stat);
             if(q > alpha){
@@ -231,7 +231,7 @@ namespace sam {
             }
         }
         
-        return TestResult(t_stat, q, 1, sig);
+        return TestStrategy::TestResult(t_stat, q, 1, sig);
     }
 
 
@@ -250,9 +250,9 @@ namespace sam {
      @param Sd2 Sample Standard Deviation 2.
      @param Sn2 Sample Size 2.
      @param alpha Significance Level.
-     @return TestResult
+     @return TestStrategy::TestResult
      */
-    TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestSide side)  
+    TestStrategy::TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side)
     {
         
         bool sig = false;
@@ -276,7 +276,7 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestSide::TwoSide){
+        if (side == TestStrategy::TestSide::TwoSide){
             // Sample 1 Mean != Sample 2 Mean
             q = 2 * cdf(complement(dist, fabs(t_stat)));
             if(q < alpha / 2){
@@ -288,7 +288,7 @@ namespace sam {
             }
         }
         
-        if (side == TestSide::Greater){
+        if (side == TestStrategy::TestSide::Greater){
             // Sample 1 Mean <  Sample 2 Mean
             q = cdf(dist, t_stat);
             if(q< alpha){
@@ -300,7 +300,7 @@ namespace sam {
             }
         }
         
-        if (side == TestSide::Less){
+        if (side == TestStrategy::TestSide::Less){
             
             // Sample 1 Mean >  Sample 2 Mean
             q = cdf(complement(dist, t_stat));
@@ -313,7 +313,7 @@ namespace sam {
             }
         }
         
-        return TestResult(t_stat, q, 1, sig);
+        return TestStrategy::TestResult(t_stat, q, 1, sig);
     }
 
 
@@ -332,9 +332,9 @@ namespace sam {
      @param Sd2 Sample Standard Deviation 2.
      @param Sn2 Sample Size 2.
      @param alpha Significance Level.
-     @return TestResult
+     @return TestStrategy::TestResult
      */
-    TestResult two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestSide side)
+    TestStrategy::TestResult two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side)
     {
         
         
@@ -365,7 +365,7 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestSide::TwoSide){
+        if (side == TestStrategy::TestSide::TwoSide){
             // Sample 1 Mean != Sample 2 Mean
             q = 2 * cdf(complement(dist, fabs(t_stat)));
             if(q < alpha / 2){
@@ -377,7 +377,7 @@ namespace sam {
             }
         }
         
-        if (side == TestSide::Greater){
+        if (side == TestStrategy::TestSide::Greater){
             // Sample 1 Mean <  Sample 2 Mean
             q = cdf(dist, t_stat);
             if(q< alpha){
@@ -389,7 +389,7 @@ namespace sam {
             }
         }
         
-        if (side == TestSide::Less){
+        if (side == TestStrategy::TestSide::Less){
             // Sample 1 Mean >  Sample 2 Mean
             q = cdf(complement(dist, t_stat));
             if(q< alpha){
@@ -401,7 +401,7 @@ namespace sam {
             }
         }
         
-        return TestResult(t_stat, q, 1, sig);
+        return TestStrategy::TestResult(t_stat, q, 1, sig);
     }
 
 }
