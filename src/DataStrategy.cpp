@@ -27,7 +27,7 @@ void DataStrategy::loadRawData(Experiment *expr, const std::string &filename) {
     
     
     if (expr->setup.ng() != csv_file.cols().size())
-        throw std::length_error("Number of columns in the CSV file doesn't match\
+        throw std::length_error("Number of columns in the CSV file doesn't match \
                                 the experiment size.");
     
     
