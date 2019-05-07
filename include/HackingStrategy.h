@@ -215,7 +215,7 @@ namespace sam {
         
     public:
         
-        GroupPooling(std::vector<int> nums = {2}) : nums(nums)
+        explicit GroupPooling(std::vector<int> nums = {2}) : nums(nums)
         {
             hid = HackingMethod::GroupPooling;
         };

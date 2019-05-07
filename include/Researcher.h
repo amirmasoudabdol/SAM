@@ -41,7 +41,7 @@ namespace sam {
         
         Researcher();
 
-        Researcher(json& config);
+        explicit Researcher(json& config);
         
         Researcher(Experiment* e,
                         Journal* j,

@@ -108,8 +108,10 @@ namespace sam {
      
      */
     class RandomSelection : public SelectionStrategy {
+    
     public:
-        RandomSelection(int seed) : seed(seed) {
+        
+        explicit RandomSelection(int seed) : seed(seed) {
             
             id = SelectionType::RandomSelection;
 

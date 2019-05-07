@@ -190,7 +190,7 @@ namespace sam {
         
     public:
         
-        ImpatientDecisionMaker(DecisionPreference selection_pref){
+        explicit ImpatientDecisionMaker(DecisionPreference selection_pref) {
             selectionPref = selection_pref;
         };
         
@@ -212,7 +212,7 @@ namespace sam {
 
     public:
         
-        PatientDecisionMaker(DecisionPreference selection_pref) {
+        explicit PatientDecisionMaker(DecisionPreference selection_pref) {
             selectionPref = selection_pref;
         };
         
@@ -235,7 +235,7 @@ namespace sam {
 
     public:
 
-        HonestDecisionMaker(int prg) {
+        explicit HonestDecisionMaker(int prg) {
             pre_registered_group = prg;
         };
         

@@ -1,11 +1,10 @@
 //
-// Created by Amir Masoud Abdol on 2019-05-06.
+// Created by Amir Masoud Abdol on 2019-05-07.
 //
-
 
 #define BOOST_TEST_DYN_LINK
 
-#define BOOST_TEST_MODULE OptionalStopping Tests
+#define BOOST_TEST_MODULE Researcher Tests
 
 #include <boost/test/unit_test.hpp>
 
@@ -16,8 +15,6 @@
 #include "HackingStrategy.h"
 #include "Researcher.h"
 
-#include "nlohmann/json.hpp"
-
 #include "sam.h"
 
 using namespace arma;
@@ -26,9 +23,14 @@ using namespace std;
 
 using json = nlohmann::json;
 
-
-BOOST_AUTO_TEST_CASE( simple_optional_stopping )
+BOOST_AUTO_TEST_CASE( honest_researcher )
 {
+
+    std::ifstream configfile("../config_file.json");
+    json config;
+    configfile >> config;
+
+
 
 
 }

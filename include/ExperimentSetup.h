@@ -28,7 +28,7 @@ namespace sam {
     using json = nlohmann::json;
     
     /**
-     * @brief      Specifying different type of expeirments.
+     * Specifying different type of expeirments.
      */
     enum class ExperimentType {
         LinearModel,    ///< Linear Model, with or without covarinace
@@ -112,7 +112,7 @@ namespace sam {
             updateExperimentSize();
         };
         
-        ExperimentSetup(json& config);
+        explicit ExperimentSetup(json& config);
         
         ExperimentSetup(const int nc, const int nd, const int ni);
         

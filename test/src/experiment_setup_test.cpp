@@ -88,18 +88,15 @@ BOOST_AUTO_TEST_SUITE( constructors )
                               20, .147, 1.0, 0.1,
                               test_params, data_params);
 
-        rowvec v = rowvec(ng).fill(25);
-        // setup.set_nobs(v); // ", 25);)
-        // BOOST_TEST(setup.nobs() == mat(1, 6).fill(25),
-        //              tt::per_element());
+        rowvec v = rowvec(ng);
 
         v = rowvec(ng).fill(1);
-        setup.set_means(v); // ", 1);)
+        setup.set_means(v);
         BOOST_TEST(setup.means() == mat(1, 6).fill(1),
                      tt::per_element());
 
         v = rowvec(ng).fill(1);
-        setup.set_vars(v); // ", 1);)
+        setup.set_vars(v);
         BOOST_TEST(setup.vars() == mat(1, 6).fill(1),
                      tt::per_element());
 
@@ -111,7 +108,7 @@ BOOST_AUTO_TEST_SUITE( constructors )
 
 
         // Checking if the changes reflect in the object
-        setup.set_sigma(sigma); // ", sigma);)
+        setup.set_sigma(sigma);
         
         vec dg = setup.sigma().diag();
         BOOST_TEST(dg == vec(6).fill(5.0),
@@ -131,7 +128,7 @@ BOOST_AUTO_TEST_SUITE( constructors )
         int nd = 5;
         int ng = nc * nd;
         arma::Row<int> nobs(ng);
-            std::generate(nobs.begin(), nobs.end(), [i=0]() mutable {return i++;});
+        std::generate(nobs.begin(), nobs.end(), [i=0]() mutable {return i++;});
         rowvec means = linspace<rowvec>(0, 100, 10);
         rowvec vars = linspace<rowvec>(0, 1, 10);
         double covs = 0.0001;
@@ -172,7 +169,7 @@ BOOST_AUTO_TEST_SUITE( constructors )
         int nd = 5;
         int ng = nc * nd;
         arma::Row<int> nobs(ng);
-            std::generate(nobs.begin(), nobs.end(), [i=0]() mutable {return i++;});
+        std::generate(nobs.begin(), nobs.end(), [i=0]() mutable {return i++;});
         rowvec means = linspace<rowvec>(0, 100, 10);
         rowvec vars = linspace<rowvec>(0, 1, 10);
         mat sigma(ng, ng); sigma.randn();

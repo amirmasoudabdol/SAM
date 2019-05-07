@@ -59,9 +59,9 @@ namespace sam {
         //! Strategy Pattern ;P
         void latent_function(std::function<void(Experiment *)>);
         
-        Experiment(json& experiment_config);
+        explicit Experiment(json& experiment_config);
         
-        Experiment(ExperimentSetup& e) : setup(e) {
+        explicit Experiment(ExperimentSetup& e) : setup(e) {
             
             initResources(setup.ng());
         };
