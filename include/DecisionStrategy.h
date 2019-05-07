@@ -13,6 +13,13 @@
 
 namespace sam {
 
+    enum class DecisionType {
+        HonestDecisionMaker,
+        PatientDecisionMaker,
+        ImpatientDecisionMaker
+    };
+
+
     /**
      DecisionStage enum indicates on what stages of the _research_ the
      Researcher is making decision in.
@@ -79,8 +86,15 @@ namespace sam {
         bool will_be_submitting = false;
         
     public:
+
+        struct DecisionStrategyParameters {
+            DecisionType name;
+            DecisionPreference preference;
+        };
         
         static DecisionStrategy* build(json &decision_strategy_config);
+
+        static DecisionStrategy* build(DecisionStrategyParameters dsp);
         
         virtual ~DecisionStrategy() = 0;
         
@@ -163,7 +177,7 @@ namespace sam {
              with submitting the final submission to the Journal or not.
              */
             virtual bool finalDecision(Experiment &experiment) = 0;
-         
+
         
         /**
          * @brief      Based on the DecisionPreference, it'll select the outcome
@@ -231,11 +245,12 @@ namespace sam {
 
 
 
+    // FIXME: Not fully implemented!
     class HonestDecisionMaker : public DecisionStrategy {
 
     public:
 
-        explicit HonestDecisionMaker(int prg) {
+        HonestDecisionMaker(int prg) {
             pre_registered_group = prg;
         };
         

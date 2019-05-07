@@ -18,21 +18,21 @@ DataStrategy::~DataStrategy() {
 }
 
 void DataStrategy::loadRawData(Experiment *expr, const std::string &filename) {
-    csv::Reader csv_file;
-    csv_file.configure_dialect("no headers")
+    csv::Reader csv;
+    csv.configure_dialect("no headers")
             .header(false);
     
-    csv_file.read(filename);
-    auto rows = csv_file.rows();
+    csv.read(filename);
+    auto rows = csv.rows();
     
     
-    if (expr->setup.ng() != csv_file.cols().size())
+    if (expr->setup.ng() != csv.cols().size())
         throw std::length_error("Number of columns in the CSV file doesn't match \
                                 the experiment size.");
     
     
     for (int r = 0; r < rows.size(); r++) {
-        for (auto &col : csv_file.cols()) {
+        for (auto &col : csv.cols()) {
             expr->measurements[std::stoi(col)][r] = std::stod(rows[r][col]);
         }
     }

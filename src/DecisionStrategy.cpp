@@ -26,6 +26,21 @@ DecisionStrategy *DecisionStrategy::build(json &decision_strategy_config) {
     }
 }
 
+DecisionStrategy *DecisionStrategy::build(DecisionStrategyParameters dsp) {
+
+    if (dsp.name == DecisionType::ImpatientDecisionMaker){
+        return new ImpatientDecisionMaker(dsp.preference);
+    }else if (dsp.name == DecisionType::PatientDecisionMaker){
+        return new PatientDecisionMaker(dsp.preference);
+//    }else if (dsp.name == DecisionType::HonestDecisionMaker){
+//        return new HonestDecisionMaker(0);
+    } else{
+        throw std::invalid_argument("Unknown DecisionStrategy");
+    }
+}
+
+
+
 std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
 {
     switch(dp)
