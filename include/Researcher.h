@@ -25,7 +25,7 @@ namespace sam {
 
     public:
 
-        class Builder;
+//        class ResearcherBuilder;
 
         Experiment* experiment;
 
@@ -39,7 +39,7 @@ namespace sam {
         //! A Submission record that Researcher is going to submit to the Journal
         Submission submission_record;
         
-        Researcher();
+        Researcher() { };
 
         explicit Researcher(json& config);
         
@@ -102,10 +102,12 @@ namespace sam {
 
 
     /**
-     Builder class for Researcher. This takes care of eveyrthing and return a
+     ResearcherBuilder class for Researcher. This takes care of eveyrthing and return a
      fully initialized Researcher after calling `.build()` method.
      */
-    class Researcher::Builder {
+    class ResearcherBuilder {
+        
+        Researcher researcher;
 
         json config;
         bool build_from_config = false;
@@ -124,7 +126,7 @@ namespace sam {
 
     public:
 
-        Builder() = default;
+        ResearcherBuilder() { };
 
         /**
          Build a researcher entirely based on the given config file. This is
@@ -134,7 +136,7 @@ namespace sam {
          @param config A JSON object
          @return Return an instance of itself
          */
-        Builder& makeResearcherFromConfig(json& config) {
+        ResearcherBuilder& makeResearcherFromConfig(json& config) {
             
             this->config = config;
             
@@ -165,41 +167,41 @@ namespace sam {
         }
         
         // Experiment's constructor also prepares the ExperimentSetup!
-        Builder& makeExperimentSetup();
+        ResearcherBuilder& makeExperimentSetup();
         
-        Builder& makeExperiment() {
+        ResearcherBuilder& makeExperiment() {
             this->experiment = new Experiment(config);
             return *this;
         };
         
-        Builder& makeJournal() {
+        ResearcherBuilder& makeJournal() {
             
             return *this;
         };
         
-        Builder& makeDecisionStrategy() {
+        ResearcherBuilder& makeDecisionStrategy() {
             
             return *this;
         };
         
-        Builder& isHacker() {
+        ResearcherBuilder& isHacker() {
             
             return *this;
         }
         
-        Builder& makeHackingStrategies(){
+        ResearcherBuilder& makeHackingStrategies(){
             
             return *this;
         };
 
 
-        Builder& setResearcherPreference(DecisionPreference pref){
+        ResearcherBuilder& setResearcherPreference(DecisionPreference pref){
             // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
             this->researcher_preference = pref;
             return *this;
         };
         
-        Builder& setExperimentSetup(ExperimentSetup es) {
+        ResearcherBuilder& setExperimentSetup(ExperimentSetup es) {
             this->experiment_setup = es;
             this->experiment = new Experiment(experiment_setup);
             return *this;
@@ -214,29 +216,29 @@ namespace sam {
          @param exp <#exp description#>
          @return <#return value description#>
          */
-        Builder& setExperiment(Experiment *exp) {
+        ResearcherBuilder& setExperiment(Experiment *exp) {
             this->experiment = exp;
             return *this;
         };
-        Builder& setDataStrategy(std::shared_ptr<DataStrategy> dgs) {
+        ResearcherBuilder& setDataStrategy(std::shared_ptr<DataStrategy> dgs) {
             this->experiment->data_strategy = dgs;
             return *this;
         }
-        Builder& setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
+        ResearcherBuilder& setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
             this->experiment->test_strategy = ts;
             return *this;
         };
-        Builder& setJournal(Journal j) {
+        ResearcherBuilder& setJournal(Journal j) {
             this->journal = &j;
             return *this;
         };
-        Builder& setJournalSelectionStrategy(SelectionStrategy *ss) {
+        ResearcherBuilder& setJournalSelectionStrategy(SelectionStrategy *ss) {
             this->journal->setSelectionStrategy(ss);
             return *this;
         };
-        Builder& setDecisionStrategy(DecisionStrategy *ds);
-        Builder& setHackingStrategy(HackingStrategy *hs);
-        Builder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
+        ResearcherBuilder& setDecisionStrategy(DecisionStrategy *ds);
+        ResearcherBuilder& setHackingStrategy(HackingStrategy *hs);
+        ResearcherBuilder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
         
         
         /**
@@ -250,7 +252,7 @@ namespace sam {
          @return Return an instance of itself where hacking_strategies has been
          initialized accordingly.
          */
-        Builder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
+        ResearcherBuilder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
             
             std::random_device rd;
             std::mt19937 gen(rd());
@@ -278,7 +280,7 @@ namespace sam {
          @return Return an instance of itself where hacking_strategies has been
          initialized accordingly.
          */
-        Builder& pickRandomHackingStrategies(int n_group, int m_method) {
+        ResearcherBuilder& pickRandomHackingStrategies(int n_group, int m_method) {
             
             this->isHacker();
             this->hacking_strategies.resize(n_group);
