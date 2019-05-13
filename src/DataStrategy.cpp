@@ -20,7 +20,7 @@ DataStrategy::~DataStrategy() {
 void DataStrategy::loadRawData(Experiment *expr, const std::string &filename) {
     csv::Reader csv;
     csv.configure_dialect("no headers")
-            .header(false);
+       .header(false);
     
     csv.read(filename);
     auto rows = csv.rows();

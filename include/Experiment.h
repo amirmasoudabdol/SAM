@@ -13,9 +13,11 @@
 #include "ExperimentSetup.h"
 #include "EffectEstimators.h"
 #include "TestStrategy.h"
+#include "Submission.h"
 
 namespace sam {
 
+//    class Submission;
     class EffectSizeEstimator;
 
     /**
@@ -78,6 +80,22 @@ namespace sam {
             
             initResources(setup.ng());
         };
+
+
+//        static Submission selected_submission_rec;
+//        
+//        const Submission& operator[](std::size_t idx) const {
+//
+//            selected_submission_rec.nobs = measurements[idx].size();
+//            selected_submission_rec.yi = means[idx];
+//            selected_submission_rec.vi = vars[idx];
+//            selected_submission_rec.sei = ses[idx];
+//
+//            selected_submission_rec.statistic = statistics[idx];
+//            selected_submission_rec.pvalue = pvalues[idx];
+//
+//            return selected_submission_rec;
+//        }
 
         
         
