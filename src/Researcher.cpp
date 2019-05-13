@@ -8,6 +8,12 @@
 
 using namespace sam;
 
+//class ResearcherBuilder;
+
+ResearcherBuilder Researcher::create(std::string name) {
+    return ResearcherBuilder(name);
+}
+
 void Researcher::hack() {
     
     Submission sub;

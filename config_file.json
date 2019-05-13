@@ -63,7 +63,7 @@
     "SimulationParameters": {
         "debug": false,
         "master-seed": 42,
-        "n-sims": 1,
+        "n-sims": 5,
         "output-path": "../outputs/",
         "output-prefix": "",
         "progress": false,

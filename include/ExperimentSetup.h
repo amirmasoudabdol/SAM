@@ -105,10 +105,9 @@ namespace sam {
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
         
-
         //! This is just a handy default constructor that I should remove at
         //! some point!
-        explicit ExperimentSetup() {
+        ExperimentSetup() {
             updateExperimentSize();
         };
         
