@@ -35,7 +35,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     // Setting the seed for number of observation
     rng_stream = new RandomNumberGenerator(rand());
     
-    dsp.name = config["data-strategy"];
+    dsp_.name = config["data-strategy"];
     
     nc_ = config["n-conditions"];
     nd_ = config["n-dep-vars"];
@@ -163,68 +163,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }    
 }
 
-ExperimentSetup::ExperimentSetup(const int nc, const int nd,
-                const int nobs, const double means, const double vars, const double covs,
-                const TestStrategy::TestStrategyParameters test_params,
-                const DataStrategy::DataStrategyParameters data_params)
-: nc_(nc), nd_(nd), ni_(0),
-  test_strategy_parameters_(test_params), dsp(data_params)
-{
-    updateExperimentSize();
-    
-    nobs_ = arma::Row<int>(ng_).fill(nobs);
-    means_ = arma::Row<double>(ng_).fill(means);
-    vars_ = arma::Row<double>(ng_).fill(vars);
-    
-    auto sigma = constructCovMatrix(vars, covs);
-    sigma_ = sigma;
-    
-}
-
-
-ExperimentSetup::ExperimentSetup(const int nc, const int nd,
-                const arma::Row<int> nobs, const arma::Row<double> means,
-                const arma::Row<double> vars, const double covs,
-                const TestStrategy::TestStrategyParameters test_params,
-                const DataStrategy::DataStrategyParameters data_params)
-: nc_(nc), nd_(nd), ni_(0),
-  test_strategy_parameters_(test_params), dsp(data_params)
-{
-    updateExperimentSize();
-    
-    if (nobs.n_cols != ng() || means.n_cols != ng() || vars.n_cols != ng())
-        throw std::length_error("Sizes do not match!");
-    
-    nobs_ = nobs;
-    means_ = means;
-    vars_ = vars;
-    
-    auto sigma = constructCovMatrix(vars, covs);
-    sigma_ = sigma;
-    
-    
-}
-
-ExperimentSetup::ExperimentSetup(const int nc, const int nd,
-                const arma::Row<int> nobs, const arma::Row<double> means,
-                const arma::Mat<double> sigma,
-                const TestStrategy::TestStrategyParameters test_params,
-                const DataStrategy::DataStrategyParameters data_params)
-: nc_(nc), nd_(nd), ni_(0),
-  test_strategy_parameters_(test_params), dsp(data_params)
-{
-    updateExperimentSize();
-    
-    if (nobs.n_cols != ng() || means.n_cols != ng()
-        || sigma.n_rows != ng() || sigma.n_cols != ng())
-        throw std::length_error("Sizes do not match!");
-                
-    nobs_ = nobs;
-    means_ = means;
-    vars_ = sigma.diag().t();
-    sigma_ = sigma;
-}
-
 void ExperimentSetup::randomize_nObs() {
 //    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
     int n = rng_stream->genSampleSize(intervals, weights);
@@ -238,7 +176,7 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     // Setting the seed for number of observation
     setup.rng_stream = new RandomNumberGenerator(rand());
     
-    setup.dsp.name = config["data-strategy"];
+    setup.dsp_.name = config["data-strategy"];
     
     setup.nc_ = config["n-conditions"];
     setup.nd_ = config["n-dep-vars"];

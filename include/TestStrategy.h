@@ -83,7 +83,7 @@ namespace sam {
         
         static std::shared_ptr<TestStrategy> build(ExperimentSetup &setup);
         
-        static std::shared_ptr<TestStrategy> build(TestStrategyParameters &params);
+        static std::shared_ptr<TestStrategy> build(const TestStrategyParameters &params);
         
         virtual ~TestStrategy() = 0;
         

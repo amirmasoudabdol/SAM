@@ -64,6 +64,9 @@ namespace sam {
         explicit Experiment(json& experiment_config);
         
         explicit Experiment(ExperimentSetup& e) : setup(e) {
+
+            data_strategy = DataStrategy::build(setup.dsp_);
+            test_strategy = TestStrategy::build(setup.tsp_);
             
             initResources(setup.ng());
         };

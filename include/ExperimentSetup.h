@@ -90,43 +90,19 @@ namespace sam {
         static ExperimentSetupBuilder create();
 
         //! Test Strategy Parameters
-        TestStrategy::TestStrategyParameters test_strategy_parameters_;
+        TestStrategy::TestStrategyParameters tsp_;
 
         //! Data Strategy Parameters
-        DataStrategy::DataStrategyParameters dsp;
+        DataStrategy::DataStrategyParameters dsp_;
 
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
 
         //! This is just a handy default constructor that I should remove at
         //! some point!
-        ExperimentSetup() {
-            updateExperimentSize();
-        };
+        ExperimentSetup() = default;
 
         explicit ExperimentSetup(json& config);
-
-        ExperimentSetup(const int nc, const int nd, const int ni);
-
-        ExperimentSetup(const int nc, const int nd,
-                        const int nobs, const double means, const double vars, const double covs,
-                        const TestStrategy::TestStrategyParameters test_params,
-                        const DataStrategy::DataStrategyParameters data_params);
-
-
-        ExperimentSetup(const int nc, const int nd,
-                        const arma::Row<int> nobs, const arma::Row<double> means,
-                        const arma::Row<double> vars, const double covs,
-                        const TestStrategy::TestStrategyParameters test_params,
-                        const DataStrategy::DataStrategyParameters data_params);
-
-
-        ExperimentSetup(const int nc, const int nd,
-                        const arma::Row<int> nobs, const arma::Row<double> means,
-                        const arma::Mat<double> sigma,
-                        const TestStrategy::TestStrategyParameters test_params,
-                        const DataStrategy::DataStrategyParameters data_params);
-
 
         ~ExperimentSetup() = default;
 
@@ -332,11 +308,8 @@ namespace sam {
                 calculate_experiment_size();
             }
             
-
             setup.vars_ = arma::Row<double>(setup.ng_);
             setup.sigma_ = arma::Mat<double>(setup.ng_, setup.ng_);
-
-            std::cerr << arma::size(setup.sigma_) << ", " << arma::size(sigma);
 
             if (arma::size(setup.sigma_) != arma::size(sigma)){
                throw std::length_error("The size of covs does not match size of the experiment.");
@@ -349,14 +322,14 @@ namespace sam {
         }
         
         ExperimentSetupBuilder& setTestStrategy(const TestStrategy::TestStrategyParameters &tsp) {
-            
+            setup.tsp_ = tsp;
             return *this;
         }
         
-//        ExperimentSetupBuilder& setDataStrategy(const DataStrategy::DataStrategyParameters &dsp) {
-//
-//            return *this;
-//        }
+        ExperimentSetupBuilder& setDataStrategy(const DataStrategy::DataStrategyParameters &dsp) {
+            setup.dsp_ = dsp;
+            return *this;
+        }
 
         ExperimentSetup build() const {
             return setup;

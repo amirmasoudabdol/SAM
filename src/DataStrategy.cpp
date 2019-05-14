@@ -40,34 +40,26 @@ void DataStrategy::loadRawData(Experiment *expr, const std::string &filename) {
     
 }
 
-// std::shared_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup){
-//     switch (setup.experiment_type) {
-//         case ExperimentType::LinearModel:
-//             return std::make_shared<LinearModelStrategy>();
-//             break;
-            
-//         case ExperimentType::LatentModel:
-//             return std::make_shared<LatentDataStrategy>();
-//             break;
-//     }
-// }
-
-std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name){
+std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name) {
     
     if (name == "LinearModel"){
         return std::make_shared<LinearModelStrategy>();
     }else if (name == "LatentModel") {
         return std::make_shared<LatentDataStrategy>();
+    }else{
+        throw std::invalid_argument("Unkown Data Strategy.");
     }
 
 }
 
 
-std::shared_ptr<DataStrategy> build(const DataStrategy::DataStrategyParameters &dsp) {
+std::shared_ptr<DataStrategy> DataStrategy::build(const DataStrategyParameters &dsp) {
     if (dsp.name == "LinearModel"){
         return std::make_shared<LinearModelStrategy>();
     }else if (dsp.name == "LatentModel") {
         return std::make_shared<LatentDataStrategy>();
+    }else{
+        throw std::invalid_argument("Unkown Data Strategy.");
     }
 }
 

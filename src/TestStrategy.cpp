@@ -58,16 +58,16 @@ std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
 
 std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
     
-    if (setup.test_strategy_parameters_.name == TestType::TTest){
-        return std::make_shared<TTest>(setup.test_strategy_parameters_.side,
-                                        setup.test_strategy_parameters_.alpha);
+    if (setup.tsp_.name == TestType::TTest){
+        return std::make_shared<TTest>(setup.tsp_.side,
+                                        setup.tsp_.alpha);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
     
 }
 
-std::shared_ptr<TestStrategy> TestStrategy::build(TestStrategyParameters &params){
+std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &params){
     
     if (params.name == TestType::TTest){
         return std::make_shared<TTest>(params);
