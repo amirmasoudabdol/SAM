@@ -73,21 +73,19 @@ namespace sam {
         arma::Row<double> error_means_;
         arma::Row<double> error_vars_;
         arma::Mat<double> error_sigma_;
-
-        void updateExperimentSize() {
-            ng_ = nc_ * nd_;
-            nrows_ = ng_ * ni_;
-        }
-
+        
     public:
 
-        
         /**
          Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
 
          @return An instance of the builder.
          */
         static ExperimentSetupBuilder create();
+        
+        ExperimentSetup() = default;
+        
+        explicit ExperimentSetup(json& config);
 
         //! Test Strategy Parameters
         TestStrategy::TestStrategyParameters tsp_;
@@ -98,13 +96,6 @@ namespace sam {
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
 
-        //! This is just a handy default constructor that I should remove at
-        //! some point!
-        ExperimentSetup() = default;
-
-        explicit ExperimentSetup(json& config);
-
-        ~ExperimentSetup() = default;
 
 
         void randomize_nObs();
@@ -116,6 +107,7 @@ namespace sam {
             rng_stream->setSeed(s);
         }
         
+        // TODO: These can move out!
         arma::Mat<double> constructCovMatrix(double var, double cov) const;
         arma::Mat<double> constructCovMatrix(const arma::Row<double> &vars, double cov) const;
 
@@ -165,6 +157,11 @@ namespace sam {
             }
         }
 
+        
+        /**
+         Check if variable sizes are set properly, if not, tries to calcualte
+         them, if fails, it'll throw and error.
+         */
         void check_expr_size() {
             if (!is_expr_size_decided) {
                 calculate_experiment_size();
@@ -232,9 +229,8 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setNumObservations(const arma::Row<int> &nobs) {
-            if (!is_expr_size_decided){
-                calculate_experiment_size();
-            }
+            check_expr_size();
+            
             if (nobs.size() != setup.ng_){
                 throw std::length_error("The size of nobs does not match size of the experiment.");
             }
@@ -246,9 +242,7 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setMeans(const double mean) {
-            if (!is_expr_size_decided) {
-                calculate_experiment_size();
-            }
+            check_expr_size();
 
             fill_vector<double>(setup.means_, setup.ng_, mean);
 
@@ -256,9 +250,8 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setMeans(const arma::Row<double> &means) {
-            if (!is_expr_size_decided){
-                calculate_experiment_size();
-            }
+            check_expr_size();
+            
             if (means.size() != setup.ng_){
                 throw std::length_error("The size of nobs does not match size of the experiment.");
             }
@@ -267,9 +260,7 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setVariance(const double var) {
-            if (!is_expr_size_decided) {
-                calculate_experiment_size();
-            }
+            check_expr_size();
             
             fill_vector<double>(setup.vars_, setup.ng_, var);
 
@@ -278,9 +269,8 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setVariance(const arma::Row<double> &vars) {
-            if (!is_expr_size_decided){
-                calculate_experiment_size();
-            }
+            check_expr_size();
+            
             if (vars.size() != setup.ng_){
                 throw std::length_error("The size of vars does not match size of the experiment.");
             }
@@ -290,9 +280,7 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setCovariance(const double cov) {
-            if (!is_expr_size_decided) {
-                calculate_experiment_size();
-            }
+            check_expr_size();
 
             if (!is_vars_set) {
                 throw std::invalid_argument("Please set the variance before the covariance.");
@@ -304,9 +292,7 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setCovarianceMatrix(const arma::Mat<double> &sigma) {
-            if (!is_expr_size_decided){
-                calculate_experiment_size();
-            }
+            check_expr_size();
             
             setup.vars_ = arma::Row<double>(setup.ng_);
             setup.sigma_ = arma::Mat<double>(setup.ng_, setup.ng_);
@@ -331,15 +317,11 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetup build() const {
-            return setup;
-        } 
-
-        operator ExperimentSetup() const {
+        ExperimentSetup build() {
+            check_expr_size();
+            
             return setup;
         }
-
-
 
     };
 
