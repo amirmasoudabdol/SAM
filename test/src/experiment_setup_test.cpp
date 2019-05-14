@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE( constructors )
     {
         ExperimentSetup setup;
 
-        BOOST_TEST(setup.ng() == 3);
+        BOOST_TEST(setup.ng() == 0);
         BOOST_TEST(setup.ni() == 0);
         BOOST_TEST(accu(setup.means()) == 0);
     }
@@ -201,6 +201,55 @@ BOOST_AUTO_TEST_SUITE( constructors )
 
 BOOST_AUTO_TEST_SUITE_END()
 
+
+BOOST_AUTO_TEST_SUITE( experiment_setup_builder )
+
+    BOOST_AUTO_TEST_CASE( building_with_fixed_params )
+    {
+
+        int nc = 2;
+        int nd = 3;
+        int ng = nc * nd;
+
+        int nobs = 25;
+        double mean = 0.25;
+        double var = 1;
+        double cov = 0.01;
+
+        ExperimentSetup setup = ExperimentSetup::create().setNumConditions(nc)
+                                .setNumDependentVariables(nd)
+                                .setNumItems(0)
+                                .setFixedNumObservations(nobs)
+                                .setFixedMeans(mean)
+                                .setFixedVariance(var)
+                                .setFixedCovariance(cov);
+
+        arma::Row<int> v_nobs = arma::Row<int>(ng).fill(nobs);
+        BOOST_TEST( setup.nobs() == v_nobs,
+                    tt::per_element());
+
+        arma::Row<double> v_means = arma::Row<double>(ng).fill(mean);
+        BOOST_TEST( setup.means() == v_means,
+                        tt::per_element());
+
+        arma::Row<double> v_vars = arma::Row<double>(ng).fill(var);
+        BOOST_TEST( setup.vars() == v_vars,
+                    tt::per_element());
+
+        arma::Mat<double> v_sigma;
+        v_sigma = arma::Mat<double>(ng, ng).fill(cov);
+        v_sigma.diag() = v_vars;
+        BOOST_TEST( setup.sigma() == v_sigma,
+                        tt::per_element());
+
+    }
+
+    BOOST_AUTO_TEST_CASE( building_with_arrays )
+    {
+
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE( parameter_randomization )
 

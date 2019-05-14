@@ -9,6 +9,10 @@
 
 using namespace sam;
 
+ExperimentSetupBuilder ExperimentSetup::create() {
+    return ExperimentSetupBuilder();
+}
+
 std::ostream& operator<<(std::ostream& os, ExperimentType et)
 {
     switch(et)
@@ -26,14 +30,14 @@ std::ostream& operator<<(std::ostream& os, ExperimentType et)
 }
 
 arma::Mat<double>
-ExperimentSetup::constructCovMatrix(double var, double cov) {
+ExperimentSetup::constructCovMatrix(double var, double cov) const {
     arma::Row<double> vars(ng_);
     vars.fill(var);
     return constructCovMatrix(vars, cov);
 }
 
 arma::Mat<double>
-ExperimentSetup::constructCovMatrix(arma::Row<double> vars, double cov) {
+ExperimentSetup::constructCovMatrix(const arma::Row<double> &vars, double cov) const {
     arma::Mat<double> cov_matrix(ng_, ng_);
     
     cov_matrix.fill(cov);
