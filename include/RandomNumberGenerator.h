@@ -49,7 +49,23 @@ class RandomNumberGenerator {
         
         int genSampleSize(const double, const double, const double, const double);
         int genSampleSize(const std::vector<double> &intervals, const std::vector<double> &weights);
-        
+    
+    
+        /**
+         Template function for randomizing values of a vector based on piecewise
+         uniform distribution.
+         
+         @sa `std::piecewise_constant_distribution`
+
+         @param vec The reference to a vector of values
+         @param intervals A vector of intervals
+         @param weights A vector of weights
+         @return The updated vec
+         */
+        template <typename T>
+        void randomize(arma::Row<T> &vec,
+                       const std::vector<double> &intervals, const std::vector<double> &weights);
+    
         // normal distribution
         arma::Mat<double>
         normal(const double mean, const double var, const double n);

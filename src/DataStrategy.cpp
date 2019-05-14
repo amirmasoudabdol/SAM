@@ -52,6 +52,25 @@ std::shared_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup){
     }
 }
 
+std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name){
+    
+    if (name == "LinearModel"){
+        return std::make_shared<LinearModelStrategy>();
+    }else if (name == "LatentModel") {
+        return std::make_shared<LatentDataStrategy>();
+    }
+
+}
+
+
+std::shared_ptr<DataStrategy> build(const DataStrategy::DataStrategyParam &dsp) {
+    if (dsp.name == "LinearModel"){
+        return std::make_shared<LinearModelStrategy>();
+    }else if (dsp.name == "LatentModel") {
+        return std::make_shared<LatentDataStrategy>();
+    }
+}
+
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
     experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),

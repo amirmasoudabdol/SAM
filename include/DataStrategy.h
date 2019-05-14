@@ -37,6 +37,9 @@ namespace sam {
 
     public:
 
+        struct DataStrategyParam {
+            std::string name;
+        };
         
         /**
          Factory method for DataStrategy.
@@ -45,6 +48,10 @@ namespace sam {
          @return a new DataStrategy
          */
         static std::shared_ptr<DataStrategy> build(ExperimentSetup &setup);
+
+        static std::shared_ptr<DataStrategy> build(const std::string &name);
+
+        static std::shared_ptr<DataStrategy> build(const DataStrategyParam &dsp);
         
         
         /**

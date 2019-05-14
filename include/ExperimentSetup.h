@@ -26,6 +26,9 @@
 namespace sam {
 /**/
     using json = nlohmann::json;
+    
+    class DataStrategy;
+    class TestStrategy;
 
     /**
      * Specifying different type of expeirments.
@@ -152,7 +155,7 @@ namespace sam {
         void setSeed(int s) {
             rng_stream->setSeed(s);
         }
-                
+        
         arma::Mat<double> constructCovMatrix(double var, double cov) const;
         arma::Mat<double> constructCovMatrix(const arma::Row<double> &vars, double cov) const;
 
@@ -360,6 +363,16 @@ namespace sam {
 
             return *this;
         }
+        
+        ExperimentSetupBuilder& setTestStrategy(const TestStrategy::TestStrategyParameters &tsp) {
+            
+            return *this;
+        }
+        
+//        ExperimentSetupBuilder& setDataStrategy(const DataStrategy::DataStrategyParameters &dsp) {
+//
+//            return *this;
+//        }
 
         ExperimentSetup build() const {
             return setup;

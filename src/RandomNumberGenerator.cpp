@@ -107,3 +107,15 @@ int RandomNumberGenerator::genSampleSize(const std::vector<double> &intervals, c
     piecewiseConstDist.param((std::piecewise_constant_distribution<>::param_type(intervals.begin(), intervals.end(), weights.begin())));
     return piecewiseConstDist(gen);
 }
+
+template <typename T = double>
+void RandomNumberGenerator::randomize(arma::Row<T> &vec,
+                                      const std::vector<double> &intervals,
+                                      const std::vector<double> &weights)
+{
+    piecewiseConstDist.param((std::piecewise_constant_distribution<>::param_type(intervals.begin(), intervals.end(),
+                                                                                 weights.begin())));
+    for (auto &v : vec) {
+        v = piecewiseConstDist(gen);
+    }
+}
