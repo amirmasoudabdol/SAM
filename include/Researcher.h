@@ -121,20 +121,7 @@ namespace sam {
         Researcher researcher;
         
         json config;
-        bool build_from_config = false;
-        //
-        //        ExperimentSetup setup;
-        //        Experiment* experiment;
-        //        Journal* journal;
-        //
-        //        bool is_hacker;
-        //        std::vector<std::vector<HackingStrategy*>> hacking_strategies;
-        //
-        //        DecisionStrategy* decision_strategy;
-        //
-        //        DecisionPreference researcher_preference;
-        //        Researcher researcher;
-        
+        bool build_from_config = false;        
         
     public:
         
@@ -152,9 +139,11 @@ namespace sam {
          @param config A JSON object
          @return Return an instance of itself
          */
-        ResearcherBuilder& makeResearcherFromConfig(json& config) {
+        ResearcherBuilder& fromConfigFile(json& config) {
             
             this->config = config;
+            
+//            auto setup = ExperimentSetup::create().fromConfigFile(config).build();
             
             researcher.experiment = new Experiment(config);
             

@@ -209,6 +209,7 @@ BOOST_AUTO_TEST_SUITE( experiment_setup_builder )
 
         int nc = 2;
         int nd = 3;
+        int ni = 0;
         int ng = nc * nd;
 
         int nobs = 25;
@@ -218,11 +219,11 @@ BOOST_AUTO_TEST_SUITE( experiment_setup_builder )
 
         ExperimentSetup setup = ExperimentSetup::create().setNumConditions(nc)
                                 .setNumDependentVariables(nd)
-                                .setNumItems(0)
-                                .setFixedNumObservations(nobs)
-                                .setFixedMeans(mean)
-                                .setFixedVariance(var)
-                                .setFixedCovariance(cov);
+                                .setNumItems(ni)
+                                .setNumObservations(nobs)
+                                .setMeans(mean)
+                                .setVariance(var)
+                                .setCovariance(cov);
 
         arma::Row<int> v_nobs = arma::Row<int>(ng).fill(nobs);
         BOOST_TEST( setup.nobs() == v_nobs,
@@ -246,7 +247,45 @@ BOOST_AUTO_TEST_SUITE( experiment_setup_builder )
 
     BOOST_AUTO_TEST_CASE( building_with_arrays )
     {
+        int nc = 2;
+        int nd = 3;
+        int ni = 0;
+        int ng = nc * nd;
 
+        int nobs = 25;
+        double mean = 0.25;
+        double var = 1;
+        double cov = 0.01;
+
+        arma::Row<int> v_nobs = arma::Row<int>(ng).fill(nobs);
+        arma::Row<double> v_means = arma::Row<double>(ng).fill(mean);
+        arma::Row<double> v_vars = arma::Row<double>(ng).fill(var);
+        arma::Mat<double> v_sigma;
+        v_sigma = arma::Mat<double>(ng, ng).fill(cov);
+        v_sigma.diag() = v_vars;
+
+        ExperimentSetup setup = ExperimentSetup::create()
+                                                .setNumConditions(nc)
+                                                .setNumDependentVariables(nd)
+                                                .setNumItems(ni)
+                                                .setNumObservations(v_nobs)
+                                                .setMeans(v_means)
+                                                .setCovarianceMatrix(v_sigma);
+
+
+        BOOST_TEST( setup.nobs() == v_nobs,
+                    tt::per_element());
+
+
+        BOOST_TEST( setup.means() == v_means,
+                    tt::per_element());
+
+
+        BOOST_TEST( setup.vars() == v_vars,
+                    tt::per_element());
+
+        BOOST_TEST( setup.sigma() == v_sigma,
+                    tt::per_element());
     }
 
 BOOST_AUTO_TEST_SUITE_END()

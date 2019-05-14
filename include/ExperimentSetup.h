@@ -148,6 +148,13 @@ namespace sam {
 
         std::vector<double> intervals;
         std::vector<double> weights;
+        
+        void setSeed(int s) {
+            rng_stream->setSeed(s);
+        }
+                
+        arma::Mat<double> constructCovMatrix(double var, double cov) const;
+        arma::Mat<double> constructCovMatrix(const arma::Row<double> &vars, double cov) const;
 
 
         const int nc() const { return nc_; };
@@ -174,18 +181,11 @@ namespace sam {
         const arma::Mat<double>& error_sigma() const { return error_sigma_; };
         void set_error_sigma(arma::Mat<double>& val) {error_sigma_ = val; };
 
-        void setSeed(int s) {
-            rng_stream->setSeed(s);
-        }
-
-
-        arma::Mat<double> constructCovMatrix(double var, double cov) const;
-        arma::Mat<double> constructCovMatrix(const arma::Row<double> &vars, double cov) const;
-
     };
 
 
     class ExperimentSetupBuilder {
+        
         ExperimentSetup setup;
 
         bool is_expr_size_decided = false;
@@ -232,12 +232,9 @@ namespace sam {
 
         ExperimentSetupBuilder() = default;
 
-        ExperimentSetupBuilder& makeFromConfigFile(json &config) {
+        ExperimentSetupBuilder& fromConfigFile(json &config);
 
-            return *this;
-        }
-
-        ExperimentSetupBuilder& setNumConditions(int nc) {
+        ExperimentSetupBuilder& setNumConditions(const int nc) {
             if (nc <= 0) {
                 throw std::invalid_argument("Number of conditions cannot be 0.");
             }
@@ -247,7 +244,7 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetupBuilder& setNumDependentVariables(int nd) {
+        ExperimentSetupBuilder& setNumDependentVariables(const int nd) {
             if (nd <= 0) {
                 throw std::invalid_argument("Number of dependent variables cannot be 0.");
             }
@@ -257,18 +254,13 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetupBuilder& setNumItems(int ni) {
-            // if (ni  0) {
-            //     throw std::invalid_argument("Number of items cannot be 0.");
-            // }
-            // setup.ni_ = ni;
-            // TODO: This needs special care!
-
+        ExperimentSetupBuilder& setNumItems(const int ni) {
+            // TODO: To be integerated!
 
             return *this;
         }
 
-        ExperimentSetupBuilder& setFixedNumObservations(int nobs) {
+        ExperimentSetupBuilder& setNumObservations(const int nobs) {
             check_expr_size();
 
             fill_vector<int>(setup.nobs_, setup.ng_, nobs);
@@ -280,7 +272,7 @@ namespace sam {
             if (!is_expr_size_decided){
                 calculate_experiment_size();
             }
-            if (nobs.size() != setup.ng()){
+            if (nobs.size() != setup.ng_){
                 throw std::length_error("The size of nobs does not match size of the experiment.");
             }
 
@@ -290,7 +282,7 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetupBuilder& setFixedMeans(double mean) {
+        ExperimentSetupBuilder& setMeans(const double mean) {
             if (!is_expr_size_decided) {
                 calculate_experiment_size();
             }
@@ -300,18 +292,18 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetupBuilder& setGroupMeans(const arma::Row<double> &means) {
+        ExperimentSetupBuilder& setMeans(const arma::Row<double> &means) {
             if (!is_expr_size_decided){
                 calculate_experiment_size();
             }
-            if (means.size() != setup.ng()){
+            if (means.size() != setup.ng_){
                 throw std::length_error("The size of nobs does not match size of the experiment.");
             }
             setup.means_ = means;
             return *this;
         }
 
-        ExperimentSetupBuilder& setFixedVariance(double var) {
+        ExperimentSetupBuilder& setVariance(const double var) {
             if (!is_expr_size_decided) {
                 calculate_experiment_size();
             }
@@ -322,11 +314,11 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetupBuilder& setGroupVariance(const arma::Row<double> &vars) {
+        ExperimentSetupBuilder& setVariance(const arma::Row<double> &vars) {
             if (!is_expr_size_decided){
                 calculate_experiment_size();
             }
-            if (vars.size() != setup.ng()){
+            if (vars.size() != setup.ng_){
                 throw std::length_error("The size of vars does not match size of the experiment.");
             }
             setup.vars_ = vars;
@@ -334,7 +326,7 @@ namespace sam {
             return *this;
         }
 
-        ExperimentSetupBuilder& setFixedCovariance(double cov) {
+        ExperimentSetupBuilder& setCovariance(const double cov) {
             if (!is_expr_size_decided) {
                 calculate_experiment_size();
             }
@@ -352,15 +344,24 @@ namespace sam {
             if (!is_expr_size_decided){
                 calculate_experiment_size();
             }
-            // TODO: Check for this
-//            if (sigma[0].size() != setup.ng()){
-//                throw std::length_error("The size of covs does not match size of the experiment.");
-//            }
-//            setup.sigma_ = covs;
+            
+
+            setup.vars_ = arma::Row<double>(setup.ng_);
+            setup.sigma_ = arma::Mat<double>(setup.ng_, setup.ng_);
+
+            std::cerr << arma::size(setup.sigma_) << ", " << arma::size(sigma);
+
+            if (arma::size(setup.sigma_) != arma::size(sigma)){
+               throw std::length_error("The size of covs does not match size of the experiment.");
+            }
+            
+            setup.vars_ = sigma.diag().t();
+            setup.sigma_ = sigma;
+
             return *this;
         }
 
-        ExperimentSetup build() {
+        ExperimentSetup build() const {
             return setup;
         } 
 
