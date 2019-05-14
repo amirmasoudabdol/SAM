@@ -80,7 +80,7 @@ Experiment::Experiment(json &experiment_config) {
     this->setup = ExperimentSetup(experiment_config["ExperimentParameters"]);
 
     // Setup the Data Strategy
-    this->data_strategy = DataStrategy::build(setup);
+    this->data_strategy = DataStrategy::build(experiment_config["ExperimentParameters"]["data-strategy"]);
     
     // Setup the Test Strategy
     this->test_strategy = TestStrategy::build(experiment_config["ExperimentParameters"]["test-strategy"]);

@@ -13,22 +13,6 @@ ExperimentSetupBuilder ExperimentSetup::create() {
     return ExperimentSetupBuilder();
 }
 
-std::ostream& operator<<(std::ostream& os, ExperimentType et)
-{
-    switch(et)
-    {
-        case ExperimentType::LinearModel:
-            os << "Fixed Model";
-            break;
-        case ExperimentType::LatentModel:
-            os << "Latent Model";
-            break;
-        default:
-            os.setstate(std::ios_base::failbit);
-    }
-    return os;
-}
-
 arma::Mat<double>
 ExperimentSetup::constructCovMatrix(double var, double cov) const {
     arma::Row<double> vars(ng_);
@@ -51,13 +35,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     // Setting the seed for number of observation
     rng_stream = new RandomNumberGenerator(rand());
     
-        
-    if (config["data-strategy"].is_null()){
-        throw std::invalid_argument("The Data Strategy parameter is not provided. Check the documentation for more info.");
-    }else if (stringToExperimentType.find(config["data-strategy"]) == stringToExperimentType.end()){
-        throw std::invalid_argument("Unknown Data Strategy.");
-    }
-    experiment_type = stringToExperimentType.find(config["data-strategy"])->second;
+    dsp.name = config["data-strategy"];
     
     nc_ = config["n-conditions"];
     nd_ = config["n-dep-vars"];
@@ -75,11 +53,11 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }else{
         if (config["n-obs"].is_array()){
             if (config["n-obs"].size() != ng_){
-                throw std::invalid_argument( "Size of --n-obs does not match the size of the experiment.");
+                throw std::invalid_argument( "Size of n-obs does not match the size of the experiment.");
             }
             nobs_ = config["n-obs"].get<std::vector<int>>();
         }else if (config["n-obs"].is_number()){
-            // Broadcase the given --n-obs to a vector of length `ng`
+            // Broadcase the given n-obs to a vector of length `ng`
             nobs_ = std::vector<int>(ng_, config["n-obs"]);
         }
     }
@@ -87,11 +65,11 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     if (config["means"].is_array()){
         if (config["means"].size() != ng_){
-            throw std::invalid_argument( "Size of --means does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of means does not match the size of the experiment.");
         }
         means_ = config["means"].get<std::vector<double>>();
     }else if (config["means"].is_number()){
-        // Broadcase the given --means to a vector of length `ng`
+        // Broadcase the given means to a vector of length `ng`
         means_ = std::vector<double>(ng_, config["means"]);
     }else{
         throw std::invalid_argument("means is invalid or not provided.");
@@ -99,11 +77,11 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     if (config["vars"].is_array()){
         if (config["vars"].size() != ng_){
-            throw std::invalid_argument( "Size of --vars does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of vars does not match the size of the experiment.");
         }
         vars_ = config["vars"].get<std::vector<double>>();
     }else if (config["vars"].is_number()){
-        // Broadcast the given --vars to a vector of length `ng`
+        // Broadcast the given vars to a vector of length `ng`
         vars_ = std::vector<double>(ng_, config["vars"]);
     }else{
         throw std::invalid_argument("vars is invalid or not provided.");
@@ -112,7 +90,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     if (config["covs"].is_array()){
         if (config["covs"].size() != ng_){
-            throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of covs does not match the size of the experiment.");
         }
         // DOC: Notify the user that the `sds` will be discarded.
         auto sigma = config["covs"].get<std::vector<std::vector<double>>>();
@@ -188,9 +166,9 @@ ExperimentSetup::ExperimentSetup(json& config) {
 ExperimentSetup::ExperimentSetup(const int nc, const int nd,
                 const int nobs, const double means, const double vars, const double covs,
                 const TestStrategy::TestStrategyParameters test_params,
-                const DataStrategyParameters data_params)
+                const DataStrategy::DataStrategyParameters data_params)
 : nc_(nc), nd_(nd), ni_(0),
-  test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+  test_strategy_parameters_(test_params), dsp(data_params)
 {
     updateExperimentSize();
     
@@ -208,9 +186,9 @@ ExperimentSetup::ExperimentSetup(const int nc, const int nd,
                 const arma::Row<int> nobs, const arma::Row<double> means,
                 const arma::Row<double> vars, const double covs,
                 const TestStrategy::TestStrategyParameters test_params,
-                const DataStrategyParameters data_params)
+                const DataStrategy::DataStrategyParameters data_params)
 : nc_(nc), nd_(nd), ni_(0),
-  test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+  test_strategy_parameters_(test_params), dsp(data_params)
 {
     updateExperimentSize();
     
@@ -230,9 +208,10 @@ ExperimentSetup::ExperimentSetup(const int nc, const int nd,
 ExperimentSetup::ExperimentSetup(const int nc, const int nd,
                 const arma::Row<int> nobs, const arma::Row<double> means,
                 const arma::Mat<double> sigma,
-                const TestStrategy::TestStrategyParameters test_params, const DataStrategyParameters data_params)
+                const TestStrategy::TestStrategyParameters test_params,
+                const DataStrategy::DataStrategyParameters data_params)
 : nc_(nc), nd_(nd), ni_(0),
-  test_strategy_parameters_(test_params), data_strategy_parameters_(data_params)
+  test_strategy_parameters_(test_params), dsp(data_params)
 {
     updateExperimentSize();
     
@@ -259,13 +238,7 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     // Setting the seed for number of observation
     setup.rng_stream = new RandomNumberGenerator(rand());
     
-        
-    if (config["data-strategy"].is_null()){
-        throw std::invalid_argument("The Data Strategy parameter is not provided. Check the documentation for more info.");
-    }else if (stringToExperimentType.find(config["data-strategy"]) == stringToExperimentType.end()){
-        throw std::invalid_argument("Unknown Data Strategy.");
-    }
-    setup.experiment_type = stringToExperimentType.find(config["data-strategy"])->second;
+    setup.dsp.name = config["data-strategy"];
     
     setup.nc_ = config["n-conditions"];
     setup.nd_ = config["n-dep-vars"];
@@ -283,11 +256,11 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     }else{
         if (config["n-obs"].is_array()){
             if (config["n-obs"].size() != setup.ng_){
-                throw std::invalid_argument( "Size of --n-obs does not match the size of the experiment.");
+                throw std::invalid_argument( "Size of n-obs does not match the size of the experiment.");
             }
             setup.nobs_ = config["n-obs"].get<std::vector<int>>();
         }else if (config["n-obs"].is_number()){
-            // Broadcase the given --n-obs to a vector of length `ng`
+            // Broadcase the given n-obs to a vector of length `ng`
             setup.nobs_ = std::vector<int>(setup.ng_, config["n-obs"]);
         }
     }
@@ -295,11 +268,11 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     
     if (config["means"].is_array()){
         if (config["means"].size() != setup.ng_){
-            throw std::invalid_argument( "Size of --means does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of means does not match the size of the experiment.");
         }
         setup.means_ = config["means"].get<std::vector<double>>();
     }else if (config["means"].is_number()){
-        // Broadcase the given --means to a vector of length `ng`
+        // Broadcase the given means to a vector of length `ng`
         setup.means_ = std::vector<double>(setup.ng_, config["means"]);
     }else{
         throw std::invalid_argument("means is invalid or not provided.");
@@ -307,11 +280,11 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     
     if (config["vars"].is_array()){
         if (config["vars"].size() != setup.ng_){
-            throw std::invalid_argument( "Size of --vars does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of vars does not match the size of the experiment.");
         }
         setup.vars_ = config["vars"].get<std::vector<double>>();
     }else if (config["vars"].is_number()){
-        // Broadcast the given --vars to a vector of length `ng`
+        // Broadcast the given vars to a vector of length `ng`
         setup.vars_ = std::vector<double>(setup.ng_, config["vars"]);
     }else{
         throw std::invalid_argument("vars is invalid or not provided.");
@@ -320,7 +293,7 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     
     if (config["covs"].is_array()){
         if (config["covs"].size() != setup.ng_){
-            throw std::invalid_argument( "Size of --covs does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of covs does not match the size of the experiment.");
         }
         // DOC: Notify the user that the `sds` will be discarded.
         auto sigma = config["covs"].get<std::vector<std::vector<double>>>();
@@ -328,8 +301,8 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
             setup.sigma_.row(i) = arma::rowvec(sigma[i]);
         }
     }else if (config["covs"].is_number()){
-        // Broadcase the --covs to the a matrix, and replace the diagonal values with
-        // the value already given by --vars.
+        // Broadcase the covs to the a matrix, and replace the diagonal values with
+        // the value already given by vars.
         double cov = config["covs"];
 
         setup.sigma_.zeros(setup.ng_, setup.ng_);
@@ -344,11 +317,11 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     // CHECK: I think they should be `nrows`
     if (config["loadings"].is_array()){
         if (config["loadings"].size() != setup.ni_){
-            throw std::invalid_argument( "Size of --loadings does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of loadings does not match the size of the experiment.");
         }
         setup.loadings_ = config["loadings"].get<std::vector<double>>();
     }else if (config["loadings"].is_number()){
-        // Broadcast the given --loadings to a vector of length `ng`
+        // Broadcast the given loadings to a vector of length `ng`
         setup.loadings_ = std::vector<double>(setup.ni_, config["loadings"]);
     }else{
         throw std::invalid_argument("loadings is invalid or not provided.");
@@ -360,11 +333,11 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     // Error's Standard Deviations
     if (config["err-vars"].is_array()){
         if (config["err-vars"].size() != setup.nrows_){
-            throw std::invalid_argument( "Size of --err-vars does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of err-vars does not match the size of the experiment.");
         }
         setup.error_vars_ = config["err-vars"].get<std::vector<double>>();
     }else if (config["err-vars"].is_number()){
-        // Broadcast the given --err-vars to a vector of length `nrows`
+        // Broadcast the given err-vars to a vector of length `nrows`
         setup.error_vars_ = std::vector<double>(setup.nrows_, config["err-vars"]);
     }else{
         throw std::invalid_argument("err-vars is invalid or not provided.");
@@ -372,7 +345,7 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     // Error's Covariant Matrix
     if (config["err-covs"].is_array()){
         if (config["err-covs"].size() != setup.nrows_){
-            throw std::invalid_argument( "Size of --err-covs does not match the size of the experiment.");
+            throw std::invalid_argument( "Size of err-covs does not match the size of the experiment.");
         }
         auto covs = config["err-covs"].get<std::vector<std::vector<double>>>();
         for (int i = 0; i < covs.size(); i++) {
@@ -380,8 +353,8 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
         }
         
     }else if (config["err-covs"].is_number()){
-        // Broadcase the --err-covs to the a matrix, and replace the diagonal values with
-        // the value already given by --vars.
+        // Broadcase the err-covs to the a matrix, and replace the diagonal values with
+        // the value already given by vars.
         double cov = config["err-covs"];
 
         setup.error_sigma_.zeros(setup.nrows_, setup.nrows_);

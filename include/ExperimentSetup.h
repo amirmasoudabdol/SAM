@@ -30,25 +30,6 @@ namespace sam {
     class DataStrategy;
     class TestStrategy;
 
-    /**
-     * Specifying different type of expeirments.
-     */
-    enum class ExperimentType {
-        LinearModel,    ///< Linear Model, with or without covarinace
-        LatentModel     ///< Latent Model or Structural Equation Model
-    };
-
-    const std::map<std::string, ExperimentType>
-    stringToExperimentType = {
-        {"LinearModel", ExperimentType::LinearModel},
-        {"LatentModel", ExperimentType::LatentModel}
-    };
-
-    struct DataStrategyParameters {
-        ExperimentType name;
-    };
-
-
     class ExperimentSetupBuilder;
 
     /**
@@ -100,17 +81,19 @@ namespace sam {
 
     public:
 
+        
+        /**
+         Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
+
+         @return An instance of the builder.
+         */
         static ExperimentSetupBuilder create();
 
         //! Test Strategy Parameters
         TestStrategy::TestStrategyParameters test_strategy_parameters_;
 
         //! Data Strategy Parameters
-        DataStrategyParameters data_strategy_parameters_;
-
-        // TODO: We are not properly initialized, fix us!
-        ExperimentType experiment_type = ExperimentType::LinearModel;
-        TestStrategy::TestType test_method = TestStrategy::TestType::TTest;
+        DataStrategy::DataStrategyParameters dsp;
 
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
@@ -128,20 +111,21 @@ namespace sam {
         ExperimentSetup(const int nc, const int nd,
                         const int nobs, const double means, const double vars, const double covs,
                         const TestStrategy::TestStrategyParameters test_params,
-                        const DataStrategyParameters data_params);
+                        const DataStrategy::DataStrategyParameters data_params);
 
 
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Row<double> vars, const double covs,
                         const TestStrategy::TestStrategyParameters test_params,
-                        const DataStrategyParameters data_params);
+                        const DataStrategy::DataStrategyParameters data_params);
 
 
         ExperimentSetup(const int nc, const int nd,
                         const arma::Row<int> nobs, const arma::Row<double> means,
                         const arma::Mat<double> sigma,
-                        const TestStrategy::TestStrategyParameters test_params, const DataStrategyParameters data_params);
+                        const TestStrategy::TestStrategyParameters test_params,
+                        const DataStrategy::DataStrategyParameters data_params);
 
 
         ~ExperimentSetup() = default;

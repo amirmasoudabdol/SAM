@@ -8,7 +8,6 @@
 #include <vector>
 #include <armadillo>
 
-#include "ExperimentSetup.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
@@ -37,7 +36,7 @@ namespace sam {
 
     public:
 
-        struct DataStrategyParam {
+        struct DataStrategyParameters {
             std::string name;
         };
         
@@ -47,11 +46,11 @@ namespace sam {
          @param setup An instance of ExperimentSetup
          @return a new DataStrategy
          */
-        static std::shared_ptr<DataStrategy> build(ExperimentSetup &setup);
+        // static std::shared_ptr<DataStrategy> build(ExperimentSetup &setup);
 
         static std::shared_ptr<DataStrategy> build(const std::string &name);
 
-        static std::shared_ptr<DataStrategy> build(const DataStrategyParam &dsp);
+        static std::shared_ptr<DataStrategy> build(const DataStrategyParameters &dsp);
         
         
         /**
