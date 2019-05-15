@@ -6,7 +6,8 @@
 #define SAMPP_DATAGENSTRATEGY_H
 
 #include <vector>
-#include <armadillo>
+
+#include "sam.h"
 
 #include "RandomNumberGenerator.h"
 

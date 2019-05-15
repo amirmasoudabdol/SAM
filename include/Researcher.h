@@ -81,7 +81,6 @@ namespace sam {
         void prepareTheSubmission();
         void submitToJournal();
         
-        
         /**
          Set the decisionStrategy of the researcher.
 
@@ -159,7 +158,8 @@ namespace sam {
                     
                     for (auto &item : set) {
                         
-                        researcher.hacking_strategies.back().push_back(HackingStrategy::build(item));
+                        researcher.hacking_strategies.back()
+                        .push_back(HackingStrategy::build(item));
                         
                     }
                     
@@ -170,35 +170,6 @@ namespace sam {
             
             return *this;
         }
-        
-        // Experiment's constructor also prepares the ExperimentSetup!
-        ResearcherBuilder& makeExperimentSetup();
-        
-        ResearcherBuilder& makeExperiment() {
-            researcher.experiment = new Experiment(config);
-            return *this;
-        };
-        
-        ResearcherBuilder& makeJournal() {
-            
-            return *this;
-        };
-        
-        ResearcherBuilder& makeDecisionStrategy() {
-            
-            return *this;
-        };
-        
-        ResearcherBuilder& isHacker() {
-            
-            return *this;
-        }
-        
-        ResearcherBuilder& makeHackingStrategies(){
-            
-            return *this;
-        };
-        
         
         ResearcherBuilder& setResearcherPreference(DecisionPreference pref){
             // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
@@ -212,7 +183,6 @@ namespace sam {
             return *this;
         };
         
-        
         /**
          ....
          
@@ -225,8 +195,8 @@ namespace sam {
             researcher.experiment = exp;
             return *this;
         };
-        ResearcherBuilder& setDataStrategy(std::shared_ptr<DataStrategy> dgs) {
-            researcher.experiment->data_strategy = dgs;
+        ResearcherBuilder& setDataStrategy(std::shared_ptr<DataStrategy> ds) {
+            researcher.experiment->data_strategy = ds;
             return *this;
         }
         ResearcherBuilder& setTestStrategy(std::shared_ptr<TestStrategy> &ts) {

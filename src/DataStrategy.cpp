@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <armadillo>
 #include <string>
 
 #include "csv/reader.hpp"

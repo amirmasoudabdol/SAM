@@ -6,7 +6,8 @@
 #define SAMPP_DECISIONSTRATEGY_H
 
 #include <vector>
-#include <armadillo>
+
+#include "sam.h"
 
 #include "Submission.h"
 #include "Experiment.h"

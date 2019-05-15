@@ -2,8 +2,8 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
-#ifndef SAMPP_EFFECTESTIMATORS_H
-#define SAMPP_EFFECTESTIMATORS_H
+#ifndef SAMPP_EFFECTSTRATEGY_H
+#define SAMPP_EFFECTSTRATEGY_H
 
 #include <vector>
 #include <string>
@@ -15,28 +15,34 @@ namespace sam {
 
     using json = nlohmann::json;
 
-    class EffectSizeEstimator {
+    class EffectStrategy {
         
 
     public:
         
-        static std::shared_ptr<EffectSizeEstimator>build(const std::string &name);
+        struct EffectStrategyParameters {
+            std::string name;
+        };
         
-        virtual ~EffectSizeEstimator() = 0;
+        static std::shared_ptr<EffectStrategy>build(const std::string &name);
+        
+        virtual ~EffectStrategy() = 0;
 
         virtual void computeEffects(Experiment *experiment) = 0;
 
-        std::string name;
+        std::string name = "";
 
     };
 
 
-    class CohensD : public EffectSizeEstimator {
+    class CohensD : public EffectStrategy {
 
     public:
 
+//        std::string name = "CohensD";
+
         explicit CohensD() {
-            name = "CohensD";
+             name = "CohensD";
         };
 
         void computeEffects(Experiment *experiment);
@@ -44,12 +50,14 @@ namespace sam {
     };
 
 
-    class HedgesG : public EffectSizeEstimator {
+    class HedgesG : public EffectStrategy {
         
     public:
 
+//        std::string name = "HedgesG";
+
         explicit HedgesG(){
-            name = "HedgesG";
+             name = "HedgesG";
         }
 
         void computeEffects(Experiment *experiment);
@@ -57,7 +65,7 @@ namespace sam {
     };
 
     //
-    //class OddRatio : public EffectSizeEstimator {
+    //class OddRatio : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -67,7 +75,7 @@ namespace sam {
     //};
     //
     //
-    //class PearsonR : public EffectSizeEstimator {
+    //class PearsonR : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -76,7 +84,7 @@ namespace sam {
     //    const std::string name = "PearsonR";
     //};
     //
-    //class GlassDelta : public EffectSizeEstimator {
+    //class GlassDelta : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -85,7 +93,7 @@ namespace sam {
     //    const std::string name = "GlassDelta";
     //};
     //
-    //class EtaSquared : public EffectSizeEstimator {
+    //class EtaSquared : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -110,4 +118,4 @@ namespace sam {
 
 }
 
-#endif //SAMPP_EFFECTESTIMATORS_H
+#endif //SAMPP_EFFECTSTRATEGY_H

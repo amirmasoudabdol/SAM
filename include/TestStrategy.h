@@ -11,7 +11,8 @@
 #include <string>
 #include <map>
 #include <string>
-#include <armadillo>
+
+#include "sam.h"
 
 #include "nlohmann/json.hpp"
 

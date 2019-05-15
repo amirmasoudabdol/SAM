@@ -15,20 +15,22 @@
 #include <functional>
 #include <cmath>
 
-#include <armadillo>
+#include "sam.h"
 
 #include "DataStrategy.h"
 #include "TestStrategy.h"
+//#include "EffectEstimators.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
 
 namespace sam {
-/**/
+
     using json = nlohmann::json;
     
     class DataStrategy;
     class TestStrategy;
+//    class EffectStrategy;
 
     class ExperimentSetupBuilder;
 
@@ -73,7 +75,7 @@ namespace sam {
         arma::Row<double> error_means_;
         arma::Row<double> error_vars_;
         arma::Mat<double> error_sigma_;
-        
+
     public:
 
         /**
@@ -92,6 +94,9 @@ namespace sam {
 
         //! Data Strategy Parameters
         DataStrategy::DataStrategyParameters dsp_;
+        
+        //! Effect Estimator Parameters
+//        EffectStrategy::EffectStrategyParameters esp_;
 
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
@@ -326,6 +331,11 @@ namespace sam {
             setup.dsp_ = dsp;
             return *this;
         }
+        
+//        ExperimentSetupBuilder& setEffectEstimator(const EffectStrategy::EffectStrategyParameters &esp) {
+//            setup.esp_ = esp;
+//            return *this;
+//        }
 
         ExperimentSetup build() {
             check_expr_size();

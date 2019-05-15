@@ -2,16 +2,16 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
-#include <EffectEstimators.h>
+#include <EffectStrategy.h>
 #include <iostream>
 
 using namespace sam;
 
-EffectSizeEstimator::~EffectSizeEstimator() {
+EffectStrategy::~EffectStrategy() {
     // Pure deconstructor
 };
 
-std::shared_ptr<EffectSizeEstimator>EffectSizeEstimator::build(const std::string &name){
+std::shared_ptr<EffectStrategy>EffectStrategy::build(const std::string &name){
     if (name == "CohensD") {
         return std::make_shared<CohensD>();
     }else if (name == "HedgesG"){

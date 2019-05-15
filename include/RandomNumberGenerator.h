@@ -7,8 +7,9 @@
 
 #include <vector>
 #include <string>
-#include <armadillo>
 #include <random>
+
+#include "sam.h"
 
 namespace sam {
 

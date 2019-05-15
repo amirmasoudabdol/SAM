@@ -9,7 +9,7 @@
 #include <string>
 #include <numeric>
 #include <algorithm>
-#include <armadillo>
+
 
 using namespace sam;
 
@@ -86,7 +86,7 @@ Experiment::Experiment(json &experiment_config) {
     this->test_strategy = TestStrategy::build(experiment_config["ExperimentParameters"]["test-strategy"]);
     
     for (auto &estimator : experiment_config["ExperimentParameters"]["effect-estimators"]){
-        this->effect_size_estimators.push_back(EffectSizeEstimator::build(estimator));
+        this->effect_size_estimators.push_back(EffectStrategy::build(estimator));
     }
     
     // Initializing the memory

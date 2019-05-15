@@ -7,16 +7,16 @@
 #include <DecisionStrategy.h>
 
 #include <vector>
-#include <armadillo>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
 #include <stdexcept>
+#include <random>
 
 #include "utils/permutation.h"
 
-#include <random>
+
 
 extern bool VERBOSE;
 

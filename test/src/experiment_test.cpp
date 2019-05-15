@@ -16,7 +16,7 @@ namespace tt = boost::test_tools;
 #include "ExperimentSetup.h"
 #include "DataStrategy.h"
 #include "TestStrategy.h"
-#include "EffectEstimators.h"
+#include "EffectStrategy.h"
 
 #include "sam.h"
 
@@ -92,8 +92,8 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
 
         auto ds = DataStrategy::build(dsp);
 
-	  	vector<shared_ptr<EffectSizeEstimator>> efs;
-	    efs.push_back(EffectSizeEstimator::build("CohensD"));
+	  	vector<shared_ptr<EffectStrategy>> efs;
+	    efs.push_back(EffectStrategy::build("CohensD"));
 
 	    Experiment expr(setup, ds, ts, efs);
 
@@ -113,8 +113,8 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
 
 	    auto ds = DataStrategy::build(dsp);
 
-	  	vector<shared_ptr<EffectSizeEstimator>> efs;
-	    efs.push_back(EffectSizeEstimator::build("CohensD"));
+	  	vector<shared_ptr<EffectStrategy>> efs;
+	    efs.push_back(EffectStrategy::build("CohensD"));
 
 	    Experiment expr(setup, ds, ts, efs);
 

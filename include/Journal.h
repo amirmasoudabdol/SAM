@@ -30,8 +30,14 @@ namespace sam {
         std::vector<Submission> publications_list;
         
     public:
+        
+        struct JournalParameters {
+            std::string name;
+        };
 
         explicit Journal(json& journal_config);
+        
+        explicit Journal(const JournalParameters &jp);
 
         /**
          Point Journal's selection strategy to the given strategy

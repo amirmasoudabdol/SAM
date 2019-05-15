@@ -6,19 +6,20 @@
 #define SAMPP_EXPERIMENT_H
 
 #include <vector>
-#include <armadillo>
 #include <functional>
+
+#include "sam.h"
 
 #include "DataStrategy.h"
 #include "ExperimentSetup.h"
-#include "EffectEstimators.h"
+#include "EffectStrategy.h"
 #include "TestStrategy.h"
 #include "Submission.h"
 
 namespace sam {
 
 //    class Submission;
-    class EffectSizeEstimator;
+    class EffectStrategy;
 
     /**
      @brief Experiment class declaration
@@ -36,7 +37,7 @@ namespace sam {
         ExperimentSetup setup;
         std::shared_ptr<DataStrategy> data_strategy;
         std::shared_ptr<TestStrategy> test_strategy;
-        std::vector<std::shared_ptr<EffectSizeEstimator>> effect_size_estimators;
+        std::vector<std::shared_ptr<EffectStrategy>> effect_size_estimators;
 
         arma::Row<int> nobs;
         arma::Row<double> means;
@@ -71,10 +72,11 @@ namespace sam {
             initResources(setup.ng());
         };
         
+        
         Experiment(ExperimentSetup &e,
                    std::shared_ptr<DataStrategy> &ds,
                    std::shared_ptr<TestStrategy> &ts,
-                   std::vector<std::shared_ptr<EffectSizeEstimator>> &efs)
+                   std::vector<std::shared_ptr<EffectStrategy>> &efs)
         {
             setup = e;
             data_strategy = ds;
@@ -128,7 +130,7 @@ namespace sam {
         }
         
 
-        void setEffectSizeEstimator(std::vector<std::shared_ptr<EffectSizeEstimator>> efs);
+        void setEffectSizeEstimator(std::vector<std::shared_ptr<EffectStrategy>> efs);
 
         // Initialize the Experiment
         void initResources(int len);

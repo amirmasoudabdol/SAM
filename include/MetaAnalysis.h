@@ -7,11 +7,7 @@
 
 #include <vector>
 
-#include <mlpack/core.hpp>
-#include <mlpack/methods/neighbor_search/neighbor_search.hpp>
-#include <mlpack/methods/linear_regression/linear_regression.hpp>
-
-//#include <armadillo>
+#include "sam.h"
 
 #include "Experiment.h"
 #include "Submission.h"
