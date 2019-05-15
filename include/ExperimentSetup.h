@@ -19,7 +19,7 @@
 
 #include "DataStrategy.h"
 #include "TestStrategy.h"
-//#include "EffectStrategy.h"
+#include "EffectStrategy.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
@@ -96,7 +96,7 @@ namespace sam {
         DataStrategy::DataStrategyParameters dsp_;
         
         //! Effect Estimator Parameters
-//        EffectStrategy::EffectStrategyParameters esp_;
+        EffectStrategy::EffectStrategyParameters esp_;
 
         //! Indicates whether `nobs` should be selected as random
         bool is_n_randomized = false;
@@ -332,10 +332,10 @@ namespace sam {
             return *this;
         }
         
-//        ExperimentSetupBuilder& setEffectEstimator(const EffectStrategy::EffectStrategyParameters &esp) {
-//            setup.esp_ = esp;
-//            return *this;
-//        }
+        ExperimentSetupBuilder& setEffectEstimator(const EffectStrategy::EffectStrategyParameters &esp) {
+            setup.esp_ = esp;
+            return *this;
+        }
 
         ExperimentSetup build() {
             check_expr_size();

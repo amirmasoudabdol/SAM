@@ -7,17 +7,24 @@
 
 #include <vector>
 #include <string>
-#include "Experiment.h"
+// #include "Experiment.h"
 
 #include "nlohmann/json.hpp"
 
 namespace sam {
 
+    class Experiment;
+    class ExperimentSetup;
+
     using json = nlohmann::json;
 
+    /**
+     * \brief      Abstract class for Effect Size Estimators
+     * 
+     * 
+     */
     class EffectStrategy {
         
-
     public:
         
         struct EffectStrategyParameters {
@@ -32,7 +39,7 @@ namespace sam {
 
         virtual void computeEffects(Experiment *experiment) = 0;
 
-        std::string name = "";
+        // std::string name = "";
 
     };
 
@@ -44,7 +51,7 @@ namespace sam {
 //        std::string name = "CohensD";
 
         explicit CohensD() {
-             name = "CohensD";
+             // name = "CohensD";
         };
 
         void computeEffects(Experiment *experiment);
@@ -58,8 +65,8 @@ namespace sam {
 
 //        std::string name = "HedgesG";
 
-        explicit HedgesG(){
-             name = "HedgesG";
+        explicit HedgesG() {
+             // name = "HedgesG";
         }
 
         void computeEffects(Experiment *experiment);

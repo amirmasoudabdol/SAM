@@ -2,8 +2,10 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
-#include <EffectStrategy.h>
 #include <iostream>
+
+#include "Experiment.h"
+#include "EffectStrategy.h"
 
 using namespace sam;
 

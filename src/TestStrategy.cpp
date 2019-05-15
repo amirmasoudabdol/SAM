@@ -2,7 +2,6 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
-#include <TestStrategy.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -10,7 +9,8 @@
 #include <iomanip>
 #include <cmath>
 
-#include <Experiment.h>
+#include "Experiment.h"
+#include "TestStrategy.h"
 
 using namespace sam;
 using boost::math::students_t;

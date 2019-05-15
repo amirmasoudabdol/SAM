@@ -68,6 +68,7 @@ namespace sam {
 
             data_strategy = DataStrategy::build(setup.dsp_);
             test_strategy = TestStrategy::build(setup.tsp_);
+            effect_strategy = EffectStrategy::build(setup.esp_);
             
             initResources(setup.ng());
         };
