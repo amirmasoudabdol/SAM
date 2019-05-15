@@ -11,8 +11,10 @@
 
 #include <armadillo>
 
-bool PROGRESS;
-bool DEBUG;
-bool VERBOSE;
+// TODO: Get rid of these!
+extern bool PROGRESS;
+extern bool DEBUG;
+extern bool VERBOSE;
+extern bool UPDATECONFIG;
 
 #endif //SAMPP_MAIN_H

@@ -26,6 +26,8 @@ namespace sam {
         
         static std::shared_ptr<EffectStrategy>build(const std::string &name);
         
+        static std::shared_ptr<EffectStrategy>build(const EffectStrategyParameters &esp);
+        
         virtual ~EffectStrategy() = 0;
 
         virtual void computeEffects(Experiment *experiment) = 0;

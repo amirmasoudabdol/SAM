@@ -2,9 +2,7 @@
     "ExperimentParameters": {
         "covs": 0.0,
         "data-strategy": "LinearModel",
-        "effect-estimators": [
-            "CohensD"
-        ],
+        "effect-estimators": "CohensD",
         "err-covs": 0.001,
         "err-vars": 0.01,
         "loadings": 0.7,

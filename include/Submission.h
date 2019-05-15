@@ -28,7 +28,7 @@ namespace sam {
         double sei;             ///< Standard error of the submitted group
         double statistic;       ///< Corresponding statistics of the submitted group
         double pvalue;          ///< _P_-value of the submitted group
-        std::vector<double> effects;
+        double effect;
         bool sig = false;       ///< Indicates if the submission is significant or not
         short side = 1;         ///< The side of the observed effect
         bool isHacked = false;

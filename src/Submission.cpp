@@ -19,9 +19,11 @@ namespace sam {
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
         
-        for (auto &estimator : e.effect_size_estimators){
-            effects.push_back(e.effects[estimator->name][index]);
-        }
+//        for (auto &estimator : e.effect_strategy){
+//            effects.push_back(e.effects[estimator->name][index]);
+//        }
+        
+        effect = e.effects[index];
         
         sig = e.sigs[index];
         
@@ -48,10 +50,11 @@ namespace sam {
         s.vi << "," <<
         s.sei << "," <<
         s.statistic << "," <<
-        s.pvalue << ",";
-        for (auto &e : s.effects){
-            os << e << ",";
-        };
+        s.pvalue << "," <<
+        s.effect << ",";
+//        for (auto &e : s.effect){
+//            os << e << ",";
+//        };
         os << s.side << ",";
         for (auto &hid : s.hHistory) {
             os << hid << ";";

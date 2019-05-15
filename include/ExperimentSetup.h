@@ -19,7 +19,7 @@
 
 #include "DataStrategy.h"
 #include "TestStrategy.h"
-//#include "EffectEstimators.h"
+//#include "EffectStrategy.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
@@ -30,7 +30,7 @@ namespace sam {
     
     class DataStrategy;
     class TestStrategy;
-//    class EffectStrategy;
+    class EffectStrategy;
 
     class ExperimentSetupBuilder;
 

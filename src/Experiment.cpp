@@ -37,9 +37,12 @@ void Experiment::initResources(int len) {
     statistics.zeros(len);
     pvalues.zeros(len);
     
-    for (auto &estimator : effect_size_estimators) {
-        effects[estimator->name].zeros(len);
-    }
+//    for (auto &estimator : effect_strategy) {
+//        effects[estimator->name].zeros(len);
+//    }
+
+    effects.zeros(len);
+    
     
     sigs.zeros(len);
 }
@@ -56,9 +59,11 @@ void Experiment::calculateStatistics() {
 
 void Experiment::calculateEffects() {
 
-    for (auto &estimator : effect_size_estimators){
-        estimator->computeEffects(this);
-    }
+//    for (auto &estimator : effect_strategy){
+//        estimator->computeEffects(this);
+//    }
+    
+    effect_strategy->computeEffects(this);
 
 }
 
@@ -85,9 +90,9 @@ Experiment::Experiment(json &experiment_config) {
     // Setup the Test Strategy
     this->test_strategy = TestStrategy::build(experiment_config["ExperimentParameters"]["test-strategy"]);
     
-    for (auto &estimator : experiment_config["ExperimentParameters"]["effect-estimators"]){
-        this->effect_size_estimators.push_back(EffectStrategy::build(estimator));
-    }
+//    for (auto &estimator : experiment_config["ExperimentParameters"]["effect-estimators"]){
+        this->effect_strategy = EffectStrategy::build(experiment_config["ExperimentParameters"]["effect-estimators"]);
+//    }
     
     // Initializing the memory
     initResources(setup.ng());

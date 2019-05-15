@@ -21,10 +21,20 @@ std::shared_ptr<EffectStrategy>EffectStrategy::build(const std::string &name){
     }
 }
 
+std::shared_ptr<EffectStrategy>EffectStrategy::build(const EffectStrategyParameters &esp){
+    if (esp.name == "CohensD") {
+        return std::make_shared<CohensD>();
+    }else if (esp.name == "HedgesG"){
+        return std::make_shared<HedgesG>();
+    }else{
+        throw std::invalid_argument("Uknown effect size estimator.\n");
+    }
+}
+
 void CohensD::computeEffects(Experiment *experiment){
     
     for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[this->name][i] = cohens_d(experiment->setup.means()[i],
+        experiment->effects[i] = cohens_d(experiment->setup.means()[i],
                                                       sqrt(experiment->setup.vars()[i]),
                                                       experiment->setup.nobs()[i],
                                                       experiment->means[i],
@@ -36,7 +46,7 @@ void CohensD::computeEffects(Experiment *experiment){
 void HedgesG::computeEffects(Experiment *experiment){
     
     for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[this->name][i] = hedges_g(experiment->setup.means()[i],
+        experiment->effects[i] = hedges_g(experiment->setup.means()[i],
                                                         sqrt(experiment->setup.vars()[i]),
                                                         experiment->setup.nobs()[i],
                                                         experiment->means[i],

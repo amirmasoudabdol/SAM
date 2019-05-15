@@ -37,7 +37,7 @@ namespace sam {
         ExperimentSetup setup;
         std::shared_ptr<DataStrategy> data_strategy;
         std::shared_ptr<TestStrategy> test_strategy;
-        std::vector<std::shared_ptr<EffectStrategy>> effect_size_estimators;
+        std::shared_ptr<EffectStrategy> effect_strategy;
 
         arma::Row<int> nobs;
         arma::Row<double> means;
@@ -45,7 +45,7 @@ namespace sam {
         arma::Row<double> ses;
         arma::Row<double> statistics;
         arma::Row<double> pvalues;
-        std::unordered_map<std::string, arma::Row<double>> effects;
+        arma::Row<double> effects;
         arma::Row<short> sigs;
         
         std::vector<arma::Row<double> > measurements;
@@ -76,12 +76,12 @@ namespace sam {
         Experiment(ExperimentSetup &e,
                    std::shared_ptr<DataStrategy> &ds,
                    std::shared_ptr<TestStrategy> &ts,
-                   std::vector<std::shared_ptr<EffectStrategy>> &efs)
+                   std::shared_ptr<EffectStrategy> &efs)
         {
             setup = e;
             data_strategy = ds;
             test_strategy = ts;
-            effect_size_estimators = efs;
+            effect_strategy = efs;
             
             initResources(setup.ng());
         };
