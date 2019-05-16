@@ -18,7 +18,7 @@
 
 namespace sam {
 
-//    class Submission;
+    class Submission;
     class EffectStrategy;
 
     /**
@@ -86,23 +86,6 @@ namespace sam {
             
             initResources(setup.ng());
         };
-
-
-//        static Submission selected_submission_rec;
-//        
-//        const Submission& operator[](std::size_t idx) const {
-//
-//            selected_submission_rec.nobs = measurements[idx].size();
-//            selected_submission_rec.yi = means[idx];
-//            selected_submission_rec.vi = vars[idx];
-//            selected_submission_rec.sei = ses[idx];
-//
-//            selected_submission_rec.statistic = statistics[idx];
-//            selected_submission_rec.pvalue = pvalues[idx];
-//
-//            return selected_submission_rec;
-//        }
-
         
         
         /**
@@ -117,8 +100,8 @@ namespace sam {
 
          @param t A reference to a Test Strategy instance
          */
-        void setTestStrategy(std::shared_ptr<TestStrategy> &t){
-            test_strategy = t;
+        void setTestStrategy(std::shared_ptr<TestStrategy> &ts){
+            test_strategy = ts;
         }
 
         /**
@@ -126,12 +109,14 @@ namespace sam {
 
          @param d A reference to a Data Strategy instance
          */
-        void setDataStrategy(std::shared_ptr<DataStrategy> &d) {
-            data_strategy = d;
+        void setDataStrategy(std::shared_ptr<DataStrategy> &ds) {
+            data_strategy = ds;
         }
         
 
-        void setEffectSizeEstimator(std::vector<std::shared_ptr<EffectStrategy>> efs);
+        void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> es) {
+            effect_strategy = es;
+        };
 
         // Initialize the Experiment
         void initResources(int len);
@@ -174,12 +159,6 @@ namespace sam {
         //! Indicates if any hacking routine has been applied on the experiment
         bool is_hacked = false;
         std::vector<int> hacks_history;
-        
-
-        
-    private:
-
-
 
 
     };

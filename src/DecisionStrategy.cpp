@@ -91,8 +91,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
             break;
             
         case DecisionPreference::MaxEffect:
-            // TODO: Activate me, I don't work because there are more than one effects
-//            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
+            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
             break;
             
         case DecisionPreference::MinPvalueMaxEffect:
@@ -122,6 +121,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
             
         case DecisionPreference::MinPvalue:
             {
+                // TODO: This should be a routine in Experiment
                 std::vector<double> pvalues;
                 std::transform(submissions_pool.begin(), submissions_pool.end(), std::back_inserter(pvalues), [](const Submission &s) {return s.pvalue;} );
                 int min_pvalue_inx = std::distance(pvalues.begin(),
@@ -136,8 +136,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
             break;
             
         case DecisionPreference::MaxEffect:
-            // TODO: Activate me, I don't work because there are more than one effects
-            //            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
+            
             break;
             
         case DecisionPreference::MinPvalueMaxEffect:

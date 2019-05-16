@@ -47,6 +47,7 @@ struct expr_setup_params {
 
     DataStrategy::DataStrategyParameters dsp;
     TestStrategy::TestStrategyParameters tsp;
+    EffectStrategy::EffectStrategyParameters esp;
 
     string ds_name = "LinearModel";
 
@@ -63,6 +64,8 @@ struct expr_setup_params {
         tsp.name = TestStrategy::TestType::TTest;
         tsp.alpha = 0.05;
         tsp.side = TestStrategy::TestSide::TwoSide;
+
+        esp.name = "CohensD";
 
     }
 };
@@ -125,6 +128,7 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
                 .setCovarianceMatrix(v_sigma)
                 .setTestStrategy(tsp)
                 .setDataStrategy(dsp)
+                .setEffectStrategy(esp)
                 .build();
 
         BOOST_TEST( setup.dsp_.name == ds_name);

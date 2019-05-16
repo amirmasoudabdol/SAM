@@ -74,9 +74,6 @@ namespace sam {
         void performResearch();
         void publishResearch();
         
-        //! By default, a researcher always prefer to return the pre-registered result
-        DecisionPreference selection_pref = DecisionPreference::PreRegisteredOutcome;
-        
         // This could be renamed to something like, selectThePreferedSubmission()
         void prepareTheSubmission();
         void submitToJournal();
@@ -171,17 +168,17 @@ namespace sam {
             return *this;
         }
         
-        ResearcherBuilder& setResearcherPreference(DecisionPreference pref){
-            // TODO: This still needs to be feeded to the Researcher's constructor which doesn't support it yet.
-            researcher.selection_pref = pref;
-            return *this;
-        };
-        
         ResearcherBuilder& setExperimentSetup(ExperimentSetup es) {
-            //            researcher.setup = es;
             researcher.experiment = new Experiment(es);
             return *this;
         };
+        
+        ResearcherBuilder& setResearcherPreference(DecisionPreference pref){
+            researcher.decision_strategy->selectionPref = pref;
+            return *this;
+        };
+        
+
         
         /**
          ....
@@ -203,8 +200,8 @@ namespace sam {
             researcher.experiment->test_strategy = ts;
             return *this;
         };
-        ResearcherBuilder& setJournal(Journal j) {
-            researcher.journal = &j;
+        ResearcherBuilder& setJournal(Journal *j) {
+            researcher.journal = j;
             return *this;
         };
         ResearcherBuilder& setJournalSelectionStrategy(SelectionStrategy *ss) {
@@ -215,6 +212,20 @@ namespace sam {
         ResearcherBuilder& setHackingStrategy(HackingStrategy *hs);
         ResearcherBuilder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
         
+        
+        ResearcherBuilder& addHackingStrategyGroup(std::vector<HackingStrategy* > hsg) {
+            researcher.hacking_strategies.push_back(hsg);
+            return *this;
+        }
+        
+        ResearcherBuilder& addNewHackingStrategy(HackingStrategy *new_hs) {
+            if (researcher.hacking_strategies.empty()){
+                researcher.hacking_strategies.resize(1);
+            }
+            researcher.hacking_strategies.back().push_back(new_hs);
+            
+            return *this;
+        }
         
         /**
          Prepare a set of hacking strategies groups by populating each group from

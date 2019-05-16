@@ -71,6 +71,7 @@ namespace sam {
         arma::Row<double> vars_;
         arma::Mat<double> sigma_;
 
+        // TODO: Integrate Us!
         arma::Row<double> loadings_;
         arma::Row<double> error_means_;
         arma::Row<double> error_vars_;
@@ -332,7 +333,7 @@ namespace sam {
             return *this;
         }
         
-        ExperimentSetupBuilder& setEffectEstimator(const EffectStrategy::EffectStrategyParameters &esp) {
+        ExperimentSetupBuilder& setEffectStrategy(const EffectStrategy::EffectStrategyParameters &esp) {
             setup.esp_ = esp;
             return *this;
         }
