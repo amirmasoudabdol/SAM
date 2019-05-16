@@ -11,9 +11,6 @@
 
 using namespace sam;
 
-extern bool VERBOSE;
-
-
 Journal::Journal(json& journal_config){
     
     max_pubs = journal_config["max-pubs"];
@@ -55,7 +52,7 @@ void Journal::saveSubmissions(int simid, std::ofstream& writer) {
         p.simid = simid;
         p.pubid = i++;
         
-        if (VERBOSE){
+        if (FLAGS::VERBOSE){
             std::cout << std::setprecision(8);
             std::cout << p << "\n";
         }

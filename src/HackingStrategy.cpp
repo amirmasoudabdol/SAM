@@ -16,9 +16,7 @@
 
 #include "utils/permutation.h"
 
-
-
-extern bool VERBOSE;
+#include "sam.h"
 
 using namespace sam;
 
@@ -122,7 +120,7 @@ std::ostream& operator<<(std::ostream& os, HackingMethod m)
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
     
-    if (VERBOSE) std::cout << "Optional Stopping...\n";
+    if (FLAGS::VERBOSE) std::cout << "Optional Stopping...\n";
     
     for (int t = 0; t < n_attempts && t < max_attempts ; t++) {
         
@@ -178,7 +176,7 @@ void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
-    if (VERBOSE) std::cout << "Outliers Removal...\n";
+    if (FLAGS::VERBOSE) std::cout << "Outliers Removal...\n";
     
     int res = 0;
     
@@ -258,7 +256,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
  */
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
-    if (VERBOSE) std::cout << "Group Pooling...\n";
+    if (FLAGS::VERBOSE) std::cout << "Group Pooling...\n";
     
     if (experiment->setup.nc() < 2){
         throw std::domain_error("There is not enough groups for pooling.");

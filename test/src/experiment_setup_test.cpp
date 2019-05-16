@@ -24,6 +24,11 @@ using namespace arma;
 using namespace sam;
 using namespace std;
 
+bool FLAGS::VERBOSE = false;
+bool FLAGS::PROGRESS = false;
+bool FLAGS::DEBUG = false;
+bool FLAGS::UPDATECONFIG = false;
+
 struct expr_setup_params {
     int nc = 2;
     int nd = 3;
@@ -74,7 +79,8 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
                                 .setNumObservations(nobs)
                                 .setMeans(mean)
                                 .setVariance(var)
-                                .setCovariance(cov);
+                                .setCovariance(cov)
+                                .build();
 
         BOOST_TEST( setup.nobs() == v_nobs, tt::per_element());
 
@@ -95,7 +101,8 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
                                                 .setNumItems(ni)
                                                 .setNumObservations(v_nobs)
                                                 .setMeans(v_means)
-                                                .setCovarianceMatrix(v_sigma);
+                                                .setCovarianceMatrix(v_sigma)
+                                                .build();
 
 
         BOOST_TEST( setup.nobs() == v_nobs, tt::per_element());
@@ -117,7 +124,8 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
                 .setMeans(v_means)
                 .setCovarianceMatrix(v_sigma)
                 .setTestStrategy(tsp)
-                .setDataStrategy(dsp);
+                .setDataStrategy(dsp)
+                .build();
 
         BOOST_TEST( setup.dsp_.name == ds_name);
 

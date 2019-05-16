@@ -24,6 +24,11 @@ using namespace arma;
 using namespace sam;
 using namespace std;
 
+bool FLAGS::VERBOSE = false;
+bool FLAGS::PROGRESS = false;
+bool FLAGS::DEBUG = false;
+bool FLAGS::UPDATECONFIG = false;
+
 struct test_experiment {
     int nc = 2;
     int nd = 3;
@@ -43,6 +48,8 @@ struct test_experiment {
     DataStrategy::DataStrategyParameters dsp;
 
     TestStrategy::TestStrategyParameters tsp;
+
+    EffectStrategy::EffectStrategyParameters esp;
 
     string ds_name = "LinearModel";
 
@@ -64,6 +71,8 @@ struct test_experiment {
         tsp.side = TestStrategy::TestSide::TwoSide;
         tsp.alpha = 0.05;
 
+        esp.name = "CohensD";
+
         setup = ExperimentSetup::create()
                 .setNumConditions(nc)
                 .setNumDependentVariables(nd)
@@ -71,7 +80,8 @@ struct test_experiment {
                 .setNumObservations(nobs)
                 .setMeans(mean)
                 .setVariance(var)
-                .setCovariance(cov);
+                .setCovariance(cov)
+                .build();
 
     }
 };
@@ -92,15 +102,12 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
 
         auto ds = DataStrategy::build(dsp);
 
-	  	vector<shared_ptr<EffectStrategy>> efs;
-	    efs.push_back(EffectStrategy::build("CohensD"));
+	  	auto es = EffectStrategy::build(esp);
 
-	    Experiment expr(setup, ds, ts, efs);
-
+	    Experiment expr(setup, ds, ts, es);
 
 	    BOOST_TEST(expr.setup.ng() == ng);
 
-	    BOOST_TEST(expr.setup.test_strategy_parameters_.name == TestStrategy::TestType::TTest);
 	}
 
 
@@ -113,10 +120,9 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
 
 	    auto ds = DataStrategy::build(dsp);
 
-	  	vector<shared_ptr<EffectStrategy>> efs;
-	    efs.push_back(EffectStrategy::build("CohensD"));
+        auto es = EffectStrategy::build(esp);
 
-	    Experiment expr(setup, ds, ts, efs);
+        Experiment expr(setup, ds, ts, es);
 
 	    expr.generateData();
 	    expr.calculateStatistics();

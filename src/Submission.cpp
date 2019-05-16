@@ -19,10 +19,6 @@ namespace sam {
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
         
-//        for (auto &estimator : e.effect_strategy){
-//            effects.push_back(e.effects[estimator->name][index]);
-//        }
-        
         effect = e.effects[index];
         
         sig = e.sigs[index];

@@ -11,10 +11,13 @@
 
 #include <armadillo>
 
-// TODO: Get rid of these!
-extern bool PROGRESS;
-extern bool DEBUG;
-extern bool VERBOSE;
-extern bool UPDATECONFIG;
+namespace sam {
+    struct FLAGS {
+        static bool PROGRESS;
+        static bool DEBUG;
+        static bool VERBOSE;
+        static bool UPDATECONFIG;
+    };
+}
 
 #endif //SAMPP_MAIN_H
