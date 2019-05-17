@@ -167,6 +167,11 @@ namespace sam {
             
             return *this;
         }
+
+        ResearcherBuilder& setExperiment(Experiment *expr) {
+            researcher.experiment = expr;
+            return *this;
+        }
         
         ResearcherBuilder& setExperimentSetup(ExperimentSetup es) {
             researcher.experiment = new Experiment(es);
@@ -179,19 +184,22 @@ namespace sam {
         };
         
 
-        
-        /**
-         ....
-         
-         @note: This will overwrite the current Experiment Setup if exists.
-         
-         @param exp <#exp description#>
-         @return <#return value description#>
-         */
-        ResearcherBuilder& setExperiment(Experiment *exp) {
-            researcher.experiment = exp;
+        ResearcherBuilder& createDecisionStrategy(const DecisionStrategy::DecisionStrategyParameters &dsp) {
+            researcher.decision_strategy = DecisionStrategy::build(dsp);
             return *this;
         };
+
+        ResearcherBuilder& createJournal(Journal::JournalParameters &jp, 
+                                         SelectionStrategy::SelectionStrategyParameters &ssp) {
+            researcher.journal = new Journal(jp, ssp);
+            return *this;
+        }
+
+        ResearcherBuilder& createExperiment(ExperimentSetup es) {
+            researcher.experiment = new Experiment(es);
+            return *this;
+        }
+
         ResearcherBuilder& setDataStrategy(std::shared_ptr<DataStrategy> ds) {
             researcher.experiment->data_strategy = ds;
             return *this;
@@ -208,7 +216,10 @@ namespace sam {
             researcher.journal->setSelectionStrategy(ss);
             return *this;
         };
-        ResearcherBuilder& setDecisionStrategy(DecisionStrategy *ds);
+        ResearcherBuilder& setDecisionStrategy(DecisionStrategy *ds) {
+            researcher.decision_strategy = ds;
+            return *this;
+        };
         ResearcherBuilder& setHackingStrategy(HackingStrategy *hs);
         ResearcherBuilder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
         

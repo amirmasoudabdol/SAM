@@ -41,7 +41,7 @@ namespace sam {
      will prefer an outcome with the lowest p-value.
      */
     enum class DecisionPreference {
-        PreRegisteredOutcome,
+        PreRegisteredOutcome = 0,
         MinSigPvalue,
         MinPvalue,
         MaxSigEffect,
@@ -92,6 +92,8 @@ namespace sam {
             DecisionType name;
             DecisionPreference preference;
         };
+
+        DecisionStrategyParameters params;
         
         static DecisionStrategy* build(json &decision_strategy_config);
 
@@ -247,22 +249,23 @@ namespace sam {
 
 
     // FIXME: Not fully implemented!
+    // FIXME: Not fully tested!
     class HonestDecisionMaker : public DecisionStrategy {
 
     public:
 
-        HonestDecisionMaker(int prg) {
-            pre_registered_group = prg;
+        HonestDecisionMaker() {
+            selectionPref = DecisionPreference::PreRegisteredOutcome;
         };
         
         virtual bool verdict(Experiment &experiment, DecisionStage stage) {
             return false;
         };
         
-        virtual bool initDecision(Experiment &experiment);
-        virtual bool intermediateDecision(Experiment &experiment);
-        virtual bool afterhackDecision(Experiment &experiment);
-        virtual bool finalDecision(Experiment &experiment);
+        virtual bool initDecision(Experiment &experiment) {return false;};
+        virtual bool intermediateDecision(Experiment &experiment) {return false;};
+        virtual bool afterhackDecision(Experiment &experiment) {return false;};
+        virtual bool finalDecision(Experiment &experiment) {return false;};
         
     };
 

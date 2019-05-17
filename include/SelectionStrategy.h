@@ -5,12 +5,15 @@
 #ifndef SAMPP_SELECTIONSTRATEGIES_H
 #define SAMPP_SELECTIONSTRATEGIES_H
 
+// #include "Journal.h"
 #include "Submission.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
 
 namespace sam {
+    
+    class Journal;
 
     using json = nlohmann::json;
 
@@ -33,6 +36,17 @@ namespace sam {
 
     public:
 
+        struct SelectionStrategyParameters {
+            SelectionType name;
+            double alpha;
+            double pub_bias;
+            int side;
+            int seed = -1;
+        };
+        
+        SelectionStrategyParameters params;
+
+
         SelectionType id;
         
         /**
@@ -45,6 +59,8 @@ namespace sam {
          * @return     A new SelectionStrategy
          */
         static SelectionStrategy* build(json &selection_straregy_config);
+
+        static SelectionStrategy* build(SelectionStrategyParameters &ssp);
         
         /**
          * @brief      Pure deconstructor of the base class
@@ -74,16 +90,23 @@ namespace sam {
      Moreover, the SignificantSelection can be tailored toward either positive or negative
      effect. In this case, the Journal will only accept Submissions with larger or smaller effects.
      */
-    class SignigicantSelection : public SelectionStrategy {
+    class SignificantSelection : public SelectionStrategy {
 
     public:
-        SignigicantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42):
+        SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42):
             alpha(alpha),  pub_bias(pub_bias), side(side) {
             
             id = SelectionType::SignificantSelection;
 
             mainRngStream = new RandomNumberGenerator(seed);
         };
+        
+        // TODO: Fix me!
+        SignificantSelection(SelectionStrategyParameters ssp) : alpha(ssp.alpha),  pub_bias(ssp.pub_bias), side(ssp.side) {
+            params = ssp;
+            
+            mainRngStream = new RandomNumberGenerator(ssp.seed);
+        }
 
         bool review(Submission& s);
 
@@ -116,6 +139,12 @@ namespace sam {
             id = SelectionType::RandomSelection;
 
             mainRngStream = new RandomNumberGenerator(seed);
+        }
+        
+        RandomSelection(SelectionStrategyParameters ssp) {
+            params = ssp;
+            
+            mainRngStream = new RandomNumberGenerator(ssp.seed);
         }
         
         bool review(Submission& s);

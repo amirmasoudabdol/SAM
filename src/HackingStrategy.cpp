@@ -83,6 +83,22 @@ HackingStrategy *HackingStrategy::build(HackingMethod method) {
     }
 }
 
+HackingStrategy *HackingStrategy::build(HackingStrategyParameters &hsp) {
+    if (hsp.name == "OptionalStopping"){
+        return new OptionalStopping();
+    }else if (hsp.name == "SDOutlierRemoval") {
+        return new SDOutlierRemoval();
+    }else if (hsp.name == "GroupPooling") {
+        return new GroupPooling();
+    }else if (hsp.name == "ConditionDropping") {
+        return new ConditionDropping();
+    }else if (hsp.name == "NoHack") {
+        return new NoHack();
+    }else{
+        throw std::invalid_argument("Cannot recognize the p-hacking method.");
+    }
+}
+
 std::ostream& operator<<(std::ostream& os, HackingMethod m)
 {
     switch(m)

@@ -16,28 +16,33 @@
 #include "MetaAnalysis.h"
 
 namespace sam {
+    
+//    class SelectionStrategy;
 
     class Journal{
         
         double max_pubs;
         
         bool still_accepting = true;
-
-        //! Journal's Selection Model/Strategy
-        SelectionStrategy* selection_strategy;
         
         //! List of all acceptec Submissions, i.e., publications
         std::vector<Submission> publications_list;
         
     public:
         
+        //! Journal's Selection Model/Strategy
+        SelectionStrategy* selection_strategy;
+        
         struct JournalParameters {
             std::string name;
+            int max_pubs;
         };
 
         explicit Journal(json& journal_config);
         
         explicit Journal(const JournalParameters &jp);
+        
+        Journal(JournalParameters &jp, SelectionStrategy::SelectionStrategyParameters &ssp);
 
         /**
          Point Journal's selection strategy to the given strategy

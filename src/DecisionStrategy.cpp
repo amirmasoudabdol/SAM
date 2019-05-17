@@ -21,6 +21,8 @@ DecisionStrategy *DecisionStrategy::build(json &decision_strategy_config) {
         return new ImpatientDecisionMaker(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
     }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
         return new PatientDecisionMaker(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
+    }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
+        return new HonestDecisionMaker();
     }else{
         throw std::invalid_argument("Unknown DecisionStrategy");
     }
@@ -32,8 +34,8 @@ DecisionStrategy *DecisionStrategy::build(DecisionStrategyParameters dsp) {
         return new ImpatientDecisionMaker(dsp.preference);
     }else if (dsp.name == DecisionType::PatientDecisionMaker){
         return new PatientDecisionMaker(dsp.preference);
-//    }else if (dsp.name == DecisionType::HonestDecisionMaker){
-//        return new HonestDecisionMaker(0);
+   }else if (dsp.name == DecisionType::HonestDecisionMaker){
+       return new HonestDecisionMaker();
     } else{
         throw std::invalid_argument("Unknown DecisionStrategy");
     }

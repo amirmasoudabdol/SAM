@@ -4,7 +4,8 @@
 
 #include <stdexcept>
 
-#include <SelectionStrategy.h>
+//#include "Journal.h"
+#include "SelectionStrategy.h"
 
 using namespace sam;
 
@@ -18,7 +19,7 @@ SelectionStrategy *SelectionStrategy::build(json &selection_strategy_config) {
     if (selection_strategy_config["name"] == "SignificantSelection") {
         
         selection_strategy_config["selection-seed"] = selection_seed;
-        return new SignigicantSelection(selection_strategy_config["alpha"], selection_strategy_config["pub-bias"], selection_strategy_config["side"], selection_seed);
+        return new SignificantSelection(selection_strategy_config["alpha"], selection_strategy_config["pub-bias"], selection_strategy_config["side"], selection_seed);
         
     }else if(selection_strategy_config["name"] == "RandomSelection") {
         
@@ -28,6 +29,25 @@ SelectionStrategy *SelectionStrategy::build(json &selection_strategy_config) {
     }else{
         throw std::invalid_argument("Unknown Selection Strategy.");
     }
+}
+
+SelectionStrategy *SelectionStrategy::build(SelectionStrategyParameters &ssp) {
+    
+    if (ssp.seed != -1) {
+        ssp.seed = rand();
+    }
+    
+    switch (ssp.name) {
+        case SelectionType::SignificantSelection:
+            return new SignificantSelection(ssp);
+            break;
+        case SelectionType::RandomSelection:
+            return new RandomSelection(ssp);
+            break;
+        default:
+            break;
+    }
+    
 }
 
 
@@ -40,7 +60,7 @@ SelectionStrategy *SelectionStrategy::build(json &selection_strategy_config) {
  @param s A reference to the Submission
  @return a boolean indicating whether the Submission is accepted or not.
  */
-bool SignigicantSelection::review(Submission &s) {
+bool SignificantSelection::review(Submission &s) {
 
     if (s.pvalue < alpha && (s.side == side || side == 0)){
         return true;

@@ -68,6 +68,11 @@ namespace sam {
     class HackingStrategy {
         
     public:
+
+        struct HackingStrategyParameters {
+            std::string name;
+        };
+
         //! Defensibility of the method
         //! This is a based on the survey results where researchers have been
         //! asked to rate the defensibility of different QRPs.
@@ -89,6 +94,8 @@ namespace sam {
         static HackingStrategy* build(json& hacking_strategy_config);
         
         static HackingStrategy* build(HackingMethod method);
+
+        static HackingStrategy* build(HackingStrategyParameters &hsp);
         
 
         /**

@@ -60,6 +60,14 @@ namespace sam {
         
         return os;
     }
+    
+    
+    std::vector<std::string> Submission::header() {
+        for (auto &item : record) {
+            columns.push_back(item.first);
+        }
+        return columns;
+    }
 
 
     std::string Submission::header(const json &effectslist) {

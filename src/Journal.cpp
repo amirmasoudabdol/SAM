@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 #include "MetaAnalysis.h"
+#include "SelectionStrategy.h"
 
 using namespace sam;
 
@@ -17,6 +18,12 @@ Journal::Journal(json& journal_config){
     
     // Setting up the SelectionStrategy
     this->selection_strategy = SelectionStrategy::build(journal_config["selection-strategy"]);
+}
+
+Journal::Journal(JournalParameters &jp,
+                 SelectionStrategy::SelectionStrategyParameters &ssp) {
+    max_pubs = jp.max_pubs;
+    this->selection_strategy = SelectionStrategy::build(ssp);
 }
 
 bool Journal::review(Submission &s) {
