@@ -54,9 +54,9 @@ std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name) {
 
 std::shared_ptr<DataStrategy> DataStrategy::build(const DataStrategyParameters &dsp) {
     
-    if (dsp.name == "LinearModel"){
+    if (dsp.name == DataModel::LinearModel){
         return std::make_shared<LinearModelStrategy>(dsp);
-    }else if (dsp.name == "LatentModel") {
+    }else if (dsp.name == DataModel::LatentModel) {
         return std::make_shared<LatentDataStrategy>(dsp);
     }else{
         throw std::invalid_argument("Unknown Data Strategy.");

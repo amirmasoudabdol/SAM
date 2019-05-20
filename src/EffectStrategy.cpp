@@ -24,9 +24,9 @@ std::shared_ptr<EffectStrategy>EffectStrategy::build(const std::string &name){
 }
 
 std::shared_ptr<EffectStrategy>EffectStrategy::build(const EffectStrategyParameters &esp){
-    if (esp.name == "CohensD") {
+    if (esp.name == EffectEstimator::CohensD) {
         return std::make_shared<CohensD>(esp);
-    }else if (esp.name == "HedgesG"){
+    }else if (esp.name == EffectEstimator::HedgesG){
         return std::make_shared<HedgesG>(esp);
     }else{
         throw std::invalid_argument("Uknown effect size estimator.\n");

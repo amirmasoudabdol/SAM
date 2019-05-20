@@ -35,7 +35,14 @@ ExperimentSetup::ExperimentSetup(json& config) {
     // Setting the seed for number of observation
     rng_stream = new RandomNumberGenerator(rand());
     
-    dsp_.name = config["data-strategy"];
+    
+    if (config["data-strategy"] == "LinearModel") {
+        dsp_.name = DataStrategy::DataModel::LinearModel;
+    }else if (config["data-strategy"] == "LatentModel") {
+        dsp_.name = DataStrategy::DataModel::LatentModel;
+    }
+    
+    
     
     nc_ = config["n-conditions"];
     nd_ = config["n-dep-vars"];

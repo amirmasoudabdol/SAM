@@ -40,10 +40,15 @@ namespace sam {
         int seed1 = -1;
         int seed2 = -1;
 
+        enum class DataModel {
+            LinearModel,
+            LatentModel
+        };
+
         struct DataStrategyParameters {
+            DataModel name;
             int seed1 = -1;
             int seed2 = -1;
-            std::string name;
         };
 
         DataStrategyParameters params;

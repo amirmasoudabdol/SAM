@@ -26,9 +26,15 @@ namespace sam {
     class EffectStrategy {
         
     public:
+
+        enum class EffectEstimator {
+            CohensD,
+            HedgesG,
+            OddRatio
+        };
         
         struct EffectStrategyParameters {
-            std::string name;
+            EffectEstimator name;
         };
 
         EffectStrategyParameters params;

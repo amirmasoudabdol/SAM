@@ -39,7 +39,7 @@ struct sample_fixed_size_linear_experiment_setup {
 
     EffectStrategy::EffectStrategyParameters esp;
 
-    string ds_name = "LinearModel";
+    // string ds_name = "LinearModel";
 
     ExperimentSetup setup;
 
@@ -53,7 +53,7 @@ struct sample_fixed_size_linear_experiment_setup {
         v_sigma = arma::Mat<double>(ng, ng).fill(cov);
         v_sigma.diag() = v_vars;
 
-        dsp.name = "LinearModel";
+        dsp.name = DataStrategy::DataModel::LinearModel;
         dsp.seed1 = 42;
         dsp.seed2 = 7;
 
@@ -61,7 +61,7 @@ struct sample_fixed_size_linear_experiment_setup {
         tsp.side = TestStrategy::TestSide::TwoSide;
         tsp.alpha = 0.05;
 
-        esp.name = "CohensD";
+        esp.name = EffectStrategy::EffectEstimator::CohensD;
 
         setup = ExperimentSetup::create()
                 .setNumConditions(nc)
