@@ -23,6 +23,14 @@ using namespace arma;
 using namespace sam;
 using namespace std;
 
-BOOST_AUTO_TEST_CASE( optional_stopping ) {
+BOOST_AUTO_TEST_SUITE( optional_stopping );
 
-}
+BOOST_AUTO_TEST_SUITE_END();
+
+BOOST_AUTO_TEST_SUITE( outliers_removal );
+
+BOOST_AUTO_TEST_SUITE_END();
+
+BOOST_AUTO_TEST_SUITE( groups_pooling );
+
+BOOST_AUTO_TEST_SUITE_END();

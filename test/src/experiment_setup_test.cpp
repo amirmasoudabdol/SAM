@@ -49,8 +49,6 @@ struct expr_setup_params {
     TestStrategy::TestStrategyParameters tsp;
     EffectStrategy::EffectStrategyParameters esp;
 
-    string ds_name = "LinearModel";
-
     expr_setup_params() {
 
         v_nobs = arma::Row<int>(ng).fill(nobs);
@@ -59,13 +57,13 @@ struct expr_setup_params {
         v_sigma = arma::Mat<double>(ng, ng).fill(cov);
         v_sigma.diag() = v_vars;
 
-        dsp.name = ds_name;
+        dsp.name = DataStrategy::DataModel::LinearModel;
 
         tsp.name = TestStrategy::TestType::TTest;
         tsp.alpha = 0.05;
         tsp.side = TestStrategy::TestSide::TwoSide;
 
-        esp.name = "CohensD";
+        esp.name = EffectStrategy::EffectEstimator::CohensD;
 
     }
 };
@@ -131,14 +129,13 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
                 .setEffectStrategy(esp)
                 .build();
 
-        BOOST_TEST( setup.dsp_.name == ds_name);
+        BOOST_TEST( (setup.dsp_.name == DataStrategy::DataModel::LinearModel ));
 
-//        BOOST_TEST( setup.tsp_.name == )
     }
 
 BOOST_AUTO_TEST_SUITE_END()
 
-// Write some tests for randomization
+// Write some tests for randomizationtrae
 
 
 

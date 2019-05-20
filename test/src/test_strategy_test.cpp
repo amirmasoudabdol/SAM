@@ -133,9 +133,8 @@ BOOST_FIXTURE_TEST_SUITE( test_strategy_class, sample_linear_experiment )
         experiment->calculateStatistics();
         experiment->runTest();
 
-//        for (int i = 0; i < ; ++i) {
-//
-//        }
+        for (int i = 0; i < experiment->setup.ng(); ++i)
+//            BOOST_TEST_SMALL(experiment->pvalues, 0.05, )
 
 
     }
