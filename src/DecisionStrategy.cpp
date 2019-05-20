@@ -15,27 +15,27 @@ DecisionStrategy::~DecisionStrategy() {
     // pure deconstructor
 };
 
-DecisionStrategy *DecisionStrategy::build(json &decision_strategy_config) {
+std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strategy_config) {
 
     if (decision_strategy_config["name"] == "ImpatientDecisionMaker"){
-        return new ImpatientDecisionMaker(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
+        return std::make_unique<ImpatientDecisionMaker>(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
     }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
-        return new PatientDecisionMaker(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
+        return std::make_unique<PatientDecisionMaker>(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
     }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
-        return new HonestDecisionMaker();
+        return std::make_unique<HonestDecisionMaker>();
     }else{
         throw std::invalid_argument("Unknown DecisionStrategy");
     }
 }
 
-DecisionStrategy *DecisionStrategy::build(DecisionStrategyParameters dsp) {
+std::unique_ptr<DecisionStrategy> DecisionStrategy::build(DecisionStrategyParameters dsp) {
 
     if (dsp.name == DecisionType::ImpatientDecisionMaker){
-        return new ImpatientDecisionMaker(dsp.preference);
+        return std::make_unique<ImpatientDecisionMaker>(dsp.preference);
     }else if (dsp.name == DecisionType::PatientDecisionMaker){
-        return new PatientDecisionMaker(dsp.preference);
+        return std::make_unique<PatientDecisionMaker>(dsp.preference);
    }else if (dsp.name == DecisionType::HonestDecisionMaker){
-       return new HonestDecisionMaker();
+       return std::make_unique<HonestDecisionMaker>();
     } else{
         throw std::invalid_argument("Unknown DecisionStrategy");
     }

@@ -130,7 +130,8 @@ BOOST_AUTO_TEST_CASE( researcher_builder )
                                         .createExperiment(setup)
                                         .createDecisionStrategy(desp)
                                         .createJournal(jp, ssp)
-                                        .addNewHackingStrategy(hs);
+                                        .addNewHackingStrategy(hs)
+                                        .build();
 
     BOOST_TEST((researcher.decision_strategy->selectionPref == DecisionPreference::PreRegisteredOutcome));
 

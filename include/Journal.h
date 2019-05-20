@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <memory>
 
 #include "csv/writer.hpp"
 
@@ -31,7 +32,7 @@ namespace sam {
     public:
         
         //! Journal's Selection Model/Strategy
-        SelectionStrategy* selection_strategy;
+        std::unique_ptr<SelectionStrategy> selection_strategy;
         
         struct JournalParameters {
             std::string name;
@@ -49,8 +50,8 @@ namespace sam {
 
          @param s The pointer to the given selection strategy
          */
-        void setSelectionStrategy(SelectionStrategy *s) {
-            selection_strategy = s;
+        void setSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
+            selection_strategy = std::move(ss);
         }
 
         /**

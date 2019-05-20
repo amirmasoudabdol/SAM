@@ -27,7 +27,7 @@ void Researcher::hack() {
         
         for (auto &h : set){
             
-            h->perform(&copiedExpr, decision_strategy);
+            h->perform(&copiedExpr, decision_strategy.get());
             copiedExpr.is_hacked = true;
             copiedExpr.hacks_history.push_back((int)h->hid);
             

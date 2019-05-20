@@ -57,7 +57,7 @@ namespace sam {
         
         Experiment* experiment;
         Journal* journal;
-        DecisionStrategy* decision_strategy;
+        std::unique_ptr<DecisionStrategy> decision_strategy;
         std::vector<std::vector<HackingStrategy*>> hacking_strategies;
         
         bool is_hacker = false;
@@ -83,8 +83,8 @@ namespace sam {
 
          @param d The pointer to a Decision Strategy
          */
-        void setDecisionStrategy(DecisionStrategy* d) {
-            decision_strategy = d;
+        void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
+            decision_strategy = std::move(ds);
         }
         
         /**
@@ -212,12 +212,13 @@ namespace sam {
             researcher.journal = j;
             return *this;
         };
-        ResearcherBuilder& setJournalSelectionStrategy(SelectionStrategy *ss) {
-            researcher.journal->setSelectionStrategy(ss);
+        ResearcherBuilder& setJournalSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
+            // TESTME
+            researcher.journal->setSelectionStrategy(std::move(ss));
             return *this;
         };
-        ResearcherBuilder& setDecisionStrategy(DecisionStrategy *ds) {
-            researcher.decision_strategy = ds;
+        ResearcherBuilder& setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
+            researcher.setDecisionStrategy(std::move(ds));
             return *this;
         };
         ResearcherBuilder& setHackingStrategy(HackingStrategy *hs);
@@ -311,13 +312,13 @@ namespace sam {
             // flags like is_hacking_strat_set, is_hacker, etc. to make sure that the
             // Researcher is completely being constructed.
             
-            return researcher;
+            return std::move(researcher);
             
         };
         
-        operator Researcher() const {
-            return researcher;
-        }
+//        operator Researcher() const {
+//            return std::move(researcher);
+//        }
     };
 
 

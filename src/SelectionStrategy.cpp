@@ -13,43 +13,43 @@ SelectionStrategy::~SelectionStrategy() {
     // Pure deconstructor
 }
 
-SelectionStrategy *SelectionStrategy::build(json &selection_strategy_config) {
+std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_strategy_config) {
     
     int selection_seed = rand();
     if (selection_strategy_config["name"] == "SignificantSelection") {
         
         selection_strategy_config["selection-seed"] = selection_seed;
-        return new SignificantSelection(selection_strategy_config["alpha"], selection_strategy_config["pub-bias"], selection_strategy_config["side"], selection_seed);
+        return std::make_unique<SignificantSelection>(selection_strategy_config["alpha"], selection_strategy_config["pub-bias"], selection_strategy_config["side"], selection_seed);
         
     }else if(selection_strategy_config["name"] == "RandomSelection") {
         
         selection_strategy_config["selection-seed"] = selection_seed;
-        return new RandomSelection(selection_seed);
+        return std::make_unique<RandomSelection>(selection_seed);
         
     }else{
         throw std::invalid_argument("Unknown Selection Strategy.");
     }
 }
 
-SelectionStrategy *SelectionStrategy::build(SelectionStrategyParameters &ssp) {
+std::unique_ptr<SelectionStrategy> SelectionStrategy::build(SelectionStrategyParameters &ssp) {
     
+    // TODO: This might not be necessary to be there
     if (ssp.seed != -1) {
         ssp.seed = rand();
     }
     
     switch (ssp.name) {
         case SelectionType::SignificantSelection:
-            return new SignificantSelection(ssp);
+            return std::make_unique<SignificantSelection>(ssp);
             break;
         case SelectionType::RandomSelection:
-            return new RandomSelection(ssp);
+            return std::make_unique<RandomSelection>(ssp);
             break;
         default:
             break;
     }
     
 }
-
 
 /**
  Check if `p-value` of the Submission is less than the specified \f$\alpha\f$.

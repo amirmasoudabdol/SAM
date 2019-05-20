@@ -58,9 +58,9 @@ namespace sam {
          *
          * @return     A new SelectionStrategy
          */
-        static SelectionStrategy* build(json &selection_straregy_config);
+        static std::unique_ptr<SelectionStrategy> build(json &selection_straregy_config);
 
-        static SelectionStrategy* build(SelectionStrategyParameters &ssp);
+        static std::unique_ptr<SelectionStrategy> build(SelectionStrategyParameters &ssp);
         
         /**
          * @brief      Pure deconstructor of the base class

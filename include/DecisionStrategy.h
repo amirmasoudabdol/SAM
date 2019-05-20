@@ -6,6 +6,7 @@
 #define SAMPP_DECISIONSTRATEGY_H
 
 #include <vector>
+#include <memory>
 
 #include "sam.h"
 
@@ -95,9 +96,9 @@ namespace sam {
 
         DecisionStrategyParameters params;
         
-        static DecisionStrategy* build(json &decision_strategy_config);
+        static std::unique_ptr<DecisionStrategy> build(json &decision_strategy_config);
 
-        static DecisionStrategy* build(DecisionStrategyParameters dsp);
+        static std::unique_ptr<DecisionStrategy> build(DecisionStrategyParameters dsp);
         
         virtual ~DecisionStrategy() = 0;
         
