@@ -14,10 +14,16 @@
 #include "TestStrategy.h"
 
 #include "sam.h"
+#include "test_fixtures.h"
 
 using namespace arma;
 using namespace sam;
 using namespace std;
+
+bool FLAGS::VERBOSE = false;
+bool FLAGS::PROGRESS = false;
+bool FLAGS::DEBUG = false;
+bool FLAGS::UPDATECONFIG = false;
 
 BOOST_AUTO_TEST_SUITE( t_test_functions )
 
@@ -116,16 +122,22 @@ BOOST_AUTO_TEST_SUITE( t_test_functions )
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE( test_strategy_class )
+
+
+BOOST_FIXTURE_TEST_SUITE( test_strategy_class, sample_linear_experiment )
 
     BOOST_AUTO_TEST_CASE( test_strategy_constructor )
     {
-        TestStrategy::TestStrategyParameters tsp;
-        tsp.name = TestStrategy::TestType::TTest;
-        tsp.side = TestStrategy::TestStrategy::TestSide::Greater;
-        tsp.alpha = 0.05;
 
-        shared_ptr<TestStrategy> ttest = TestStrategy::build(tsp);
+        experiment->generateData();
+        experiment->calculateStatistics();
+        experiment->runTest();
+
+//        for (int i = 0; i < ; ++i) {
+//
+//        }
+
+
     }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -79,6 +79,8 @@ namespace sam {
             TestSide side = TestSide::TwoSide;
             double alpha = 0.05;
         };
+
+        TestStrategyParameters params;
         
         static std::shared_ptr<TestStrategy> build(json &config);
         
@@ -105,6 +107,7 @@ namespace sam {
     class TTest : public TestStrategy {
         
     private:
+        // TODO: Remove us!
         TestSide side;
         double alpha;
         
@@ -113,8 +116,10 @@ namespace sam {
         TTest(TestSide side = TestSide::TwoSide, double alpha = 0.05) :
             side(side), alpha(alpha) { };
         
-        TTest(TestStrategyParameters params) :
-            side(params.side), alpha(params.alpha) { };
+        TTest(TestStrategyParameters tsp) :
+            side(tsp.side), alpha(tsp.alpha) { 
+            params = tsp;
+        };
         
         void run(Experiment* experiment);
         

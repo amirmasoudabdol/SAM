@@ -18,6 +18,7 @@ find_package(LAPACK)
 find_package(BLAS)
 
 include_directories(include)
+include_directories(test/include)
 include_directories(${MLPACK_SRCS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
@@ -32,7 +33,6 @@ if (${ENABLE_TESTS})
 
     enable_testing()
     file(GLOB TESTSOURCES "test/src/*.cpp")
-
 
     #Run through each source
     foreach(testSrc ${TESTSOURCES})

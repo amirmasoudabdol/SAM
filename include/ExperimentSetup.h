@@ -28,10 +28,10 @@ namespace sam {
 
     using json = nlohmann::json;
     
+    // Forward declration of the necessary classes.
     class DataStrategy;
     class TestStrategy;
     class EffectStrategy;
-
     class ExperimentSetupBuilder;
 
     /**
@@ -156,6 +156,8 @@ namespace sam {
         //! Used to make sure that variance is set before the covariance
         bool is_vars_set = false;
 
+        int seed = -1;
+
         
         /**
          Calculate the experiment setup sizes
@@ -209,6 +211,18 @@ namespace sam {
         ExperimentSetupBuilder() = default;
 
         ExperimentSetupBuilder& fromConfigFile(json &config);
+
+        /**
+         * \brief      Sets the seed for randomizing setup parameters
+         *
+         * \param[in]  s     seed
+         *
+         * \return     A reference to the builder
+         */
+        ExperimentSetupBuilder& setSeed(const int s) {
+            seed = s;
+            return *this;
+        }
 
         ExperimentSetupBuilder& setNumConditions(const int nc) {
             if (nc <= 0) {
@@ -340,6 +354,12 @@ namespace sam {
 
         ExperimentSetup build() {
             check_expr_size();
+
+            if (seed == -1) {
+                seed = rand();
+            }
+
+            setup.rng_stream = new RandomNumberGenerator(seed);
             
             return setup;
         }

@@ -30,6 +30,8 @@ namespace sam {
         struct EffectStrategyParameters {
             std::string name;
         };
+
+        EffectStrategyParameters params;
         
         static std::shared_ptr<EffectStrategy>build(const std::string &name);
         
@@ -54,6 +56,10 @@ namespace sam {
              // name = "CohensD";
         };
 
+        explicit CohensD(EffectStrategyParameters esp) {
+            params = esp;
+        };
+
         void computeEffects(Experiment *experiment);
         
     };
@@ -68,6 +74,10 @@ namespace sam {
         explicit HedgesG() {
              // name = "HedgesG";
         }
+
+        explicit HedgesG(EffectStrategyParameters esp) {
+            params = esp;
+        };
 
         void computeEffects(Experiment *experiment);
         

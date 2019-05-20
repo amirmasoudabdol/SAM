@@ -19,80 +19,34 @@ namespace tt = boost::test_tools;
 #include "EffectStrategy.h"
 
 #include "sam.h"
+#include "test_fixtures.h"
 
 using namespace arma;
 using namespace sam;
 using namespace std;
+
 
 bool FLAGS::VERBOSE = false;
 bool FLAGS::PROGRESS = false;
 bool FLAGS::DEBUG = false;
 bool FLAGS::UPDATECONFIG = false;
 
-struct test_experiment {
-    int nc = 2;
-    int nd = 3;
-    int ni = 0;
-    int ng = nc * nd;
-
-    int nobs = 25;
-    double mean = 0.25;
-    double var = 1;
-    double cov = 0.01;
-
-    arma::Row<int> v_nobs;
-    arma::Row<double> v_means;
-    arma::Row<double> v_vars;
-    arma::Mat<double> v_sigma;
-
-    DataStrategy::DataStrategyParameters dsp;
-
-    TestStrategy::TestStrategyParameters tsp;
-
-    EffectStrategy::EffectStrategyParameters esp;
-
-    string ds_name = "LinearModel";
-
-    ExperimentSetup setup;
-
-    test_experiment() {
-
-        BOOST_TEST_MESSAGE( "setup the test experiment" );
-
-        v_nobs = arma::Row<int>(ng).fill(nobs);
-        v_means = arma::Row<double>(ng).fill(mean);
-        v_vars = arma::Row<double>(ng).fill(var);
-        v_sigma = arma::Mat<double>(ng, ng).fill(cov);
-        v_sigma.diag() = v_vars;
-
-        dsp.name = ds_name;
-
-        tsp.name = TestStrategy::TestType::TTest;
-        tsp.side = TestStrategy::TestSide::TwoSide;
-        tsp.alpha = 0.05;
-
-        esp.name = "CohensD";
-
-        setup = ExperimentSetup::create()
-                .setNumConditions(nc)
-                .setNumDependentVariables(nd)
-                .setNumItems(ni)
-                .setNumObservations(nobs)
-                .setMeans(mean)
-                .setVariance(var)
-                .setCovariance(cov)
-                .build();
-
-    }
-};
-
-
-BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
+BOOST_FIXTURE_TEST_SUITE ( constructors, sample_fixed_size_linear_experiment_setup )
 
 
     BOOST_AUTO_TEST_CASE( test1 )
     {
-        ExperimentSetup ex;
+//        ExperimentSetup ex;
+
+    }
+
+    BOOST_AUTO_TEST_CASE( test2 )
+    {
+        Experiment expr(setup);
+
+        BOOST_TEST(expr.data_strategy->params.name == "LinearModel");
+        BOOST_TEST((expr.test_strategy->params.name == TestStrategy::TestType::TTest));
+        BOOST_TEST((expr.effect_strategy->params.name == "CohensD"));
 
     }
 
@@ -111,10 +65,10 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
 	}
 
 
-	BOOST_AUTO_TEST_CASE( linear_data_strategy )
+	BOOST_AUTO_TEST_CASE( linear_data_strategy_testing_stats )
 	{
 
-        srand(42);
+        // srand(42);
 
 	    auto ts = TestStrategy::build(tsp);
 
@@ -131,12 +85,23 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, test_experiment )
 
 	    BOOST_TEST(expr.means.size() == ng);
 
-	    vec means{0.3230, 0.1939, 0.5688, 0.2823, 0.2731, 0.3167};
+        // Checking means ---------------------------------
+	    for (int i = 0; i < expr.setup.ng(); ++i)
+	        BOOST_CHECK_SMALL(expr.means[i] - v_means[i], 0.1);
 
-	    cout << expr.means << endl;
+        // Checking variance ------------------------------
+        for (int i = 0; i < expr.setup.ng(); ++i)
+            BOOST_CHECK_SMALL(expr.vars[i] - v_vars[i], 0.1);
 
-//	    for (int i = 0; i < expr.means.size(); ++i)
-//	        BOOST_CHECK_SMALL(expr.means[i] - means[i], 0.0001);
+        // Checking covariance ----------------------------
+        arma::mat dt(nobs, ng);
+        for (int i = 0; i < expr.setup.ng(); ++i)
+            dt.col(i) = expr.measurements[i].as_col();
+
+        arma::mat corr = arma::cor(dt);
+        for (int i = 0; i < setup.ng(); ++i)
+            for (int j = 0; j < setup.ng(); ++j)
+                BOOST_CHECK_SMALL(corr(i, j) - v_sigma(i, j), 0.1);
 
 	}
 
