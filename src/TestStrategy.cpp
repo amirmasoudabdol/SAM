@@ -4,10 +4,11 @@
 
 #include <iostream>
 #include <stdexcept>
-
-#include <boost/math/distributions/students_t.hpp>
 #include <iomanip>
 #include <cmath>
+
+#include <utils/magic_enum.hpp>
+#include <boost/math/distributions/students_t.hpp>
 
 #include "Experiment.h"
 #include "TestStrategy.h"
@@ -17,13 +18,6 @@ using boost::math::students_t;
 
 TestStrategy::~TestStrategy() {
     // Pure deconstructor
-};
-
-const std::map<std::string, TestStrategy::TestSide>
-stringToTestSide = {
-    {"Less", TestStrategy::TestSide::Less},
-    {"Greater", TestStrategy::TestSide::Greater},
-    {"TwoSide", TestStrategy::TestSide::TwoSide}
 };
 
 void TTest::run(Experiment* experiment) {
@@ -44,11 +38,17 @@ void TTest::run(Experiment* experiment) {
 }
 
 
-
 std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
+    using namespace magic_enum;
+    
+    auto test_side_name = test_strategy_config["side"].get<std::string>();
+    auto test_side = enum_cast<TestStrategy::TestSide>(test_side_name);
+    if (!test_side.has_value())
+        throw std::invalid_argument("Unknown TestSide.");
+    
     if (test_strategy_config["name"] == "TTest"){
-        return std::make_shared<TTest>(stringToTestSide.find(test_strategy_config["side"])->second,
+        return std::make_shared<TTest>(test_side.value(),
                                         test_strategy_config["alpha"]);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
@@ -147,18 +147,26 @@ namespace sam {
 
 
     TestStrategy::TestResult
-    t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestStrategy::TestSide side, bool equal_var = false){
+    t_test(double Sm1, double Sd1, double Sn1,
+           double Sm2, double Sd2, double Sn2,
+           double alpha, TestStrategy::TestSide side, bool equal_var = false){
 
         using namespace sam;
 
         if (Sm1 == 0.){
-            return single_sample_t_test(Sm1, Sm2, Sd2, Sn2, alpha, side);
+            return single_sample_t_test(Sm1,
+                                        Sm2, Sd2, Sn2,
+                                        alpha, side);
         }
         
         if (equal_var) {
-            return two_samples_t_test_equal_sd(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2, alpha, side);
+            return two_samples_t_test_equal_sd(Sm1, Sd1, Sn1,
+                                               Sm2, Sd2, Sn2,
+                                               alpha, side);
         }else{
-            return two_samples_t_test_unequal_sd(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2, alpha, side);
+            return two_samples_t_test_unequal_sd(Sm1, Sd1, Sn1,
+                                                 Sm2, Sd2, Sn2,
+                                                 alpha, side);
         }
     }
 

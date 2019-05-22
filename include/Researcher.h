@@ -17,9 +17,6 @@
 
 #include "nlohmann/json.hpp"
 
-//#include "ResearcherBuilder.h"
-
-
 namespace sam {
 
     using json = nlohmann::json;

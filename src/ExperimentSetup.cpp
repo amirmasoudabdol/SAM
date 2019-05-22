@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 
+#include <utils/magic_enum.hpp>
 
 #include "ExperimentSetup.h"
 
@@ -35,14 +36,10 @@ ExperimentSetup::ExperimentSetup(json& config) {
     // Setting the seed for number of observation
     rng_stream = new RandomNumberGenerator(rand());
     
-    
-    if (config["data-strategy"] == "LinearModel") {
-        dsp_.name = DataStrategy::DataModel::LinearModel;
-    }else if (config["data-strategy"] == "LatentModel") {
-        dsp_.name = DataStrategy::DataModel::LatentModel;
+    auto data_model =  magic_enum::enum_cast<DataStrategy::DataModel>(config["data-strategy"].get<std::string>());
+    if (data_model.has_value()) {
+        dsp_.name = data_model.value();
     }
-    
-    
     
     nc_ = config["n-conditions"];
     nd_ = config["n-dep-vars"];

@@ -50,18 +50,6 @@ namespace sam {
         MinPvalueMaxEffect
     };
 
-    const std::map<std::string, DecisionPreference>
-    stringToResearcherPreference = {
-        {"Pre-registered Outcome", DecisionPreference::PreRegisteredOutcome},
-        {"MinSigPvalue", DecisionPreference::MinSigPvalue},
-        {"MinPvalue", DecisionPreference::MinPvalue},
-        {"MaxSigEffect", DecisionPreference::MaxSigEffect},
-        {"MaxEffect", DecisionPreference::MaxEffect},
-        {"MinPvalueMaxEffect", DecisionPreference::MinPvalueMaxEffect}
-    };
-
-
-
     /**
      @brief Abstract class for different decision strategies.
      

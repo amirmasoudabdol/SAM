@@ -2,6 +2,8 @@
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
 
+#include <utils/magic_enum.hpp>
+
 #include "DecisionStrategy.h"
 
 using namespace sam;
@@ -16,11 +18,16 @@ DecisionStrategy::~DecisionStrategy() {
 };
 
 std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strategy_config) {
+    
+    using namespace magic_enum;
+    
+    auto pref_name = decision_strategy_config["preference"].get<std::string>();
+    auto pref = enum_cast<DecisionPreference>(pref_name);
 
     if (decision_strategy_config["name"] == "ImpatientDecisionMaker"){
-        return std::make_unique<ImpatientDecisionMaker>(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
+        return std::make_unique<ImpatientDecisionMaker>(pref.value());
     }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
-        return std::make_unique<PatientDecisionMaker>(stringToResearcherPreference.find(decision_strategy_config["preference"])->second);
+        return std::make_unique<PatientDecisionMaker>(pref.value());
     }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
         return std::make_unique<HonestDecisionMaker>();
     }else{

@@ -26,16 +26,6 @@ namespace sam {
         N_HACKING_METHODS           // 5, only to know the last number
     };
 
-    const std::map<std::string, HackingMethod>
-    stringToHackingMethod = {
-        {"NoHack",              HackingMethod::NoHack},
-        {"OptionalStopping",    HackingMethod::OptionalStopping},
-        {"SDOutlierRemoval",    HackingMethod::SDOutlierRemoval},
-        {"GroupPooling",        HackingMethod::GroupPooling},
-        {"ConditionDropping",   HackingMethod::ConditionDropping}
-    };
-        
-
     /*
      HackingStage indicates the stage where the hacking is being performed on
      the Experiment. Each method will be assigned a value, and Researcher can
@@ -46,14 +36,6 @@ namespace sam {
         DataCollection,
         DataProcessing,
         Reporting
-    };
-        
-    const std::map<std::string, HackingStage>
-    stringToHackingStage = {
-        {"Setup",            HackingStage::Setup},
-        {"DataCollection",   HackingStage::DataCollection},
-        {"DataProcessing",   HackingStage::DataProcessing},
-        {"Reporting",        HackingStage::Reporting}
     };
 
     /**

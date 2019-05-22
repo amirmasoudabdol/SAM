@@ -99,31 +99,6 @@ HackingStrategy *HackingStrategy::build(HackingStrategyParameters &hsp) {
     }
 }
 
-std::ostream& operator<<(std::ostream& os, HackingMethod m)
-{
-    switch(m)
-    {
-        case HackingMethod::NoHack:
-            os << "NoHack";
-            break;
-        case HackingMethod::OptionalStopping:
-            os << "OptionalStopping";
-            break;
-        case HackingMethod::SDOutlierRemoval:
-            os << "SDOutlierRemoval";
-            break;
-        case HackingMethod::GroupPooling:
-            os << "GroupPooling";
-            break;
-        case HackingMethod::ConditionDropping:
-            os << "ConditionDropping";
-            break;
-        default:
-            os.setstate(std::ios_base::failbit);
-    }
-    return os;
-}
-
 /**
  @brief Implementation of optional stopping.
  
