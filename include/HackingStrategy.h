@@ -17,13 +17,12 @@ namespace sam {
 
     using json = nlohmann::json;
 
-    enum class HackingMethod : int {
-        NoHack = 0,                 // 0
-        OptionalStopping,           // 1
-        SDOutlierRemoval,           // 2
-        GroupPooling,               // 3
-        ConditionDropping,          // 4
-        N_HACKING_METHODS           // 5, only to know the last number
+    enum class HackingMethod {
+        OptionalStopping = 0,
+        SDOutlierRemoval,
+        GroupPooling,
+        ConditionDropping,
+        NoHack
     };
 
     /*
@@ -31,7 +30,7 @@ namespace sam {
      the Experiment. Each method will be assigned a value, and Researcher can
      apply different hacking methods in different stages.
      */
-    enum class HackingStage : unsigned int {
+    enum class HackingStage {
         Setup,
         DataCollection,
         DataProcessing,
@@ -52,17 +51,21 @@ namespace sam {
     public:
 
         struct HackingStrategyParameters {
-            std::string name;
+            HackingMethod name;
+
+            HackingStage stage = HackingStage::DataProcessing;
+
+            //! Defensibility of the method
+            //! This is a based on the survey results where researchers have been
+            //! asked to rate the defensibility of different QRPs.
+            double defensibility;
         };
 
-        //! Defensibility of the method
-        //! This is a based on the survey results where researchers have been
-        //! asked to rate the defensibility of different QRPs.
-        double defensibility;
+        HackingStrategyParameters params;
         
-        HackingStage hacking_stage = HackingStage::DataProcessing;
+        // HackingStage hacking_stage = HackingStage::DataProcessing;
         
-        HackingMethod hid;
+        // HackingMethod hid;
         
         /**
          * @brief      Factory method for building a HackingStrategy
@@ -103,7 +106,7 @@ namespace sam {
     public:
 
         NoHack() {
-            hid = HackingMethod::NoHack;
+            params.name = HackingMethod::NoHack;
         };
         
         void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) { };
@@ -123,7 +126,7 @@ namespace sam {
             n_attempts(n_attempts),
             max_attempts(max_attempts)
         {
-            hid = HackingMethod::OptionalStopping;
+            params.name = HackingMethod::OptionalStopping;
         };
 
         void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
@@ -177,7 +180,7 @@ namespace sam {
             min_observations(min_observations),
             multipliers(multipliers)
         {
-            hid = HackingMethod::SDOutlierRemoval;
+            params.name = HackingMethod::SDOutlierRemoval;
         };
         
 
@@ -206,7 +209,7 @@ namespace sam {
         
         explicit GroupPooling(std::vector<int> nums = {2}) : nums(nums)
         {
-            hid = HackingMethod::GroupPooling;
+            params.name = HackingMethod::GroupPooling;
         };
         
         // Submission hackedSubmission;
@@ -224,7 +227,7 @@ namespace sam {
 
     public:
         ConditionDropping() {
-            hid = HackingMethod::ConditionDropping;
+            params.name = HackingMethod::ConditionDropping;
         };
         
         void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) { };

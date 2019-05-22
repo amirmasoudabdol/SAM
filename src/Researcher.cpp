@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <utils/magic_enum.hpp>
 
 #include "Researcher.h"
 
@@ -15,6 +16,8 @@ ResearcherBuilder Researcher::create(std::string name) {
 }
 
 void Researcher::hack() {
+    
+    using namespace magic_enum;
     
     Submission sub;
     
@@ -29,7 +32,7 @@ void Researcher::hack() {
             
             h->perform(&copiedExpr, decision_strategy.get());
             copiedExpr.is_hacked = true;
-            copiedExpr.hacks_history.push_back((int)h->hid);
+            copiedExpr.hacks_history.push_back(enum_integer<HackingMethod>(h->params.name));
             
             decision_strategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);

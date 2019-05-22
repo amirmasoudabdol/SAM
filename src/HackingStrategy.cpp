@@ -15,6 +15,7 @@
 #include <random>
 
 #include "utils/permutation.h"
+#include "utils/magic_enum.hpp"
 
 #include "sam.h"
 
@@ -84,18 +85,26 @@ HackingStrategy *HackingStrategy::build(HackingMethod method) {
 }
 
 HackingStrategy *HackingStrategy::build(HackingStrategyParameters &hsp) {
-    if (hsp.name == "OptionalStopping"){
-        return new OptionalStopping();
-    }else if (hsp.name == "SDOutlierRemoval") {
-        return new SDOutlierRemoval();
-    }else if (hsp.name == "GroupPooling") {
-        return new GroupPooling();
-    }else if (hsp.name == "ConditionDropping") {
-        return new ConditionDropping();
-    }else if (hsp.name == "NoHack") {
-        return new NoHack();
-    }else{
-        throw std::invalid_argument("Cannot recognize the p-hacking method.");
+
+    switch (hsp.name) {
+        case HackingMethod::NoHack:
+            return new NoHack();
+            break;
+        case HackingMethod::OptionalStopping:
+            return new OptionalStopping();
+            break;
+        case HackingMethod::SDOutlierRemoval:
+            return new SDOutlierRemoval();
+            break;
+        case HackingMethod::GroupPooling:
+            return new GroupPooling();
+            break;
+        case HackingMethod::ConditionDropping:
+            return new ConditionDropping();
+            break;
+        default:
+            throw std::invalid_argument("Cannot recognize the p-hacking method.");
+            break;
     }
 }
 

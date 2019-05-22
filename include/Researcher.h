@@ -16,10 +16,12 @@
 #include "DecisionStrategy.h"
 
 #include "nlohmann/json.hpp"
+#include "utils/magic_enum.hpp"
 
 namespace sam {
 
     using json = nlohmann::json;
+    using namespace magic_enum;
     
     class ResearcherBuilder;
 
@@ -251,12 +253,13 @@ namespace sam {
             
             std::random_device rd;
             std::mt19937 gen(rd());
-            std::uniform_int_distribution<> uniform(0, hacking_strategies_pool.size() - 1);
+            std::uniform_int_distribution<int> uniform(0, hacking_strategies_pool.size() - 1);
             
             for (auto &group : researcher.hacking_strategies) {
                 
                 for (int i = 0; i < m_strategies; i++) {
-                    group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
+                    auto h_method = enum_cast<HackingMethod>(uniform(gen));
+                    group.push_back(HackingStrategy::build(h_method.value()));
                 }
                 
             }
@@ -282,12 +285,13 @@ namespace sam {
             
             std::random_device rd;
             std::mt19937 gen(rd());
-            std::uniform_int_distribution<> uniform(1, static_cast<int>(HackingMethod::N_HACKING_METHODS) - 1);
+            std::uniform_int_distribution<int> uniform(1, enum_count<HackingMethod>() - 1);
             
             for (auto &group : researcher.hacking_strategies) {
                 
                 for (int i = 0; i < m_method; i++) {
-                    group.push_back(HackingStrategy::build(static_cast<HackingMethod>(uniform(gen))));
+                    auto h_method = enum_cast<HackingMethod>(uniform(gen));
+                    group.push_back(HackingStrategy::build(h_method.value()));
                 }
                 
             }
