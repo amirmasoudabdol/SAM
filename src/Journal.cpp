@@ -22,6 +22,7 @@ Journal::Journal(json& journal_config){
 
 Journal::Journal(JournalParameters &jp,
                  SelectionStrategy::SelectionStrategyParameters &ssp) {
+    params = jp;
     max_pubs = jp.max_pubs;
     this->selection_strategy = SelectionStrategy::build(ssp);
 }

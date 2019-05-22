@@ -39,6 +39,8 @@ namespace sam {
             int max_pubs;
         };
 
+        JournalParameters params;
+
         explicit Journal(json& journal_config);
         
         explicit Journal(const JournalParameters &jp);
@@ -91,6 +93,10 @@ namespace sam {
          @param writer The output file.
          */
         void saveSubmissions(int simid, std::ofstream& writer);
+
+        auto publications() const {
+            return publications_list;
+        }
         
         /**
          Clear the publications_list vector.

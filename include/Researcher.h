@@ -259,6 +259,7 @@ namespace sam {
                 
                 for (int i = 0; i < m_strategies; i++) {
                     auto h_method = enum_cast<HackingMethod>(uniform(gen));
+                    // I think this should use the index from the list! Test it!
                     group.push_back(HackingStrategy::build(h_method.value()));
                 }
                 

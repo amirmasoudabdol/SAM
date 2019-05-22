@@ -62,9 +62,11 @@ namespace sam {
     }
     
     
-    std::vector<std::string> Submission::header() {
-        for (auto &item : record) {
-            columns.push_back(item.first);
+    std::vector<std::string> Submission::col_names() {
+        if (!record.empty()){
+            for (auto &item : record) {
+                columns.push_back(item.first);
+            }
         }
         return columns;
     }

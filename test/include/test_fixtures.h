@@ -10,6 +10,8 @@
 #include "DataStrategy.h"
 #include "TestStrategy.h"
 #include "EffectStrategy.h"
+#include "Journal.h"
+#include "SelectionStrategy.h"
 
 #include "sam.h"
 
@@ -91,6 +93,37 @@ struct sample_linear_experiment {
         experiment = new Experiment(linear_setup.setup);
 
     }
+};
+
+
+struct sample_journal {
+    Journal *journal;
+    Journal::JournalParameters jp;
+    SelectionStrategy::SelectionStrategyParameters ssp;
+
+    sample_journal() {
+
+        jp.name = "PNAS";
+        jp.max_pubs = 70;
+
+        ssp.name = SelectionType::SignificantSelection;
+        ssp.alpha = 0.05;
+        ssp.pub_bias = 0.95;
+        ssp.side = 1;
+
+        journal = new Journal(jp, ssp);
+    }
+};
+
+
+struct sample_researcher {
+
+};
+
+struct sample_research {
+    sample_linear_experiment experiment;
+    sample_journal journal;
+
 };
 
 #endif //SAMPP_TEST_FIXTURES_H
