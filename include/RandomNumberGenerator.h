@@ -68,18 +68,18 @@ class RandomNumberGenerator {
                        const std::vector<double> &intervals, const std::vector<double> &weights);
     
         // normal distribution
-        arma::Mat<double>
+        arma::Row<double>
         normal(const double mean, const double var, const double n);
         std::vector<arma::Row<double> >
-        normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const int n);
+        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const int n);
         std::vector<arma::Row<double> >
-        normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<int> &nobs);
+        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs);
 
         // multivariate normal distribution
         std::vector<arma::Row<double> >
-        mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const int n);
+        mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int n);
         std::vector<arma::Row<double> >
-        mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const arma::Mat<int> &nobs);
+        mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs);
         
 
     private:

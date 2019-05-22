@@ -85,8 +85,8 @@ struct sample_researcher {
 
         dsp.name = ds_name;
 
-        tsp.name = TestStrategy::TestType::TTest;
-        tsp.side = TestStrategy::TestSide::TwoSide;
+        tsp.name = TestStrategy::TestMethod::TTest;
+        tsp.side = TestStrategy::TestSide::TwoSided;
         tsp.alpha = 0.05;
 
         esp.name = "CohensD";

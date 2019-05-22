@@ -9,13 +9,13 @@
 
 using namespace sam;
 
-arma::Mat<double>
+arma::Row<double>
 RandomNumberGenerator::normal(const double mean, const double var, const double n){
-    return var * arma::randn<arma::Mat<double>>(n) + mean;
+    return var * arma::randn<arma::Row<double>>(n) + mean;
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::normal(const arma::Mat<double>& means, const arma::Mat<double>& vars, const int n) {
+RandomNumberGenerator::normal(const arma::Row<double> &means, const arma::Row<double> &vars, const int n) {
 
     std::vector<arma::Row<double> > rns;
 
@@ -27,15 +27,12 @@ RandomNumberGenerator::normal(const arma::Mat<double>& means, const arma::Mat<do
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<double> &vars, const arma::Mat<int> &nobs){
+RandomNumberGenerator::normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs){
 
     std::vector<arma::Row<double> > rns;
-//    std::vector<arma::Row<double> > rns(means.size());
     
     // TODO: Replace the for loop with a stl algorithm
     for (int i = 0; i < means.size(); ++i){
-//        rns[i] = arma::randn(nobs[i]);
-        // rns.push_back(sds[i] * arma::randn<arma::Mat<double>>(nobs[i]) + means[i]);
         rns.push_back(normal(means[i], vars[i], nobs[i]));
     }
 
@@ -45,7 +42,7 @@ RandomNumberGenerator::normal(const arma::Mat<double> &means, const arma::Mat<do
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const int n){
+RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const int n){
     
     arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, n);
     
@@ -58,7 +55,7 @@ RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<do
 }
 
 std::vector<arma::Row<double> >
-RandomNumberGenerator::mvnorm(const arma::Mat<double> &means, const arma::Mat<double> &sigma, const arma::Mat<int> &nobs){
+RandomNumberGenerator::mvnorm(const arma::Row<double> &means, const arma::Mat<double> &sigma, const arma::Row<int> &nobs){
     
     // TODO: This can be optimized by some STL algorithm as well
     arma::mat rans_mat = arma::mvnrnd(means.t(), sigma, nobs.max());

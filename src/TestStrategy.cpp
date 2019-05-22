@@ -29,8 +29,8 @@ void TTest::run(Experiment* experiment) {
                                               experiment->means[i],
                                               sqrt(experiment->vars[i]),
                                               experiment->measurements[i].size(),
-                                              this->alpha,
-                                              this->side);
+                                              this->params.alpha,
+                                              this->params.side);
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
         experiment->sigs[i] = res.sig;
@@ -41,15 +41,26 @@ void TTest::run(Experiment* experiment) {
 std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
     using namespace magic_enum;
+
+    TestStrategyParameters tsp;
     
+    auto test_method_name = test_strategy_config["name"].get<std::string>();
+    auto test_method = enum_cast<TestStrategy::TestMethod>(test_method_name);
+    if (!test_method.has_value())
+        throw std::invalid_argument("Unknown Test Method.");
+    tsp.name = test_method.value();
+
     auto test_side_name = test_strategy_config["side"].get<std::string>();
     auto test_side = enum_cast<TestStrategy::TestSide>(test_side_name);
     if (!test_side.has_value())
-        throw std::invalid_argument("Unknown TestSide.");
+        throw std::invalid_argument("Unknown Test Side.");
+    tsp.side = test_side.value();
+
+    tsp.alpha = test_strategy_config["alpha"];
+
     
     if (test_strategy_config["name"] == "TTest"){
-        return std::make_shared<TTest>(test_side.value(),
-                                        test_strategy_config["alpha"]);
+        return std::make_shared<TTest>(tsp);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
@@ -58,9 +69,8 @@ std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
 
 std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
     
-    if (setup.tsp_.name == TestType::TTest){
-        return std::make_shared<TTest>(setup.tsp_.side,
-                                        setup.tsp_.alpha);
+    if (setup.tsp_.name == TestMethod::TTest){
+        return std::make_shared<TTest>(setup.tsp_);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
@@ -69,7 +79,7 @@ std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
 
 std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &params){
     
-    if (params.name == TestType::TTest){
+    if (params.name == TestMethod::TTest){
         return std::make_shared<TTest>(params);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
@@ -124,7 +134,8 @@ namespace sam {
      @param Sm Sample Mean.
      @param Sd Sample Standard Deviation.
      */
-    double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestStrategy::TestSide side)
+    double single_sample_find_df(double M,
+                                 double Sm, double Sd, double alpha, TestStrategy::TestSide side)
     {
         using namespace sam;
         using boost::math::students_t;
@@ -139,7 +150,9 @@ namespace sam {
         return ceil(df) + 1;
     }
 
-    TestStrategy::TestResult t_test(arma::Row<double> dt1, arma::Row<double> dt2, double alpha, TestStrategy::TestSide side){
+    TestStrategy::TestResult t_test(const arma::Row<double> &dt1,
+                                    const arma::Row<double> &dt2,
+                                    double alpha, TestStrategy::TestSide side){
         return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
                       arma::mean(dt2), arma::stddev(dt2), dt2.size(),
                       alpha, side, true);
@@ -187,7 +200,10 @@ namespace sam {
      @param alpha Significance Level.
      @return TestStrategy::TestResult
      */
-    TestStrategy::TestResult single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side)
+    TestStrategy::TestResult
+    single_sample_t_test(double M,
+                         double Sm, double Sd, unsigned Sn,
+                         double alpha, TestStrategy::TestSide side)
     {
         
         bool sig = false;
@@ -205,16 +221,16 @@ namespace sam {
         // Finally define our distribution, and get the probability:
         //
         students_t dist(df);
-        double q = 0;
+        double p = 0;
         
         //
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestStrategy::TestSide::TwoSide){
+        if (side == TestStrategy::TestSide::TwoSided){
             // Mean != M
-            q = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(q < alpha / 2){
+            p = 2 * cdf(complement(dist, fabs(t_stat)));
+            if(p < alpha / 2){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }
@@ -226,8 +242,8 @@ namespace sam {
         
         if (side == TestStrategy::TestSide::Less){
             // Mean  < M
-            q = cdf(complement(dist, t_stat));
-            if(q > alpha){
+            p = cdf(complement(dist, t_stat));
+            if(p > alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }
@@ -239,8 +255,8 @@ namespace sam {
         
         if (side == TestStrategy::TestSide::Greater){
             // Mean  > M
-            q = cdf(dist, t_stat);
-            if(q > alpha){
+            p = cdf(dist, t_stat);
+            if(p > alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }
@@ -250,7 +266,7 @@ namespace sam {
             }
         }
         
-        return TestStrategy::TestResult(t_stat, q, 1, sig);
+        return TestStrategy::TestResult(t_stat, p, 1, sig);
     }
 
 
@@ -289,16 +305,16 @@ namespace sam {
         // Define our distribution, and get the probability:
         //
         students_t dist(df);
-        double q = 0;
+        double p = 0;
         
         //
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestStrategy::TestSide::TwoSide){
+        if (side == TestStrategy::TestSide::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
-            q = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(q < alpha / 2){
+            p = 2 * cdf(complement(dist, fabs(t_stat)));
+            if(p < alpha / 2){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -309,8 +325,8 @@ namespace sam {
         
         if (side == TestStrategy::TestSide::Greater){
             // Sample 1 Mean <  Sample 2 Mean
-            q = cdf(dist, t_stat);
-            if(q< alpha){
+            p = cdf(dist, t_stat);
+            if(p< alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -322,8 +338,8 @@ namespace sam {
         if (side == TestStrategy::TestSide::Less){
             
             // Sample 1 Mean >  Sample 2 Mean
-            q = cdf(complement(dist, t_stat));
-            if(q< alpha){
+            p = cdf(complement(dist, t_stat));
+            if(p< alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -332,7 +348,7 @@ namespace sam {
             }
         }
         
-        return TestStrategy::TestResult(t_stat, q, 1, sig);
+        return TestStrategy::TestResult(t_stat, p, 1, sig);
     }
 
 
@@ -378,16 +394,16 @@ namespace sam {
         // Define our distribution, and get the probability:
         //
         students_t dist(df);
-        double q = 0;
+        double p = 0;
         
         //
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestStrategy::TestSide::TwoSide){
+        if (side == TestStrategy::TestSide::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
-            q = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(q < alpha / 2){
+            p = 2 * cdf(complement(dist, fabs(t_stat)));
+            if(p < alpha / 2){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -398,8 +414,8 @@ namespace sam {
         
         if (side == TestStrategy::TestSide::Greater){
             // Sample 1 Mean <  Sample 2 Mean
-            q = cdf(dist, t_stat);
-            if(q< alpha){
+            p = cdf(dist, t_stat);
+            if(p< alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -410,8 +426,8 @@ namespace sam {
         
         if (side == TestStrategy::TestSide::Less){
             // Sample 1 Mean >  Sample 2 Mean
-            q = cdf(complement(dist, t_stat));
-            if(q< alpha){
+            p = cdf(complement(dist, t_stat));
+            if(p< alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -420,7 +436,7 @@ namespace sam {
             }
         }
         
-        return TestStrategy::TestResult(t_stat, q, 1, sig);
+        return TestStrategy::TestResult(t_stat, p, 1, sig);
     }
 
 }

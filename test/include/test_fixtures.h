@@ -59,8 +59,8 @@ struct sample_fixed_size_linear_experiment_setup {
         dsp.seed1 = 42;
         dsp.seed2 = 7;
 
-        tsp.name = TestStrategy::TestType::TTest;
-        tsp.side = TestStrategy::TestSide::TwoSide;
+        tsp.name = TestStrategy::TestMethod::TTest;
+        tsp.side = TestStrategy::TestSide::TwoSided;
         tsp.alpha = 0.05;
 
         esp.name = EffectStrategy::EffectEstimator::CohensD;

@@ -125,20 +125,26 @@ namespace sam {
         const int nrows() const { return nrows_; };
 
         const arma::Row<int>& nobs() const { return nobs_; };
-        void set_nobs(arma::Mat<int>& val) {nobs_ = val; };
+        void set_nobs(arma::Row<int>& val) {nobs_ = val; };
+        
         const arma::Row<double>& means() const { return means_; };
-        void set_means(arma::Mat<double>& val) {means_ = val; };
+        void set_means(arma::Row<double>& val) {means_ = val; };
+        
         const arma::Row<double>& vars() const { return vars_; };
-        void set_vars(arma::Mat<double>& val) {vars_ = val; };
+        void set_vars(arma::Row<double>& val) {vars_ = val; };
+        
         const arma::Mat<double>& sigma() const { return sigma_; };
         void set_sigma(arma::Mat<double>& val) {sigma_ = val; };
 
         const arma::Row<double>& loadings() const { return loadings_; };
-        void set_loadings(arma::Mat<double>& val) {loadings_ = val; };
+        void set_loadings(arma::Row<double>& val) {loadings_ = val; };
+        
         const arma::Row<double>& error_means() const { return error_means_; };
-        void set_error_means(arma::Mat<double>& val) {error_means_ = val; };
+        void set_error_means(arma::Row<double>& val) {error_means_ = val; };
+        
         const arma::Row<double>& error_vars() const { return error_vars_; };
-        void set_error_vars(arma::Mat<double>& val) {error_vars_ = val; };
+        void set_error_vars(arma::Row<double>& val) {error_vars_ = val; };
+        
         const arma::Mat<double>& error_sigma() const { return error_sigma_; };
         void set_error_sigma(arma::Mat<double>& val) {error_sigma_ = val; };
 

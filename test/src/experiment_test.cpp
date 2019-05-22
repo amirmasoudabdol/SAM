@@ -45,7 +45,7 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, sample_fixed_size_linear_experiment_set
         Experiment expr(setup);
 
         BOOST_TEST((expr.data_strategy->params.name == DataStrategy::DataModel::LinearModel));
-        BOOST_TEST((expr.test_strategy->params.name == TestStrategy::TestType::TTest));
+        BOOST_TEST((expr.test_strategy->params.name == TestStrategy::TestMethod::TTest));
         BOOST_TEST((expr.effect_strategy->params.name == EffectStrategy::EffectEstimator::CohensD));
 
     }

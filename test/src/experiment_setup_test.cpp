@@ -59,9 +59,9 @@ struct expr_setup_params {
 
         dsp.name = DataStrategy::DataModel::LinearModel;
 
-        tsp.name = TestStrategy::TestType::TTest;
+        tsp.name = TestStrategy::TestMethod::TTest;
         tsp.alpha = 0.05;
-        tsp.side = TestStrategy::TestSide::TwoSide;
+        tsp.side = TestStrategy::TestSide::TwoSided;
 
         esp.name = EffectStrategy::EffectEstimator::CohensD;
 

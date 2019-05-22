@@ -53,7 +53,7 @@ namespace sam {
         /**
          * Specifying the significant testing method
          */
-        enum class TestType {
+        enum class TestMethod {
             TTest,           ///< T-test
             FTest            ///< F-test
         };
@@ -64,7 +64,7 @@ namespace sam {
         enum class TestSide {
             Less,
             Greater,
-            TwoSide
+            TwoSided
         };
         
         
@@ -75,8 +75,8 @@ namespace sam {
          the construction process.
          */
         struct TestStrategyParameters {
-            TestType name;
-            TestSide side = TestSide::TwoSide;
+            TestMethod name;
+            TestSide side = TestSide::TwoSided;
             double alpha = 0.05;
         };
 
@@ -106,18 +106,9 @@ namespace sam {
      */
     class TTest : public TestStrategy {
         
-    private:
-        // TODO: Remove us!
-        TestSide side;
-        double alpha;
-        
     public:
         
-        TTest(TestSide side = TestSide::TwoSide, double alpha = 0.05) :
-            side(side), alpha(alpha) { };
-        
-        TTest(TestStrategyParameters tsp) :
-            side(tsp.side), alpha(tsp.alpha) { 
+        TTest(TestStrategyParameters tsp) { 
             params = tsp;
         };
         
@@ -134,7 +125,7 @@ namespace sam {
     confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side);
 
     TestStrategy::TestResult
-    t_test(arma::Row<double> d1, arma::Row<double> d2, double alpha, TestStrategy::TestSide side);
+    t_test(const arma::Row<double> &d1, const arma::Row<double> &d2, double alpha, TestStrategy::TestSide side);
 
     TestStrategy::TestResult
     t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestStrategy::TestSide side, bool equal_var);

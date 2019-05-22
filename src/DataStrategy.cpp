@@ -68,6 +68,10 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),
                                                              experiment->setup.sigma(),
                                                              experiment->setup.nobs() );
+    
+//    experiment->measurements = this->main_rng_stream->normal(experiment->setup.means(),
+//                                                             experiment->setup.vars(),
+//                                                             experiment->setup.nobs() );
 }
 
 std::vector<arma::Row<double>>
