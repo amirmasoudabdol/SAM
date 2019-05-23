@@ -48,36 +48,6 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(DecisionStrategyParame
     }
 }
 
-
-
-std::ostream& operator<<(std::ostream& os, DecisionPreference dp)
-{
-    switch(dp)
-    {
-        case DecisionPreference::PreRegisteredOutcome:
-            os << "PreRegistered Outcome";
-            break;
-        case DecisionPreference::MinSigPvalue:
-            os << "Minimum Significant Pvalue";
-            break;
-        case DecisionPreference::MinPvalue:
-            os << "Minimum Pvalue";
-            break;
-        case DecisionPreference::MaxSigEffect:
-            os << "Maximum Significant Effect";
-            break;
-        case DecisionPreference::MaxEffect:
-            os << "Maximum Effect";
-            break;
-        case DecisionPreference::MinPvalueMaxEffect:
-            os << "Maximum Effect with Min Pvalue";
-            break;
-        default:
-            os.setstate(std::ios_base::failbit);
-    }
-    return os;
-}
-
 Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     
     int selectedOutcome = pre_registered_group;
