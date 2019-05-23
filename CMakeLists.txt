@@ -5,6 +5,8 @@ option(ENABLE_TESTS "Enable tests" OFF)
 
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+#set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+#set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 set(CMAKE_CXX_STANDARD 17)
 

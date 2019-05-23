@@ -25,7 +25,7 @@ struct sample_fixed_size_linear_experiment_setup {
     int ni = 0;
     int ng = nc * nd;
 
-    int nobs = 5000;
+    int nobs = 20;
     double mean = 0.25;
     double var = 1;
     double cov = 0.00;
