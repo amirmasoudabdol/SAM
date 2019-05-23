@@ -40,6 +40,8 @@ namespace sam {
         };
 
         JournalParameters params;
+        
+        Journal() = default;
 
         explicit Journal(json& journal_config);
         

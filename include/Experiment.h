@@ -60,6 +60,8 @@ namespace sam {
         //! Strategy Pattern ;P
         void latent_function(std::function<void(Experiment *)>);
         
+        Experiment() = default;
+        
         explicit Experiment(json& experiment_config);
         
         explicit Experiment(ExperimentSetup& e) : setup(e) {

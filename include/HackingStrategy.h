@@ -58,14 +58,15 @@ namespace sam {
             //! Defensibility of the method
             //! This is a based on the survey results where researchers have been
             //! asked to rate the defensibility of different QRPs.
-            double defensibility;
+            //! Defensitbility of 0 indicates that the method is completely
+            //! frown upon and shouldn't be used, while defensibility of 1.
+            //! means it's a valid pratice and it's not going to be preseved
+            //! as a hacking method.
+            double defensibility = 1.;
         };
 
+        //! Hacking Strategy parameters.
         HackingStrategyParameters params;
-        
-        // HackingStage hacking_stage = HackingStage::DataProcessing;
-        
-        // HackingMethod hid;
         
         /**
          * @brief      Factory method for building a HackingStrategy
@@ -118,6 +119,7 @@ namespace sam {
      @brief Declartion of OptionalStopping hacking strategy
      */
     class OptionalStopping : public HackingStrategy {
+        
     public:
 
         OptionalStopping(std::string level = "dv", int num = 3, int n_attempts = 1, int max_attempts = 10) :

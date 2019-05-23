@@ -22,7 +22,15 @@ class RandomNumberGenerator {
         std::bernoulli_distribution bernoulliDist;
         std::uniform_real_distribution<double> uniformDist;
         std::piecewise_constant_distribution<> piecewiseConstDist;
-        
+    
+    
+        RandomNumberGenerator() {
+            seed = rand();
+            gen = std::mt19937(rd());
+            gen.seed(seed);
+            
+            arma::arma_rng::set_seed(seed);
+        }
 
         RandomNumberGenerator(int s) :
             seed(s)
