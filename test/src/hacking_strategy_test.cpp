@@ -138,6 +138,8 @@ BOOST_FIXTURE_TEST_SUITE( groups_pooling, sample_linear_experiment );
         // Performing the hack
         groups_pooling.perform(experiment, patient_dec_maker.get());
 
+        std::cout << experiment->nobs << std::endl;
+
         int n_new_groups = 3;
         BOOST_TEST( experiment->measurements.size() == n_new_groups + linear_setup.setup.ng() );
 

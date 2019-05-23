@@ -55,7 +55,7 @@ std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_c
     }else if (hacking_strategy_config["name"] == "NoHack") {
         return std::make_unique<NoHack>();
     }else{
-        throw std::invalid_argument("Cannot recognize the p-hacking method.");
+        throw std::invalid_argument("Unknown Hacking Strategies.");
     }
     
 }

@@ -7,8 +7,15 @@
 namespace sam {
 
     Submission::Submission(Experiment& e, const int &index) {
-            
-       tnobs = e.setup.nobs()[index];
+        
+        // This is an ugly hack to solve the GroupPooling problem, I need to move
+        // this to the Experiment
+        if (index < e.setup.ng()){
+            tnobs = e.setup.nobs()[index];
+        }else{
+            tnobs = 0;
+        }
+        
 
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized

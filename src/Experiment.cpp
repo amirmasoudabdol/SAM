@@ -31,18 +31,20 @@ void Experiment::initExperiment() {
 // TODO: Still not happy with this!
 void Experiment::initResources(int len) {
 
-    means.zeros(len);
-    vars.zeros(len);
-    ses.zeros(len);
-    statistics.zeros(len);
-    pvalues.zeros(len);
-    effects.zeros(len);
-    sigs.zeros(len);
+    nobs.resize(len);
+    means.resize(len);
+    vars.resize(len);
+    ses.resize(len);
+    statistics.resize(len);
+    pvalues.resize(len);
+    effects.resize(len);
+    sigs.resize(len);
 }
 
 void Experiment::calculateStatistics() {
     
     for (int i = 0; i < measurements.size(); ++i) {
+        nobs[i] = measurements[i].size();
         means[i] = arma::mean(measurements[i]);
         vars[i] = arma::var(measurements[i]);
         ses[i] = sqrt(vars[i] / measurements[i].size());
