@@ -68,6 +68,11 @@ struct expr_setup_params {
     }
 };
 
+BOOST_AUTO_TEST_CASE( default_constructor )
+{
+    ExperimentSetup setup;
+}
+
 BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
 
 
@@ -135,7 +140,7 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, expr_setup_params )
 
 BOOST_AUTO_TEST_SUITE_END()
 
-// Write some tests for randomizationtrae
+// Write some tests for randomization
 
 
 

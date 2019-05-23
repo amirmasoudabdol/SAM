@@ -76,6 +76,9 @@ BOOST_FIXTURE_TEST_SUITE ( constructors, sample_fixed_size_linear_experiment_set
 
         auto es = EffectStrategy::build(esp);
 
+//        v_nobs.fill(5000);
+//        setup.set_nobs(v_nobs);
+
         Experiment expr(setup, ds, ts, es);
 
 	    expr.generateData();

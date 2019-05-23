@@ -83,13 +83,13 @@ struct sample_researcher {
         v_sigma = arma::Mat<double>(ng, ng).fill(cov);
         v_sigma.diag() = v_vars;
 
-        dsp.name = ds_name;
+        dsp.name = DataStrategy::DataModel::LinearModel;
 
         tsp.name = TestStrategy::TestMethod::TTest;
         tsp.side = TestStrategy::TestSide::TwoSided;
         tsp.alpha = 0.05;
 
-        esp.name = "CohensD";
+        esp.name = EffectStrategy::EffectEstimator::CohensD;
 
         setup = ExperimentSetup::create()
                 .setNumConditions(nc)
@@ -106,7 +106,7 @@ struct sample_researcher {
 
         experiment = new Experiment(setup);
 
-        hsp.name = "NoHack";
+        hsp.name = HackingMethod::NoHack;
 
         desp.name = DecisionType::HonestDecisionMaker;
         desp.preference = DecisionPreference::PreRegisteredOutcome;
@@ -120,6 +120,11 @@ struct sample_researcher {
     }
 
 };
+
+BOOST_AUTO_TEST_CASE ( default_constructor )
+{
+    Researcher researcher;
+}
 
 BOOST_FIXTURE_TEST_SUITE ( researcher, sample_researcher )
 

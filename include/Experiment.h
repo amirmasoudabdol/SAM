@@ -64,7 +64,7 @@ namespace sam {
         
         explicit Experiment(json& experiment_config);
         
-        explicit Experiment(ExperimentSetup& e) : setup(e) {
+        explicit Experiment(ExperimentSetup& e) : setup{e} {
 
             data_strategy = DataStrategy::build(setup.dsp_);
             test_strategy = TestStrategy::build(setup.tsp_);
@@ -77,13 +77,9 @@ namespace sam {
         Experiment(ExperimentSetup &e,
                    std::shared_ptr<DataStrategy> &ds,
                    std::shared_ptr<TestStrategy> &ts,
-                   std::shared_ptr<EffectStrategy> &efs)
+                   std::shared_ptr<EffectStrategy> &efs) :
+        setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs}
         {
-            setup = e;
-            data_strategy = ds;
-            test_strategy = ts;
-            effect_strategy = efs;
-            
             initResources(setup.ng());
         };
         

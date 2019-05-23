@@ -34,6 +34,8 @@ namespace sam {
         //! An arbitrary name for the Researcher
         std::string name;
         
+    public:
+        
         /**
          Default constructor of the Researcher.
          
@@ -42,8 +44,6 @@ namespace sam {
          the ResearcherBuilder.
          */
         Researcher() = default;
-        
-    public:
 
         /**
          Starts the Researcher build process. Use this to build a new instance
