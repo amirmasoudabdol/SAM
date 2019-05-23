@@ -57,7 +57,7 @@ namespace sam {
         Experiment* experiment;
         Journal* journal;
         std::unique_ptr<DecisionStrategy> decision_strategy;
-        std::vector<std::vector<HackingStrategy*>> hacking_strategies;
+        std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
         
         bool is_hacker = false;
         bool isHacker() const {
@@ -225,7 +225,7 @@ namespace sam {
         
         
         ResearcherBuilder& addHackingStrategyGroup(std::vector<HackingStrategy* > hsg) {
-            researcher.hacking_strategies.push_back(hsg);
+//            researcher.hacking_strategies.push_back(hsg);
             return *this;
         }
         
@@ -233,7 +233,7 @@ namespace sam {
             if (researcher.hacking_strategies.empty()){
                 researcher.hacking_strategies.resize(1);
             }
-            researcher.hacking_strategies.back().push_back(new_hs);
+//            researcher.hacking_strategies.back().push_back(new_hs);
             
             return *this;
         }

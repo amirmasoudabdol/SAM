@@ -77,11 +77,11 @@ namespace sam {
          *
          * @return     A new HackingStrategy
          */
-        static HackingStrategy* build(json& hacking_strategy_config);
+        static std::unique_ptr<HackingStrategy> build(json& hacking_strategy_config);
         
-        static HackingStrategy* build(HackingMethod method);
+        static std::unique_ptr<HackingStrategy> build(HackingMethod method);
 
-        static HackingStrategy* build(HackingStrategyParameters &hsp);
+        static std::unique_ptr<HackingStrategy> build(HackingStrategyParameters &hsp);
         
 
         /**

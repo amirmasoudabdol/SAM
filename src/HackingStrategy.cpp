@@ -31,16 +31,16 @@ HackingStrategy::~HackingStrategy() {
  @param config A JSON object defining a hacking strategy, and its parameters
  @return Pointer to a HackingStrategy
  */
-HackingStrategy *HackingStrategy::build(json &hacking_strategy_config) {
+std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_config) {
     
     if (hacking_strategy_config["name"] == "OptionalStopping"){
-        return new OptionalStopping(hacking_strategy_config["level"],
+        return std::make_unique<OptionalStopping>(hacking_strategy_config["level"],
                                     hacking_strategy_config["num"],
                                     hacking_strategy_config["n_attempts"],
                                     hacking_strategy_config["max_attempts"]);
         
     }else if (hacking_strategy_config["name"] == "SDOutlierRemoval") {
-        return new SDOutlierRemoval(hacking_strategy_config["level"],
+        return std::make_unique<SDOutlierRemoval>(hacking_strategy_config["level"],
                                     hacking_strategy_config["order"],
                                     hacking_strategy_config["num"],
                                     hacking_strategy_config["n_attempts"],
@@ -49,58 +49,58 @@ HackingStrategy *HackingStrategy::build(json &hacking_strategy_config) {
                                     hacking_strategy_config["multipliers"]);
         
     }else if (hacking_strategy_config["name"] == "GroupPooling") {
-        return new GroupPooling(hacking_strategy_config["nums"]);
+        return std::make_unique<GroupPooling>(hacking_strategy_config["nums"]);
     }else if (hacking_strategy_config["name"] == "ConditionDropping") {
-        return new ConditionDropping();
+        return std::make_unique<ConditionDropping>();
     }else if (hacking_strategy_config["name"] == "NoHack") {
-        return new NoHack();
+        return std::make_unique<NoHack>();
     }else{
         throw std::invalid_argument("Cannot recognize the p-hacking method.");
     }
     
 }
 
-HackingStrategy *HackingStrategy::build(HackingMethod method) {
+std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingMethod method) {
     switch (method) {
         
         case HackingMethod::NoHack:
-            return new NoHack();
+            return std::make_unique<NoHack>();
             break;
         case HackingMethod::OptionalStopping:
-            return new OptionalStopping();
+            return std::make_unique<OptionalStopping>();
             break;
         case HackingMethod::SDOutlierRemoval:
-            return new SDOutlierRemoval();
+            return std::make_unique<SDOutlierRemoval>();
             break;
         case HackingMethod::GroupPooling:
-            return new GroupPooling();
+            return std::make_unique<GroupPooling>();
             break;
         case HackingMethod::ConditionDropping:
-            return new ConditionDropping();
+            return std::make_unique<ConditionDropping>();
             break;
         default:
-            return new NoHack();
+            return std::make_unique<NoHack>();
             break;
     }
 }
 
-HackingStrategy *HackingStrategy::build(HackingStrategyParameters &hsp) {
+std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingStrategyParameters &hsp) {
 
     switch (hsp.name) {
         case HackingMethod::NoHack:
-            return new NoHack();
+            return std::make_unique<NoHack>();
             break;
         case HackingMethod::OptionalStopping:
-            return new OptionalStopping();
+            return std::make_unique<OptionalStopping>();
             break;
         case HackingMethod::SDOutlierRemoval:
-            return new SDOutlierRemoval();
+            return std::make_unique<SDOutlierRemoval>();
             break;
         case HackingMethod::GroupPooling:
-            return new GroupPooling();
+            return std::make_unique<GroupPooling>();
             break;
         case HackingMethod::ConditionDropping:
-            return new ConditionDropping();
+            return std::make_unique<ConditionDropping>();
             break;
         default:
             throw std::invalid_argument("Cannot recognize the p-hacking method.");
