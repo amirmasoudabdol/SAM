@@ -108,7 +108,7 @@ namespace sam {
         }
         
 
-        void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> es) {
+        void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> &es) {
             effect_strategy = es;
         };
 
@@ -153,8 +153,7 @@ namespace sam {
         //! Indicates if any hacking routine has been applied on the experiment
         bool is_hacked = false;
         std::vector<int> hacks_history;
-
-
+        
     };
     
 }
