@@ -42,14 +42,15 @@ BOOST_AUTO_TEST_SUITE( t_test_functions )
         //    3.198143
 
         // a <- rnorm(25, 3, 1)
-        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368, 2.634829, 3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948, 2.920190, 3.402363, 2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
+        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368,\
+        2.634829, 3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948,\
+        2.920190, 3.402363, 2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
 
         double r_p_value = 4.077e-16;
 
-        TestStrategy::TestResult res = t_test(0., 0., 0., mean(a), stddev(a), a.size(), 0.05, TestStrategy::TestSide::TwoSide, true);
-
-            // std::cerr << "r: " << r_p_value << "\n";
-            // std::cerr << "sam: " << res.pvalue << "\n";
+        TestStrategy::TestResult res = t_test(0., 0., 0.,
+                mean(a), stddev(a), a.size(),
+                0.05, TestStrategy::TestSide::TwoSided, true);
 
         BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
     }
@@ -69,19 +70,20 @@ BOOST_AUTO_TEST_SUITE( t_test_functions )
         //    3.198143  2.009350
 
         // a <- rnorm(25, 3, 1)
-        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368, 2.634829, 3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948, 2.920190, 3.402363, 2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
+        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368, 2.634829,\
+        3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948, 2.920190, 3.402363,\
+        2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
 
         // b <- rnorm(23, 2, 1)
-        Row<double> b = {1.8461070, 1.7434951, 2.5623408, 1.2993293, 1.7287880, 1.1736090, 2.8343341, 1.0222412, 2.3009044, 1.6807970, 1.9258431, 2.3732799, 1.0147146, 1.6255013, 1.9335160, 3.2866492, 4.4683571, 2.8719037, 1.8299214, 1.5066573, 1.4453529, 0.4761787, 3.2652345};
+        Row<double> b = {1.8461070, 1.7434951, 2.5623408, 1.2993293, 1.7287880, 1.1736090, 2.8343341, 1.0222412,\
+        2.3009044, 1.6807970, 1.9258431, 2.3732799, 1.0147146, 1.6255013, 1.9335160, 3.2866492, 4.4683571,\
+        2.8719037, 1.8299214, 1.5066573, 1.4453529, 0.4761787, 3.2652345};
 
         double r_p_value = 1.911e-05;
 
         TestStrategy::TestResult res = t_test(mean(a), stddev(a), a.size(),
             mean(b), stddev(b), b.size(),
-            0.05, TestStrategy::TestSide::TwoSide, true);
-
-            // std::cerr << "r: " << r_p_value << "\n";
-            // std::cerr << "sam: " << res.pvalue << "\n";
+            0.05, TestStrategy::TestSide::TwoSided, true);
 
         BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
     }
@@ -104,17 +106,18 @@ BOOST_AUTO_TEST_SUITE( t_test_functions )
         double r_p_value = 2.116e-05;
 
         // a <- rnorm(25, 3, 1)
-        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368, 2.634829, 3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948, 2.920190, 3.402363, 2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
+        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368, 2.634829, 3.358146,\
+        3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948, 2.920190, 3.402363, 2.821342, 3.640249,\
+        4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
 
         // b <- rnorm(23, 2, 1)
-        Row<double> b = {1.8461070, 1.7434951, 2.5623408, 1.2993293, 1.7287880, 1.1736090, 2.8343341, 1.0222412, 2.3009044, 1.6807970, 1.9258431, 2.3732799, 1.0147146, 1.6255013, 1.9335160, 3.2866492, 4.4683571, 2.8719037, 1.8299214, 1.5066573, 1.4453529, 0.4761787, 3.2652345};
+        Row<double> b = {1.8461070, 1.7434951, 2.5623408, 1.2993293, 1.7287880, 1.1736090, 2.8343341, 1.0222412,\
+        2.3009044, 1.6807970, 1.9258431, 2.3732799, 1.0147146, 1.6255013, 1.9335160, 3.2866492, 4.4683571, 2.8719037,\
+        1.8299214, 1.5066573, 1.4453529, 0.4761787, 3.2652345};
 
         TestStrategy::TestResult res = t_test(mean(a), stddev(a), a.size(),
             mean(b), stddev(b), b.size(),
-            0.05, TestStrategy::TestSide::TwoSide, false);
-
-            // std::cerr << "r: " << r_p_value << "\n";
-            // std::cerr << "sam: " << res.pvalue << "\n";
+            0.05, TestStrategy::TestSide::TwoSided, false);
 
         BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
     }
@@ -128,15 +131,48 @@ BOOST_FIXTURE_TEST_SUITE( test_strategy_class, sample_linear_experiment )
     BOOST_AUTO_TEST_CASE( test_strategy_constructor )
     {
 
-        experiment->generateData();
-        experiment->calculateStatistics();
-        experiment->runTest();
+        linear_setup.v_means.fill(0);
+        linear_setup.v_nobs.fill(10);
+        experiment->setup.set_means(linear_setup.v_means);
+        experiment->setup.set_nobs(linear_setup.v_nobs);
 
+        rowvec pvalues;
+        rowvec statistics;
 
+        for (int i = 0; i < 10000; ++i)
+        {
+            experiment->generateData();
+            experiment->calculateStatistics();
+            experiment->runTest();
 
-        for (int i = 0; i < experiment->setup.ng(); ++i)
-//            BOOST_TEST_SMALL(experiment->pvalues, 0.05, )
+            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
+            statistics.insert_cols(statistics.size(), experiment->statistics);
+        }
 
+        BOOST_CHECK_SMALL(arma::mean(pvalues) - 0.5, 0.01);
+        BOOST_CHECK_SMALL(arma::mean(statistics) - 0.0, 0.01);
+
+        linear_setup.v_means.fill(1);
+        linear_setup.v_means.fill(1);
+        linear_setup.v_nobs.fill(10);
+        experiment->setup.set_means(linear_setup.v_means);
+        experiment->setup.set_means(linear_setup.v_means);
+        experiment->setup.set_nobs(linear_setup.v_nobs);
+
+        pvalues.clear();
+        statistics.clear();
+        for (int i = 0; i < 10000; ++i)
+        {
+            experiment->generateData();
+            experiment->calculateStatistics();
+            experiment->runTest();
+
+            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
+            statistics.insert_cols(statistics.size(), experiment->statistics);
+        }
+
+        BOOST_CHECK_SMALL(arma::mean(pvalues) - 0.04, 0.01);
+        BOOST_CHECK_SMALL(arma::mean(statistics) - 3.45, 0.01);
 
     }
 

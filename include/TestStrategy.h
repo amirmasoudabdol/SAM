@@ -46,8 +46,12 @@ namespace sam {
             
             TestResult(double statistic, double pvalue, int side, double sig) :
             statistic(statistic), pvalue(pvalue), side(side), sig(sig) {};
-            
-            
+
+            friend std::ostream &operator<<(std::ostream &os, const TestResult &result) {
+                os << "statistic: " << result.statistic << " pvalue: " << result.pvalue << " side: " << result.side
+                   << " sig: " << result.sig;
+                return os;
+            }
         };
         
         /**

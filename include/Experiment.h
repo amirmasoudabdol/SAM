@@ -31,8 +31,6 @@ namespace sam {
      */
     class Experiment {
         
-
-
     public:
         ExperimentSetup setup;
         std::shared_ptr<DataStrategy> data_strategy;
@@ -92,8 +90,6 @@ namespace sam {
          Runs the Test Strategy
          */
         void runTest();
-        
-
         
         /**
          Set or re-set the Test Strategy
