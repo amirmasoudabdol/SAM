@@ -1,0 +1,8 @@
+//
+// Created by Amir Masoud Abdol on 2019-05-23.
+//
+
+#ifndef SAMPP_HACKINGSTRATEGYTYPES_H
+#define SAMPP_HACKINGSTRATEGYTYPES_H
+
+#endif //SAMPP_HACKINGSTRATEGYTYPES_H
