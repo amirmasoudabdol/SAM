@@ -229,12 +229,23 @@ namespace sam {
             return *this;
         }
         
+        ResearcherBuilder& addNewHackingStrategy(HackingStrategyParameters hsp) {
+            if (researcher.hacking_strategies.empty()){
+                researcher.hacking_strategies.resize(1);
+            }
+            researcher.hacking_strategies.back().push_back(HackingStrategy::build(hsp));
+            
+            researcher.is_hacker = true;
+            return *this;
+        }
+        
         ResearcherBuilder& addNewHackingStrategy(HackingStrategy *new_hs) {
             if (researcher.hacking_strategies.empty()){
                 researcher.hacking_strategies.resize(1);
             }
 //            researcher.hacking_strategies.back().push_back(new_hs);
             
+            researcher.is_hacker = true;
             return *this;
         }
         
@@ -265,6 +276,7 @@ namespace sam {
                 
             }
             
+            researcher.is_hacker = true;
             return *this;
         };
         
@@ -297,6 +309,7 @@ namespace sam {
                 
             }
             
+            researcher.is_hacker = true;
             return *this;
         };
         

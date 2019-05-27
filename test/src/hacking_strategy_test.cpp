@@ -36,7 +36,7 @@ BOOST_FIXTURE_TEST_SUITE( optional_stopping, sample_linear_experiment );
 
     BOOST_AUTO_TEST_CASE( constructors )
     {
-        HackingStrategy::HackingStrategyParameters hsp;
+        HackingStrategyParameters hsp;
         hsp.name = HackingMethod::OptionalStopping;
     }
 
@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_SUITE( outliers_removal, sample_linear_experiment );
 
     BOOST_AUTO_TEST_CASE( constructors )
     {
-        HackingStrategy::HackingStrategyParameters hsp;
+        HackingStrategyParameters hsp;
         hsp.name = HackingMethod::SDOutlierRemoval;
 
     }
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_SUITE( groups_pooling, sample_linear_experiment );
 
     BOOST_AUTO_TEST_CASE( constructors )
     {
-        HackingStrategy::HackingStrategyParameters hsp;
+        HackingStrategyParameters hsp;
         hsp.name = HackingMethod::GroupPooling;
 
     }

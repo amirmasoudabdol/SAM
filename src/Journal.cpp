@@ -27,8 +27,8 @@ Journal::Journal(JournalParameters &jp,
     this->selection_strategy = SelectionStrategy::build(ssp);
 }
 
-bool Journal::review(Submission &s) {
-    
+bool Journal::review(Submission s) {
+
     bool decision = this->selection_strategy->review(s);
     
     if (decision){

@@ -84,6 +84,7 @@ void Researcher::performResearch(){
     bool willHack = decision_strategy->verdict(*experiment,
                                                DecisionStage::Initial);
     
+
     if (is_hacker && willHack){
         hack();
     }    
@@ -103,7 +104,7 @@ void Researcher::publishResearch(){
     
     // Setting researcher's submission record
     submission_record = decision_strategy->final_submission;
-
+    
     // Submit the final submission to the Jouranl
     journal->review(decision_strategy->final_submission);
     

@@ -24,8 +24,8 @@ arma::vec FixedEffectEstimator::estimate(vector<Submission> publications) {
     
     for (int i = 0; i < publications.size(); i++) {
         predictors(i) = 0;
-        responses(i) = publications[i].yi;
-        weights(i) = 1. / publications[i].vi;
+        responses(i) = publications[i].mean;
+        weights(i) = 1. / publications[i].var;
     }
     
     LinearRegression fixed_model(predictors, responses, weights);

@@ -40,11 +40,13 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
 
         // Setting up the Research
         
-        nobs = 20;
+//        nobs = 20;
         mean = 1;
         var = 1;
+        nobs = single_sample_find_df(0, mean, var, 0.05, TestStrategy::TestSide::TwoSided);
+//        nobs /= 2;
         
-        nsims = 5000;
+        nsims = 10000;
         
         double n_pubs = jp.max_pubs * nsims;
 
@@ -52,16 +54,14 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
         
         // Starting the Test
         
-        vec pub_sigs;
+        vec pub_sigs(n_pubs);
 
-    	BOOST_REQUIRE (setup.ng() == ng);
+    	BOOST_TEST (setup.ng() == ng);
     	
         for (auto &p : {0., 0.05, 0.5, 0.95} ) {
             
             ssp.pub_bias = p;
             researcher.journal->selection_strategy = SelectionStrategy::build(ssp);
-        
-            pub_sigs.set_size(n_pubs);
 
             for (int i = 0; i < nsims; i++) {
 
@@ -113,7 +113,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
 
         vec pub_sigs;
 
-        BOOST_REQUIRE (setup.ng() == ng);
+        BOOST_TEST (setup.ng() == ng);
 
         pub_sigs.set_size(n_pubs);
 

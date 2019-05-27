@@ -74,7 +74,7 @@ struct sample_researcher {
     DecisionStrategy::DecisionStrategyParameters desp;
 
     HackingStrategy *hs;
-    HackingStrategy::HackingStrategyParameters hsp;
+    HackingStrategyParameters hsp;
 
     sample_researcher() {
         v_nobs = arma::Row<int>(ng).fill(nobs);
@@ -111,9 +111,9 @@ struct sample_researcher {
         desp.name = DecisionType::HonestDecisionMaker;
         desp.preference = DecisionPreference::PreRegisteredOutcome;
 
-        ssp.name = SelectionType::RandomSelection;
+        ssp.name = SelectionMethod::RandomSelection;
         ssp.alpha = 0.05;
-        ssp.pub_bias = 0.95;
+        ssp.pub_bias = 1;
         ssp.side = 1;
         ssp.seed = 42;
 

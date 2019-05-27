@@ -31,8 +31,8 @@ namespace sam {
         //! Number of observation in submitted group
         int nobs;
         //! Effect size of the submitted group
-        double yi;
-        double vi;
+        double mean;
+        double var;
         //! Standard error of the submitted group
         double sei;
         //! Corresponding statistics of the submitted group
@@ -73,8 +73,8 @@ namespace sam {
             record["pubid"] = std::to_string(pubid);
             record["inx"] = std::to_string(inx);
             record["nobs"] = std::to_string(nobs);
-            record["yi"] = std::to_string(yi);
-            record["vi"] = std::to_string(vi);
+            record["yi"] = std::to_string(mean);
+            record["vi"] = std::to_string(var);
             record["sei"] = std::to_string(sei);
             record["statistic"] = std::to_string(statistic);
             record["pvalue"] = std::to_string(pvalue);

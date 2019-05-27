@@ -33,16 +33,22 @@ std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_stra
 
 std::unique_ptr<SelectionStrategy> SelectionStrategy::build(SelectionStrategyParameters &ssp) {
     
+
+    if (FLAGS::VERBOSE)
+        std::cout << "Building the Selection Strategy." << std::endl;
+
     // TODO: This might not be necessary to be there
-    if (ssp.seed != -1) {
+    if (ssp.seed == -1) {
         ssp.seed = rand();
     }
     
+    if (FLAGS::VERBOSE) std::cout << "SS's seed: " << ssp.seed << std::endl;
+    
     switch (ssp.name) {
-        case SelectionType::SignificantSelection:
+        case SelectionMethod::SignificantSelection:
             return std::make_unique<SignificantSelection>(ssp);
             break;
-        case SelectionType::RandomSelection:
+        case SelectionMethod::RandomSelection:
             return std::make_unique<RandomSelection>(ssp);
             break;
         default:
@@ -62,14 +68,18 @@ std::unique_ptr<SelectionStrategy> SelectionStrategy::build(SelectionStrategyPar
  */
 bool SignificantSelection::review(Submission &s) {
 
-    if (s.pvalue < alpha && (s.side == side || side == 0)){
-        return true;
-    }else if (mainRngStream->uniform() < pub_bias) {
-        return true;
+    // Only accepting +/- results if journal cares about it, side != 0
+    if (s.side != side && side != 0){
+        return false;
     }
 
-
-    return false;
+    if (s.pvalue < alpha){
+        return true;
+    }else if (mainRngStream->uniform() < 1 - pub_bias) {
+        return true;
+    }else{
+        return false;
+    }
 }
 
 /**

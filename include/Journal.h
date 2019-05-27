@@ -22,14 +22,14 @@ namespace sam {
 
     class Journal{
         
-        double max_pubs;
         
         bool still_accepting = true;
         
-        //! List of all acceptec Submissions, i.e., publications
-        std::vector<Submission> publications_list;
         
     public:
+        double max_pubs;
+        //! List of all acceptec Submissions, i.e., publications
+        std::vector<Submission> publications_list;
         
         //! Journal's Selection Model/Strategy
         std::unique_ptr<SelectionStrategy> selection_strategy;
@@ -67,7 +67,7 @@ namespace sam {
          * @return     A boolean indicating whether the Submission should
          * be accpeted or not.
          */
-        bool review(Submission &s);
+        bool review(Submission s);
 
         /**
          * @brief      Accept the Submission by adding it to the

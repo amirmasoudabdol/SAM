@@ -5,37 +5,20 @@
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
 
-#include "Experiment.h"
-#include "Submission.h"
-#include "DecisionStrategy.h"
 #include <string>
 #include <map>
+
+#include "Experiment.h"
+#include "Submission.h"
+#include "HackingStrategyTypes.h"
+#include "DecisionStrategy.h"
+
 
 #include "nlohmann/json.hpp"
 
 namespace sam {
 
     using json = nlohmann::json;
-
-    enum class HackingMethod {
-        OptionalStopping = 0,
-        SDOutlierRemoval,
-        GroupPooling,
-        ConditionDropping,
-        NoHack
-    };
-
-    /*
-     HackingStage indicates the stage where the hacking is being performed on
-     the Experiment. Each method will be assigned a value, and Researcher can
-     apply different hacking methods in different stages.
-     */
-    enum class HackingStage {
-        Setup,
-        DataCollection,
-        DataProcessing,
-        Reporting
-    };
 
     /**
      @brief Abstract class for hacking strategies.
@@ -49,22 +32,7 @@ namespace sam {
     class HackingStrategy {
         
     public:
-
-        struct HackingStrategyParameters {
-            HackingMethod name;
-
-            HackingStage stage = HackingStage::DataProcessing;
-
-            //! Defensibility of the method
-            //! This is a based on the survey results where researchers have been
-            //! asked to rate the defensibility of different QRPs.
-            //! Defensitbility of 0 indicates that the method is completely
-            //! frown upon and shouldn't be used, while defensibility of 1.
-            //! means it's a valid pratice and it's not going to be preseved
-            //! as a hacking method.
-            double defensibility = 1.;
-        };
-
+        
         //! Hacking Strategy parameters.
         HackingStrategyParameters params;
         
@@ -121,6 +89,10 @@ namespace sam {
     class OptionalStopping : public HackingStrategy {
         
     public:
+
+        OptionalStoppingParameters params;
+
+        OptionalStopping(OptionalStoppingParameters os_params) : params(os_params) {} ;
 
         OptionalStopping(std::string level = "dv", int num = 3, int n_attempts = 1, int max_attempts = 10) :
             level(level),

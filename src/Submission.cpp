@@ -19,8 +19,8 @@ namespace sam {
 
         inx = index;
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
-        yi = e.means[index];
-        vi = e.vars[index];
+        mean = e.means[index];
+        var = e.vars[index];
         sei = e.ses[index];
 
         statistic = e.statistics[index];
@@ -35,7 +35,7 @@ namespace sam {
         // storing latent means, vars with different names. **This is just not a good idea**.
         // Submission should be self-contained and I shouldn't look into another object
         // FIXME: This is fishy!
-        side = std::copysign(1.0, yi - e.setup.means()[index]);
+        side = std::copysign(1.0, mean - e.setup.means()[index]);
         
         isHacked = e.is_hacked;
         
@@ -49,8 +49,8 @@ namespace sam {
         s.tnobs << "," <<
         s.inx << "," <<
         s.nobs << "," <<
-        s.yi << "," <<
-        s.vi << "," <<
+        s.mean << "," <<
+        s.var << "," <<
         s.sei << "," <<
         s.statistic << "," <<
         s.pvalue << "," <<

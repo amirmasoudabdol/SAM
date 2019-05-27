@@ -17,7 +17,7 @@ namespace sam {
 
     using json = nlohmann::json;
 
-    enum class SelectionType {
+    enum class SelectionMethod {
         SignificantSelection,
         RandomSelection
     };
@@ -37,7 +37,7 @@ namespace sam {
     public:
 
         struct SelectionStrategyParameters {
-            SelectionType name;
+            SelectionMethod name;
             double alpha;
             double pub_bias;
             int side;
@@ -47,7 +47,7 @@ namespace sam {
         SelectionStrategyParameters params;
 
 
-        SelectionType id;
+        SelectionMethod id;
         
         /**
          * @brief      Factory method for building a SelectionStrategy
@@ -96,7 +96,7 @@ namespace sam {
         SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42):
             alpha(alpha),  pub_bias(pub_bias), side(side) {
             
-            id = SelectionType::SignificantSelection;
+            id = SelectionMethod::SignificantSelection;
 
             mainRngStream = new RandomNumberGenerator(seed);
         };
@@ -128,6 +128,8 @@ namespace sam {
      
      In this method, Journal does not check any criteria for accepting or rejecting a
      submission. Each submission has 50% chance of being accepted or not.
+
+     @note This is technically the SignificantSelection with pub_bias set to 0.
      
      */
     class RandomSelection : public SelectionStrategy {
@@ -136,7 +138,7 @@ namespace sam {
         
         explicit RandomSelection(int seed) : seed(seed) {
             
-            id = SelectionType::RandomSelection;
+            id = SelectionMethod::RandomSelection;
 
             mainRngStream = new RandomNumberGenerator(seed);
         }
