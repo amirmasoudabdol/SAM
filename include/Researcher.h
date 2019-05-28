@@ -188,9 +188,10 @@ namespace sam {
             return *this;
         };
 
-        ResearcherBuilder& createJournal(Journal::JournalParameters &jp, 
-                                         SelectionStrategy::SelectionStrategyParameters &ssp) {
-            researcher.journal = new Journal(jp, ssp);
+        ResearcherBuilder& createJournal(Journal::JournalParameters &jp) {
+//                                         SelectionStrategy::SelectionStrategyParameters &ssp) {
+//            researcher.journal = new Journal(jp, ssp);
+            researcher.journal = new Journal(jp);
             return *this;
         }
 

@@ -34,24 +34,31 @@ HackingStrategy::~HackingStrategy() {
 std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_config) {
     
     if (hacking_strategy_config["name"] == "OptionalStopping"){
-        return std::make_unique<OptionalStopping>(hacking_strategy_config["level"],
-                                    hacking_strategy_config["num"],
-                                    hacking_strategy_config["n_attempts"],
-                                    hacking_strategy_config["max_attempts"]);
+        auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
+        return std::make_unique<OptionalStopping>(params);
+//        return std::make_unique<OptionalStopping>(hacking_strategy_config["level"],
+//                                    hacking_strategy_config["num"],
+//                                    hacking_strategy_config["n_attempts"],
+//                                    hacking_strategy_config["max_attempts"]);
         
     }else if (hacking_strategy_config["name"] == "SDOutlierRemoval") {
-        return std::make_unique<SDOutlierRemoval>(hacking_strategy_config["level"],
-                                    hacking_strategy_config["order"],
-                                    hacking_strategy_config["num"],
-                                    hacking_strategy_config["n_attempts"],
-                                    hacking_strategy_config["max_attempts"],
-                                    hacking_strategy_config["min_observations"],
-                                    hacking_strategy_config["multipliers"]);
+        auto params = hacking_strategy_config.get<SDOutlierRemoval::Parameters>();
+        return std::make_unique<SDOutlierRemoval>(params);
+//        return std::make_unique<SDOutlierRemoval>(hacking_strategy_config["level"],
+//                                    hacking_strategy_config["order"],
+//                                    hacking_strategy_config["num"],
+//                                    hacking_strategy_config["n_attempts"],
+//                                    hacking_strategy_config["max_attempts"],
+//                                    hacking_strategy_config["min_observations"],
+//                                    hacking_strategy_config["multipliers"]);
         
     }else if (hacking_strategy_config["name"] == "GroupPooling") {
-        return std::make_unique<GroupPooling>(hacking_strategy_config["nums"]);
+        auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
+        return std::make_unique<GroupPooling>(params);
+//        return std::make_unique<GroupPooling>(hacking_strategy_config["nums"]);
     }else if (hacking_strategy_config["name"] == "ConditionDropping") {
-        return std::make_unique<ConditionDropping>();
+        auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
+        return std::make_unique<ConditionDropping>(params);
     }else if (hacking_strategy_config["name"] == "NoHack") {
         return std::make_unique<NoHack>();
     }else{
@@ -61,51 +68,27 @@ std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_c
 }
 
 std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingMethod method) {
-    switch (method) {
-        
-        case HackingMethod::NoHack:
-            return std::make_unique<NoHack>();
-            break;
-        case HackingMethod::OptionalStopping:
-            return std::make_unique<OptionalStopping>();
-            break;
-        case HackingMethod::SDOutlierRemoval:
-            return std::make_unique<SDOutlierRemoval>();
-            break;
-        case HackingMethod::GroupPooling:
-            return std::make_unique<GroupPooling>();
-            break;
-        case HackingMethod::ConditionDropping:
-            return std::make_unique<ConditionDropping>();
-            break;
-        default:
-            return std::make_unique<NoHack>();
-            break;
-    }
-}
-
-std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingStrategyParameters &hsp) {
-
-    switch (hsp.name) {
-        case HackingMethod::NoHack:
-            return std::make_unique<NoHack>();
-            break;
-        case HackingMethod::OptionalStopping:
-            return std::make_unique<OptionalStopping>();
-            break;
-        case HackingMethod::SDOutlierRemoval:
-            return std::make_unique<SDOutlierRemoval>();
-            break;
-        case HackingMethod::GroupPooling:
-            return std::make_unique<GroupPooling>();
-            break;
-        case HackingMethod::ConditionDropping:
-            return std::make_unique<ConditionDropping>();
-            break;
-        default:
-            throw std::invalid_argument("Cannot recognize the p-hacking method.");
-            break;
-    }
+//    switch (method) {
+//        
+//        case HackingMethod::NoHack:
+//            return std::make_unique<NoHack>();
+//            break;
+//        case HackingMethod::OptionalStopping:
+//            return std::make_unique<OptionalStopping>();
+//            break;
+//        case HackingMethod::SDOutlierRemoval:
+//            return std::make_unique<SDOutlierRemoval>();
+//            break;
+//        case HackingMethod::GroupPooling:
+//            return std::make_unique<GroupPooling>();
+//            break;
+//        case HackingMethod::ConditionDropping:
+//            return std::make_unique<ConditionDropping>();
+//            break;
+//        default:
+//            return std::make_unique<NoHack>();
+//            break;
+//    }
 }
 
 /**
@@ -122,9 +105,9 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
     
     if (FLAGS::VERBOSE) std::cout << "Optional Stopping...\n";
     
-    for (int t = 0; t < n_attempts && t < max_attempts ; t++) {
+    for (int t = 0; t < params.n_attempts && t < params.max_attempts ; t++) {
         
-        addObservations(experiment, num);
+        addObservations(experiment, params.num);
         
         // TODO: This can still be done nicer
         experiment->calculateStatistics();
@@ -151,18 +134,18 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 }
 
 void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
-    level = "dv";
+    params.level = "dv";
 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> uniform(min_n, max_n);
 
-    num = uniform(gen);
+    params.num = uniform(gen);
 
     uniform.param(std::uniform_int_distribution<>::param_type(1, 3));
-    n_attempts = uniform(gen);
+    params.n_attempts = uniform(gen);
 
-    max_attempts = 10;
+    params.max_attempts = 10;
 }
 
 
@@ -180,14 +163,14 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     
     int res = 0;
     
-    for (auto &d : multipliers) {
+    for (auto &d : params.multipliers) {
         
-        for (int t = 0; t < n_attempts &&
-                        t < max_attempts &&
+        for (int t = 0; t < params.n_attempts &&
+                        t < params.max_attempts &&
                         res != 1
                         ; t++) {
             
-            res = removeOutliers(experiment, num, d);
+            res = removeOutliers(experiment, params.num, d);
             
             experiment->calculateStatistics();
             experiment->calculateEffects();
@@ -212,12 +195,12 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
     for (auto &row : experiment->measurements) {
         
         // At least one row has less than `min_observations`
-        if (row.size() <= min_observations)
+        if (row.size() <= params.min_observations)
             res = 1;
             
         
         // This trick makes finding the largest outlier easier. I'll see if I can find a better way
-        if (order == "max first")
+        if (params.order == "max first")
             row = sort(row);
 
         // Finding the outliers
@@ -227,7 +210,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
         
 
         for (int i = inx.size() - 1;
-             i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > min_observations ;
+             i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > params.min_observations ;
              i--)
         {
             row.shed_col(inx[i]);
@@ -262,7 +245,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
         throw std::domain_error("There is not enough groups for pooling.");
     }
     
-    for (auto &r : nums){
+    for (auto &r : params.nums){
         pool(experiment, r);
     }
     

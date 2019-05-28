@@ -32,7 +32,7 @@ void Researcher::hack() {
             
             h->perform(&copiedExpr, decision_strategy.get());
             copiedExpr.is_hacked = true;
-            copiedExpr.hacks_history.push_back(enum_integer<HackingMethod>(h->params.name));
+            copiedExpr.hacks_history.push_back(enum_integer<HackingMethod>(h->name));
             
             decision_strategy->verdict(copiedExpr,
                                       DecisionStage::DoneHacking);

@@ -34,7 +34,8 @@ namespace sam {
     public:
         
         //! Hacking Strategy parameters.
-        HackingStrategyParameters params;
+//        HackingStrategyParameters params;
+        HackingMethod name;
         
         /**
          * @brief      Factory method for building a HackingStrategy
@@ -68,6 +69,7 @@ namespace sam {
          *                               is going to use the DecisionStrategy.
          */
         virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) = 0;
+        
     };
         
         
@@ -75,7 +77,7 @@ namespace sam {
     public:
 
         NoHack() {
-            params.name = HackingMethod::NoHack;
+//            params.name = HackingMethod::NoHack;
         };
         
         void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) { };
@@ -89,18 +91,32 @@ namespace sam {
     class OptionalStopping : public HackingStrategy {
         
     public:
+        
+        struct Parameters {
+            HackingMethod name = HackingMethod::OptionalStopping;
+            std::string level = "dv";
+            int num = 3;
+            int n_attempts = 1;
+            int max_attempts = 10;
+            
+            bool is_randomized = false;
+        };
 
-        OptionalStoppingParameters params;
+        Parameters params;
 
-        OptionalStopping(OptionalStoppingParameters os_params) : params(os_params) {} ;
+        OptionalStopping(const Parameters &p) : params{p} {
+            name = params.name;
+        } ;
 
-        OptionalStopping(std::string level = "dv", int num = 3, int n_attempts = 1, int max_attempts = 10) :
-            level(level),
-            num(num),
-            n_attempts(n_attempts),
-            max_attempts(max_attempts)
+        OptionalStopping(std::string level = "dv", int num = 3, int n_attempts = 1, int max_attempts = 10)
         {
             params.name = HackingMethod::OptionalStopping;
+            params.level = level;
+            params.num = num;
+            params.n_attempts = n_attempts;
+            params.max_attempts = max_attempts;
+            
+            name = params.name;
         };
 
         void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
@@ -113,17 +129,17 @@ namespace sam {
         
     private:
         
-        std::string level = "dv";
+//        std::string level = "dv";
         
         //! Number of new observations to be added to each group
-        int num = 3;
+//        int num = 3;
         
         //! Number of times that Researcher add `num` observations to each group
-        int n_attempts = 1;
+//        int n_attempts = 1;
         
         //! Maximum number of times that Researcher tries to add new observations to
         //! each group
-        int max_attempts = 10;
+//        int max_attempts = 10;
         
         
         /**
@@ -136,6 +152,37 @@ namespace sam {
         void addObservations(Experiment *experiment, const int &n);
 
     };
+    
+    // TODO:
+    // I've included the inline for now, but these set of definitions should be moved
+    // to a seperate place, maybe a CPP file for each hacking method and all its
+    // implementations. This can include the parsing, enum map, ...
+    
+    inline
+    void to_json(json& j, const OptionalStopping::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<HackingMethod>(p.name)},
+            {"level", p.level},
+            {"num", p.num},
+            {"n_attempts", p.n_attempts},
+            {"max_attempts", p.max_attempts}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, OptionalStopping::Parameters& p) {
+        
+        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
+        if (name.has_value())
+            p.name = name.value();
+        else
+            throw std::invalid_argument("Unknown hacking strategy");
+        
+        j.at("level").get_to(p.level);
+        j.at("num").get_to(p.num);
+        j.at("n_attempts").get_to(p.n_attempts);
+        j.at("max_attempts").get_to(p.max_attempts);
+    }
 
     /**
      @brief Declaration of Outlier Removal hacking method based on items' distance from their
@@ -145,16 +192,39 @@ namespace sam {
     class SDOutlierRemoval : public HackingStrategy {
     public:
         
-        SDOutlierRemoval(std::string level = "dv", std::string order = "max first", int num = 3, int n_attempts = 1, int max_attempts = 3, int min_observations = 10, std::vector<double> multipliers = {3}) :
-            level(level),
-            order(order),
-            num(num),
-            n_attempts(n_attempts),
-            max_attempts(max_attempts),
-            min_observations(min_observations),
-            multipliers(multipliers)
+        struct Parameters {
+            HackingMethod name = HackingMethod::SDOutlierRemoval;
+            std::string level = "dv";
+            std::string order = "max first";
+            int num = 3;
+            int n_attempts = 1;
+            int max_attempts = 10;
+            int min_observations = 15;
+            std::vector<double> multipliers = {3};
+        };
+        
+        Parameters params;
+        
+        SDOutlierRemoval();
+        
+        SDOutlierRemoval(const Parameters &p) : params{p} {
+            name = params.name;
+        };
+        
+        SDOutlierRemoval(std::string level = "dv", std::string order = "max first",
+                         int num = 3, int n_attempts = 1, int max_attempts = 3,
+                         int min_observations = 10, std::vector<double> multipliers = {3})
         {
             params.name = HackingMethod::SDOutlierRemoval;
+            params.level = level;
+            params.order = order;
+            params.num = num;
+            params.n_attempts = n_attempts;
+            params.max_attempts = max_attempts;
+            params.min_observations = min_observations;
+            params.multipliers = multipliers;
+            
+            name = params.name;
         };
         
 
@@ -165,47 +235,143 @@ namespace sam {
         
     private:
         
-        std::string level = "dv";
-        std::string order = "max first";
-        int num = 3;
-        int n_attempts = 1;
-        int max_attempts = 10;
-        int min_observations = 15;
-        std::vector<double> multipliers = {3};
+//        std::string level = "dv";
+//        std::string order = "max first";
+//        int num = 3;
+//        int n_attempts = 1;
+//        int max_attempts = 10;
+//        int min_observations = 15;
+//        std::vector<double> multipliers = {3};
         
         int removeOutliers(Experiment *experiment, const int &n, const int &d);
         
     };
+    
+    
+    inline
+    void to_json(json& j, const SDOutlierRemoval::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<HackingMethod>(p.name)},
+            {"level", p.level},
+            {"order", p.order},
+            {"num", p.num},
+            {"n_attempts", p.n_attempts},
+            {"max_attempts", p.max_attempts},
+            {"min_observations", p.min_observations},
+            {"multipliers", p.multipliers}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, SDOutlierRemoval::Parameters& p) {
+        
+        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
+        if (name.has_value())
+            p.name = name.value();
+        else
+            throw std::invalid_argument("Unknown hacking strategy");
+        
+        j.at("level").get_to(p.level);
+        j.at("order").get_to(p.order);
+        j.at("num").get_to(p.num);
+        j.at("n_attempts").get_to(p.n_attempts);
+        j.at("max_attempts").get_to(p.max_attempts);
+        j.at("min_observations").get_to(p.min_observations);
+        j.at("multipliers").get_to(p.multipliers);
+    }
+    
 
     class GroupPooling : public HackingStrategy {
         
     public:
         
-        explicit GroupPooling(std::vector<int> nums = {2}) : nums(nums)
-        {
+        struct Parameters {
+            HackingMethod name = HackingMethod::GroupPooling;
+            std::vector<int> nums = {2};
+        };
+        
+        Parameters params;
+        
+        GroupPooling(const Parameters &p) : params{p} {
+            name = params.name;
+        };
+        
+        explicit GroupPooling(std::vector<int> nums = {2}) {
             params.name = HackingMethod::GroupPooling;
+            params.nums = nums;
+            
+            name = params.name;
         };
         
         // Submission hackedSubmission;
         void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
         
     private:
-
-        std::vector<int> nums = {2};
         
         void pool(Experiment* experiment, int r);
     };
+    
+    inline
+    void to_json(json& j, const GroupPooling::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<HackingMethod>(p.name)},
+            {"nums", p.nums}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, GroupPooling::Parameters& p) {
+        
+        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
+        if (name.has_value())
+            p.name = name.value();
+        else
+            throw std::invalid_argument("Unknown hacking strategy");
+        
+        j.at("nums").get_to(p.nums);
+    }
         
         
     class ConditionDropping : public HackingStrategy {
 
     public:
+        
+        struct Parameters {
+            HackingMethod name = HackingMethod::ConditionDropping;
+        };
+        
+        Parameters params;
+        
+        ConditionDropping(const Parameters &p) : params{p} {
+            name = params.name;
+        };
+        
         ConditionDropping() {
             params.name = HackingMethod::ConditionDropping;
+            
+            name = params.name;
         };
         
         void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) { };
     };
+    
+    
+    inline
+    void to_json(json& j, const ConditionDropping::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<HackingMethod>(p.name)}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, ConditionDropping::Parameters& p) {
+        
+        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
+        if (name.has_value())
+            p.name = name.value();
+        else
+            throw std::invalid_argument("Unknown hacking strategy");
+    }
 
     //class QuestionableRounding : public HackingStrategy {
     //

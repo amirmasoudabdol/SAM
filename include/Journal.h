@@ -47,7 +47,7 @@ namespace sam {
         
         explicit Journal(const JournalParameters &jp);
         
-        Journal(JournalParameters &jp, SelectionStrategy::SelectionStrategyParameters &ssp);
+        // Journal(JournalParameters &jp, SelectionStrategy::SelectionStrategyParameters &ssp);
 
         /**
          Point Journal's selection strategy to the given strategy

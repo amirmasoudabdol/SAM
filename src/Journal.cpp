@@ -20,12 +20,12 @@ Journal::Journal(json& journal_config){
     this->selection_strategy = SelectionStrategy::build(journal_config["selection-strategy"]);
 }
 
-Journal::Journal(JournalParameters &jp,
-                 SelectionStrategy::SelectionStrategyParameters &ssp) {
-    params = jp;
-    max_pubs = jp.max_pubs;
-    this->selection_strategy = SelectionStrategy::build(ssp);
-}
+//Journal::Journal(JournalParameters &jp,
+//                 SelectionStrategy::SelectionStrategyParameters &ssp) {
+//    params = jp;
+//    max_pubs = jp.max_pubs;
+//    this->selection_strategy = SelectionStrategy::build(ssp);
+//}
 
 bool Journal::review(Submission s) {
 

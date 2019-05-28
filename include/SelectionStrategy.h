@@ -10,6 +10,7 @@
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
+#include "utils/magic_enum.hpp"
 
 namespace sam {
     
@@ -36,15 +37,15 @@ namespace sam {
 
     public:
 
-        struct SelectionStrategyParameters {
+//        struct SelectionStrategyParameters {
             SelectionMethod name;
-            double alpha;
-            double pub_bias;
-            int side;
-            int seed = -1;
-        };
-        
-        SelectionStrategyParameters params;
+//            double alpha;
+//            double pub_bias;
+//            int side;
+//            int seed = -1;
+//        };
+//
+//        SelectionStrategyParameters params;
 
 
         SelectionMethod id;
@@ -60,7 +61,7 @@ namespace sam {
          */
         static std::unique_ptr<SelectionStrategy> build(json &selection_straregy_config);
 
-        static std::unique_ptr<SelectionStrategy> build(SelectionStrategyParameters &ssp);
+//        static std::unique_ptr<SelectionStrategy> build(SelectionStrategyParameters &ssp);
         
         /**
          * @brief      Pure deconstructor of the base class
@@ -93,35 +94,82 @@ namespace sam {
     class SignificantSelection : public SelectionStrategy {
 
     public:
-        SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42):
-            alpha(alpha),  pub_bias(pub_bias), side(side) {
-            
+        
+        struct Parameters {
+            SelectionMethod name = SelectionMethod::SignificantSelection;
+            double alpha = 0.05;
+            double pub_bias = 0.5;
+            int side = 1;
+            int seed = 42;
+        };
+        
+        Parameters params;
+        
+        SignificantSelection(const Parameters &p) : params{p} {};
+        
+        SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42) {
             id = SelectionMethod::SignificantSelection;
 
+            params.name = SelectionMethod::SignificantSelection;
+            params.alpha = alpha;
+            params.pub_bias = pub_bias;
+            params.side = side;
+            params.seed = seed;
+            
             mainRngStream = new RandomNumberGenerator(seed);
+            
+            name = params.name;
         };
         
         // TODO: Fix me!
-        SignificantSelection(SelectionStrategyParameters ssp) : alpha(ssp.alpha),  pub_bias(ssp.pub_bias), side(ssp.side) {
-            params = ssp;
-            
-            mainRngStream = new RandomNumberGenerator(ssp.seed);
-        }
+//        SignificantSelection(SelectionStrategyParameters ssp) : alpha(ssp.alpha),  pub_bias(ssp.pub_bias), side(ssp.side) {
+//            params = ssp;
+//
+//            mainRngStream = new RandomNumberGenerator(ssp.seed);
+//        }
 
         bool review(Submission& s);
 
-    private:
-        //! The \alpha at which the _selection strategy_ decides the significance
-        //! of a publication
-        double alpha;
-        
-        //! Publication bias rate
-        double pub_bias;
-        
-        //! Indicates the _selection stratgy_'s preference toward positive, `1`,
-        //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
-        int side;
+//    private:
+//        //! The \alpha at which the _selection strategy_ decides the significance
+//        //! of a publication
+//        double alpha;
+//
+//        //! Publication bias rate
+//        double pub_bias;
+//
+//        //! Indicates the _selection stratgy_'s preference toward positive, `1`,
+//        //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
+//        int side;
     };
+    
+    
+    inline
+    void to_json(json& j, const SignificantSelection::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<SelectionMethod>(p.name)},
+            {"alpha", p.alpha},
+            {"pub-bias", p.pub_bias},
+            {"side", p.side}
+            // {"seed", p.seed}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, SignificantSelection::Parameters& p) {
+        
+        auto name = magic_enum::enum_cast<SelectionMethod>(j["name"].get<std::string>());
+        if (name.has_value())
+            p.name = name.value();
+        else
+            throw std::invalid_argument("Unknown selection method.");
+        
+        j.at("alpha").get_to(p.alpha);
+        j.at("pub-bias").get_to(p.pub_bias);
+        j.at("side").get_to(p.side);
+        // j.at("seed").get_to(p.seed);
+        // FIXME: I do not provide seed in the config file. I need to fix this somehow.
+    }
 
     /**
      @brief Random Selection Strategy
@@ -136,23 +184,55 @@ namespace sam {
     
     public:
         
-        explicit RandomSelection(int seed) : seed(seed) {
+        struct Parameters {
+            SelectionMethod name = SelectionMethod::RandomSelection;
+            int seed = 42;
+        };
+        
+        Parameters params;
+        
+        RandomSelection(int seed) : seed(seed) {
             
-            id = SelectionMethod::RandomSelection;
-
+            params.name = SelectionMethod::RandomSelection;
             mainRngStream = new RandomNumberGenerator(seed);
+            
+            name = params.name;
         }
         
-        RandomSelection(SelectionStrategyParameters ssp) {
-            params = ssp;
-            
-            mainRngStream = new RandomNumberGenerator(ssp.seed);
-        }
+        RandomSelection(const Parameters &p) : params{p} {};
+        
+//        RandomSelection(SelectionStrategyParameters ssp) {
+//            params = ssp;
+//
+//            mainRngStream = new RandomNumberGenerator(ssp.seed);
+//        }
         
         bool review(Submission& s);
         
         int seed;
     };
+    
+    inline
+    void to_json(json& j, const RandomSelection::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<SelectionMethod>(p.name)},
+            {"seed", p.seed}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, RandomSelection::Parameters& p) {
+        
+        auto name = magic_enum::enum_cast<SelectionMethod>(j["name"].get<std::string>());
+        if (name.has_value())
+            p.name = name.value();
+        else
+            throw std::invalid_argument("Unknown selection method.");
+        
+        j.at("seed").get_to(p.seed);
+    }
+    
+    
 
 }
 
