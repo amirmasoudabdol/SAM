@@ -35,31 +35,12 @@ namespace sam {
         Reporting
     };
 
-    //struct OptionalStoppingParameters {
-    //    HackingMethod name = HackingMethod::OptionalStopping;
-    //    int num;
-    //};
-
-//    struct SDOutliersRemovalParameters {
-//        HackingMethod name = HackingMethod::SDOutlierRemoval;
-//        int num;
-//    };
-//
-//    struct GroupPoolingParameters {
-//        HackingMethod name = HackingMethod::GroupPooling;
-//        int num;
-//    };
-
     struct HackingStrategyParameters {
         
         //! Arbitrary ID to keep track of number of hacking methods
         int hid = 0;
         
         HackingMethod name;
-
-    //    OptionalStoppingParameters osp;
-//        SDOutliersRemovalParameters orp;
-//        GroupPoolingParameters gpp;
         
         HackingStage stage = HackingStage::DataProcessing;
         

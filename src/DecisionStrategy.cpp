@@ -18,22 +18,21 @@ DecisionStrategy::~DecisionStrategy() {
 };
 
 std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strategy_config) {
-    
-    using namespace magic_enum;
-    
-    auto pref_name = decision_strategy_config["preference"].get<std::string>();
-    auto pref = enum_cast<DecisionPreference>(pref_name);
 
     if (decision_strategy_config["name"] == "ImpatientDecisionMaker"){
         
         auto params = decision_strategy_config.get<ImpatientDecisionMaker::Parameters>();
         return std::make_unique<ImpatientDecisionMaker>(params);
         
-//        return std::make_unique<ImpatientDecisionMaker>(pref.value());
     }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
-        return std::make_unique<PatientDecisionMaker>(pref.value());
+        
+        auto params = decision_strategy_config.get<PatientDecisionMaker::Parameters>();
+        return std::make_unique<PatientDecisionMaker>(params);
+        
     }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
+        
         return std::make_unique<HonestDecisionMaker>();
+        
     }else{
         throw std::invalid_argument("Unknown DecisionStrategy");
     }
