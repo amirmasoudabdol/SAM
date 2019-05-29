@@ -37,18 +37,7 @@ namespace sam {
 
     public:
 
-//        struct SelectionStrategyParameters {
-            SelectionMethod name;
-//            double alpha;
-//            double pub_bias;
-//            int side;
-//            int seed = -1;
-//        };
-//
-//        SelectionStrategyParameters params;
-
-
-        SelectionMethod id;
+        SelectionMethod name;
         
         /**
          * @brief      Factory method for building a SelectionStrategy
@@ -60,8 +49,6 @@ namespace sam {
          * @return     A new SelectionStrategy
          */
         static std::unique_ptr<SelectionStrategy> build(json &selection_straregy_config);
-
-//        static std::unique_ptr<SelectionStrategy> build(SelectionStrategyParameters &ssp);
         
         /**
          * @brief      Pure deconstructor of the base class
@@ -95,11 +82,26 @@ namespace sam {
 
     public:
         
+        
+        /**
+         A type keeping the parameters of the Significat Seleciton strategy.
+         */
         struct Parameters {
+            //! Selection strategy name
             SelectionMethod name = SelectionMethod::SignificantSelection;
+            
+            //! The \alpha at which the _selection strategy_ decides the significance
+            //! of a publication
             double alpha = 0.05;
+
+            //! Publication bias rate
             double pub_bias = 0.5;
+
+            //! Indicates the _selection stratgy_'s preference toward positive, `1`,
+            //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
             int side = 1;
+            
+            //! Seed to be used for deicison distribution
             int seed = 42;
         };
         
@@ -108,8 +110,8 @@ namespace sam {
         SignificantSelection(const Parameters &p) : params{p} {};
         
         SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42) {
-            id = SelectionMethod::SignificantSelection;
 
+            
             params.name = SelectionMethod::SignificantSelection;
             params.alpha = alpha;
             params.pub_bias = pub_bias;
@@ -121,26 +123,8 @@ namespace sam {
             name = params.name;
         };
         
-        // TODO: Fix me!
-//        SignificantSelection(SelectionStrategyParameters ssp) : alpha(ssp.alpha),  pub_bias(ssp.pub_bias), side(ssp.side) {
-//            params = ssp;
-//
-//            mainRngStream = new RandomNumberGenerator(ssp.seed);
-//        }
-
         bool review(Submission& s);
 
-//    private:
-//        //! The \alpha at which the _selection strategy_ decides the significance
-//        //! of a publication
-//        double alpha;
-//
-//        //! Publication bias rate
-//        double pub_bias;
-//
-//        //! Indicates the _selection stratgy_'s preference toward positive, `1`,
-//        //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
-//        int side;
     };
     
     
@@ -200,12 +184,6 @@ namespace sam {
         }
         
         RandomSelection(const Parameters &p) : params{p} {};
-        
-//        RandomSelection(SelectionStrategyParameters ssp) {
-//            params = ssp;
-//
-//            mainRngStream = new RandomNumberGenerator(ssp.seed);
-//        }
         
         bool review(Submission& s);
         

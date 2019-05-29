@@ -13,8 +13,10 @@
 #include <string>
 
 #include "sam.h"
+#include "Utilities.h"
 
 #include "nlohmann/json.hpp"
+#include "utils/magic_enum.hpp"
 
 namespace sam {
 
@@ -83,8 +85,8 @@ namespace sam {
             TestSide side = TestSide::TwoSided;
             double alpha = 0.05;
         };
-
-        TestStrategyParameters params;
+//
+//        TestStrategyParameters params;
         
         static std::shared_ptr<TestStrategy> build(json &config);
         
@@ -112,13 +114,46 @@ namespace sam {
         
     public:
         
-        TTest(TestStrategyParameters tsp) { 
-            params = tsp;
+        struct Parameters {
+            TestMethod name = TestMethod::TTest;
+            TestSide side = TestSide::TwoSided;
+            double alpha;
+        };
+        
+        Parameters params;
+        
+        TTest(const Parameters &p) : params{p} {};
+        
+        // Cleanup
+        TTest(TestStrategyParameters tsp) {
+//            params = tsp;
         };
         
         void run(Experiment* experiment);
         
     };
+    
+    
+        // JSON Parser for ImpatientDecisionStrategy::Parameters
+        inline
+        void to_json(json& j, const TTest::Parameters& p) {
+            j = json{
+                {"name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
+                {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
+                {"alpha", p.alpha}
+            };
+        }
+    
+        inline
+        void from_json(const json& j, TTest::Parameters& p) {
+            
+            // Using a helper template function to handle the optional and throw if necessary.
+            p.name = get_enum_value_from_json<TestStrategy::TestMethod>("name", j);
+            
+            p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
+            
+            j.at("alpha").get_to(p.alpha);
+        }
 
 
     // Stats Utility

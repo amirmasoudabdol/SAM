@@ -21,48 +21,16 @@ std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_stra
         params.seed =  selection_seed;
         return std::make_unique<SignificantSelection>(params);
         
-        // selection_strategy_config["selection-seed"] = selection_seed;
-        // return std::make_unique<SignificantSelection>(selection_strategy_config["alpha"], selection_strategy_config["pub-bias"], selection_strategy_config["side"], selection_seed);
-        
     }else if(selection_strategy_config["name"] == "RandomSelection") {
 
         auto params = selection_strategy_config.get<RandomSelection::Parameters>();
         params.seed = selection_seed;
         return std::make_unique<RandomSelection>(params);
         
-        // selection_strategy_config["selection-seed"] = selection_seed;
-        // return std::make_unique<RandomSelection>(selection_seed);
-        
     }else{
         throw std::invalid_argument("Unknown Selection Strategy.");
     }
 }
-
-//std::unique_ptr<SelectionStrategy> SelectionStrategy::build(SelectionStrategyParameters &ssp) {
-//    
-//
-//    if (FLAGS::VERBOSE)
-//        std::cout << "Building the Selection Strategy." << std::endl;
-//
-//    // TODO: This might not be necessary to be there
-//    if (ssp.seed == -1) {
-//        ssp.seed = rand();
-//    }
-//    
-//    if (FLAGS::VERBOSE) std::cout << "SS's seed: " << ssp.seed << std::endl;
-//    
-//    switch (ssp.name) {
-//        case SelectionMethod::SignificantSelection:
-//            return std::make_unique<SignificantSelection>(ssp);
-//            break;
-//        case SelectionMethod::RandomSelection:
-//            return std::make_unique<RandomSelection>(ssp);
-//            break;
-//        default:
-//            break;
-//    }
-//    
-//}
 
 /**
  Check if `p-value` of the Submission is less than the specified \f$\alpha\f$.

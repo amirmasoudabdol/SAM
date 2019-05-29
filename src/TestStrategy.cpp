@@ -40,27 +40,12 @@ void TTest::run(Experiment* experiment) {
 
 std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
-    using namespace magic_enum;
-
-    TestStrategyParameters tsp;
-    
-    auto test_method_name = test_strategy_config["name"].get<std::string>();
-    auto test_method = enum_cast<TestStrategy::TestMethod>(test_method_name);
-    if (!test_method.has_value())
-        throw std::invalid_argument("Unknown Test Method.");
-    tsp.name = test_method.value();
-
-    auto test_side_name = test_strategy_config["side"].get<std::string>();
-    auto test_side = enum_cast<TestStrategy::TestSide>(test_side_name);
-    if (!test_side.has_value())
-        throw std::invalid_argument("Unknown Test Side.");
-    tsp.side = test_side.value();
-
-    tsp.alpha = test_strategy_config["alpha"];
-
-    
     if (test_strategy_config["name"] == "TTest"){
-        return std::make_shared<TTest>(tsp);
+        
+        auto params = test_strategy_config.get<TTest::Parameters>();
+        return std::make_shared<TTest>(params);
+        
+//        return std::make_shared<TTest>(tsp);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
@@ -79,11 +64,11 @@ std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
 
 std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &params){
     
-    if (params.name == TestMethod::TTest){
-        return std::make_shared<TTest>(params);
-    }else{
-        throw std::invalid_argument("Unknown Test Strategy.");
-    }
+//    if (params.name == TestMethod::TTest){
+//        return std::make_shared<TTest>(params);
+//    }else{
+//        throw std::invalid_argument("Unknown Test Strategy.");
+//    }
     
 }
 

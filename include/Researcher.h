@@ -189,6 +189,7 @@ namespace sam {
         };
 
         ResearcherBuilder& createJournal(Journal::JournalParameters &jp) {
+            // TODO: Removed during the transition to json parser. Bring me back!
 //                                         SelectionStrategy::SelectionStrategyParameters &ssp) {
 //            researcher.journal = new Journal(jp, ssp);
             researcher.journal = new Journal(jp);
@@ -230,15 +231,16 @@ namespace sam {
             return *this;
         }
         
-        ResearcherBuilder& addNewHackingStrategy(HackingStrategyParameters hsp) {
-            if (researcher.hacking_strategies.empty()){
-                researcher.hacking_strategies.resize(1);
-            }
-            researcher.hacking_strategies.back().push_back(HackingStrategy::build(hsp));
-            
-            researcher.is_hacker = true;
-            return *this;
-        }
+        // TODO: Removed during the transition to json parser. Bring me back!
+//        ResearcherBuilder& addNewHackingStrategy(HackingStrategyParameters hsp) {
+//            if (researcher.hacking_strategies.empty()){
+//                researcher.hacking_strategies.resize(1);
+//            }
+//            researcher.hacking_strategies.back().push_back(HackingStrategy::build(hsp));
+//            
+//            researcher.is_hacker = true;
+//            return *this;
+//        }
         
         ResearcherBuilder& addNewHackingStrategy(HackingStrategy *new_hs) {
             if (researcher.hacking_strategies.empty()){

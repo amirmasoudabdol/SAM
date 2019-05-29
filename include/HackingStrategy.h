@@ -12,7 +12,7 @@
 #include "Submission.h"
 #include "HackingStrategyTypes.h"
 #include "DecisionStrategy.h"
-
+#include "Utilities.h"
 
 #include "nlohmann/json.hpp"
 
@@ -33,8 +33,7 @@ namespace sam {
         
     public:
         
-        //! Hacking Strategy parameters.
-//        HackingStrategyParameters params;
+        //! Hacking Strategy name.
         HackingMethod name;
         
         /**
@@ -49,8 +48,6 @@ namespace sam {
         static std::unique_ptr<HackingStrategy> build(json& hacking_strategy_config);
         
         static std::unique_ptr<HackingStrategy> build(HackingMethod method);
-
-        static std::unique_ptr<HackingStrategy> build(HackingStrategyParameters &hsp);
         
 
         /**
@@ -95,8 +92,15 @@ namespace sam {
         struct Parameters {
             HackingMethod name = HackingMethod::OptionalStopping;
             std::string level = "dv";
+            
+            //! Number of new observations to be added to each group
             int num = 3;
+            
+            //! Number of times that Researcher add `num` observations to each group
             int n_attempts = 1;
+            
+            //! Maximum number of times that Researcher tries to add new observations to
+            //! each group
             int max_attempts = 10;
             
             bool is_randomized = false;
@@ -128,20 +132,6 @@ namespace sam {
         void randomize(int min_n, int max_n);
         
     private:
-        
-//        std::string level = "dv";
-        
-        //! Number of new observations to be added to each group
-//        int num = 3;
-        
-        //! Number of times that Researcher add `num` observations to each group
-//        int n_attempts = 1;
-        
-        //! Maximum number of times that Researcher tries to add new observations to
-        //! each group
-//        int max_attempts = 10;
-        
-        
         /**
          Add _n_ observations to all groups and return the updated experiment to
          the `perform()` method.
@@ -172,11 +162,8 @@ namespace sam {
     inline
     void from_json(const json& j, OptionalStopping::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
-        if (name.has_value())
-            p.name = name.value();
-        else
-            throw std::invalid_argument("Unknown hacking strategy");
+        // Using a helper template function to handle the optional and throw if necessary.
+        p.name = get_enum_value_from_json<HackingMethod>("name", j);
         
         j.at("level").get_to(p.level);
         j.at("num").get_to(p.num);
@@ -227,22 +214,11 @@ namespace sam {
             name = params.name;
         };
         
-
         // Submission hackedSubmission;
         void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
         
-        
-        
     private:
-        
-//        std::string level = "dv";
-//        std::string order = "max first";
-//        int num = 3;
-//        int n_attempts = 1;
-//        int max_attempts = 10;
-//        int min_observations = 15;
-//        std::vector<double> multipliers = {3};
-        
+
         int removeOutliers(Experiment *experiment, const int &n, const int &d);
         
     };
@@ -265,11 +241,8 @@ namespace sam {
     inline
     void from_json(const json& j, SDOutlierRemoval::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
-        if (name.has_value())
-            p.name = name.value();
-        else
-            throw std::invalid_argument("Unknown hacking strategy");
+        // Using a helper template function to handle the optional and throw if necessary.
+        p.name = get_enum_value_from_json<HackingMethod>("name", j);
         
         j.at("level").get_to(p.level);
         j.at("order").get_to(p.order);
@@ -322,11 +295,8 @@ namespace sam {
     inline
     void from_json(const json& j, GroupPooling::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
-        if (name.has_value())
-            p.name = name.value();
-        else
-            throw std::invalid_argument("Unknown hacking strategy");
+        // Using a helper template function to handle the optional and throw if necessary.
+        p.name = get_enum_value_from_json<HackingMethod>("name", j);
         
         j.at("nums").get_to(p.nums);
     }
@@ -366,11 +336,8 @@ namespace sam {
     inline
     void from_json(const json& j, ConditionDropping::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<HackingMethod>(j["name"].get<std::string>());
-        if (name.has_value())
-            p.name = name.value();
-        else
-            throw std::invalid_argument("Unknown hacking strategy");
+        // Using a helper template function to handle the optional and throw if necessary.
+        p.name = get_enum_value_from_json<HackingMethod>("name", j);
     }
 
     //class QuestionableRounding : public HackingStrategy {

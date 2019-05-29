@@ -34,33 +34,29 @@ HackingStrategy::~HackingStrategy() {
 std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_config) {
     
     if (hacking_strategy_config["name"] == "OptionalStopping"){
+        
         auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
         return std::make_unique<OptionalStopping>(params);
-//        return std::make_unique<OptionalStopping>(hacking_strategy_config["level"],
-//                                    hacking_strategy_config["num"],
-//                                    hacking_strategy_config["n_attempts"],
-//                                    hacking_strategy_config["max_attempts"]);
         
     }else if (hacking_strategy_config["name"] == "SDOutlierRemoval") {
+        
         auto params = hacking_strategy_config.get<SDOutlierRemoval::Parameters>();
         return std::make_unique<SDOutlierRemoval>(params);
-//        return std::make_unique<SDOutlierRemoval>(hacking_strategy_config["level"],
-//                                    hacking_strategy_config["order"],
-//                                    hacking_strategy_config["num"],
-//                                    hacking_strategy_config["n_attempts"],
-//                                    hacking_strategy_config["max_attempts"],
-//                                    hacking_strategy_config["min_observations"],
-//                                    hacking_strategy_config["multipliers"]);
         
     }else if (hacking_strategy_config["name"] == "GroupPooling") {
+        
         auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
         return std::make_unique<GroupPooling>(params);
-//        return std::make_unique<GroupPooling>(hacking_strategy_config["nums"]);
+        
     }else if (hacking_strategy_config["name"] == "ConditionDropping") {
+        
         auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
         return std::make_unique<ConditionDropping>(params);
+        
     }else if (hacking_strategy_config["name"] == "NoHack") {
+        
         return std::make_unique<NoHack>();
+        
     }else{
         throw std::invalid_argument("Unknown Hacking Strategies.");
     }
@@ -153,9 +149,9 @@ void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
 /**
  @brief Implementation of Outliers Removal based on an item's distance from the \mu.
  
- The `sd_multiplier`, d is set at the construction, and it'll be used to check whether a measurement
- should be removed or not. Any item satisfying the  \f$v > |\mu - d * \sigma|\f$  will be removed from the
- dataset.
+ The `sd_multiplier`, d is set at the construction, and it'll be used to check
+ whether a measurement should be removed or not. Any item satisfying the
+ \f$v > |\mu - d * \sigma|\f$  will be removed from the dataset.
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     

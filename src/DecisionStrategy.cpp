@@ -25,7 +25,11 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
     auto pref = enum_cast<DecisionPreference>(pref_name);
 
     if (decision_strategy_config["name"] == "ImpatientDecisionMaker"){
-        return std::make_unique<ImpatientDecisionMaker>(pref.value());
+        
+        auto params = decision_strategy_config.get<ImpatientDecisionMaker::Parameters>();
+        return std::make_unique<ImpatientDecisionMaker>(params);
+        
+//        return std::make_unique<ImpatientDecisionMaker>(pref.value());
     }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
         return std::make_unique<PatientDecisionMaker>(pref.value());
     }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
@@ -37,11 +41,11 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
 
 std::unique_ptr<DecisionStrategy> DecisionStrategy::build(DecisionStrategyParameters dsp) {
 
-    if (dsp.name == DecisionType::ImpatientDecisionMaker){
+    if (dsp.name == DecisionMethod::ImpatientDecisionMaker){
         return std::make_unique<ImpatientDecisionMaker>(dsp.preference);
-    }else if (dsp.name == DecisionType::PatientDecisionMaker){
+    }else if (dsp.name == DecisionMethod::PatientDecisionMaker){
         return std::make_unique<PatientDecisionMaker>(dsp.preference);
-   }else if (dsp.name == DecisionType::HonestDecisionMaker){
+   }else if (dsp.name == DecisionMethod::HonestDecisionMaker){
        return std::make_unique<HonestDecisionMaker>();
     } else{
         throw std::invalid_argument("Unknown DecisionStrategy");

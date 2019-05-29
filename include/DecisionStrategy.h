@@ -12,10 +12,11 @@
 
 #include "Submission.h"
 #include "Experiment.h"
+#include "Utilities.h"
 
 namespace sam {
 
-    enum class DecisionType {
+    enum class DecisionMethod {
         HonestDecisionMaker,
         PatientDecisionMaker,
         ImpatientDecisionMaker
@@ -78,7 +79,7 @@ namespace sam {
     public:
 
         struct DecisionStrategyParameters {
-            DecisionType name;
+            DecisionMethod name;
             DecisionPreference preference;
         };
 
@@ -196,6 +197,19 @@ namespace sam {
         
     public:
         
+        struct Parameters {
+            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+            DecisionPreference preference = DecisionPreference::MinPvalue;
+        };
+        
+        Parameters params;
+        
+        explicit ImpatientDecisionMaker(const Parameters &p) : params{p} {
+            // TODO: I totally need to refactor this! I'm using the abstract class
+            // paramters and it's confusing!
+            selectionPref = params.preference;
+        };
+        
         explicit ImpatientDecisionMaker(DecisionPreference selection_pref) {
             selectionPref = selection_pref;
         };
@@ -212,11 +226,38 @@ namespace sam {
         virtual bool finalDecision(Experiment &experiment);
         
     };
+    
+    // JSON Parser for ImpatientDecisionStrategy::Parameters
+        inline
+        void to_json(json& j, const ImpatientDecisionMaker::Parameters& p) {
+            j = json{
+                {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
+                {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
+            };
+        }
+    
+        inline
+        void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
+            
+            // Using a helper template function to handle the optional and throw if necessary.
+            p.name = get_enum_value_from_json<DecisionMethod>("name", j);
+            
+            p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
+        }
 
 
     class PatientDecisionMaker : public DecisionStrategy {
 
     public:
+        
+        struct Parameters {
+            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+            DecisionPreference preference = DecisionPreference::MinPvalue;
+        };
+        
+        Parameters params;
+        
+        explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
         
         explicit PatientDecisionMaker(DecisionPreference selection_pref) {
             selectionPref = selection_pref;
@@ -234,6 +275,24 @@ namespace sam {
         virtual bool finalDecision(Experiment &experiment);
         
     };
+    
+    // JSON Parser for PatientDecisionStrategy::Parameters
+    inline
+    void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
+            {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
+        };
+    }
+    
+    inline
+    void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
+        
+        // Using a helper template function to handle the optional and throw if necessary.
+        p.name = get_enum_value_from_json<DecisionMethod>("name", j);
+        
+        p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
+    }
 
 
 
@@ -242,6 +301,14 @@ namespace sam {
     class HonestDecisionMaker : public DecisionStrategy {
 
     public:
+        
+        struct Parameters {
+            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+        };
+        
+        Parameters params;
+        
+        HonestDecisionMaker(const Parameters &p) : params{p} {};
 
         HonestDecisionMaker() {
             selectionPref = DecisionPreference::PreRegisteredOutcome;
