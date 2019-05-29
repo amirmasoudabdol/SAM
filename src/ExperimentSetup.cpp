@@ -68,6 +68,9 @@ ExperimentSetup::ExperimentSetup(json& config) {
         }
     }
 
+    // get_expr_setup_params<int>(config["n-obs"], ng_);
+
+
     
     if (config["means"].is_array()){
         if (config["means"].size() != ng_){

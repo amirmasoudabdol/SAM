@@ -15,21 +15,20 @@
 #include "utils/magic_enum.hpp"
 
 using json = nlohmann::json;
+using Generator = std::mt19937;
 
-// Implementation of a factory method for STL statistics
+class DistributionRandomGenerator {
+public:
+    DistributionRandomGenerator();
+    
+    
+};
 
-
-
-
-/**
- <#Description#>
-
- @param key <#key description#>
- @param j <#j description#>
- @return <#return value description#>
- */
 template<typename T>
-T get_enum_value_from_json(const std::string &key, const json &j){
+std::vector<T> get_expr_setup_params(json const &j, int const size);
+
+template<typename T>
+T get_enum_value_from_json(const std::string &key, const json &j) {
     auto name = magic_enum::enum_cast<T>(j[key].get<std::string>());
     if (name.has_value())
         return name.value();
