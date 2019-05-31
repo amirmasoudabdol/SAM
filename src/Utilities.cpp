@@ -5,7 +5,6 @@
 #include "Utilities.h"
 
 using Generator = std::mt19937;
-using Distribution = std::function<double(Generator &)>;
 
 template <class DistributionType, class... Parameters>
 Distribution make_distribution_impl(json const &j, Parameters... parameters) {
@@ -60,45 +59,4 @@ if(distributionName == #name_) return make_distribution_impl<std::name_<type_>>(
 #undef generate_distribution_factory
 
     throw std::runtime_error{&"Unknown distribution " [ distributionName]};
-}
-
-
-template<typename T>
-std::vector<T> get_expr_setup_params(json const &j, int const size) {
-    
-    switch (j.type()) {
-        case nlohmann::detail::value_t::object:
-            try {
-                Generator gen{std::random_device{}()};
-                
-                auto dist = make_distribution(j);
-                auto val = dist(gen);
-                
-                return std::vector<T>(size, val);
-                
-            } catch (const std::exception& e) {
-                throw e.what();
-            }
-            break;
-            
-        case nlohmann::detail::value_t::array:
-            if (j.size() != size)
-                throw std::length_error("Array size does not match with the size\
-                                        of the experiment.\n");
-            else
-                return j.get<std::vector<T>>();
-            break;
-            
-        case nlohmann::detail::value_t::number_integer:
-        case nlohmann::detail::value_t::number_unsigned:
-        case nlohmann::detail::value_t::number_float:
-            return std::vector<T>(size, j.get<int>());
-            break;
-            
-        case nlohmann::detail::value_t::null:
-        default:
-            throw std::invalid_argument("Missing parameter.\n");
-            break;
-    }
-    
 }

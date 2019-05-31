@@ -21,6 +21,7 @@
 #include "TestStrategy.h"
 #include "EffectStrategy.h"
 #include "RandomNumberGenerator.h"
+#include "Utilities.h"
 
 #include "nlohmann/json.hpp"
 
@@ -46,6 +47,8 @@ namespace sam {
 
         //! Main random number stream used by the class to randomize `true_nobs`, etc.
         RandomNumberGenerator *rng_stream;
+        
+        Generator gen{std::random_device{}()};
 
         //! Number of experimental conditions, e.g., treatment 1, treatment 2.
         int nc_ = 0;
@@ -76,6 +79,8 @@ namespace sam {
         arma::Row<double> error_means_;
         arma::Row<double> error_vars_;
         arma::Mat<double> error_sigma_;
+        
+        std::map<std::string, Distribution> params_distro;
 
     public:
 
@@ -194,23 +199,6 @@ namespace sam {
                 }
             }
         }
-
-        /**
-         \brief      A helper function to fill `val` to a vector. This
-         will also allocate the necessary space, `size`, for the vector.
-         
-         \param      vecc  The reference to the vector
-         \param[in]  size  The size of the vector
-         \param[in]  val   The value of the vector
-         
-         \tparam     T     The type of the vector and value.
-         
-         TODO: This can move out!
-         */
-        template<typename T>
-        void fill_vector(arma::Row<T> &vecc, int size, T val){
-            vecc = arma::Row<T>(size).fill(val);
-        };
 
     public:
 

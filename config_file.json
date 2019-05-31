@@ -4,6 +4,7 @@
         "data-strategy": "LinearModel",
         "effect-estimators": "CohensD",
         "err-covs": 0.001,
+        "err-means": 0.0,
         "err-vars": 0.01,
         "loadings": 0.7,
         "means": 0.5,
@@ -11,6 +12,7 @@
         "n-dep-vars": 3,
         "n-items": 3,
         "n-obs": 10,
+        "sigma": 0.5,
         "test-strategy": {
             "alpha": 0.05,
             "name": "TTest",
