@@ -91,7 +91,8 @@ Experiment::Experiment(json &experiment_config) {
 
 
 void Experiment::randomize() {
-    if (setup.is_n_randomized) {
-        setup.randomize_nObs();
-    }
+//    if (setup.is_n_randomized) {
+//        setup.randomize_nObs();
+//    }
+    setup.randomize_parameters();
 }

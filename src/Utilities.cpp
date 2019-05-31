@@ -6,11 +6,6 @@
 
 using Generator = std::mt19937;
 
-template <class DistributionType, class... Parameters>
-Distribution make_distribution_impl(json const &j, Parameters... parameters) {
-    return DistributionType{j.at(parameters)...};
-}
-
 Distribution make_distribution(json const &j) {
     auto const &distributionName = j.at("dist");
 

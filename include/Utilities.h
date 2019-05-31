@@ -21,32 +21,16 @@ using json = nlohmann::json;
 using Generator = std::mt19937;
 using Distribution = std::function<double(Generator &)>;
 
-
 Distribution make_distribution(json const &j);
 
-class DistributionRandomGenerator {
-public:
-    DistributionRandomGenerator();
-    
-    
-};
-
-
-//template<typename T>
-//std::tuple<std::vector<T>, Distribution>
-//get_expr_or_of(json const &j, int const size) {
-//    
-//    if (size == 1) {
-//        auto dist = make_distribution(j);
-//        return std::make_tuple(std::vector<T>(size), dist);
-//    }else{
-//        return std::make_tuple(std::vector<T>(size), nullptr);
-//    }
-//    
-//};
+template <class DistributionType, class... Parameters>
+Distribution make_distribution_impl(json const &j, Parameters... parameters) {
+    return DistributionType{j.at(parameters)...};
+}
 
 template<typename T>
-std::vector<T> get_expr_setup_params(json const &j, int const size) {
+std::tuple<std::vector<T>, Distribution>
+get_expr_setup_params(json const &j, int const size) {
     
     switch (j.type()) {
         case nlohmann::detail::value_t::object:
@@ -56,7 +40,7 @@ std::vector<T> get_expr_setup_params(json const &j, int const size) {
                 auto dist = make_distribution(j);
                 auto val = dist(gen);
                 
-                return std::vector<T>(size, val);
+                return std::make_tuple(std::vector<T>(size, val), dist);
                 
             } catch (const std::exception& e) {
                 throw e.what();
@@ -68,13 +52,13 @@ std::vector<T> get_expr_setup_params(json const &j, int const size) {
                 throw std::length_error("Array size does not match with the size\
                                         of the experiment.\n");
             else
-                return j.get<std::vector<T>>();
+                return std::make_tuple(j.get<std::vector<T>>(), nullptr);
             break;
             
         case nlohmann::detail::value_t::number_integer:
         case nlohmann::detail::value_t::number_unsigned:
         case nlohmann::detail::value_t::number_float:
-            return std::vector<T>(size, j.get<T>());
+            return std::make_tuple(std::vector<T>(size, j.get<T>()), nullptr);
             break;
             
         case nlohmann::detail::value_t::null:

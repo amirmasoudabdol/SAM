@@ -80,7 +80,7 @@ namespace sam {
         arma::Row<double> error_vars_;
         arma::Mat<double> error_sigma_;
         
-        std::map<std::string, Distribution> params_distro;
+        std::map<std::string, Distribution> params_dist;
 
     public:
 
@@ -152,6 +152,8 @@ namespace sam {
         
         const arma::Mat<double>& error_sigma() const { return error_sigma_; };
         void set_error_sigma(arma::Mat<double>& val) {error_sigma_ = val; };
+        
+        void randomize_parameters();
 
     };
 

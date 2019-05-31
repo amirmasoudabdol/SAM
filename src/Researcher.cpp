@@ -56,9 +56,11 @@ void Researcher::prepareResearch() {
     // Randomize if necessary
     // TODO: I need to handle this better because nobs is being assigned in the
     // ExperimentSetup before this as well, when reading other parameteres.
-    if (experiment->setup.is_n_randomized){
-        experiment->randomize();
-    }
+    // if (experiment->setup.is_n_randomized){
+    //     experiment->randomize();
+    // }
+
+    experiment->randomize();
     
     // Allocating memory
     experiment->initResources(experiment->setup.ng());

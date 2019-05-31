@@ -3,6 +3,7 @@
 //
 
 #include <stdexcept>
+#include <tuple>
 
 #include <utils/magic_enum.hpp>
 
@@ -49,13 +50,31 @@ ExperimentSetup::ExperimentSetup(json& config) {
     ni_ = config["n-items"];
     ng_ = nc_ * nd_;
     nrows_ = ng_ * ni_;
-        
-    nobs_ = get_expr_setup_params<int>(config["n-obs"], ng_);
-    means_ = get_expr_setup_params<double>(config["means"], ng_);
-    vars_ = get_expr_setup_params<double>(config["vars"], ng_);
-    loadings_ = get_expr_setup_params<double>(config["loadings"], ni_);
-    error_means_ = get_expr_setup_params<double>(config["err-means"], nrows_);
-    error_vars_ = get_expr_setup_params<double>(config["err-vars"], nrows_);
+
+    auto nobs_t = get_expr_setup_params<int>(config["n-obs"], ng_);
+    nobs_ = std::get<0>(nobs_t);
+    params_dist["n-obs"] = std::get<1>(nobs_t);
+
+    auto means_t = get_expr_setup_params<double>(config["means"], ng_);
+    means_ = std::get<0>(means_t);
+    params_dist["means"] = std::get<1>(means_t);
+
+    auto vars_t = get_expr_setup_params<double>(config["vars"], ng_);
+    vars_ = std::get<0>(vars_t);
+    params_dist["vars"] = std::get<1>(vars_t);
+
+    auto loadings_t = get_expr_setup_params<double>(config["loadings"], ni_);
+    loadings_ = std::get<0>(loadings_t);
+    params_dist["loadings"] = std::get<1>(loadings_t);
+
+    auto error_means_t = get_expr_setup_params<double>(config["err-means"], nrows_);
+    error_means_ = std::get<0>(error_means_t);
+    params_dist["err-means"] = std::get<1>(error_means_t);
+
+    auto error_vars_t = get_expr_setup_params<double>(config["err-vars"], nrows_);
+    error_vars_ = std::get<0>(error_vars_t);
+    params_dist["err-vars"] = std::get<1>(error_vars_t);
+
     
     if (config["covs"].is_array()){
         if (config["covs"].size() != ng_){
@@ -109,6 +128,34 @@ void ExperimentSetup::randomize_nObs() {
     std::fill(nobs_.begin(), nobs_.end(), n);
 }
 
+void ExperimentSetup::randomize_parameters() {
+    if (params_dist["n-obs"]){
+        fill_vector<int>(nobs_, nobs_.size(), params_dist["n-obs"](gen));
+    }
+
+    if (params_dist["means"]){
+        fill_vector<double>(means_, means_.size(), params_dist["means"](gen));
+    }
+
+    if (params_dist["vars"]){
+        fill_vector<double>(vars_, vars_.size(), params_dist["vars"](gen));
+    }
+
+    // TODO: TEST US!
+    // if (params_dist["loadings"]){
+    //     fill_vector<double>(loadings_, loadings_.size(), params_dist["loadings"](gen));
+    // }
+
+    // if (params_dist["err-means"]){
+    //     fill_vector<double>(error_means_, error_means_.size(), params_dist["err-means"](gen));
+    // }
+
+    // if (params_dist["err-vars"]){
+    //     fill_vector<double>(error_vars_, error_vars_.size(), params_dist["err-vars"](gen));
+    // }
+
+}
+
 
 
 ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
@@ -124,12 +171,29 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     setup.ng_ = setup.nc_ * setup.nd_;
     setup.nrows_ = setup.ng_ * setup.ni_;
     
-    setup.nobs_ = get_expr_setup_params<int>(config["n-obs"], setup.ng_);
-    setup.means_ = get_expr_setup_params<double>(config["means"], setup.ng_);
-    setup.vars_ = get_expr_setup_params<double>(config["vars"], setup.ng_);
-    setup.loadings_ = get_expr_setup_params<double>(config["loadings"], setup.ni_);
-    setup.error_means_ = get_expr_setup_params<double>(config["err-means"], setup.nrows_);
-    setup.error_vars_ = get_expr_setup_params<double>(config["err-vars"], setup.nrows_);
+    auto nobs_t = get_expr_setup_params<int>(config["n-obs"], setup.ng_);
+    setup.nobs_ = std::get<0>(nobs_t);
+    setup.params_dist["n-obs"] = std::get<1>(nobs_t);
+
+    auto means_t = get_expr_setup_params<double>(config["means"], setup.ng_);
+    setup.means_ = std::get<0>(means_t);
+    setup.params_dist["means"] = std::get<1>(means_t);
+
+    auto vars_t = get_expr_setup_params<double>(config["vars"], setup.ng_);
+    setup.vars_ = std::get<0>(vars_t);
+    setup.params_dist["vars"] = std::get<1>(vars_t);
+
+    auto loadings_t = get_expr_setup_params<double>(config["loadings"], setup.ni_);
+    setup.loadings_ = std::get<0>(loadings_t);
+    setup.params_dist["loadings"] = std::get<1>(loadings_t);
+
+    auto error_means_t = get_expr_setup_params<double>(config["err-means"], setup.nrows_);
+    setup.error_means_ = std::get<0>(error_means_t);
+    setup.params_dist["err-means"] = std::get<1>(error_means_t);
+
+    auto error_vars_t = get_expr_setup_params<double>(config["err-vars"], setup.nrows_);
+    setup.error_vars_ = std::get<0>(error_vars_t);
+    setup.params_dist["err-vars"] = std::get<1>(error_vars_t);
     
     if (config["covs"].is_array()){
         if (config["covs"].size() != setup.ng_){
