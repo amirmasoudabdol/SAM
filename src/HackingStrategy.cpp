@@ -122,10 +122,14 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
     
     int i = 0;
-    std::for_each(experiment->measurements.begin(), experiment->measurements.end(),
-                  [&new_observations, &i](arma::Row<double> &row) {
-                      row.insert_cols(row.size(), new_observations[i++]);
-                  });    
+    
+    // Add new observations to first `ng` group. I don't iterate over everything in
+    // the `measurements` because they might actually be the results of `pooling`.
+    // Therefore, I only add new values to original groups.
+    std::for_each_n(experiment->measurements.begin(), experiment->setup.ng(),
+                      [&new_observations, &i](arma::Row<double> &row) {
+                          row.insert_cols(row.size(), new_observations[i++]);
+                      });
     
 }
 
@@ -188,7 +192,10 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
     
     int res = 0;
     
-    for (auto &row : experiment->measurements) {
+    // Removing outliers only from the original groups, see #104
+    for (int i = 0; i < experiment->setup.ng(); ++i) {
+        
+        auto &row = experiment->measurements[i];
         
         // At least one row has less than `min_observations`
         if (row.size() <= params.min_observations)
@@ -278,12 +285,16 @@ void GroupPooling::pool(Experiment *experiment, int r){
                                                             collector());
     
     std::vector<arma::Row<double>> pooled_groups;
+    
+    // Extending the measurements to avoid over-pooling, see #104
+    experiment->measurements.resize(permutations.size() * experiment->setup.nd());
+    
     for (auto &per : permutations) {
         
         for (int d = 0; d < experiment->setup.nd(); d++) {
             
             // Creating an empty new group
-            experiment->measurements.push_back(arma::Row<double>());
+//            experiment->measurements.push_back(arma::Row<double>());
             
             for (int i = 0; i < r ; i++){
                 

@@ -103,16 +103,6 @@ namespace sam {
         
         //! Effect Estimator Parameters
         EffectStrategy::EffectStrategyParameters esp_;
-
-        //! Indicates whether `nobs` should be selected as random
-        bool is_n_randomized = false;
-
-
-
-        void randomize_nObs();
-
-        std::vector<double> intervals;
-        std::vector<double> weights;
         
         void setSeed(int s) {
             rng_stream->setSeed(s);

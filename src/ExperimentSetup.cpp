@@ -122,12 +122,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
 }
 
-void ExperimentSetup::randomize_nObs() {
-//    nobs = RNGEngine->genSampleSize(0.75, 20, 100, 300);
-    int n = rng_stream->genSampleSize(intervals, weights);
-    std::fill(nobs_.begin(), nobs_.end(), n);
-}
-
 void ExperimentSetup::randomize_parameters() {
     if (params_dist["n-obs"]){
         fill_vector<int>(nobs_, nobs_.size(), params_dist["n-obs"](gen));

@@ -54,12 +54,8 @@ void Researcher::hack() {
 void Researcher::prepareResearch() {
     
     // Randomize if necessary
-    // TODO: I need to handle this better because nobs is being assigned in the
-    // ExperimentSetup before this as well, when reading other parameteres.
-    // if (experiment->setup.is_n_randomized){
-    //     experiment->randomize();
-    // }
-
+    // The check is being performed in the `randomize()` function based on whether
+    // a distribution is provided for any of the parameters.
     experiment->randomize();
     
     // Allocating memory
@@ -82,7 +78,7 @@ void Researcher::performResearch(){
     
     experiment->runTest();
 
-    // 
+    // TODO: Need _more_ clarification
     bool willHack = decision_strategy->verdict(*experiment,
                                                DecisionStage::Initial);
     
