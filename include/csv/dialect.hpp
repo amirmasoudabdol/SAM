@@ -127,6 +127,11 @@ namespace csv {
       column_names(Fargs...);
       return *this;
     }
+      
+    Dialect& column_names(const std::vector<std::string> &column_names) {
+      column_names_ = column_names;
+      return *this;
+    }
 
     Dialect& header(bool header) {
       header_ = header;

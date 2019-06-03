@@ -23,6 +23,7 @@ using Distribution = std::function<double(Generator &)>;
 
 Distribution make_distribution(json const &j);
 
+
 template <class DistributionType, class... Parameters>
 Distribution make_distribution_impl(json const &j, Parameters... parameters) {
     return DistributionType{j.at(parameters)...};

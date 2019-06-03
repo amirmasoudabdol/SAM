@@ -16,12 +16,12 @@ namespace sam {
     class Submission {
 
         std::vector<std::string> columns;
-        std::unordered_map<std::string, std::string> record;
+        std::map<std::string, std::string> record;
         
     public:
 
-        static std::string header(const json &effectslist);
-        std::vector<std::string> col_names();
+//        static std::string header(const json &effectslist);
+        std::vector<std::string> cols();
 
         //! Simulation ID
         int simid = 0;
@@ -66,26 +66,8 @@ namespace sam {
         }
 
         friend std::ostream& operator<<(std::ostream& os, const Submission& s);
-        
-        operator std::unordered_map<std::string, std::string>() {
-            
-            record["simid"] = std::to_string(simid);
-            record["pubid"] = std::to_string(pubid);
-            record["inx"] = std::to_string(inx);
-            record["nobs"] = std::to_string(nobs);
-            record["yi"] = std::to_string(mean);
-            record["vi"] = std::to_string(var);
-            record["sei"] = std::to_string(sei);
-            record["statistic"] = std::to_string(statistic);
-            record["pvalue"] = std::to_string(pvalue);
-            record["effect"] = std::to_string(effect);
-            record["sig"] = std::to_string(sig);
-            record["side"] = std::to_string(side);
-            record["isHacked"] = std::to_string(isHacked);
-            record["tnobs"] = std::to_string(tnobs);
-            
-            return record;
-        }
+
+        operator std::map<std::string, std::string>();
 
     };
 

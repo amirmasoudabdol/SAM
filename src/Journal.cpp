@@ -53,23 +53,6 @@ void Journal::reject(Submission &s) {
     
 }
 
-void Journal::saveSubmissions(int simid, std::ofstream& writer) {
-    
-    int i = 0;
-    for (auto& p : publications_list) {
-        p.simid = simid;
-        p.pubid = i++;
-        
-        if (FLAGS::VERBOSE){
-            std::cout << std::setprecision(8);
-            std::cout << p << "\n";
-        }
-        
-        writer << p << "\n";
-    }
-}
-
-
 void Journal::testMeta() {
     FixedEffectEstimator fes;
     

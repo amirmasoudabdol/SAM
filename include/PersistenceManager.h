@@ -15,8 +15,8 @@
 #include <csv/reader.hpp>
 #include <csv/writer.hpp>
 
-
 #include "sam.h"
+#include "Submission.h"
 
 namespace sam {
 
@@ -27,6 +27,8 @@ namespace sam {
     public:
         class Writer;
         class Reader;
+        
+        ~PersistenceManager() { };
     };
     
     class PersistenceManager::Writer {
@@ -39,34 +41,21 @@ namespace sam {
         
     public:
         
-        Writer(string filename) : filename(filename) {
-            writer = std::make_unique<csv::Writer>(filename);
-            writer->configure_dialect()
-            .delimiter(", ")
-            .column_names("simid", "pubid", "inx", "nobs", "yi", "vi", "sei", "statistic", "pvalue", "effect", "sig", "side", "isHacked", "tnobs");
-            
-        };
+        Writer() = default;
+        ~Writer();
         
-        ~PersistenceManager() {
-            writer->close();
-        }
+        Writer(string filename);
         
-        void write(std::vector<Submission> subs) {
-             if (is_header_set) {
-                 writer->configure_dialect()
-                       .column_names(subs.front().col_names());
-             }
-            
-            for (std::unordered_map<std::string, std::string> &&s : subs) {
-                writer->write_row(s);
-            }
-        }
+        void write(std::vector<Submission> &subs);
         
-        void write(std::vector<arma::Row<double> > measurements) {
-            // Do stuff
-        }
+        void write(std::vector<arma::Row<double> > measurements);
 
-    }
+    };
+        
+        
+    class Reader {
+            
+    };
 
 }
 
