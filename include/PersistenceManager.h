@@ -17,6 +17,7 @@
 
 #include "sam.h"
 #include "Submission.h"
+#include "Experiment.h"
 
 namespace sam {
 
@@ -33,7 +34,7 @@ namespace sam {
     
     class PersistenceManager::Writer {
         
-        string filename;
+        string file_name_;
         
         std::unique_ptr<csv::Writer> writer;
         
@@ -44,7 +45,7 @@ namespace sam {
         Writer() = default;
         ~Writer();
         
-        Writer(string filename);
+        Writer(const string &filename);
         
         /// Write a list of submission records to a file, or a database
         /// @param subs A reference to Submission container
@@ -57,7 +58,23 @@ namespace sam {
     };
         
         
-    class Reader {
+    class PersistenceManager::Reader {
+        
+        string file_name_;
+        std::unique_ptr<csv::Reader> reader;
+        
+    public:
+        Reader() = default;
+        ~Reader();
+        
+        Reader(const string &filename);
+        
+        void filename(const string &name) {
+            file_name_ = name;
+            reader->read(file_name_);
+        };
+        
+        void read_raw_data(Experiment *epxr);
             
     };
 

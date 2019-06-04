@@ -16,29 +16,6 @@ DataStrategy::~DataStrategy() {
     // Pure deconstructor
 }
 
-void DataStrategy::loadRawData(Experiment *expr, const std::string &filename) {
-    csv::Reader csv;
-    csv.configure_dialect("no headers")
-       .header(false);
-    
-    csv.read(filename);
-    auto rows = csv.rows();
-    
-    
-    if (expr->setup.ng() != csv.cols().size())
-        throw std::length_error("Number of columns in the CSV file doesn't match \
-                                the experiment size.");
-    
-    
-    for (int r = 0; r < rows.size(); r++) {
-        for (auto &col : csv.cols()) {
-            expr->measurements[std::stoi(col)][r] = std::stod(rows[r][col]);
-        }
-    }
-    
-    
-}
-
 std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name) {
     
     if (name == "LinearModel"){

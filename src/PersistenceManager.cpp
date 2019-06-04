@@ -13,10 +13,9 @@
 
 using namespace sam;
 
-PersistenceManager::Writer::Writer(string filename) : filename(filename) {
-    writer = std::make_unique<csv::Writer>(filename);
+PersistenceManager::Writer::Writer(const string &filename) : file_name_(filename) {
+    writer = std::make_unique<csv::Writer>(file_name_);
     writer->configure_dialect().delimiter(", ");
-    
 };
 
 PersistenceManager::Writer::~Writer() {
@@ -40,7 +39,7 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
         writer->write_row(s);
     }
 
-    // Fix me! 
+    // TODO: Fix me! I'm fine but it's be nicer if there is a more elegant way to do this.
     if (FLAGS::VERBOSE) {
         for (auto &s : subs) {
             std::cout << s << std::endl;
@@ -48,6 +47,34 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
     }
 }
 
+PersistenceManager::Reader::Reader(const string &filename) : file_name_(filename) {
+    reader = std::make_unique<csv::Reader>();
+    reader->configure_dialect().delimiter(",").header(false);
+    reader->read(file_name_);
+};
+
+PersistenceManager::Reader::~Reader() {
+    
+}
+
+
+void PersistenceManager::Reader::read_raw_data(Experiment *expr) {
+    
+    auto rows = reader->rows();
+    
+    
+    if (expr->setup.ng() != reader->cols().size())
+        throw std::length_error("Number of columns in the CSV file doesn't match \
+                                the experiment size.");
+    
+    
+    for (int r = 0; r < rows.size(); r++) {
+        for (auto &col : reader->cols()) {
+            expr->measurements[std::stoi(col)][r] = std::stod(rows[r][col]);
+        }
+    }
+    
+}
 
 void PersistenceManager::Writer::write(std::vector<arma::Row<double> > &data, int sid) {
     
