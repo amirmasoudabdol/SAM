@@ -23,16 +23,20 @@ PersistenceManager::Writer::~Writer() {
    writer->close();
 }
 
-void PersistenceManager::Writer::write(std::vector<Submission> &subs) {
+void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
     
     int i = 0;
+    // This initiates a copy and it's not very efficient.
+    // TODO: Optimize me!
     for (std::map<std::string, std::string> &&s : subs) {
         if (!is_header_set) {
             writer->configure_dialect().column_names(subs.front().cols());
             is_header_set = true;
         }
 
-        // TODO: Add PID & SID
+        s["simid"] = std::to_string(sid);
+        s["pubid"] = std::to_string(i++);
+
         writer->write_row(s);
     }
 

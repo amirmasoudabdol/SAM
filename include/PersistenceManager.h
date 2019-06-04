@@ -46,7 +46,7 @@ namespace sam {
         
         Writer(string filename);
         
-        void write(std::vector<Submission> &subs);
+        void write(std::vector<Submission> &subs, int sid = 0);
         
         void write(std::vector<arma::Row<double> > measurements);
 
