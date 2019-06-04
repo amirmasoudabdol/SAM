@@ -184,17 +184,15 @@ namespace sam {
             HackingMethod name = HackingMethod::SDOutlierRemoval;
             std::string level = "dv";
             std::string order = "max first";
-            int num = 3;
-            int n_attempts = 1;
-            int max_attempts = 10;
-            int min_observations = 15;
+            int num {3};
+            int n_attempts {1};
+            int max_attempts {10};
+            int min_observations {15};
             std::vector<double> multipliers = {3};
         };
         
         Parameters params;
-        
-        SDOutlierRemoval();
-        
+                
         SDOutlierRemoval(const Parameters &p) : params{p} {
             name = params.name;
         };

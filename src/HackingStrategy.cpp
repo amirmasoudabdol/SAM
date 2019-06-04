@@ -64,27 +64,27 @@ std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_c
 }
 
 std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingMethod method) {
-//    switch (method) {
-//        
-//        case HackingMethod::NoHack:
-//            return std::make_unique<NoHack>();
-//            break;
-//        case HackingMethod::OptionalStopping:
-//            return std::make_unique<OptionalStopping>();
-//            break;
-//        case HackingMethod::SDOutlierRemoval:
-//            return std::make_unique<SDOutlierRemoval>();
-//            break;
-//        case HackingMethod::GroupPooling:
-//            return std::make_unique<GroupPooling>();
-//            break;
-//        case HackingMethod::ConditionDropping:
-//            return std::make_unique<ConditionDropping>();
-//            break;
-//        default:
-//            return std::make_unique<NoHack>();
-//            break;
-//    }
+    switch (method) {
+
+        case HackingMethod::NoHack:
+            return std::make_unique<NoHack>();
+            break;
+        case HackingMethod::OptionalStopping:
+            return std::make_unique<OptionalStopping>();
+            break;
+        case HackingMethod::SDOutlierRemoval:
+            return std::make_unique<SDOutlierRemoval>();
+            break;
+        case HackingMethod::GroupPooling:
+            return std::make_unique<GroupPooling>();
+            break;
+        case HackingMethod::ConditionDropping:
+            return std::make_unique<ConditionDropping>();
+            break;
+        default:
+            return std::make_unique<NoHack>();
+            break;
+    }
 }
 
 /**

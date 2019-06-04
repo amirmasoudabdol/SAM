@@ -47,7 +47,7 @@ namespace sam {
         Writer(string filename);
         
         /// Write a list of submission records to a file, or a database
-        /// @param subs <#subs description#>
+        /// @param subs A reference to Submission container
         void write(std::vector<Submission> &subs, int sid = 0);
         
         /// Write each groups' data to a file, or a database

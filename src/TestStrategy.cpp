@@ -62,7 +62,7 @@ std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
     
 }
 
-std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &params){
+//std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &params){
     
 //    if (params.name == TestMethod::TTest){
 //        return std::make_shared<TTest>(params);
@@ -70,7 +70,7 @@ std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &
 //        throw std::invalid_argument("Unknown Test Strategy.");
 //    }
     
-}
+//}
 
 namespace sam {
 
