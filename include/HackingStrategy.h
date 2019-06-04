@@ -75,6 +75,7 @@ namespace sam {
 
         NoHack() {
 //            params.name = HackingMethod::NoHack;
+            name = HackingMethod::NoHack;
         };
         
         void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) { };

@@ -72,12 +72,14 @@ namespace sam {
         arma::Row<int> nobs_;
         arma::Row<double> means_;
         arma::Row<double> vars_;
+        arma::Row<double> covs_;
         arma::Mat<double> sigma_;
 
         // TODO: Integrate Us!
         arma::Row<double> loadings_;
         arma::Row<double> error_means_;
         arma::Row<double> error_vars_;
+        arma::Row<double> error_covs_;
         arma::Mat<double> error_sigma_;
         
         std::map<std::string, Distribution> params_dist;
@@ -107,10 +109,6 @@ namespace sam {
         void setSeed(int s) {
             rng_stream->setSeed(s);
         }
-        
-        // TODO: These can move out!
-        arma::Mat<double> constructCovMatrix(double var, double cov) const;
-        arma::Mat<double> constructCovMatrix(const arma::Row<double> &vars, double cov) const;
 
 
         const int nc() const { return nc_; };
@@ -301,7 +299,7 @@ namespace sam {
             if (!is_vars_set) {
                 throw std::invalid_argument("Please set the variance before the fixed covariance.");
             }else{
-                setup.sigma_ = setup.constructCovMatrix(setup.vars_, cov);
+                setup.sigma_ = constructCovMatrix(setup.vars_, cov, setup.ng_);
             }
 
             return *this;

@@ -16,23 +16,6 @@ ExperimentSetupBuilder ExperimentSetup::create() {
     return ExperimentSetupBuilder();
 }
 
-arma::Mat<double>
-ExperimentSetup::constructCovMatrix(double var, double cov) const {
-    arma::Row<double> vars(ng_);
-    vars.fill(var);
-    return constructCovMatrix(vars, cov);
-}
-
-arma::Mat<double>
-ExperimentSetup::constructCovMatrix(const arma::Row<double> &vars, double cov) const {
-    arma::Mat<double> cov_matrix(ng_, ng_);
-    
-    cov_matrix.fill(cov);
-    cov_matrix.diag() = vars;
-    
-    return cov_matrix;
-}
-
 ExperimentSetup::ExperimentSetup(json& config) {
     
     using namespace magic_enum;
@@ -62,6 +45,13 @@ ExperimentSetup::ExperimentSetup(json& config) {
     auto vars_t = get_expr_setup_params<double>(config["vars"], ng_);
     vars_ = std::get<0>(vars_t);
     params_dist["vars"] = std::get<1>(vars_t);
+    
+    auto covs_t = get_expr_setup_params<double>(config["covs"], ng_ * (ng_ - 1) / 2);
+    covs_ = std::get<0>(covs_t);
+    params_dist["covs"] = std::get<1>(covs_t);
+    
+    // Constructing the covarinace matrix based on the given covariance and variances.
+    sigma_ = constructCovMatrix(vars_, covs_, ng_);
 
     auto loadings_t = get_expr_setup_params<double>(config["loadings"], ni_);
     loadings_ = std::get<0>(loadings_t);
@@ -75,50 +65,12 @@ ExperimentSetup::ExperimentSetup(json& config) {
     error_vars_ = std::get<0>(error_vars_t);
     params_dist["err-vars"] = std::get<1>(error_vars_t);
 
+    auto error_covs_t = get_expr_setup_params<double>(config["err-covs"], nrows_ * (nrows_ - 1) / 2);
+    error_covs_ = std::get<0>(error_covs_t);
+    params_dist["err-covs"] = std::get<1>(error_covs_t);
     
-    if (config["covs"].is_array()){
-        if (config["covs"].size() != ng_){
-            throw std::invalid_argument( "Size of covs does not match the size of the experiment.");
-        }
-        // DOC: Notify the user that the `sds` will be discarded.
-        auto sigma = config["covs"].get<std::vector<std::vector<double>>>();
-        for (int i = 0; i < sigma.size(); i++) {
-            sigma_.row(i) = arma::rowvec(sigma[i]);
-        }
-        vars_ = sigma_.diag().t();
-    }else if (config["covs"].is_number()){
-        // Broadcase the --covs to the a matrix, and replace the diagonal values with
-        // the value already given by --vars.
-        double cov = config["covs"];
-
-        sigma_.zeros(ng_, ng_);
-        sigma_.fill(cov);
-        sigma_.diag() = vars_;
-    }else{
-        throw std::invalid_argument("covs is invalid or not provided.");
-    }
-
-    // Error's Covariant Matrix
-    if (config["err-covs"].is_array()){
-        if (config["err-covs"].size() != nrows_){
-            throw std::invalid_argument( "Size of --err-covs does not match the size of the experiment.");
-        }
-        auto covs = config["err-covs"].get<std::vector<std::vector<double>>>();
-        for (int i = 0; i < covs.size(); i++) {
-            error_sigma_.row(i) = arma::rowvec(covs[i]);
-        }
-        
-    }else if (config["err-covs"].is_number()){
-        // Broadcase the --err-covs to the a matrix, and replace the diagonal values with
-        // the value already given by --vars.
-        double cov = config["err-covs"];
-
-        error_sigma_.zeros(nrows_, nrows_);
-        error_sigma_.fill(cov);
-        error_sigma_.diag() = error_vars_;
-    }else{
-        throw std::invalid_argument("err-covs is invalid or not provided.");
-    }
+    // Constructing the covariance matrix
+    error_sigma_ = constructCovMatrix(error_vars_, error_covs_, nrows_);
     
 }
 
@@ -134,6 +86,13 @@ void ExperimentSetup::randomize_parameters() {
     if (params_dist["vars"]){
         fill_vector<double>(vars_, vars_.size(), params_dist["vars"](gen));
     }
+
+    if (params_dist["covs"]){
+        fill_vector<double>(covs_, covs_.size(), params_dist["vars"](gen));
+    }
+
+    if (params_dist["vars"] || params_dist["covs"])
+        sigma_ = constructCovMatrix(vars_, covs_, ng_);
 
     // TODO: TEST US!
     // if (params_dist["loadings"]){
