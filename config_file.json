@@ -12,7 +12,6 @@
         "n-dep-vars": 3,
         "n-items": 3,
         "n-obs": 10,
-        "sigma": 0.5,
         "test-strategy": {
             "alpha": 0.05,
             "name": "TTest",

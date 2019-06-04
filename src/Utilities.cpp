@@ -6,6 +6,47 @@
 
 using Generator = std::mt19937;
 
+arma::Mat<double>
+constructCovMatrix(const arma::Row<double> &vars, const double cov, int n) {
+    arma::Mat<double> cov_matrix(n, n);
+    
+    cov_matrix.fill(cov);
+    cov_matrix.diag() = vars;
+    
+    return cov_matrix;
+}
+
+arma::Mat<double>
+constructCovMatrix(const arma::Row<double> &vars, const arma::Row<double> &covs, int n) {
+    using namespace arma;
+
+    assert(covs.size() == n * (n - 1) / 2);
+
+    mat temp(n, n);
+    temp.fill(-1);
+
+    mat L = trimatl(temp, -1);
+
+    mat::row_iterator row_it     = L.begin_row(1);  // start of rowumn 1
+    mat::row_iterator row_it_end = L.end_row(n-1);    //   end of rowumn 3
+
+    for(int i = 0; row_it != row_it_end; ++row_it)
+        if ((*row_it) == -1)
+            (*row_it) = covs(i++);
+
+    mat sigma = symmatl(L);
+    sigma.diag() = vars;
+
+    return sigma;
+}
+
+arma::Mat<double>
+constructCovMatrix(const double var, const double cov, const int n) {
+    arma::Row<double> vars(n);
+    vars.fill(var);
+    return constructCovMatrix(vars, cov, n);
+}
+
 
 Distribution make_distribution(json const &j) {
     auto const &distributionName = j.at("dist");

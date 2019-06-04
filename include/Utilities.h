@@ -13,7 +13,6 @@
 #include <tuple>
 
 #include "sam.h"
-
 #include "nlohmann/json.hpp"
 #include "utils/magic_enum.hpp"
 
@@ -99,5 +98,14 @@ T get_enum_value_from_json(const std::string &key, const json &j) {
     else
         throw std::invalid_argument("Unknown value.");
 }
+
+arma::Mat<double>
+constructCovMatrix(const arma::Row<double> &vars, const arma::Row<double> &covs, int n);
+
+arma::Mat<double>
+constructCovMatrix(const arma::Row<double> &vars, const double cov, int n);
+
+arma::Mat<double>
+constructCovMatrix(const double var, const double cov, const int n);
 
 #endif //SAMPP_UTILITIES_H
