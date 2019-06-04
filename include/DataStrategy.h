@@ -63,6 +63,8 @@ namespace sam {
 
         static std::shared_ptr<DataStrategy> build(const std::string &name);
 
+        static std::shared_ptr<DataStrategy> build(json &data_strategy_config);
+
         static std::shared_ptr<DataStrategy> build(const DataStrategyParameters &dsp);
         
         

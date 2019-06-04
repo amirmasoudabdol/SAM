@@ -183,10 +183,20 @@ namespace sam {
         };
         
 
-        ResearcherBuilder& createDecisionStrategy(const DecisionStrategy::DecisionStrategyParameters &dsp) {
-            researcher.decision_strategy = DecisionStrategy::build(dsp);
+//        ResearcherBuilder& createDecisionStrategy(const DecisionStrategy::DecisionStrategyParameters &dsp) {
+//            researcher.decision_strategy = DecisionStrategy::build(dsp);
+//            return *this;
+//        };
+        
+        ResearcherBuilder& createDecisionStrategy(json &ds){
+            researcher.decision_strategy = DecisionStrategy::build(ds);
             return *this;
-        };
+        }
+        
+//        ResearcherBuilder& setDecisionStrategy(const DecisionStrategy &ds){
+//            researcher.decision_strategy = ds;
+//            return *this;
+//        };
 
         ResearcherBuilder& createJournal(Journal::JournalParameters &jp) {
             // TODO: Removed during the transition to json parser. Bring me back!
@@ -195,6 +205,13 @@ namespace sam {
             researcher.journal = new Journal(jp);
             return *this;
         }
+        
+        ResearcherBuilder& createJournal(json &journal_config) {
+            researcher.journal = new Journal(journal_config);
+            return *this;
+        }
+        
+        
 
         ResearcherBuilder& createExperiment(ExperimentSetup es) {
             researcher.experiment = new Experiment(es);

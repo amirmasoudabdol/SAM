@@ -126,54 +126,54 @@ BOOST_AUTO_TEST_SUITE_END()
 
 
 
-BOOST_FIXTURE_TEST_SUITE( test_strategy_class, sample_linear_experiment )
-
-    BOOST_AUTO_TEST_CASE( test_strategy_constructor )
-    {
-
-        linear_setup.v_means.fill(0);
-        linear_setup.v_nobs.fill(10);
-        experiment->setup.set_means(linear_setup.v_means);
-        experiment->setup.set_nobs(linear_setup.v_nobs);
-
-        rowvec pvalues;
-        rowvec statistics;
-
-        for (int i = 0; i < 10000; ++i)
-        {
-            experiment->generateData();
-            experiment->calculateStatistics();
-            experiment->runTest();
-
-            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
-            statistics.insert_cols(statistics.size(), experiment->statistics);
-        }
-
-        BOOST_CHECK_SMALL(arma::mean(pvalues) - 0.5, 0.01);
-        BOOST_CHECK_SMALL(arma::mean(statistics) - 0.0, 0.01);
-
-        linear_setup.v_means.fill(1);
-        linear_setup.v_means.fill(1);
-        linear_setup.v_nobs.fill(10);
-        experiment->setup.set_means(linear_setup.v_means);
-        experiment->setup.set_means(linear_setup.v_means);
-        experiment->setup.set_nobs(linear_setup.v_nobs);
-
-        pvalues.clear();
-        statistics.clear();
-        for (int i = 0; i < 10000; ++i)
-        {
-            experiment->generateData();
-            experiment->calculateStatistics();
-            experiment->runTest();
-
-            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
-            statistics.insert_cols(statistics.size(), experiment->statistics);
-        }
-
-        BOOST_CHECK_SMALL(arma::mean(pvalues) - 0.04, 0.01);
-        BOOST_CHECK_SMALL(arma::mean(statistics) - 3.45, 0.01);
-
-    }
+//BOOST_FIXTURE_TEST_SUITE( test_strategy_class, sample_linear_experiment )
+//
+//    BOOST_AUTO_TEST_CASE( test_strategy_constructor )
+//    {
+//
+//        linear_setup.v_means.fill(0);
+//        linear_setup.v_nobs.fill(10);
+//        experiment->setup.set_means(linear_setup.v_means);
+//        experiment->setup.set_nobs(linear_setup.v_nobs);
+//
+//        rowvec pvalues;
+//        rowvec statistics;
+//
+//        for (int i = 0; i < 10000; ++i)
+//        {
+//            experiment->generateData();
+//            experiment->calculateStatistics();
+//            experiment->runTest();
+//
+//            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
+//            statistics.insert_cols(statistics.size(), experiment->statistics);
+//        }
+//
+//        BOOST_CHECK_SMALL(arma::mean(pvalues) - 0.5, 0.01);
+//        BOOST_CHECK_SMALL(arma::mean(statistics) - 0.0, 0.01);
+//
+//        linear_setup.v_means.fill(1);
+//        linear_setup.v_means.fill(1);
+//        linear_setup.v_nobs.fill(10);
+//        experiment->setup.set_means(linear_setup.v_means);
+//        experiment->setup.set_means(linear_setup.v_means);
+//        experiment->setup.set_nobs(linear_setup.v_nobs);
+//
+//        pvalues.clear();
+//        statistics.clear();
+//        for (int i = 0; i < 10000; ++i)
+//        {
+//            experiment->generateData();
+//            experiment->calculateStatistics();
+//            experiment->runTest();
+//
+//            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
+//            statistics.insert_cols(statistics.size(), experiment->statistics);
+//        }
+//
+//        BOOST_CHECK_SMALL(arma::mean(pvalues) - 0.04, 0.01);
+//        BOOST_CHECK_SMALL(arma::mean(statistics) - 3.45, 0.01);
+//
+//    }
 
 BOOST_AUTO_TEST_SUITE_END()

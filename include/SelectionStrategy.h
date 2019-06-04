@@ -107,7 +107,9 @@ namespace sam {
         
         Parameters params;
         
-        SignificantSelection(const Parameters &p) : params{p} {};
+        SignificantSelection(const Parameters &p) : params{p} {
+            mainRngStream = new RandomNumberGenerator(params.seed);
+        };
         
         SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42) {
 

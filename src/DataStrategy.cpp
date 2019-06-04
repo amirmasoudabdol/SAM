@@ -29,6 +29,18 @@ std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name) {
 }
 
 
+std::shared_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
+    
+    if (data_strategy_config["name"] == "LinearModel"){
+        return std::make_shared<LinearModelStrategy>();
+    }else if (data_strategy_config["name"] == "LatentModel") {
+        return std::make_shared<LatentDataStrategy>();
+    }else{
+        throw std::invalid_argument("Unknown Data Strategy.");
+    }
+
+}
+
 std::shared_ptr<DataStrategy> DataStrategy::build(const DataStrategyParameters &dsp) {
     
     if (dsp.name == DataModel::LinearModel){
@@ -39,6 +51,8 @@ std::shared_ptr<DataStrategy> DataStrategy::build(const DataStrategyParameters &
         throw std::invalid_argument("Unknown Data Strategy.");
     }
 }
+
+
 
 
 void LinearModelStrategy::genData(Experiment* experiment)  {

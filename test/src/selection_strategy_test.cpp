@@ -60,8 +60,8 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
     	
         for (auto &p : {0., 0.05, 0.5, 0.95} ) {
             
-            ssp.pub_bias = p;
-            researcher.journal->selection_strategy = SelectionStrategy::build(ssp);
+            s_s_conf["pub_bias"] = p;
+            researcher.journal->selection_strategy = SelectionStrategy::build(s_s_conf);
 
             for (int i = 0; i < nsims; i++) {
 
@@ -85,7 +85,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
             
             std::cout << arma::mean(pub_sigs) << std::endl;
             
-            BOOST_TEST( arma::mean(pub_sigs) > ssp.pub_bias );
+            BOOST_TEST( arma::mean(pub_sigs) > s_s_conf["pub_bias"] );
             
         }
 
@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
 
         double n_pubs = jp.max_pubs * nsims;
         
-        ssp.name = SelectionMethod::RandomSelection;
+        s_s_conf["name"] = "RandomSelection";
 
         initResearch();
 

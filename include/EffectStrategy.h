@@ -41,6 +41,8 @@ namespace sam {
         
         static std::shared_ptr<EffectStrategy>build(const std::string &name);
         
+        static std::shared_ptr<EffectStrategy>build(json &effect_strategy_config);
+        
         static std::shared_ptr<EffectStrategy>build(const EffectStrategyParameters &esp);
         
         virtual ~EffectStrategy() = 0;

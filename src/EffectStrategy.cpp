@@ -33,6 +33,17 @@ std::shared_ptr<EffectStrategy>EffectStrategy::build(const EffectStrategyParamet
     }
 }
 
+// TODO: This needs to be improved. It's an ugly fix for now.
+std::shared_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_config) {
+    if (effect_strategy_config["name"] == "CohensD") {
+        return std::make_shared<CohensD>();
+    }else if (effect_strategy_config["name"] == "HedgesG"){
+        return std::make_shared<HedgesG>();
+    }else{
+        throw std::invalid_argument("Uknown effect size estimator.\n");
+    }
+}
+
 void CohensD::computeEffects(Experiment *experiment){
     
     for (int i = 0; i < experiment->means.size(); i++) {

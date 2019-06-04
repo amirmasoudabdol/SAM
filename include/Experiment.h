@@ -66,9 +66,11 @@ namespace sam {
         
         explicit Experiment(ExperimentSetup& e) : setup{e} {
 
-            data_strategy = DataStrategy::build(setup.dsp_);
-            test_strategy = TestStrategy::build(setup.tsp_);
-            effect_strategy = EffectStrategy::build(setup.esp_);
+            data_strategy = DataStrategy::build(setup.dsp_conf);
+            test_strategy = TestStrategy::build(setup.tsp_conf);
+            
+            // TODO: Fix me!
+            effect_strategy = EffectStrategy::build(setup.esp_conf);
             
             initResources(setup.ng());
         };

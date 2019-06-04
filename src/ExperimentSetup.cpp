@@ -23,7 +23,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     // Setting the seed for number of observation
     rng_stream = new RandomNumberGenerator(rand());
     
-    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data-strategy"].get<std::string>());
+    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data-strategy"]["name"].get<std::string>());
     if (data_model.has_value()) {
         dsp_.name = data_model.value();
     }

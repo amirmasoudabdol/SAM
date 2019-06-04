@@ -99,12 +99,15 @@ namespace sam {
 
         //! Test Strategy Parameters
         TestStrategy::TestStrategyParameters tsp_;
+        json tsp_conf;
 
         //! Data Strategy Parameters
         DataStrategy::DataStrategyParameters dsp_;
+        json dsp_conf;
         
         //! Effect Estimator Parameters
         EffectStrategy::EffectStrategyParameters esp_;
+        json esp_conf;
         
         void setSeed(int s) {
             rng_stream->setSeed(s);
@@ -321,7 +324,8 @@ namespace sam {
             return *this;
         }
         
-        ExperimentSetupBuilder& setTestStrategy(const TestStrategy::TestStrategyParameters &tsp) {
+        ExperimentSetupBuilder& setTestStrategy(const TestStrategy::TestStrategyParameters &tsp)
+        {
             setup.tsp_ = tsp;
             return *this;
         }
@@ -333,6 +337,24 @@ namespace sam {
         
         ExperimentSetupBuilder& setEffectStrategy(const EffectStrategy::EffectStrategyParameters &esp) {
             setup.esp_ = esp;
+            return *this;
+        }
+        
+        ExperimentSetupBuilder& setTestStrategyParameters(json &test_strategy_config)
+        {
+            setup.tsp_conf = test_strategy_config;
+            return *this;
+        }
+        
+        ExperimentSetupBuilder& setDataStrategyParameters(json &test_strategy_config)
+        {
+            setup.dsp_conf = test_strategy_config;
+            return *this;
+        }
+        
+        ExperimentSetupBuilder& setEffectStrategyParameters(json &test_strategy_config)
+        {
+            setup.esp_conf = test_strategy_config;
             return *this;
         }
 
