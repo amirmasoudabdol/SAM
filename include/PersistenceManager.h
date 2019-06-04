@@ -46,10 +46,14 @@ namespace sam {
         
         Writer(string filename);
         
+        /// Write a list of submission records to a file, or a database
+        /// @param subs <#subs description#>
         void write(std::vector<Submission> &subs, int sid = 0);
         
-        void write(std::vector<arma::Row<double> > measurements);
-
+        /// Write each groups' data to a file, or a database
+        /// @param data A reference to the Experiment->measurements
+        void write(std::vector<arma::Row<double>> &data, int sid = 0);
+        
     };
         
         
