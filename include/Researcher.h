@@ -138,6 +138,9 @@ namespace sam {
             
             this->config = config;
             
+            /// TODO: I can technically replace all these direct calls with calls
+            /// to their counterpart in the Builder!
+            
             researcher.experiment = new Experiment(config["ExperimentParameters"]);
             
             researcher.journal = new Journal(config["JournalParameters"]);
@@ -164,7 +167,63 @@ namespace sam {
             
             return *this;
         }
+        
+        ////////////////////////////
+        /// CREATEING NEW OBJECT ///
+        ////////////////////////////
+        
+        /**
+         @brief Create a new DecisionStrategy for the researcher based on the
+         given configuration.
+         */
+        ResearcherBuilder& createDecisionStrategy(json &ds){
+            researcher.decision_strategy = DecisionStrategy::build(ds);
+            return *this;
+        }
+        
+        /**
+         @brief Create a new Journal for the researcher based on the given
+         configuration.
+         
+         @note The configuration needs to include information about the
+         SelectionStrategy as well.
+         */
+        ResearcherBuilder& createJournal(json &journal_config) {
+            researcher.journal = new Journal(journal_config);
+            return *this;
+        }
 
+        /**
+         @brief Create a new Experiment based on the given ExperimentSetup.
+         
+         @note: This assumes that the experiment setup is correctly initiated.
+         */
+        ResearcherBuilder& createExperiment(ExperimentSetup es) {
+            researcher.experiment = new Experiment(es);
+            return *this;
+        }
+        
+        
+        ResearcherBuilder& createNewHackingStrategyGroup(json &hacking_strategy_group_config) {
+            // TODO: To be implemented
+            return *this;
+        }
+        
+        ResearcherBuilder& createNewHackingStrategy(json &hacking_strategy_config) {
+            // TODO: To be implemented
+            return *this;
+        }
+        
+        //////////////////////////
+        /// SETTING NEW OBJECT ///
+        //////////////////////////
+        
+//        ResearcherBuilder& setDecisionStrategy(const DecisionStrategy &ds){
+//            researcher.decision_strategy = ds;
+//            return *this;
+//        };
+        
+        
         ResearcherBuilder& setExperiment(Experiment *expr) {
             researcher.experiment = expr;
             return *this;
@@ -175,68 +234,35 @@ namespace sam {
             return *this;
         };
         
-        ResearcherBuilder& setResearcherPreference(DecisionPreference pref){
-            researcher.decision_strategy->selectionPref = pref;
-            return *this;
-        };
-        
-
-//        ResearcherBuilder& createDecisionStrategy(const DecisionStrategy::DecisionStrategyParameters &dsp) {
-//            researcher.decision_strategy = DecisionStrategy::build(dsp);
-//            return *this;
-//        };
-        
-        ResearcherBuilder& createDecisionStrategy(json &ds){
-            researcher.decision_strategy = DecisionStrategy::build(ds);
-            return *this;
-        }
-        
-//        ResearcherBuilder& setDecisionStrategy(const DecisionStrategy &ds){
-//            researcher.decision_strategy = ds;
-//            return *this;
-//        };
-
-        ResearcherBuilder& createJournal(Journal::JournalParameters &jp) {
-            // TODO: Removed during the transition to json parser. Bring me back!
-//                                         SelectionStrategy::SelectionStrategyParameters &ssp) {
-//            researcher.journal = new Journal(jp, ssp);
-            researcher.journal = new Journal(jp);
-            return *this;
-        }
-        
-        ResearcherBuilder& createJournal(json &journal_config) {
-            researcher.journal = new Journal(journal_config);
-            return *this;
-        }
-        
-        
-
-        ResearcherBuilder& createExperiment(ExperimentSetup es) {
-            researcher.experiment = new Experiment(es);
-            return *this;
-        }
-
+        // TODO: I'm not sure if I should leave these here or not
         ResearcherBuilder& setDataStrategy(std::shared_ptr<DataStrategy> ds) {
             researcher.experiment->data_strategy = ds;
             return *this;
         }
+        
+        // TODO: I'm not sure if I should leave these here or not
         ResearcherBuilder& setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
             researcher.experiment->test_strategy = ts;
             return *this;
         };
+        
         ResearcherBuilder& setJournal(Journal *j) {
             researcher.journal = j;
             return *this;
         };
+        
+        
         ResearcherBuilder& setJournalSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
             // TESTME
             researcher.journal->setSelectionStrategy(std::move(ss));
             return *this;
         };
+        
         ResearcherBuilder& setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
             researcher.setDecisionStrategy(std::move(ds));
             return *this;
         };
+        
         ResearcherBuilder& setHackingStrategy(HackingStrategy *hs);
         ResearcherBuilder& setHackingStrategy(std::vector<std::vector<HackingStrategy*>>);
         
@@ -246,16 +272,7 @@ namespace sam {
             return *this;
         }
         
-        // TODO: Removed during the transition to json parser. Bring me back!
-//        ResearcherBuilder& addNewHackingStrategy(HackingStrategyParameters hsp) {
-//            if (researcher.hacking_strategies.empty()){
-//                researcher.hacking_strategies.resize(1);
-//            }
-//            researcher.hacking_strategies.back().push_back(HackingStrategy::build(hsp));
-//            
-//            researcher.is_hacker = true;
-//            return *this;
-//        }
+
         
         ResearcherBuilder& addNewHackingStrategy(HackingStrategy *new_hs) {
             if (researcher.hacking_strategies.empty()){
@@ -282,7 +299,7 @@ namespace sam {
             
             std::random_device rd;
             std::mt19937 gen(rd());
-            std::uniform_int_distribution<int> uniform(0, hacking_strategies_pool.size() - 1);
+            std::uniform_int_distribution<> uniform(0, hacking_strategies_pool.size() - 1);
             
             for (auto &group : researcher.hacking_strategies) {
                 
