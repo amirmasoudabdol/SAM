@@ -441,28 +441,30 @@ namespace csv {
     unordered_flat_map<std::string_view, std::string> current_row_;
     std::string current_value_;
     ConcurrentQueue<unordered_flat_map<std::string_view, std::string>> rows_;
-    ProducerToken rows_ptoken_;
-    ConsumerToken rows_ctoken_;
     ConcurrentQueue<size_t> number_of_rows_processed_;
 
     // Member variables to keep track of rows/cols
     size_t columns_;
-    size_t expected_number_of_rows_;
 
     // Member variables to enable streaming
-    ConcurrentQueue<size_t> row_iterator_queue_;
-    size_t row_iterator_index_;
-
+    
+    std::string current_dialect_name_;
+    
     std::thread reading_thread_;
     bool reading_thread_started_;
-
+    
     std::thread processing_thread_;
     std::atomic<bool> processing_thread_started_;
 
+    ConcurrentQueue<size_t> row_iterator_queue_;
+    size_t row_iterator_index_;
+    size_t expected_number_of_rows_;
+    
     ConcurrentQueue<std::string> values_;
     ProducerToken values_ptoken_;
     ConsumerToken values_ctoken_;
-    std::string current_dialect_name_;
+    ProducerToken rows_ptoken_;
+    ConsumerToken rows_ctoken_;
     unordered_flat_map<std::string, Dialect> dialects_;
     Dialect current_dialect_;
     size_t done_index_;
