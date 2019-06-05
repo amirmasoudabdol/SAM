@@ -29,12 +29,12 @@ std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name) {
 }
 
 
-std::shared_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
+std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
     
     if (data_strategy_config["name"] == "LinearModel"){
-        return std::make_shared<LinearModelStrategy>();
+        return std::make_unique<LinearModelStrategy>();
     }else if (data_strategy_config["name"] == "LatentModel") {
-        return std::make_shared<LatentDataStrategy>();
+        return std::make_unique<LatentDataStrategy>();
     }else{
         throw std::invalid_argument("Unknown Data Strategy.");
     }

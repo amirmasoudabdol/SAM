@@ -71,11 +71,11 @@ namespace sam {
         
         explicit Experiment(ExperimentSetup& e) : setup{e} {
 
-            data_strategy = DataStrategy::build(setup.dsp_conf);
-            test_strategy = TestStrategy::build(setup.tsp_conf);
+            data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
+            test_strategy = std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
             
             // TODO: Fix me!
-            effect_strategy = EffectStrategy::build(setup.esp_conf);
+            effect_strategy = std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
             
             initResources(setup.ng());
         };

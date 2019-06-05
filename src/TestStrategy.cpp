@@ -38,14 +38,14 @@ void TTest::run(Experiment* experiment) {
 }
 
 
-std::shared_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
+std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
     if (test_strategy_config["name"] == "TTest"){
         
         auto params = test_strategy_config.get<TTest::Parameters>();
-        return std::make_shared<TTest>(params);
+        return std::make_unique<TTest>(params);
         
-//        return std::make_shared<TTest>(tsp);
+//        return std::make_unique<TTest>(tsp);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }

@@ -197,6 +197,10 @@ namespace sam {
 
         ExperimentSetupBuilder() = default;
 
+        /**
+         @brief Create and configure a new experiment setup based on the given
+         configuration.
+         */
         ExperimentSetupBuilder& fromConfigFile(json &config);
 
         /**
@@ -321,22 +325,6 @@ namespace sam {
             setup.vars_ = sigma.diag().t();
             setup.sigma_ = sigma;
 
-            return *this;
-        }
-        
-        ExperimentSetupBuilder& setTestStrategy(const TestStrategy::TestStrategyParameters &tsp)
-        {
-            setup.tsp_ = tsp;
-            return *this;
-        }
-        
-        ExperimentSetupBuilder& setDataStrategy(const DataStrategy::DataStrategyParameters &dsp) {
-            setup.dsp_ = dsp;
-            return *this;
-        }
-        
-        ExperimentSetupBuilder& setEffectStrategy(const EffectStrategy::EffectStrategyParameters &esp) {
-            setup.esp_ = esp;
             return *this;
         }
         
