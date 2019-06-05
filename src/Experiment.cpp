@@ -73,16 +73,16 @@ void Experiment::recalculateEverything() {
 Experiment::Experiment(json &experiment_config) { 
     
     // Setup the Experiment
-    this->setup = ExperimentSetup(experiment_config["ExperimentParameters"]);
+    this->setup = ExperimentSetup(experiment_config);
 
     // Setup the Data Strategy
-    this->data_strategy = DataStrategy::build(experiment_config["ExperimentParameters"]["data-strategy"]);
+    this->data_strategy = DataStrategy::build(experiment_config["data-strategy"]);
     
     // Setup the Test Strategy
-    this->test_strategy = TestStrategy::build(experiment_config["ExperimentParameters"]["test-strategy"]);
+    this->test_strategy = TestStrategy::build(experiment_config["test-strategy"]);
     
     // Setup Effect Strategy
-    this->effect_strategy = EffectStrategy::build(experiment_config["ExperimentParameters"]["effect-estimators"]);
+    this->effect_strategy = EffectStrategy::build(experiment_config["effect-estimators"]);
     
     // Initializing the memory
     initResources(setup.ng());

@@ -138,9 +138,7 @@ namespace sam {
             
             this->config = config;
             
-//            auto setup = ExperimentSetup::create().fromConfigFile(config).build();
-            
-            researcher.experiment = new Experiment(config);
+            researcher.experiment = new Experiment(config["ExperimentParameters"]);
             
             researcher.journal = new Journal(config["JournalParameters"]);
             

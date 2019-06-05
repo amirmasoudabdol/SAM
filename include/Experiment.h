@@ -33,6 +33,11 @@ namespace sam {
         
     public:
         ExperimentSetup setup;
+        
+        /// @note: While I'm still confused about these, but I'm starting to feel that it
+        /// actually makes sense for them to be a shared pointer. In fact, I don't really
+        /// want to copy them around when I copy the experiment, I would like them to be
+        /// shared. So, it seems the ownership is correct here.
         std::shared_ptr<DataStrategy> data_strategy;
         std::shared_ptr<TestStrategy> test_strategy;
         std::shared_ptr<EffectStrategy> effect_strategy;
