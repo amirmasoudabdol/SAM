@@ -38,6 +38,7 @@ SOFTWARE.
 namespace csv {
 
   struct Dialect {
+
     std::string delimiter_;
     bool skip_initial_space_;
     char line_terminator_;
@@ -49,7 +50,6 @@ namespace csv {
       
     unordered_flat_map<std::string_view, bool> ignore_columns_;
     std::vector<std::string> column_names_;
-    
 
     Dialect() :
       delimiter_(","),
@@ -118,18 +118,30 @@ namespace csv {
     Dialect& column_names() {
       return *this;
     }
+    
+    // Some utility structs to check template specialization
+    template<typename Test, template<typename...> class Ref>
+    struct is_specialization : std::false_type {};
+    
+    template<template<typename...> class Ref, typename... Args>
+    struct is_specialization<Ref<Args...>, Ref> : std::true_type {};        
 
     // Parameter packed trim_characters method
     // Accepts a variadic number of columns
     template<typename T, typename... Targs>
-    Dialect& column_names(T column, Targs... Fargs) {
+    typename
+    std::enable_if<!is_specialization<T, std::vector>::value, Dialect&>::type
+    column_names(T column, Targs... Fargs) {
       column_names_.push_back(column);
       column_names(Fargs...);
       return *this;
     }
-      
-    Dialect& column_names(const std::vector<std::string> &column_names) {
-      column_names_ = column_names;
+    
+    // Parameter packed trim_characters method
+    // Accepts a vector of strings
+    Dialect& column_names(const std::vector<std::string>& columns) {
+      for (auto& column : columns)
+	column_names_.push_back(column);
       return *this;
     }
 
