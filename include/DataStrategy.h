@@ -59,14 +59,8 @@ namespace sam {
          @param setup An instance of ExperimentSetup
          @return a new DataStrategy
          */
-        // static std::shared_ptr<DataStrategy> build(ExperimentSetup &setup);
-
-        static std::shared_ptr<DataStrategy> build(const std::string &name);
 
         static std::unique_ptr<DataStrategy> build(json &data_strategy_config);
-
-        static std::shared_ptr<DataStrategy> build(const DataStrategyParameters &dsp);
-        
         
         /**
          Pure deconstructor of the DataStrategy abstract class.

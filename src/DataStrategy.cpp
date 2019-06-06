@@ -16,19 +16,6 @@ DataStrategy::~DataStrategy() {
     // Pure deconstructor
 }
 
-std::shared_ptr<DataStrategy> DataStrategy::build(const std::string &name) {
-    
-    if (name == "LinearModel"){
-        return std::make_shared<LinearModelStrategy>();
-    }else if (name == "LatentModel") {
-        return std::make_shared<LatentDataStrategy>();
-    }else{
-        throw std::invalid_argument("Unknown Data Strategy.");
-    }
-
-}
-
-
 std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
     
     if (data_strategy_config["name"] == "LinearModel"){
@@ -40,20 +27,6 @@ std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
     }
 
 }
-
-std::shared_ptr<DataStrategy> DataStrategy::build(const DataStrategyParameters &dsp) {
-    
-    if (dsp.name == DataModel::LinearModel){
-        return std::make_shared<LinearModelStrategy>(dsp);
-    }else if (dsp.name == DataModel::LatentModel) {
-        return std::make_shared<LatentDataStrategy>(dsp);
-    }else{
-        throw std::invalid_argument("Unknown Data Strategy.");
-    }
-}
-
-
-
 
 void LinearModelStrategy::genData(Experiment* experiment)  {
     experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),

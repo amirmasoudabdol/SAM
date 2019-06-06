@@ -45,32 +45,11 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
         auto params = test_strategy_config.get<TTest::Parameters>();
         return std::make_unique<TTest>(params);
         
-//        return std::make_unique<TTest>(tsp);
     }else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
     
 }
-
-std::shared_ptr<TestStrategy> TestStrategy::build(ExperimentSetup &setup){
-    
-    if (setup.tsp_.name == TestMethod::TTest){
-        return std::make_shared<TTest>(setup.tsp_);
-    }else{
-        throw std::invalid_argument("Unknown Test Strategy.");
-    }
-    
-}
-
-//std::shared_ptr<TestStrategy> TestStrategy::build(const TestStrategyParameters &params){
-    
-//    if (params.name == TestMethod::TTest){
-//        return std::make_shared<TTest>(params);
-//    }else{
-//        throw std::invalid_argument("Unknown Test Strategy.");
-//    }
-    
-//}
 
 namespace sam {
 

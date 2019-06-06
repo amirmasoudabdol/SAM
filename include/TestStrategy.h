@@ -88,11 +88,7 @@ namespace sam {
 //
 //        TestStrategyParameters params;
         
-        static std::unique_ptr<TestStrategy> build(json &config);
-        
-        static std::shared_ptr<TestStrategy> build(ExperimentSetup &setup);
-        
-        static std::shared_ptr<TestStrategy> build(const TestStrategyParameters &params);
+        static std::unique_ptr<TestStrategy> build(json &test_strategy_config);
         
         virtual ~TestStrategy() = 0;
         

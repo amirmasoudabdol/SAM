@@ -13,27 +13,6 @@ EffectStrategy::~EffectStrategy() {
     // Pure deconstructor
 };
 
-std::shared_ptr<EffectStrategy>EffectStrategy::build(const std::string &name){
-    if (name == "CohensD") {
-        return std::make_shared<CohensD>();
-    }else if (name == "HedgesG"){
-        return std::make_shared<HedgesG>();
-    }else{
-        throw std::invalid_argument("Uknown effect size estimator.\n");
-    }
-}
-
-std::shared_ptr<EffectStrategy>EffectStrategy::build(const EffectStrategyParameters &esp){
-    if (esp.name == EffectEstimator::CohensD) {
-        return std::make_shared<CohensD>(esp);
-    }else if (esp.name == EffectEstimator::HedgesG){
-        return std::make_shared<HedgesG>(esp);
-    }else{
-        throw std::invalid_argument("Uknown effect size estimator.\n");
-    }
-}
-
-// TODO: This needs to be improved. It's an ugly fix for now.
 std::unique_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_config) {
     if (effect_strategy_config["name"] == "CohensD") {
         return std::make_unique<CohensD>();
