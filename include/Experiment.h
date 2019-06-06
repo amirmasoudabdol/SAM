@@ -73,14 +73,13 @@ namespace sam {
 
             data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
             test_strategy = std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
-            
-            // TODO: Fix me!
             effect_strategy = std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
             
             initResources(setup.ng());
         };
         
         
+        // TODO: I think this can change, I don't need to accept shared_ptr here
         Experiment(ExperimentSetup &e,
                    std::shared_ptr<DataStrategy> &ds,
                    std::shared_ptr<TestStrategy> &ts,
@@ -100,6 +99,8 @@ namespace sam {
          Set or re-set the Test Strategy
 
          @param t A reference to a Test Strategy instance
+         
+         TODO: I think I need to re-evalute passing a shared_ptr by reference.
          */
         void setTestStrategy(std::shared_ptr<TestStrategy> &ts){
             test_strategy = ts;
@@ -109,12 +110,20 @@ namespace sam {
          Set or re-set the Data Strategy
 
          @param d A reference to a Data Strategy instance
+         
+         TODO: I think I need to re-evalute passing a shared_ptr by reference.
          */
         void setDataStrategy(std::shared_ptr<DataStrategy> &ds) {
             data_strategy = ds;
         }
         
-
+        /**
+         Set or re-set the Effect Strategy
+         
+         @param es A reference to an Effect Strategy instance.
+         
+         TODO: I think I need to re-evalute passing a shared_ptr by reference.
+         */
         void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> &es) {
             effect_strategy = es;
         };

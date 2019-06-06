@@ -14,10 +14,10 @@ using namespace sam;
 
 Journal::Journal(json& journal_config){
     
-    max_pubs = journal_config["max-pubs"];
+    max_pubs = journal_config["max_pubs"];
     
     // Setting up the SelectionStrategy
-    this->selection_strategy = SelectionStrategy::build(journal_config["selection-strategy"]);
+    this->selection_strategy = SelectionStrategy::build(journal_config["selection_strategy"]);
 }
 
 //Journal::Journal(JournalParameters &jp,

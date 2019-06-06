@@ -76,13 +76,13 @@ Experiment::Experiment(json &experiment_config) {
     this->setup = ExperimentSetup(experiment_config);
 
     // Setup the Data Strategy
-    this->data_strategy = DataStrategy::build(experiment_config["data-strategy"]);
+    this->data_strategy = DataStrategy::build(experiment_config["data_strategy"]);
     
     // Setup the Test Strategy
-    this->test_strategy = TestStrategy::build(experiment_config["test-strategy"]);
+    this->test_strategy = TestStrategy::build(experiment_config["test_strategy"]);
     
     // Setup Effect Strategy
-    this->effect_strategy = EffectStrategy::build(experiment_config["effect-estimators"]);
+    this->effect_strategy = EffectStrategy::build(experiment_config["effect_estimators"]);
     
     // Initializing the memory
     initResources(setup.ng());

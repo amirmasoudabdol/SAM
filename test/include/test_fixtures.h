@@ -171,12 +171,12 @@ struct SampleResearch {
     Journal *journal;
     json j_conf = {
         {"name", "PLOS"},
-        {"max-pubs", 70}
+        {"max_pubs", 70}
     };
     json s_s_conf = {
         {"name", "SignificantSelection"},
         {"alpha", 0.05},
-        {"pub-bias", 42},
+        {"pub_bias", 42},
         {"side", 1}
     };
     
@@ -218,7 +218,7 @@ struct SampleResearch {
 
     void initResearch() {
         
-        j_conf["selection-strategy"] = s_s_conf;
+        j_conf["selection_strategy"] = s_s_conf;
         
         auto ts = TestStrategy::build(t_s_conf);
 

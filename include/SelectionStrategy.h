@@ -135,7 +135,7 @@ namespace sam {
         j = json{
             {"name", magic_enum::enum_name<SelectionMethod>(p.name)},
             {"alpha", p.alpha},
-            {"pub-bias", p.pub_bias},
+            {"pub_bias", p.pub_bias},
             {"side", p.side}
             // {"seed", p.seed}
         };
@@ -151,7 +151,7 @@ namespace sam {
             throw std::invalid_argument("Unknown selection method.");
         
         j.at("alpha").get_to(p.alpha);
-        j.at("pub-bias").get_to(p.pub_bias);
+        j.at("pub_bias").get_to(p.pub_bias);
         j.at("side").get_to(p.side);
         // j.at("seed").get_to(p.seed);
         // FIXME: I do not provide seed in the config file. I need to fix this somehow.

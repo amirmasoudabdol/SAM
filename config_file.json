@@ -1,22 +1,22 @@
 {
     "ExperimentParameters": {
         "covs": 0.0,
-        "data-strategy": {
+        "data_strategy": {
             "name": "LinearModel"
         },
-        "effect-estimators": {
+        "effect_estimators": {
             "name": "CohensD"
         },
-        "err-covs": 0.001,
-        "err-means": 0.0,
-        "err-vars": 0.01,
+        "err_covs": 0.001,
+        "err_means": 0.0,
+        "err_vars": 0.01,
         "loadings": 0.7,
         "means": 0.5,
-        "n-conditions": 3,
-        "n-dep-vars": 3,
-        "n-items": 3,
-        "n-obs": 10,
-        "test-strategy": {
+        "n_conditions": 3,
+        "n_dep_vars": 3,
+        "n_items": 3,
+        "n_obs": 10,
+        "test_strategy": {
             "alpha": 0.05,
             "name": "TTest",
             "side": "TwoSided"
@@ -24,21 +24,21 @@
         "vars": 1
     },
     "JournalParameters": {
-        "max-pubs": 20,
-        "selection-strategy": {
+        "max_pubs": 20,
+        "selection_strategy": {
             "alpha": 0.05,
             "name": "SignificantSelection",
-            "pub-bias": 0.95,
-            "selection-seed": 565444343,
+            "pub_bias": 0.95,
+            "selection_seed": 565444343,
             "side": 0
         }
     },
     "ResearcherParameters": {
-        "decision-strategy": {
+        "decision_strategy": {
             "name": "ImpatientDecisionMaker",
             "preference": "MinPvalue"
         },
-        "hacking-strategies": [
+        "hacking_strategies": [
             [
                 {
                     "level": "dv",
@@ -49,14 +49,14 @@
                 }
             ]
         ],
-        "is-phacker": true
+        "is_phacker": true
     },
     "SimulationParameters": {
         "debug": false,
-        "master-seed": 42,
-        "n-sims": 5,
-        "output-path": "../outputs/",
-        "output-prefix": "",
+        "master_seed": 42,
+        "n_sims": 5,
+        "output_path": "../outputs/",
+        "output_prefix": "",
         "progress": false,
         "verbose": true
     }

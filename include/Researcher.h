@@ -145,11 +145,11 @@ namespace sam {
             
             researcher.journal = new Journal(config["JournalParameters"]);
             
-            researcher.decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision-strategy"]);
+            researcher.decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision_strategy"]);
             
-            researcher.is_hacker = config["ResearcherParameters"]["is-phacker"];
+            researcher.is_hacker = config["ResearcherParameters"]["is_phacker"];
             if (researcher.is_hacker){
-                for (auto &set : config["ResearcherParameters"]["hacking-strategies"]) {
+                for (auto &set : config["ResearcherParameters"]["hacking_strategies"]) {
                     
                     researcher.hacking_strategies.push_back({});
                     
