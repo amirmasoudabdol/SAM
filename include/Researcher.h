@@ -72,6 +72,7 @@ namespace sam {
         void prepareResearch();
         void performResearch();
         void publishResearch();
+        void research();
         
         // This could be renamed to something like, selectThePreferedSubmission()
         void prepareTheSubmission();

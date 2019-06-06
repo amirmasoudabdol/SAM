@@ -107,3 +107,14 @@ void Researcher::publishResearch(){
     journal->review(decision_strategy->final_submission);
     
 }
+
+
+void Researcher::research() {
+
+    prepareResearch();
+
+    performResearch();
+
+    publishResearch();
+    
+}
