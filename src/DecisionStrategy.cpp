@@ -38,19 +38,6 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
     }
 }
 
-std::unique_ptr<DecisionStrategy> DecisionStrategy::build(DecisionStrategyParameters dsp) {
-
-    if (dsp.name == DecisionMethod::ImpatientDecisionMaker){
-        return std::make_unique<ImpatientDecisionMaker>(dsp.preference);
-    }else if (dsp.name == DecisionMethod::PatientDecisionMaker){
-        return std::make_unique<PatientDecisionMaker>(dsp.preference);
-   }else if (dsp.name == DecisionMethod::HonestDecisionMaker){
-       return std::make_unique<HonestDecisionMaker>();
-    } else{
-        throw std::invalid_argument("Unknown DecisionStrategy");
-    }
-}
-
 Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     
     int selectedOutcome = pre_registered_group;

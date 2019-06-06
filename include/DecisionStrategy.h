@@ -77,17 +77,10 @@ namespace sam {
         bool will_be_submitting = false;
         
     public:
-
-        struct DecisionStrategyParameters {
-            DecisionMethod name;
-            DecisionPreference preference;
-        };
-
-        DecisionStrategyParameters params;
+        
+        DecisionMethod name;
         
         static std::unique_ptr<DecisionStrategy> build(json &decision_strategy_config);
-
-        static std::unique_ptr<DecisionStrategy> build(DecisionStrategyParameters dsp);
         
         virtual ~DecisionStrategy() = 0;
         
@@ -188,6 +181,8 @@ namespace sam {
          * @return     A copy of the selected outcome
          */
         Submission selectBetweenSubmissions();
+        
+//        Experiment selectBetweenExperiments();
     };
 
     /**

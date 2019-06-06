@@ -10,6 +10,11 @@
         "err_covs": 0.001,
         "err_means": 0.0,
         "err_vars": 0.01,
+        "items": {
+            "dist": "normal_distribution",
+            "mean": 1,
+            "stddev": 0.5
+        },
         "loadings": 0.7,
         "means": 0.5,
         "n_conditions": 3,
