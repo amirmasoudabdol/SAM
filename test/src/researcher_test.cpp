@@ -21,6 +21,8 @@
 
 #include "sam.h"
 
+#include "test_fixtures.h"
+
 using namespace arma;
 using namespace sam;
 using namespace std;
@@ -32,115 +34,32 @@ bool FLAGS::PROGRESS = false;
 bool FLAGS::DEBUG = false;
 bool FLAGS::UPDATECONFIG = false;
 
-
-struct sample_researcher {
-
-//    BOOST_TEST_MESSAGE( "Setup a sample ExperimentSetup and ExperimentSetup" );
-
-    int nc = 2;
-    int nd = 3;
-    int ni = 0;
-    int ng = nc * nd;
-
-    int nobs = 25;
-    double mean = 0.25;
-    double var = 1;
-    double cov = 0.01;
-
-    arma::Row<int> v_nobs;
-    arma::Row<double> v_means;
-    arma::Row<double> v_vars;
-    arma::Mat<double> v_sigma;
-
-    DataStrategy::DataStrategyParameters dsp;
-
-    TestStrategy::TestStrategyParameters tsp;
-
-    EffectStrategy::EffectStrategyParameters esp;
-
-    string ds_name = "LinearModel";
-
-    ExperimentSetup setup;
-
-    Experiment *experiment;
-
-    Journal *journal;
-    Journal::JournalParameters jp;
-
-    SelectionStrategy *ss;
-    SelectionStrategy::SelectionStrategyParameters ssp;
-
-    DecisionStrategy *ds;
-    DecisionStrategy::DecisionStrategyParameters desp;
-
-    HackingStrategy *hs;
-    HackingStrategyParameters hsp;
-
-    sample_researcher() {
-        v_nobs = arma::Row<int>(ng).fill(nobs);
-        v_means = arma::Row<double>(ng).fill(mean);
-        v_vars = arma::Row<double>(ng).fill(var);
-        v_sigma = arma::Mat<double>(ng, ng).fill(cov);
-        v_sigma.diag() = v_vars;
-
-        dsp.name = DataStrategy::DataModel::LinearModel;
-
-        tsp.name = TestStrategy::TestMethod::TTest;
-        tsp.side = TestStrategy::TestSide::TwoSided;
-        tsp.alpha = 0.05;
-
-        esp.name = EffectStrategy::EffectEstimator::CohensD;
-
-        setup = ExperimentSetup::create()
-                .setNumConditions(nc)
-                .setNumDependentVariables(nd)
-                .setNumItems(ni)
-                .setNumObservations(nobs)
-                .setMeans(mean)
-                .setVariance(var)
-                .setCovariance(cov)
-                .setDataStrategy(dsp)
-                .setTestStrategy(tsp)
-                .setEffectStrategy(esp)
-                .build();
-
-        experiment = new Experiment(setup);
-
-        hsp.name = HackingMethod::NoHack;
-
-        desp.name = DecisionType::HonestDecisionMaker;
-        desp.preference = DecisionPreference::PreRegisteredOutcome;
-
-        ssp.name = SelectionMethod::RandomSelection;
-        ssp.alpha = 0.05;
-        ssp.pub_bias = 1;
-        ssp.side = 1;
-        ssp.seed = 42;
-
-    }
-
-};
-
 BOOST_AUTO_TEST_CASE ( default_constructor )
 {
     Researcher researcher;
 }
 
-BOOST_FIXTURE_TEST_SUITE ( researcher, sample_researcher )
+BOOST_FIXTURE_TEST_SUITE ( researcher, SampleResearch )
 
 BOOST_AUTO_TEST_CASE( researcher_builder )
 {
+    
+    initResearch();
 
-    Researcher researcher = Researcher::create("John")
+    Researcher new_researcher = Researcher::create("John")
                                         .createExperiment(setup)
-                                        .createDecisionStrategy(desp)
-                                        .createJournal(jp, ssp)
+                                        .createDecisionStrategy(de_s_conf)
+                                        .createJournal(j_conf)
                                         .addNewHackingStrategy(hs)
                                         .build();
 
-    BOOST_TEST((researcher.decision_strategy->selectionPref == DecisionPreference::PreRegisteredOutcome));
+    BOOST_TEST((new_researcher.decision_strategy->selectionPref == DecisionPreference::PreRegisteredOutcome));
 
-    BOOST_TEST((researcher.journal->selection_strategy->params.alpha == 0.05));
+    // Aha! This is where the open-close principle shows itself. I cannot access
+    // alpha here because SelectionStrategy abstract class doesn't have a `params`
+    // instance, and even if it had, it would not be the same as the one that I
+    // created via the factory.
+//    BOOST_TEST((new_researcher.journal->selection_strategy->params.alpha == 0.05));
 
 
 }

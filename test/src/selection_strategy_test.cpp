@@ -48,7 +48,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
         
         nsims = 10000;
         
-        double n_pubs = jp.max_pubs * nsims;
+        double n_pubs = j_conf["max_pubs"].get<int>() * nsims;
 
     	initResearch();
         
@@ -75,9 +75,9 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
                     
                 }
                 
-                for (int k = 0; k < jp.max_pubs; ++k)
+                for (int k = 0; k < j_conf["max_pubs"].get<int>(); ++k)
                 {
-                    pub_sigs[i * jp.max_pubs + k] = researcher.journal->publications_list[k].sig;
+                    pub_sigs[i * j_conf["max_pubs"].get<int>() + k] = researcher.journal->publications_list[k].sig;
                 }
                 
                 researcher.journal->clear();
@@ -103,7 +103,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
 
         nsims = 1000;
 
-        double n_pubs = jp.max_pubs * nsims;
+        double n_pubs = j_conf["max_pubs"].get<int>() * nsims;
         
         s_s_conf["name"] = "RandomSelection";
 
@@ -129,9 +129,9 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
 
             }
 
-            for (int k = 0; k < jp.max_pubs; ++k)
+            for (int k = 0; k < j_conf["max_pubs"].get<int>(); ++k)
             {
-                pub_sigs[i * jp.max_pubs + k] = researcher.journal->publications_list[k].sig;
+                pub_sigs[i * j_conf["max_pubs"].get<int>() + k] = researcher.journal->publications_list[k].sig;
             }
 
             researcher.journal->clear();

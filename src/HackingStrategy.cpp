@@ -266,6 +266,10 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
 
 }
 
+
+/// <#Description#>
+/// @param experiment <#experiment description#>
+/// @param r Lenght of each permutation
 void GroupPooling::pool(Experiment *experiment, int r){
     // Length of each permutation
     //    const int r = _num;
@@ -287,7 +291,7 @@ void GroupPooling::pool(Experiment *experiment, int r){
     std::vector<arma::Row<double>> pooled_groups;
     
     // Extending the measurements to avoid over-pooling, see #104
-    experiment->measurements.resize(permutations.size() * experiment->setup.nd());
+    experiment->measurements.resize(experiment->setup.ng() + permutations.size() * experiment->setup.nd());
     
     for (auto &per : permutations) {
         
@@ -296,14 +300,19 @@ void GroupPooling::pool(Experiment *experiment, int r){
             // Creating an empty new group
 //            experiment->measurements.push_back(arma::Row<double>());
             
+//            arma::Row<double> new_group{experiment->measurements[per[0]]};
+            
             for (int i = 0; i < r ; i++){
                 
-                // Fill the new group by pooling members of the selected permutation, `per`.
-                experiment->measurements.back().insert_cols(experiment->measurements.back().size(),
-                                                            experiment->measurements[per[i] * (n - 1) + d]);
-                
+//                new_group += experiment->measurements[per[i] * (n - 1) + d];
+                experiment->measurements[experiment->setup.ng() + d]
+                                .insert_cols(experiment->measurements.back().size(),
+                                              experiment->measurements[per[i] * (n - 1) + d]);
                 
             }
+//            std::cout << new_group  << std::endl;
+            // Fill the new group by pooling members of the selected permutation, `per`.
+//            experiment->measurements[experiment->setup.ng() + d] = new_group;
             
         }
         
