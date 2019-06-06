@@ -156,7 +156,6 @@ struct SampleResearch {
         {"side", "TwoSided"}
     };
 
-//    EffectStrategy::EffectStrategyParameters esp;
     EffectStrategy *es;
     json e_s_conf = {
         {"name", "CohensD"}
@@ -164,10 +163,7 @@ struct SampleResearch {
 
     ExperimentSetup setup;
     Experiment *experiment;
-    
-    Journal::JournalParameters jp;
-    
-    
+
     Journal *journal;
     json j_conf = {
         {"name", "PLOS"},
@@ -207,12 +203,6 @@ struct SampleResearch {
         v_sigma = arma::Mat<double>(ng, ng).fill(cov);
         v_sigma.diag() = v_vars;
 
-//        dsp.name = DataStrategy::DataModel::LinearModel;
-//        dsp.seed1 = 42;
-//        dsp.seed2 = 7;
-
-//        esp.name = EffectStrategy::EffectEstimator::CohensD;
-
     }
 
 
@@ -234,6 +224,8 @@ struct SampleResearch {
                 .setTestStrategyParameters(t_s_conf)
                 .setEffectStrategyParameters(e_s_conf)
                 .build();
+
+        experiment = new Experiment(setup);
 
         researcher = Researcher::create("John")
                                     .createExperiment(setup)
