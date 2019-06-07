@@ -35,7 +35,7 @@ void Researcher::hack() {
             copiedExpr.hacks_history.push_back(enum_integer<HackingMethod>(h->name));
             
             decision_strategy->verdict(copiedExpr,
-                                      DecisionStage::DoneHacking);
+                                            DecisionStage::DoneHacking);
             
             // If the researcher statisfied, hacking routine will be stopped
             if (!decision_strategy->isStillHacking()){
@@ -79,11 +79,10 @@ void Researcher::performResearch(){
     experiment->runTest();
 
     // TODO: Need _more_ clarification
-    bool willHack = decision_strategy->verdict(*experiment,
-                                               DecisionStage::Initial);
+//    bool willHack = decision_strategy->verdict(*experiment);
     
 
-    if (is_hacker && willHack){
+    if (!decision_strategy->verdict(*experiment, DecisionStage::Initial).isPublishable() && isHacker()){
         hack();
     }    
 }
@@ -97,8 +96,7 @@ void Researcher::performResearch(){
 void Researcher::publishResearch(){
     
     // Ask for the final decision    
-    decision_strategy->verdict(*experiment,
-                                      DecisionStage::Final);
+    decision_strategy->verdict(*experiment, DecisionStage::Final);
     
     // Setting researcher's submission record
     submission_record = decision_strategy->final_submission;

@@ -59,8 +59,6 @@ namespace sam {
         
     protected:
         
-        Submission current_submission;
-        
         //! List of selected Submission by the researcher.
         std::vector<Submission> submissions_pool;
 
@@ -75,6 +73,49 @@ namespace sam {
         bool is_still_hacking = true;
         
         bool will_be_submitting = false;
+        
+        
+        /**
+         A method implementing the Initial decision making logic.
+         
+         @return A boolean indicating whether the researcher should proceed
+         with the hacking or not.
+         */
+        virtual void initDecision(Experiment &experiment) = 0;
+        
+        /**
+         A method implementing the Intermediate decision making logic.
+         
+         @note Decision Strategy at this stage can decide if it wants to add
+         an intermediate solution to the pool or not. This is often a solution
+         halfway through the hacking process for instance.
+         
+         @return A boolean indicating whether the researcher should stop the
+         hacking procedude or not. E.g., in the case of Optional Stopping this
+         routine will decide whether researcher should stop after each attempt
+         or continue further.
+         */
+        virtual void intermediateDecision(Experiment &experiment) = 0;
+        
+        /**
+         A method implementing the decision making routine after completely
+         applying a hacking strategy on an experiment.
+         
+         @return A boolean indicating whether the researcher should proceed to
+         the _next_ hacking strategy.
+         */
+        virtual void afterhackDecision(Experiment &experiment) = 0;
+        
+        /**
+         A method implementing the Final decision making logic.
+         
+         @note In the case where the Decision Making should look back at the
+         history of hacking, this routine will also prepare the `final_submission`.
+         
+         @return A boolean indicating whether the researcher should proceed
+         with submitting the final submission to the Journal or not.
+         */
+        virtual void finalDecision(Experiment &experiment) = 0;
         
     public:
         
@@ -91,13 +132,30 @@ namespace sam {
         /*
          * The default get method for is_still_hacking
          */
-        bool isStillHacking() const {
+        virtual bool isStillHacking() {
             return is_still_hacking;
+        }
+        
+        virtual bool isPublishable() {
+            return current_submission.isSig();
+        }
+        
+        /**
+         This can be used by the researcher to decide if he is going with the
+         submission or not.
+         */
+        virtual bool willBeSubmitting() {
+            return will_be_submitting;
         }
         
         //! Indicates the pre-registered outcome in the case where the
         //! Researcher prefers the PreRegisteredOutcome
         int pre_registered_group = 0;
+        
+        
+        DecisionStage current_stage;
+        
+        Submission current_submission;
         
         //! This will set to the final submission record that the Researcher
         //! is satisfied with.
@@ -123,47 +181,10 @@ namespace sam {
          *
          * @return     A boolean indicating whether result is satisfactory or not
          */
-        virtual bool verdict(Experiment& experiment, DecisionStage stage) = 0;
-        
-        
-            /**
-             A method implementing the Initial decision making logic.
-             
-             @return A boolean indicating whether the researcher should proceed
-             with the hacking or not.
-             */
-            virtual bool initDecision(Experiment &experiment) = 0;
-        
-            /**
-             A method implementing the Intermediate decision making logic.
-             
-             @return A boolean indicating whether the researcher should stop the
-             hacking procedude or not. E.g., in the case of Optional Stopping this
-             routine will decide whether researcher should stop after each attempt
-             or continue further.
-             */
-            virtual bool intermediateDecision(Experiment &experiment) = 0;
-        
-            /**
-             A method implementing the decision making routine after completely
-             applying a hacking strategy on an experiment.
-             
-             @return A boolean indicating whether the researcher should proceed to
-             the _next_ hacking strategy.
-             */
-            virtual bool afterhackDecision(Experiment &experiment) = 0;
-        
-            /**
-             A method implementing the Final decision making logic.
-             
-             @note In the case where the Decision Making should look back at the
-             history of hacking, this routine will also prepare the `final_submission`.
-             
-             @return A boolean indicating whether the researcher should proceed
-             with submitting the final submission to the Journal or not.
-             */
-            virtual bool finalDecision(Experiment &experiment) = 0;
+        virtual DecisionStrategy& verdict(Experiment& experiment, DecisionStage stage) = 0;
 
+        
+        void saveCurrentSubmission();
         
         /**
          * @brief      Based on the DecisionPreference, it'll select the outcome
@@ -205,20 +226,24 @@ namespace sam {
             selectionPref = params.preference;
         };
         
-        explicit ImpatientDecisionMaker(DecisionPreference selection_pref) {
-            selectionPref = selection_pref;
-        };
+//        explicit ImpatientDecisionMaker(DecisionPreference selection_pref) {
+//            selectionPref = selection_pref;
+//        };
         
-        bool isPublishable(const Submission &sub) const {
-            return sub.isSig();
+        bool isStillHacking() override {
+            return is_still_hacking;
         }
+//
+//        bool isPublishable() override {
+//            return current_submission.isSig();
+//        }
         
-        virtual bool verdict(Experiment &experiment, DecisionStage stage);
+        virtual ImpatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
         
-        virtual bool initDecision(Experiment &experiment);
-        virtual bool intermediateDecision(Experiment &experiment);
-        virtual bool afterhackDecision(Experiment &experiment);
-        virtual bool finalDecision(Experiment &experiment);
+        virtual void initDecision(Experiment &experiment) override;
+        virtual void intermediateDecision(Experiment &experiment) override;
+        virtual void afterhackDecision(Experiment &experiment) override;
+        virtual void finalDecision(Experiment &experiment) override;
         
     };
     
@@ -241,84 +266,84 @@ namespace sam {
         }
 
 
-    class PatientDecisionMaker : public DecisionStrategy {
-
-    public:
-        
-        struct Parameters {
-            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-            DecisionPreference preference = DecisionPreference::MinPvalue;
-        };
-        
-        Parameters params;
-        
-        explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
-        
-        explicit PatientDecisionMaker(DecisionPreference selection_pref) {
-            selectionPref = selection_pref;
-        };
-        
-        bool isPublishable(const Submission &sub) const {
-            return sub.isSig();
-        };
-        
-        virtual bool verdict(Experiment &experiment, DecisionStage stage);
-        
-        virtual bool initDecision(Experiment &experiment);
-        virtual bool intermediateDecision(Experiment &experiment);
-        virtual bool afterhackDecision(Experiment &experiment);
-        virtual bool finalDecision(Experiment &experiment);
-        
-    };
-    
-    // JSON Parser for PatientDecisionStrategy::Parameters
-    inline
-    void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
-        j = json{
-            {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
-            {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
-        };
-    }
-    
-    inline
-    void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
-        
-        // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<DecisionMethod>("name", j);
-        
-        p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
-    }
-
-
-
-    // FIXME: Not fully implemented!
-    // FIXME: Not fully tested!
-    class HonestDecisionMaker : public DecisionStrategy {
-
-    public:
-        
-        struct Parameters {
-            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-        };
-        
-        Parameters params;
-        
-        HonestDecisionMaker(const Parameters &p) : params{p} {};
-
-        HonestDecisionMaker() {
-            selectionPref = DecisionPreference::PreRegisteredOutcome;
-        };
-        
-        virtual bool verdict(Experiment &experiment, DecisionStage stage) {
-            return false;
-        };
-        
-        virtual bool initDecision(Experiment &experiment) {return false;};
-        virtual bool intermediateDecision(Experiment &experiment) {return false;};
-        virtual bool afterhackDecision(Experiment &experiment) {return false;};
-        virtual bool finalDecision(Experiment &experiment) {return false;};
-        
-    };
+//    class PatientDecisionMaker : public DecisionStrategy {
+//
+//    public:
+//
+//        struct Parameters {
+//            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+//            DecisionPreference preference = DecisionPreference::MinPvalue;
+//        };
+//
+//        Parameters params;
+//
+//        explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
+//
+//        explicit PatientDecisionMaker(DecisionPreference selection_pref) {
+//            selectionPref = selection_pref;
+//        };
+//
+//        bool isPublishable(const Submission &sub) const {
+//            return sub.isSig();
+//        };
+//
+//        virtual bool verdict(Experiment &experiment, DecisionStage stage);
+//
+//        virtual bool initDecision(Experiment &experiment);
+//        virtual bool intermediateDecision(Experiment &experiment);
+//        virtual bool afterhackDecision(Experiment &experiment);
+//        virtual bool finalDecision(Experiment &experiment);
+//
+//    };
+//
+//    // JSON Parser for PatientDecisionStrategy::Parameters
+//    inline
+//    void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
+//        j = json{
+//            {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
+//            {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
+//        };
+//    }
+//
+//    inline
+//    void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
+//
+//        // Using a helper template function to handle the optional and throw if necessary.
+//        p.name = get_enum_value_from_json<DecisionMethod>("name", j);
+//
+//        p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
+//    }
+//
+//
+//
+//    // FIXME: Not fully implemented!
+//    // FIXME: Not fully tested!
+//    class HonestDecisionMaker : public DecisionStrategy {
+//
+//    public:
+//
+//        struct Parameters {
+//            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+//        };
+//
+//        Parameters params;
+//
+//        HonestDecisionMaker(const Parameters &p) : params{p} {};
+//
+//        HonestDecisionMaker() {
+//            selectionPref = DecisionPreference::PreRegisteredOutcome;
+//        };
+//
+//        virtual bool verdict(Experiment &experiment, DecisionStage stage) {
+//            return false;
+//        };
+//
+//        virtual bool initDecision(Experiment &experiment) {return false;};
+//        virtual bool intermediateDecision(Experiment &experiment) {return false;};
+//        virtual bool afterhackDecision(Experiment &experiment) {return false;};
+//        virtual bool finalDecision(Experiment &experiment) {return false;};
+//
+//    };
 
 }
     

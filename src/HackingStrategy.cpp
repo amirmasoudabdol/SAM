@@ -110,7 +110,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
         experiment->calculateEffects();
         experiment->runTest();
         
-        if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking))
+        if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking())
             return;
     }
     
@@ -177,7 +177,7 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             experiment->runTest();
             
             
-            if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking))
+            if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking())
                 return ;
             
         }
@@ -260,7 +260,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     experiment->calculateEffects();
     experiment->runTest();
     
-    if (decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)){
+    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking()){
         return ;
     }
 
