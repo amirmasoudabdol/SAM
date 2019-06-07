@@ -24,13 +24,13 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
         auto params = decision_strategy_config.get<ImpatientDecisionMaker::Parameters>();
         return std::make_unique<ImpatientDecisionMaker>(params);
         
-//    }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
-//
-//        auto params = decision_strategy_config.get<PatientDecisionMaker::Parameters>();
-//        return std::make_unique<PatientDecisionMaker>(params);
-//
-//    }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
-//
+    }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
+
+        auto params = decision_strategy_config.get<PatientDecisionMaker::Parameters>();
+        return std::make_unique<PatientDecisionMaker>(params);
+
+    }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
+
 //        return std::make_unique<HonestDecisionMaker>();
         
     }else{
@@ -38,11 +38,12 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
     }
 }
 
-Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
+Submission DecisionStrategy::selectOutcome(Experiment& experiment, const DecisionPreference &preference) {
     
+    // TODO: This is confusing...
     int selectedOutcome = pre_registered_group;
     
-    switch (selectionPref) {
+    switch (preference) {
         case DecisionPreference::PreRegisteredOutcome:
             selectedOutcome = pre_registered_group;
             break;
@@ -78,9 +79,9 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
 }
 
 
-Submission DecisionStrategy::selectBetweenSubmissions(){
+Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &preference){
     
-    switch (selectionPref) {
+    switch (preference) {
         case DecisionPreference::PreRegisteredOutcome:
             break;
             
@@ -170,7 +171,7 @@ void ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
 
 ImpatientDecisionMaker& ImpatientDecisionMaker::verdict(Experiment &experiment, DecisionStage stage) {
     
-    current_submission = selectOutcome(experiment);
+    current_submission = selectOutcome(experiment, params.preference);
     
     switch(stage){
         case DecisionStage::Initial:
@@ -192,63 +193,68 @@ ImpatientDecisionMaker& ImpatientDecisionMaker::verdict(Experiment &experiment, 
 }
 
 
+void PatientDecisionMaker::initDecision(Experiment &experiment) {
+//    Submission sub = selectOutcome(experiment);
 
-//bool PatientDecisionMaker::initDecision(Experiment &experiment) {
+    experiments_pool.push_back(experiment);
+    submissions_pool.push_back(current_submission);
+
+    is_still_hacking = !isPublishable();
+//    return is_still_hacking;
+}
+
+void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
+
+
+    is_still_hacking = !isPublishable();
+//    return is_still_hacking;
+}
+
+void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 //    Submission sub = selectOutcome(experiment);
-//
-//    experiments_pool.push_back(experiment);
-//    submissions_pool.push_back(sub);
-//
-//    is_still_hacking = !isPublishable(sub);
+
+    if (isPublishable()){
+        experiments_pool.push_back(experiment);
+        submissions_pool.push_back(current_submission);
+    }
+
+    is_still_hacking = !isPublishable();
 //    return is_still_hacking;
-//}
-//
-//bool PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
-//
-//
-//    is_still_hacking = !isPublishable(selectOutcome(experiment));
+}
+
+void PatientDecisionMaker::finalDecision(Experiment &experiment) {
+
+    final_submission = selectBetweenSubmissions(params.preference);
+
+    clearHistory();
+
+    is_still_hacking = false;
 //    return is_still_hacking;
-//}
-//
-//bool PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
-//    Submission sub = selectOutcome(experiment);
-//
-//    if (isPublishable(sub)){
-//        experiments_pool.push_back(experiment);
-//        submissions_pool.push_back(sub);
-//    }
-//
-//    is_still_hacking = !isPublishable(sub);
-//    return is_still_hacking;
-//}
-//
-//bool PatientDecisionMaker::finalDecision(Experiment &experiment) {
-//
-//    final_submission = selectBetweenSubmissions();
-//
-//    clearHistory();
-//
-//    is_still_hacking = false;
-//    return is_still_hacking;
-//}
-//
-//
-//bool PatientDecisionMaker::verdict(Experiment &experiment, DecisionStage stage){
-//    switch (stage) {
-//
-//        case DecisionStage::Initial:
-//            return initDecision(experiment);
-//            break;
-//        case DecisionStage::WhileHacking:
-//            return intermediateDecision(experiment);
-//            break;
-//        case DecisionStage::DoneHacking:
-//            return afterhackDecision(experiment);
-//            break;
-//        case DecisionStage::Final:
-//            return finalDecision(experiment);
-//            break;
-//    }
-//}
-//
-//
+}
+
+
+PatientDecisionMaker& PatientDecisionMaker::verdict(Experiment &experiment,
+                                                        DecisionStage stage) {
+    
+    current_submission = selectOutcome(experiment, params.preference);
+    
+    switch (stage) {
+
+        case DecisionStage::Initial:
+            initDecision(experiment);
+            break;
+        case DecisionStage::WhileHacking:
+            intermediateDecision(experiment);
+            break;
+        case DecisionStage::DoneHacking:
+            afterhackDecision(experiment);
+            break;
+        case DecisionStage::Final:
+            finalDecision(experiment);
+            break;
+    }
+    
+    return *this;
+}
+
+

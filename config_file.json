@@ -16,8 +16,8 @@
             "stddev": 0.5
         },
         "loadings": 0.7,
-        "means": 0.5,
-        "n_conditions": 3,
+        "means": 0.145,
+        "n_conditions": 2,
         "n_dep_vars": 3,
         "n_items": 3,
         "n_obs": 10,
@@ -26,7 +26,7 @@
             "name": "TTest",
             "side": "TwoSided"
         },
-        "vars": 1
+        "vars": 0.1
     },
     "JournalParameters": {
         "max_pubs": 20,
@@ -40,7 +40,7 @@
     },
     "ResearcherParameters": {
         "decision_strategy": {
-            "name": "ImpatientDecisionMaker",
+            "name": "PatientDecisionMaker",
             "preference": "MinPvalue"
         },
         "hacking_strategies": [

@@ -194,14 +194,14 @@ namespace sam {
          *
          * @return     A copy of the selected outcome
          */
-        Submission selectOutcome(Experiment &experiment);
+        Submission selectOutcome(Experiment &experiment, const DecisionPreference &preference);
 
         /**
          * @brief      Select the final submission by checking all logged Submissions.
          *
          * @return     A copy of the selected outcome
          */
-        Submission selectBetweenSubmissions();
+        Submission selectBetweenSubmissions(const DecisionPreference &preference);
         
 //        Experiment selectBetweenExperiments();
     };
@@ -266,56 +266,56 @@ namespace sam {
         }
 
 
-//    class PatientDecisionMaker : public DecisionStrategy {
-//
-//    public:
-//
-//        struct Parameters {
-//            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-//            DecisionPreference preference = DecisionPreference::MinPvalue;
-//        };
-//
-//        Parameters params;
-//
-//        explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
-//
+    class PatientDecisionMaker : public DecisionStrategy {
+
+    public:
+
+        struct Parameters {
+            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+            DecisionPreference preference = DecisionPreference::MinPvalue;
+        };
+
+        Parameters params;
+
+        explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
+
 //        explicit PatientDecisionMaker(DecisionPreference selection_pref) {
 //            selectionPref = selection_pref;
 //        };
-//
+
 //        bool isPublishable(const Submission &sub) const {
 //            return sub.isSig();
 //        };
-//
-//        virtual bool verdict(Experiment &experiment, DecisionStage stage);
-//
-//        virtual bool initDecision(Experiment &experiment);
-//        virtual bool intermediateDecision(Experiment &experiment);
-//        virtual bool afterhackDecision(Experiment &experiment);
-//        virtual bool finalDecision(Experiment &experiment);
-//
-//    };
-//
-//    // JSON Parser for PatientDecisionStrategy::Parameters
-//    inline
-//    void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
-//        j = json{
-//            {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
-//            {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
-//        };
-//    }
-//
-//    inline
-//    void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
-//
-//        // Using a helper template function to handle the optional and throw if necessary.
-//        p.name = get_enum_value_from_json<DecisionMethod>("name", j);
-//
-//        p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
-//    }
-//
-//
-//
+
+        virtual PatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
+
+        virtual void  initDecision(Experiment &experiment) override;
+        virtual void  intermediateDecision(Experiment &experiment) override;
+        virtual void  afterhackDecision(Experiment &experiment) override;
+        virtual void  finalDecision(Experiment &experiment) override;
+
+    };
+
+    // JSON Parser for PatientDecisionStrategy::Parameters
+    inline
+    void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
+        j = json{
+            {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
+            {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
+        };
+    }
+
+    inline
+    void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
+
+        // Using a helper template function to handle the optional and throw if necessary.
+        p.name = get_enum_value_from_json<DecisionMethod>("name", j);
+
+        p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
+    }
+
+
+
 //    // FIXME: Not fully implemented!
 //    // FIXME: Not fully tested!
 //    class HonestDecisionMaker : public DecisionStrategy {
@@ -338,10 +338,10 @@ namespace sam {
 //            return false;
 //        };
 //
-//        virtual bool initDecision(Experiment &experiment) {return false;};
-//        virtual bool intermediateDecision(Experiment &experiment) {return false;};
-//        virtual bool afterhackDecision(Experiment &experiment) {return false;};
-//        virtual bool finalDecision(Experiment &experiment) {return false;};
+//        virtual void initDecision(Experiment &experiment) {return false;};
+//        virtual void intermediateDecision(Experiment &experiment) {return false;};
+//        virtual void afterhackDecision(Experiment &experiment) {return false;};
+//        virtual void finalDecision(Experiment &experiment) {return false;};
 //
 //    };
 

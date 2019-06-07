@@ -18,6 +18,7 @@ namespace sam {
         
 
         inx = index;
+        
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         mean = e.means[index];
         var = e.vars[index];
