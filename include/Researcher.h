@@ -82,6 +82,8 @@ namespace sam {
          Set the decisionStrategy of the researcher.
 
          @param d The pointer to a Decision Strategy
+         
+         @note Researcher owns its decision strategy that's why I move the pointer.
          */
         void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
             decision_strategy = std::move(ds);

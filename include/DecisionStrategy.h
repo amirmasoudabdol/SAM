@@ -59,6 +59,10 @@ namespace sam {
         
     protected:
         
+        //! Indicates the pre-registered outcome in the case where the
+        //! Researcher prefers the PreRegisteredOutcome
+        int pre_registered_group = 0;
+        
         //! List of selected Submission by the researcher.
         std::vector<Submission> submissions_pool;
 
@@ -121,13 +125,23 @@ namespace sam {
         
         DecisionMethod name;
         
+        const int preRegistetedGroup() const {
+            return pre_registered_group;
+        };
+        
+        void preRegisteredGroup(int g) {
+            pre_registered_group = g;
+        }
+        
+        /**
+         DecisionStrategy factory method.
+         
+         @param decision_strategy_config    A JSON object containing information
+         about each decision strategy.
+         */
         static std::unique_ptr<DecisionStrategy> build(json &decision_strategy_config);
         
         virtual ~DecisionStrategy() = 0;
-        
-        //! Indicates researcher's selection preference on how he choose the
-        //! outcome variable for submission.
-        DecisionPreference selectionPref;
         
         /*
          * The default get method for is_still_hacking
@@ -147,10 +161,6 @@ namespace sam {
         virtual bool willBeSubmitting() {
             return will_be_submitting;
         }
-        
-        //! Indicates the pre-registered outcome in the case where the
-        //! Researcher prefers the PreRegisteredOutcome
-        int pre_registered_group = 0;
         
         
         DecisionStage current_stage;
@@ -221,22 +231,12 @@ namespace sam {
         Parameters params;
         
         explicit ImpatientDecisionMaker(const Parameters &p) : params{p} {
-            // TODO: I totally need to refactor this! I'm using the abstract class
-            // paramters and it's confusing!
-            selectionPref = params.preference;
+
         };
-        
-//        explicit ImpatientDecisionMaker(DecisionPreference selection_pref) {
-//            selectionPref = selection_pref;
-//        };
         
         bool isStillHacking() override {
             return is_still_hacking;
         }
-//
-//        bool isPublishable() override {
-//            return current_submission.isSig();
-//        }
         
         virtual ImpatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
         
@@ -278,14 +278,6 @@ namespace sam {
         Parameters params;
 
         explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
-
-//        explicit PatientDecisionMaker(DecisionPreference selection_pref) {
-//            selectionPref = selection_pref;
-//        };
-
-//        bool isPublishable(const Submission &sub) const {
-//            return sub.isSig();
-//        };
 
         virtual PatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
 

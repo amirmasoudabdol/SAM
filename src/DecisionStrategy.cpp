@@ -123,13 +123,10 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
 
 
 void ImpatientDecisionMaker::initDecision(Experiment &experiment) {
-//    Submission sub = selectOutcome(experiment);
     
     // Preparing pools anyway
     experiments_pool.push_back(experiment);
     submissions_pool.push_back(current_submission);
-    
-//    return !isPublishable();
 }
 
 void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
@@ -139,11 +136,9 @@ void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
     /// finds a publishable solution. This is different in the case of patient
     /// decision maker for instance.
     is_still_hacking = !isPublishable();
-//    return is_still_hacking;
 }
 
 void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
-//    Submission sub = selectOutcome(experiment);
     
     
     if (isPublishable()){
@@ -153,7 +148,6 @@ void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
     is_still_hacking = !isPublishable();
     
-//    return is_still_hacking;
 }
 
 void ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
@@ -164,7 +158,6 @@ void ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
     
     // Done Hacking...
     is_still_hacking = false;
-//    return is_still_hacking;
 }
 
 
@@ -194,24 +187,20 @@ ImpatientDecisionMaker& ImpatientDecisionMaker::verdict(Experiment &experiment, 
 
 
 void PatientDecisionMaker::initDecision(Experiment &experiment) {
-//    Submission sub = selectOutcome(experiment);
 
     experiments_pool.push_back(experiment);
     submissions_pool.push_back(current_submission);
 
     is_still_hacking = !isPublishable();
-//    return is_still_hacking;
 }
 
 void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
 
     is_still_hacking = !isPublishable();
-//    return is_still_hacking;
 }
 
 void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
-//    Submission sub = selectOutcome(experiment);
 
     if (isPublishable()){
         experiments_pool.push_back(experiment);
@@ -219,7 +208,6 @@ void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
     }
 
     is_still_hacking = !isPublishable();
-//    return is_still_hacking;
 }
 
 void PatientDecisionMaker::finalDecision(Experiment &experiment) {
@@ -229,7 +217,6 @@ void PatientDecisionMaker::finalDecision(Experiment &experiment) {
     clearHistory();
 
     is_still_hacking = false;
-//    return is_still_hacking;
 }
 
 
