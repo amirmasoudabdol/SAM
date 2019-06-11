@@ -78,10 +78,6 @@ void Researcher::performResearch(){
     
     experiment->runTest();
 
-    // TODO: Need _more_ clarification
-//    bool willHack = decision_strategy->verdict(*experiment);
-    
-
     if (!decision_strategy->verdict(*experiment, DecisionStage::Initial).isPublishable() && isHacker()){
         hack();
     }    

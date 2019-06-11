@@ -122,21 +122,29 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
 }
 
 
+
+/// Impatient decision maker keeps the initial study and stop the hacking
+/// process if the results is already satistifactory.
+///
+/// @param experiment A reference to the experiment.
 void ImpatientDecisionMaker::initDecision(Experiment &experiment) {
     
     // Preparing pools anyway
     experiments_pool.push_back(experiment);
     submissions_pool.push_back(current_submission);
-}
-
-void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
-
-    /// Impatient decision maker check if the check current submission is publishable
-    /// or not, if not, it'll continue hacking... and will stop as soon as it
-    /// finds a publishable solution. This is different in the case of patient
-    /// decision maker for instance.
+    
     is_still_hacking = !isPublishable();
 }
+
+/// Impatient decision maker check if the check current submission is publishable
+/// or not, if not, it'll continue hacking... and will stop as soon as it
+/// finds a publishable solution. This is different in the case of patient
+/// decision maker for instance.
+void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
+
+    is_still_hacking = !isPublishable();
+}
+
 
 void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
     
@@ -186,20 +194,35 @@ ImpatientDecisionMaker& ImpatientDecisionMaker::verdict(Experiment &experiment, 
 }
 
 
+/// It'll add the experiment and submission to the pool, regardless of the
+/// significance.
+///
+/// It'll update the verdict on whether the researcher will continue hacking or
+/// not. The researcher can check this flag by calling `isStillHacking()` routine.
+///
+/// @param experiment A reference to the experiment
 void PatientDecisionMaker::initDecision(Experiment &experiment) {
 
     experiments_pool.push_back(experiment);
     submissions_pool.push_back(current_submission);
 
-    is_still_hacking = !isPublishable();
+    is_still_hacking = true;
 }
 
+
+/// In this case, this only updates the status of the hack.
+///
+/// @param experiment A reference to the experiment
 void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
-
-    is_still_hacking = !isPublishable();
+    is_still_hacking = true;
 }
 
+
+/// Patient decision maker keeps track of its intermediate results until it
+/// makes the final decision and choose between them.
+///
+/// @param experiment A reference to the experiment
 void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
     if (isPublishable()){
@@ -207,9 +230,15 @@ void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
         submissions_pool.push_back(current_submission);
     }
 
-    is_still_hacking = !isPublishable();
+    // Patient Decision maker always continue hacking...
+    is_still_hacking = true;
 }
 
+
+/// Impatient decision maker — at the final stage — goes through all solutions
+/// and select the one based on its preference.
+///
+/// @param experiment A reference to the experiment.
 void PatientDecisionMaker::finalDecision(Experiment &experiment) {
 
     final_submission = selectBetweenSubmissions(params.preference);

@@ -143,13 +143,17 @@ namespace sam {
         
         virtual ~DecisionStrategy() = 0;
         
-        /*
-         * The default get method for is_still_hacking
-         */
+        
+        /// The logic of continoution should be implemented here. Researcher will
+        /// ask this method to asses the state of its progress.
         virtual bool isStillHacking() {
             return is_still_hacking;
         }
         
+        
+        /// It indicates whether the current_submission is significant or not.
+        /// This can be overwritten to adopt to different type of studies or
+        /// logics.
         virtual bool isPublishable() {
             return current_submission.isSig();
         }
