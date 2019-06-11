@@ -19,8 +19,6 @@ void Researcher::hack() {
     
     using namespace magic_enum;
     
-    Submission sub;
-    
     for (auto &set : hacking_strategies){
         
         // For each set, we make a copy of the experiment and apply the given
@@ -78,7 +76,7 @@ void Researcher::performResearch(){
     
     experiment->runTest();
 
-    if (!decision_strategy->verdict(*experiment, DecisionStage::Initial).isPublishable() && isHacker()){
+    if (decision_strategy->verdict(*experiment, DecisionStage::Initial).isStillHacking() && isHacker()){
         hack();
     }    
 }
