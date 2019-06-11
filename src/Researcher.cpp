@@ -78,7 +78,7 @@ void Researcher::performResearch(){
     
     experiment->runTest();
 
-    if (!decision_strategy->verdict(*experiment, DecisionStage::Initial).isPublishable() && isHacker()){
+    if (decision_strategy->verdict(*experiment, DecisionStage::Initial).isStillHacking() && isHacker()){
         hack();
     }    
 }
