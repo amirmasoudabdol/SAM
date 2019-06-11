@@ -31,7 +31,7 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
 
     }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
 
-//        return std::make_unique<HonestDecisionMaker>();
+        return std::make_unique<HonestDecisionMaker>();
         
     }else{
         throw std::invalid_argument("Unknown DecisionStrategy");
@@ -273,4 +273,17 @@ PatientDecisionMaker& PatientDecisionMaker::verdict(Experiment &experiment,
     return *this;
 }
 
+
+HonestDecisionMaker& HonestDecisionMaker::verdict(Experiment &experiment,
+DecisionStage stage) {
+    
+    current_submission = selectOutcome(experiment, params.preference);
+    
+    submissions_pool.push_back(current_submission);
+    experiments_pool.push_back(experiment);
+    
+    final_submission = current_submission;
+    
+    return *this;
+}
 

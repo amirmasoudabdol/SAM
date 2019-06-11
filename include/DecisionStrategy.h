@@ -198,7 +198,11 @@ namespace sam {
         virtual DecisionStrategy& verdict(Experiment& experiment, DecisionStage stage) = 0;
 
         
-        void saveCurrentSubmission();
+        /// A helper method to save the current submission. This needs to be called
+        /// after verdict.
+        void saveCurrentSubmission() {
+            submissions_pool.push_back(current_submission);
+        };
         
         /**
          * @brief      Based on the DecisionPreference, it'll select the outcome
@@ -312,34 +316,35 @@ namespace sam {
 
 
 
-//    // FIXME: Not fully implemented!
-//    // FIXME: Not fully tested!
-//    class HonestDecisionMaker : public DecisionStrategy {
-//
-//    public:
-//
-//        struct Parameters {
-//            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-//        };
-//
-//        Parameters params;
-//
-//        HonestDecisionMaker(const Parameters &p) : params{p} {};
-//
-//        HonestDecisionMaker() {
-//            selectionPref = DecisionPreference::PreRegisteredOutcome;
-//        };
-//
-//        virtual bool verdict(Experiment &experiment, DecisionStage stage) {
-//            return false;
-//        };
-//
-//        virtual void initDecision(Experiment &experiment) {return false;};
-//        virtual void intermediateDecision(Experiment &experiment) {return false;};
-//        virtual void afterhackDecision(Experiment &experiment) {return false;};
-//        virtual void finalDecision(Experiment &experiment) {return false;};
-//
-//    };
+    // FIXME: Not fully implemented!
+    // FIXME: Not fully tested!
+    class HonestDecisionMaker : public DecisionStrategy {
+
+    public:
+
+        struct Parameters {
+            DecisionMethod name = DecisionMethod::HonestDecisionMaker;
+            DecisionPreference preference = DecisionPreference::PreRegisteredOutcome;
+        };
+
+        Parameters params;
+
+        HonestDecisionMaker() {
+            
+        };
+        
+        bool isStillHacking() override {
+            return false;
+        };
+
+        virtual HonestDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
+
+        virtual void initDecision(Experiment &experiment) override {};
+        virtual void intermediateDecision(Experiment &experiment) override {};
+        virtual void afterhackDecision(Experiment &experiment) override {};
+        virtual void finalDecision(Experiment &experiment) override {};
+
+    };
 
 }
     
