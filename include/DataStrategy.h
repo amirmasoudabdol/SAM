@@ -143,7 +143,7 @@ namespace sam {
         
         LinearModelStrategy(ExperimentSetup &setup) {
             mdist = mvnorm_distribution<>(setup.means().t(), setup.sigma());
-//            mdist = make_multivariate_distribution(setup.sigma(), setup.sigma());
+
             
             // Just in case...
             seed1 = rand();

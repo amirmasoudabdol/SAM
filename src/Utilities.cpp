@@ -134,7 +134,7 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
 if(distributionName == #name_) return make_multivariate_distribution_impl<name_<type_>>(j, ## __VA_ARGS__);
 
     // TODO: This doesn't work for now because I don't have the automatic conversion of the parameters.
-//    generate_multivariate_distribution_factory(mvnorm_distribution, double, "means", "covs");
+    generate_multivariate_distribution_factory(mvnorm_distribution, double, "means", "covs");
 
 #undef generate_multivariate_distribution_factory
 
