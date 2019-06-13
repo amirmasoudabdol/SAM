@@ -16,10 +16,13 @@
 
 #include "utils/permutation.h"
 #include "utils/magic_enum.hpp"
+#include "effolkronium/random.hpp"
 
 #include "sam.h"
 
 using namespace sam;
+
+using Random = effolkronium::random_static;
 
 HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
@@ -136,14 +139,9 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
     params.level = "dv";
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> uniform(min_n, max_n);
+    params.num = Random::get<int>(min_n, max_n);
 
-    params.num = uniform(gen);
-
-    uniform.param(std::uniform_int_distribution<>::param_type(1, 3));
-    params.n_attempts = uniform(gen);
+    params.n_attempts = Random::get<int>(1, 3);
 
     params.max_attempts = 10;
 }

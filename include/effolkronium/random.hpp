@@ -848,6 +848,37 @@ namespace effolkronium {
         }
 
         /**
+         * \brief Return value from custom Dist distribution
+         *        seeded by internal random engine.
+
+         * \tparam Dist The type of custom distribution with next concept:
+         *         http://en.cppreference.com/w/cpp/concept/RandomNumberDistribution
+         *         If the distribution provides operator(N)
+         * \tparam Args
+         * \param dist The custom distribution with next concept:
+         *         http://en.cppreference.com/w/cpp/concept/RandomNumberDistribution
+         * \param args The arguments which will be forwarded to Dist::operator()
+         * \return Value from custom distribution
+         *
+         * \warning THIS ONLY WORKS WITH THE MVNORM_DISTRIBUTION FOR NOW!
+         */
+        template<typename Dist, typename... Args>
+        static typename Dist::result_type get(Dist& dist, Args&&... args) {
+            return dist( engine_instance(), std::forward<Args>(args)... );
+        }
+
+        /**
+         * \warning This is even more hacking and it works but 
+         */
+        // template<typename Dist>
+        // static arma::Col<typename Dist::result_type> get(Dist& dist, const size_t N) {
+
+        //     arma::Col<typename Dist::result_type> v(N);
+        //     std::generate_n(v.begin(), N, [dist]() mutable {return dist(engine_instance());});
+        //     return v;
+        // }
+
+        /**
         * \brief Reorders the elements in the given range [first, last)
         *        such that each possible permutation of those elements
         *        has equal probability of appearance.

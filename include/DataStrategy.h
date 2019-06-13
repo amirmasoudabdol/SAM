@@ -10,8 +10,14 @@
 #include "sam.h"
 
 #include "RandomNumberGenerator.h"
+#include "Utilities.h"
+#include "ExperimentSetup.h"
 
 #include "nlohmann/json.hpp"
+#include "effolkronium/random.hpp"
+
+using Random = effolkronium::random_static;
+using RandomLocal = effolkronium::random_local;
 
 namespace sam {
     
@@ -61,6 +67,8 @@ namespace sam {
          */
 
         static std::unique_ptr<DataStrategy> build(json &data_strategy_config);
+        
+        static std::unique_ptr<DataStrategy> build(ExperimentSetup &setup);
         
         /**
          Pure deconstructor of the DataStrategy abstract class.
@@ -130,7 +138,20 @@ namespace sam {
             
             main_rng_stream = new RandomNumberGenerator(seed1);
             sec_rng_stream = new RandomNumberGenerator(seed2);
+            
         };
+        
+        LinearModelStrategy(ExperimentSetup &setup) {
+            mdist = mvnorm_distribution<>(setup.means().t(), setup.sigma());
+//            mdist = make_multivariate_distribution(setup.sigma(), setup.sigma());
+            
+            // Just in case...
+            seed1 = rand();
+            seed2 = rand();
+            
+            main_rng_stream = new RandomNumberGenerator(seed1);
+            sec_rng_stream = new RandomNumberGenerator(seed2);
+        }
         
         LinearModelStrategy(DataStrategyParameters dsp) {
 
@@ -157,6 +178,10 @@ namespace sam {
 //        int seed2;
         RandomNumberGenerator *main_rng_stream;
         RandomNumberGenerator *sec_rng_stream;
+        
+        RandomLocal random{};
+        Distribution dist;
+        MultivariateDistribution mdist;
     };
 
     /**
@@ -171,20 +196,24 @@ namespace sam {
     public:
 
         LatentDataStrategy() {
-            seed1 = rand();
-            seed2 = rand();
-            
-            main_rng_stream = new RandomNumberGenerator(seed1);
-            sec_rng_stream = new RandomNumberGenerator(seed2);
+//            seed1 = rand();
+//            seed2 = rand();
+//
+//            main_rng_stream = new RandomNumberGenerator(seed1);
+//            sec_rng_stream = new RandomNumberGenerator(seed2);
         }
+        
+//        LatentDataStrategy(ExperimentSetup &setup) {
+//            
+//        }
         
         LatentDataStrategy(DataStrategyParameters dsp) {
             params = dsp;
-            seed1 = rand();
-            seed2 = rand();
-            
-            main_rng_stream = new RandomNumberGenerator(seed1);
-            sec_rng_stream = new RandomNumberGenerator(seed2);
+//            seed1 = rand();
+//            seed2 = rand();
+//
+//            main_rng_stream = new RandomNumberGenerator(seed1);
+//            sec_rng_stream = new RandomNumberGenerator(seed2);
         }
         
         void genData(Experiment* experiment);
@@ -198,8 +227,8 @@ namespace sam {
     private:
 //        int seed1;
 //        int seed2;
-        RandomNumberGenerator *main_rng_stream;
-        RandomNumberGenerator *sec_rng_stream;
+//        RandomNumberGenerator *main_rng_stream;
+//        RandomNumberGenerator *sec_rng_stream;
         
     };
 

@@ -50,7 +50,7 @@ bool SignificantSelection::review(Submission &s) {
 
     if (s.pvalue < params.alpha){
         return true;
-    }else if (mainRngStream->uniform() < 1 - params.pub_bias) {
+    }else if (random.get(0.f, 1.f) < 1 - params.pub_bias) {
         return true;
     }else{
         return false;
@@ -65,7 +65,7 @@ bool SignificantSelection::review(Submission &s) {
  @return a boolean indicating whether the Submission is accpeted or not.
  */
 bool RandomSelection::review(Submission &s) {
-    if (mainRngStream->uniform() < 0.5) {
+    if (random.get(0.f, 1.f) < 0.5) {
         return true;
     }else{
         return false;

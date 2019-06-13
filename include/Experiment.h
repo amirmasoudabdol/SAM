@@ -71,7 +71,10 @@ namespace sam {
         
         explicit Experiment(ExperimentSetup& e) : setup{e} {
 
-            data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
+            // TODO: Hey! I'm constructing this with `setup` because I want the mvnorm_dist 
+            // sees the means and covs;
+            data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup));
+
             test_strategy = std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
             effect_strategy = std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
             

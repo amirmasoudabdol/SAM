@@ -15,10 +15,13 @@
 #include "sam.h"
 #include "nlohmann/json.hpp"
 #include "utils/magic_enum.hpp"
+#include "effolkronium/random.hpp"
 
 using json = nlohmann::json;
 using Generator = std::mt19937;
 using Distribution = std::function<double(Generator &)>;
+using MultivariateDistribution = std::function<arma::mat(Generator &)>;
+using Random = effolkronium::random_static;
 
 template <class _RealType = double>
 class mvnorm_distribution
@@ -58,6 +61,8 @@ private:
     arma::gmm_diag gd_model_;
     param_type p_;
     result_type v_;
+    int i_ = -1;
+    int seed_ = 42;
     
 public:
     // constructor and reset functions
@@ -77,6 +82,8 @@ public:
         
         gf_model_.set_means(m);
         gf_model_.set_fcovs(c);
+        
+        v_.set_size(p_.ndims());
     }
     
     explicit mvnorm_distribution(const param_type& p)
@@ -84,13 +91,18 @@ public:
     void reset() {};
     
     // seeding
-    
+    int seed() const {return seed_;}
+    void seed(int s) {seed_ = s; arma::arma_rng::set_seed(seed_);}
     
     // generating functions
     template<class URNG>
-    result_type operator()(URNG& g)
-    {return (*this)(g, p_);}
-    template<class URNG> result_type operator()(URNG& g, const param_type& parm);
+        result_type operator()(URNG& g)
+        {return (*this)(g, p_);}
+    template<class URNG>
+        result_type operator()(URNG& g, int N);
+    template<class URNG> 
+        result_type operator()(URNG& g, const param_type& parm);
+    
     
     // property functions
     result_type means() const {return p_.means();}
@@ -130,10 +142,23 @@ mvnorm_distribution<_RealType>::operator()(_URNG &g, const mvnorm_distribution<_
     return gf_model_.generate();
 }
 
+template <class _RealType>
+template <class _URNG>
+mvnorm_distribution<double>::result_type
+mvnorm_distribution<_RealType>::operator()(_URNG &g, const int N) {
+    return gf_model_.generate(N);
+}
+
 Distribution make_distribution(json const &j);
+MultivariateDistribution make_multivariate_distribution(json const &j);
 
 template <class DistributionType, class... Parameters>
 Distribution make_distribution_impl(json const &j, Parameters... parameters) {
+    return DistributionType{j.at(parameters)...};
+}
+
+template <class DistributionType, class... Parameters>
+MultivariateDistribution make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
     return DistributionType{j.at(parameters)...};
 }
 
@@ -144,10 +169,10 @@ get_expr_setup_params(json const &j, int const size) {
     switch (j.type()) {
         case nlohmann::detail::value_t::object:
             try {
-                Generator gen{std::random_device{}()};
+                // Generator gen{std::random_device{}()};
                 
                 auto dist = make_distribution(j);
-                auto val = dist(gen);
+                auto val = Random::get(dist);
                 
                 return std::make_tuple(std::vector<T>(size, val), dist);
                 

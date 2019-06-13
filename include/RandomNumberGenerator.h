@@ -17,17 +17,16 @@ class RandomNumberGenerator {
 
     public:
         
-        std::random_device rd;
-        std::mt19937 gen;
-        std::bernoulli_distribution bernoulliDist;
-        std::uniform_real_distribution<double> uniformDist;
-        std::piecewise_constant_distribution<> piecewiseConstDist;
+//        std::random_device rd;
+//        std::mt19937 gen;
+//        std::bernoulli_distribution bernoulliDist;
+//        std::piecewise_constant_distribution<> piecewiseConstDist;
     
     
         RandomNumberGenerator() {
-            seed = rand();
-            gen = std::mt19937(rd());
-            gen.seed(seed);
+//            seed = rand();
+//            gen = std::mt19937(rd());
+//            gen.seed(seed);
             
             arma::arma_rng::set_seed(seed);
         }
@@ -35,8 +34,8 @@ class RandomNumberGenerator {
         RandomNumberGenerator(int s) :
             seed(s)
         {
-            gen = std::mt19937(rd());
-            gen.seed(seed);
+//            gen = std::mt19937(rd());
+//            gen.seed(seed);
             
             arma::arma_rng::set_seed(seed);
                 
@@ -52,17 +51,14 @@ class RandomNumberGenerator {
         int getSeed() {
             return seed;
         };
-
-        double uniform();
-        double uniform(const double min, const double max);
     
         // normal distribution
-        arma::Row<double>
-        normal(const double mean, const double var, const double n);
-        std::vector<arma::Row<double> >
-        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const int n);
-        std::vector<arma::Row<double> >
-        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs);
+//        arma::Row<double>
+//        normal(const double mean, const double var, const double n);
+//        std::vector<arma::Row<double> >
+//        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const int n);
+//        std::vector<arma::Row<double> >
+//        normal(const arma::Row<double> &means, const arma::Row<double> &vars, const arma::Row<int> &nobs);
 
         // multivariate normal distribution
         std::vector<arma::Row<double> >
@@ -72,7 +68,7 @@ class RandomNumberGenerator {
         
 
     private:
-        int seed;
+    int seed = 42;
     };
     
 }

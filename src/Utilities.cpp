@@ -112,3 +112,31 @@ if(distributionName == #name_) return make_distribution_impl<std::name_<type_>>(
 
     throw std::runtime_error{&"Unknown distribution " [ distributionName]};
 }
+
+
+MultivariateDistribution make_multivariate_distribution(json const &j) {
+
+    auto const &distributionName = j.at("dist");
+    
+    // return make_multivariate_distribution_impl<mvnorm_distribution<double>>(means, covs);
+
+/**
+ A macro generating different functions calls based on the given distribution.
+
+ @param name_ The distribution name
+ @param type_ The distribution type
+ @param ... Paramters of the distribution, according to their representation in
+ the standard library
+ @return A function call to the make_distribution_impl that returns a distribution
+ class.
+ */
+#define generate_multivariate_distribution_factory(name_, type_, ...) \
+if(distributionName == #name_) return make_multivariate_distribution_impl<name_<type_>>(j, ## __VA_ARGS__);
+
+    // TODO: This doesn't work for now because I don't have the automatic conversion of the parameters.
+//    generate_multivariate_distribution_factory(mvnorm_distribution, double, "means", "covs");
+
+#undef generate_multivariate_distribution_factory
+
+    throw std::runtime_error{&"Unknown distribution " [ distributionName]};
+}

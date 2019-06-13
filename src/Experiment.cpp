@@ -39,6 +39,7 @@ void Experiment::initResources(int len) {
     pvalues.resize(len);
     effects.resize(len);
     sigs.resize(len);
+    measurements.resize(len);
 }
 
 void Experiment::calculateStatistics() {
@@ -76,7 +77,9 @@ Experiment::Experiment(json &experiment_config) {
     this->setup = ExperimentSetup(experiment_config);
 
     // Setup the Data Strategy
-    this->data_strategy = DataStrategy::build(experiment_config["data_strategy"]);
+    // this->data_strategy = DataStrategy::build(experiment_config["data_strategy"]);
+    // TODO: Hey! I'm changing this to let mvnorm_dist have access to means and covs...
+    this->data_strategy = DataStrategy::build(this->setup);
     
     // Setup the Test Strategy
     this->test_strategy = TestStrategy::build(experiment_config["test_strategy"]);

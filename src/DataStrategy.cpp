@@ -8,6 +8,7 @@
 #include "csv/reader.hpp"
 
 #include "Experiment.h"
+#include "ExperimentSetup.h"
 #include "DataStrategy.h"
 
 using namespace sam;
@@ -28,10 +29,34 @@ std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
 
 }
 
+std::unique_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup) {
+
+//    if (data_strategy_config["name"] == "LinearModel"){
+        return std::make_unique<LinearModelStrategy>(setup);
+//    }else if (data_strategy_config["name"] == "LatentModel") {
+//        return std::make_unique<LatentDataStrategy>();
+//    }else{
+//        throw std::invalid_argument("Unknown Data Strategy.");
+//    }
+
+}
+
+
 void LinearModelStrategy::genData(Experiment* experiment)  {
-    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),
-                                                             experiment->setup.sigma(),
-                                                             experiment->setup.nobs() );
+    
+    arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
+    sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
+    
+//    std::cout << random.get(mdist);;
+    
+    std::generate(experiment->measurements.begin(), experiment->measurements.end(),
+                  [sample, i = 0]() mutable {return sample.row(i++);});
+    
+//    std::fill
+    
+//    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),
+//                                                             experiment->setup.sigma(),
+//                                                             experiment->setup.nobs() );
     
 //    experiment->measurements = this->main_rng_stream->normal(experiment->setup.means(),
 //                                                             experiment->setup.vars(),
@@ -41,9 +66,17 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     
-    return this->sec_rng_stream->mvnorm(experiment->setup.means(),
-                                          experiment->setup.sigma(),
-                                          n_new_obs);
+    arma::mat sample(experiment->setup.ng(), n_new_obs);
+    sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
+    std::vector<arma::Row<double>> new_values(experiment->setup.ng());
+    
+    std::generate(new_values.begin(), new_values.end(),
+                  [sample, i = 0]() mutable {return sample.row(i++);});
+    
+    return new_values;
+//    return this->sec_rng_stream->mvnorm(experiment->setup.means(),
+//                                          experiment->setup.sigma(),
+//                                          n_new_obs);
 }
 
 arma::Row<double>

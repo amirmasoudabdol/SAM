@@ -21,12 +21,12 @@ ExperimentSetup::ExperimentSetup(json& config) {
     using namespace magic_enum;
     
     // Setting the seed for number of observation
-    rng_stream = new RandomNumberGenerator(rand());
+//    rng_stream = new RandomNumberGenerator(rand());
     
-    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data_strategy"]["name"].get<std::string>());
-    if (data_model.has_value()) {
-        dsp_.name = data_model.value();
-    }
+//    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data_strategy"]["name"].get<std::string>());
+//    if (data_model.has_value()) {
+//        dsp_.name = data_model.value();
+//    }
     
     nc_ = config["n_conditions"];
     nd_ = config["n_dep_vars"];
@@ -76,19 +76,19 @@ ExperimentSetup::ExperimentSetup(json& config) {
 
 void ExperimentSetup::randomize_parameters() {
     if (params_dist["n_obs"]){
-        fill_vector<int>(nobs_, nobs_.size(), params_dist["n_obs"](gen));
+        fill_vector<int>(nobs_, nobs_.size(), Random::get(params_dist["n_obs"]));
     }
 
     if (params_dist["means"]){
-        fill_vector<double>(means_, means_.size(), params_dist["means"](gen));
+        fill_vector<double>(means_, means_.size(), Random::get(params_dist["means"]));
     }
 
     if (params_dist["vars"]){
-        fill_vector<double>(vars_, vars_.size(), params_dist["vars"](gen));
+        fill_vector<double>(vars_, vars_.size(), Random::get(params_dist["vars"]));
     }
 
     if (params_dist["covs"]){
-        fill_vector<double>(covs_, covs_.size(), params_dist["vars"](gen));
+        fill_vector<double>(covs_, covs_.size(), Random::get(params_dist["vars"]));
     }
 
     if (params_dist["vars"] || params_dist["covs"])
@@ -114,9 +114,9 @@ void ExperimentSetup::randomize_parameters() {
 ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
 
     // Setting the seed for number of observation
-    setup.rng_stream = new RandomNumberGenerator(rand());
+//    setup.rng_stream = new RandomNumberGenerator(rand());
     
-    setup.dsp_.name = config["data_strategy"];
+//    setup.dsp_.name = config["data_strategy"];
     
     setup.nc_ = config["n_conditions"];
     setup.nd_ = config["n_dep_vars"];

@@ -17,6 +17,9 @@
 
 #include "nlohmann/json.hpp"
 #include "utils/magic_enum.hpp"
+#include "effolkronium/random.hpp"
+
+using Random = effolkronium::random_static;
 
 namespace sam {
 
@@ -300,14 +303,11 @@ namespace sam {
          */
         ResearcherBuilder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
             
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<> uniform(0, hacking_strategies_pool.size() - 1);
-            
             for (auto &group : researcher.hacking_strategies) {
                 
                 for (int i = 0; i < m_strategies; i++) {
-                    auto h_method = enum_cast<HackingMethod>(uniform(gen));
+                    // TEST ME!
+                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, hacking_strategies_pool.size() - 1));
                     // I think this should use the index from the list! Test it!
                     group.push_back(HackingStrategy::build(h_method.value()));
                 }
@@ -334,14 +334,10 @@ namespace sam {
             researcher.isHacker();
             researcher.hacking_strategies.resize(n_group);
             
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<int> uniform(1, enum_count<HackingMethod>() - 1);
-            
             for (auto &group : researcher.hacking_strategies) {
                 
                 for (int i = 0; i < m_method; i++) {
-                    auto h_method = enum_cast<HackingMethod>(uniform(gen));
+                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, enum_count<HackingMethod>() - 1));
                     group.push_back(HackingStrategy::build(h_method.value()));
                 }
                 

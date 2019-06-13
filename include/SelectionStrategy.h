@@ -5,12 +5,15 @@
 #ifndef SAMPP_SELECTIONSTRATEGIES_H
 #define SAMPP_SELECTIONSTRATEGIES_H
 
-// #include "Journal.h"
+#include "Utilities.h"
 #include "Submission.h"
 #include "RandomNumberGenerator.h"
 
 #include "nlohmann/json.hpp"
 #include "utils/magic_enum.hpp"
+#include "effolkronium/random.hpp"
+
+using RandomLocal = effolkronium::random_local;
 
 namespace sam {
     
@@ -33,7 +36,8 @@ namespace sam {
     class SelectionStrategy {
         
     protected:
-        RandomNumberGenerator* mainRngStream;
+        Distribution dist;
+        RandomLocal random;
 
     public:
 
@@ -108,7 +112,7 @@ namespace sam {
         Parameters params;
         
         SignificantSelection(const Parameters &p) : params{p} {
-            mainRngStream = new RandomNumberGenerator(params.seed);
+//            mainRngStream = new RandomNumberGenerator(params.seed);
         };
         
         SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42) {
@@ -120,7 +124,7 @@ namespace sam {
             params.side = side;
             params.seed = seed;
             
-            mainRngStream = new RandomNumberGenerator(seed);
+//            mainRngStream = new RandomNumberGenerator(seed);
             
             name = params.name;
         };
@@ -180,7 +184,7 @@ namespace sam {
         RandomSelection(int seed) : seed(seed) {
             
             params.name = SelectionMethod::RandomSelection;
-            mainRngStream = new RandomNumberGenerator(seed);
+//            mainRngStream = new RandomNumberGenerator(seed);
             
             name = params.name;
         }
