@@ -23,6 +23,56 @@ using Distribution = std::function<double(Generator &)>;
 using MultivariateDistribution = std::function<arma::mat(Generator &)>;
 using Random = effolkronium::random_static;
 
+
+// partial specialization (full specialization works too)
+namespace nlohmann {
+    template <typename T>
+    struct adl_serializer<arma::Mat<T>> {
+        static void to_json(json& j, const arma::Mat<T> &mat) {
+            std::vector<std::vector<T>> vmat(mat.n_rows, mat.n_cols);
+            arma::mat::iterator mat_it = mat.begin();
+            
+            int n_rows = vmat.size();
+            int n_cols = vmat[0].size();
+            for (int i = 0; i < n_rows; ++i) {
+                for (int j = 0; j < n_cols; ++j) {
+                    vmat[j][i] = (*mat_it);
+                    mat_it++;
+                }
+            }
+        }
+        
+        static void from_json(const json& j, arma::Mat<T>& mat) {
+            /// TODO: Check it vac is actually a matrix.
+            /// TODO: This is almost working but I need to translate
+            /// everything into `arma::vec` to make this more uniform all the way.
+            int n_rows, n_cols;
+            std::vector<std::vector<T>> vmat;
+            if (j[0].type() != detail::value_t::array) {
+                vmat.push_back(j.get<std::vector<T>>());
+            }else if (j[0].type() == detail::value_t::array) {
+                vmat = j.get<std::vector<std::vector<T>>>();
+            }else{
+                throw std::invalid_argument("Cannot convert the given value to a matrix."); // It's not a matrix
+            }
+            
+            n_rows = vmat.size();
+            n_cols = vmat[0].size();
+            
+            /// TODO: This is dirty but it return the transpose of the matrix, so
+            /// it'll be `arma::vec` instead of `vec`.
+            /// FIXME!
+            mat = arma::Mat<T>(n_cols, n_rows);
+            for (int i = 0; i < n_rows; ++i) {
+                for (int j = 0; j < n_cols; ++j) {
+                    mat(j, i) = vmat[i][j];
+                }
+            }
+            
+        }
+    };
+}
+
 template <class _RealType = double>
 class mvnorm_distribution
 {
@@ -182,11 +232,13 @@ get_expr_setup_params(json const &j, int const size) {
             break;
             
         case nlohmann::detail::value_t::array:
-            if (j.size() != size)
-                throw std::length_error("Array size does not match with the size\
+            {
+                if (j.size() != size)
+                    throw std::length_error("Array size does not match with the size\
                                         of the experiment.\n");
-            else
-                return std::make_tuple(j.get<std::vector<T>>(), nullptr);
+                else
+                    return std::make_tuple(j.get<std::vector<T>>(), nullptr);
+            }
             break;
             
         case nlohmann::detail::value_t::number_integer:
