@@ -314,10 +314,6 @@ namespace sam {
         p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
     }
 
-
-
-    // FIXME: Not fully implemented!
-    // FIXME: Not fully tested!
     class HonestDecisionMaker : public DecisionStrategy {
 
     public:
@@ -327,6 +323,8 @@ namespace sam {
             DecisionPreference preference = DecisionPreference::PreRegisteredOutcome;
         };
 
+        /// Parameters of the HonestDecisionMaker are fixed, he is basically the
+        /// baseline researcher that report everything he finds.
         Parameters params;
 
         HonestDecisionMaker() {

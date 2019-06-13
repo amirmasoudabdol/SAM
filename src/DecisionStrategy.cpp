@@ -40,7 +40,9 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
 
 Submission DecisionStrategy::selectOutcome(Experiment& experiment, const DecisionPreference &preference) {
     
-    // TODO: This is confusing...
+    /// We always start with the pre_registered_group, and if we find others
+    /// results based on researchers' preference, then we replace it, and report
+    /// that one.
     int selectedOutcome = pre_registered_group;
     
     switch (preference) {
@@ -66,10 +68,6 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             
         case DecisionPreference::MinPvalueMaxEffect:
             
-            break;
-            
-        default:
-            selectedOutcome = 0;
             break;
     }
     
@@ -210,12 +208,13 @@ void PatientDecisionMaker::initDecision(Experiment &experiment) {
 }
 
 
-/// In this case, this only updates the status of the hack.
+/// A patient decision maker is still optimizing for the effort, he'd not continue
+/// hacking if an intermediate result is already publishable
 ///
 /// @param experiment A reference to the experiment
 void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
-    is_still_hacking = true;
+    is_still_hacking = !isPublishable();
 }
 
 
