@@ -3,6 +3,8 @@
 //
 
 #include "Utilities.h"
+#include "utils/multivariate_random.h"
+#include "utils/truncated_random.h"
 
 using Generator = std::mt19937;
 
@@ -73,6 +75,15 @@ Distribution make_distribution(json const &j) {
         return std::bernoulli_distribution(
                     std::bernoulli_distribution::param_type(j.at("p")));
     }
+    
+    // Custom Distributions
+    if (distributionName == "truncated_normal_distribution") {
+        return truncated_normal_distribution<>(
+                    truncated_normal_distribution<>::param_type(j.at("mean"),
+                                                                   j.at("stddev"),
+                                                                   j.at("min"),
+                                                                   j.at("max")));
+    }
 
 /**
  A macro generating different functions calls based on the given distribution.
@@ -135,6 +146,7 @@ if(distributionName == #name_) return make_multivariate_distribution_impl<name_<
 
     // TODO: This doesn't work for now because I don't have the automatic conversion of the parameters.
     generate_multivariate_distribution_factory(mvnorm_distribution, double, "means", "covs");
+    generate_multivariate_distribution_factory(truncated_mvnorm_distribution, double, "means", "covs", "lowers", "uppers");
 
 #undef generate_multivariate_distribution_factory
 
