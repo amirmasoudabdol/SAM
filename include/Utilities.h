@@ -29,17 +29,13 @@ namespace nlohmann {
     template <typename T>
     struct adl_serializer<arma::Mat<T>> {
         static void to_json(json& j, const arma::Mat<T> &mat) {
-            std::vector<std::vector<T>> vmat(mat.n_rows, mat.n_cols);
-            arma::mat::iterator mat_it = mat.begin();
+            std::vector<std::vector<T>> vmat(mat.n_rows);
             
-            int n_rows = vmat.size();
-            int n_cols = vmat[0].size();
-            for (int i = 0; i < n_rows; ++i) {
-                for (int j = 0; j < n_cols; ++j) {
-                    vmat[j][i] = (*mat_it);
-                    mat_it++;
-                }
-            }
+            for (int i = 0; i < mat.n_rows; ++i)
+                vmat[i] = arma::conv_to<std::vector<T>>::from(mat.row(i));
+
+            j = *mat;
+
         }
         
         static void from_json(const json& j, arma::Mat<T>& mat) {
