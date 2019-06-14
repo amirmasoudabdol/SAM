@@ -53,15 +53,14 @@ BOOST_AUTO_TEST_CASE( researcher_builder )
                                         .addNewHackingStrategy(hs)
                                         .build();
 
-    BOOST_TEST((new_researcher.decision_strategy->selectionPref == DecisionPreference::PreRegisteredOutcome));
-
     // Aha! This is where the open-close principle shows itself. I cannot access
     // alpha here because SelectionStrategy abstract class doesn't have a `params`
     // instance, and even if it had, it would not be the same as the one that I
     // created via the factory.
 //    BOOST_TEST((new_researcher.journal->selection_strategy->params.alpha == 0.05));
 
-
+        // The same here as well, I've removed the params from the Abstract class and this is the result.
+        // BOOST_TEST((new_researcher.decision_strategy->params.preference == DecisionPreference::PreRegisteredOutcome));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -14,6 +14,10 @@
 #include "Experiment.h"
 #include "Utilities.h"
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 namespace sam {
 
     enum class DecisionMethod {
@@ -58,6 +62,8 @@ namespace sam {
     class DecisionStrategy {
         
     protected:
+
+        json config_;
         
         //! Indicates the pre-registered outcome in the case where the
         //! Researcher prefers the PreRegisteredOutcome
