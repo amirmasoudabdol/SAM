@@ -17,9 +17,6 @@
 
 #include "sam.h"
 
-//#include "DataStrategy.h"
-//#include "TestStrategy.h"
-//#include "EffectStrategy.h"
 #include "Utilities.h"
 
 #include "nlohmann/json.hpp"
@@ -29,9 +26,6 @@ namespace sam {
     using json = nlohmann::json;
     
     // Forward declration of the necessary classes.
-//    class DataStrategy;
-//    class TestStrategy;
-//    class EffectStrategy;
     class ExperimentSetupBuilder;
 
     /**
@@ -43,11 +37,6 @@ namespace sam {
     class ExperimentSetup {
 
         friend class ExperimentSetupBuilder;
-
-        //! Main random number stream used by the class to randomize `true_nobs`, etc.
-//        RandomNumberGenerator *rng_stream;
-        
-//        Generator gen{std::random_device{}()};
 
         //! Number of experimental conditions, e.g., treatment 1, treatment 2.
         int nc_ = 0;
@@ -97,21 +86,13 @@ namespace sam {
         explicit ExperimentSetup(json& config);
 
         //! Test Strategy Parameters
-        // TestStrategy::TestStrategyParameters tsp_;
         json tsp_conf;
 
         //! Data Strategy Parameters
-        // DataStrategy::DataStrategyParameters dsp_;
         json dsp_conf;
         
         //! Effect Estimator Parameters
-        // EffectStrategy::EffectStrategyParameters esp_;
         json esp_conf;
-        
-//        void setSeed(int s) {
-//            rng_stream->setSeed(s);
-//        }
-
 
         const int nc() const { return nc_; };
         const int nd() const { return nd_; };
@@ -351,8 +332,6 @@ namespace sam {
             if (seed == -1) {
                 seed = rand();
             }
-
-//            setup.rng_stream = new RandomNumberGenerator(seed);
             
             return setup;
         }

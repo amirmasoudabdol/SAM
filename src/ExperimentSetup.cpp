@@ -20,9 +20,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     using namespace magic_enum;
     
-    // Setting the seed for number of observation
-//    rng_stream = new RandomNumberGenerator(rand());
-    
 //    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data_strategy"]["name"].get<std::string>());
 //    if (data_model.has_value()) {
 //        dsp_.name = data_model.value();
