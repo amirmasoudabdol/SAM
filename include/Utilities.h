@@ -23,8 +23,7 @@ using Distribution = std::function<double(Generator &)>;
 using MultivariateDistribution = std::function<arma::mat(Generator &)>;
 using Random = effolkronium::random_static;
 
-
-// partial specialization (full specialization works too)
+// JSON to ARMA Serializer
 namespace nlohmann {
     template <typename T>
     struct adl_serializer<arma::Mat<T>> {

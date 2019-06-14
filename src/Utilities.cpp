@@ -128,11 +128,10 @@ if(distributionName == #name_) return make_distribution_impl<std::name_<type_>>(
 MultivariateDistribution make_multivariate_distribution(json const &j) {
 
     auto const &distributionName = j.at("dist");
-    
-    // return make_multivariate_distribution_impl<mvnorm_distribution<double>>(means, covs);
 
 /**
- A macro generating different functions calls based on the given distribution.
+ A macro generating different functions calls based on the given distribution. The main difference here is
+ the fact that the `std::function` has the form of `std::function<arma::mat<double>(Generator &)>`.
 
  @param name_ The distribution name
  @param type_ The distribution type
@@ -144,7 +143,6 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
 #define generate_multivariate_distribution_factory(name_, type_, ...) \
 if(distributionName == #name_) return make_multivariate_distribution_impl<name_<type_>>(j, ## __VA_ARGS__);
 
-    // TODO: This doesn't work for now because I don't have the automatic conversion of the parameters.
     generate_multivariate_distribution_factory(mvnorm_distribution, double, "means", "covs");
     generate_multivariate_distribution_factory(truncated_mvnorm_distribution, double, "means", "covs", "lowers", "uppers");
 
