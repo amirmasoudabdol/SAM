@@ -15,6 +15,11 @@
             "mean": 1,
             "stddev": 0.5
         },
+        "measurements" : {
+            "dist": "truncated_normal_distribution",
+            "mean": 1,
+            "stddev": 1
+        },
         "loadings": 0.7,
         "means": 0.145,
         "n_conditions": 2,

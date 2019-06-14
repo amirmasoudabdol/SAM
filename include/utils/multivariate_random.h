@@ -26,6 +26,12 @@ public:
         explicit param_type(result_type means, result_type covs)
                 : means_(means), covs_(covs) {
             dims_ = means.n_rows;
+
+            if (covs.n_rows != dims_ )
+                throw std::length_error("Covariance matrix has the wrong dimension.");
+
+            if (!covs.is_symmetric() || !covs.is_square())
+                throw std::logic_error("Covarinace matrix is not square or symmetrical.");
         }
 
         size_t ndims() const {return dims_;}
@@ -43,7 +49,7 @@ public:
 
 private:
     arma::gmm_full gf_model_;
-    arma::gmm_diag gd_model_;
+//    arma::gmm_diag gd_model_;
     param_type p_;
     result_type v_;
     int i_ = -1;
@@ -56,14 +62,10 @@ public:
         // check if it's diagonal, initiate the diag model
         gf_model_.reset(p_.ndims(), 1);
 
-        // I need to redesign the params...
         arma::mat m(p_.ndims(), 1);
         arma::cube c(p_.ndims(), p_.ndims(), 1);
         m.col(0) = p_.means();
         c.slice(0) = p_.covs();
-
-        //        gf_model_.set_means(p_.means());
-        //        gf_model_.set_fcovs(p_.covs());
 
         gf_model_.set_means(m);
         gf_model_.set_fcovs(c);
@@ -83,8 +85,7 @@ public:
     template<class URNG>
     result_type operator()(URNG& g)
     {return (*this)(g, p_);}
-//    template<class URNG>
-//    result_type operator()(URNG& g, int N);
+
     template<class URNG>
     result_type operator()(URNG& g, const param_type& parm);
 
@@ -127,14 +128,7 @@ mvnorm_distribution<_RealType>::operator()(_URNG &g, const mvnorm_distribution<_
     return gf_model_.generate();
 }
 
-//template <class _RealType>
-//template <class _URNG>
-//mvnorm_distribution<double>::result_type
-//mvnorm_distribution<_RealType>::operator()(_URNG &g, const int N) {
-//    return gf_model_.generate(N);
-//}
-
-
+// Truncated Normal Distribution
 template <class _RealType = double>
 class truncated_mvnorm_distribution
 {
@@ -156,9 +150,13 @@ public:
         explicit param_type(result_type means, result_type covs, result_type lowers, result_type uppers)
         : means_(means), covs_(covs), lowers_(lowers), uppers_(uppers) {
             dims_ = means.n_rows;
-            // TODO: Expand the test
-            if (lowers_.size() != uppers_.size())
+
+            // Checking whether dimensions matches
+            if (lowers_.n_rows != dims_ || uppers_.n_rows != dims_)
                 throw std::length_error("Check your arrays size");
+
+            if (!covs.is_symmetric() || !covs.is_square())
+                throw std::logic_error("Covariance matrix is not symmetric.");
         }
         
         size_t ndims() const {return dims_;}
@@ -180,7 +178,7 @@ public:
     
 private:
     arma::gmm_full gf_model_;
-    arma::gmm_diag gd_model_;
+//    arma::gmm_diag gd_model_;
     param_type p_;
     result_type v_;
     int i_ = -1;
@@ -190,17 +188,14 @@ public:
     // constructor and reset functions
     explicit truncated_mvnorm_distribution(result_type means, result_type covs, result_type lowers, result_type uppers)
     : p_(param_type(means, covs, lowers, uppers)) {
-        // check if it's diagonal, initiate the diag model
+        // TODO: check if it's diagonal, initiate the diag model.
+        // This is a bit tricky since I'd need an adaptor for them... let it be for now...
         gf_model_.reset(p_.ndims(), 1);
-        
-        // I need to redesign the params...
+
         arma::mat m(p_.ndims(), 1);
         arma::cube c(p_.ndims(), p_.ndims(), 1);
         m.col(0) = p_.means();
         c.slice(0) = p_.covs();
-        
-        //        gf_model_.set_means(p_.means());
-        //        gf_model_.set_fcovs(p_.covs());
         
         gf_model_.set_means(m);
         gf_model_.set_fcovs(c);
@@ -220,8 +215,6 @@ public:
     template<class URNG>
     result_type operator()(URNG& g)
     {return (*this)(g, p_);}
-    //    template<class URNG>
-    //    result_type operator()(URNG& g, int N);
     template<class URNG>
     result_type operator()(URNG& g, const param_type& parm);
     
