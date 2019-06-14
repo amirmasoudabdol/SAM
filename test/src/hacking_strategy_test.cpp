@@ -20,7 +20,6 @@ namespace tt = boost::test_tools;
 #include "ExperimentSetup.h"
 #include "DecisionStrategy.h"
 #include "HackingStrategy.h"
-#include "RandomNumberGenerator.h"
 
 #include "test_fixtures.h"
 

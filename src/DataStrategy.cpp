@@ -46,21 +46,10 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     
     arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
     sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
-    
-//    std::cout << random.get(mdist);;
-    
+        
     std::generate(experiment->measurements.begin(), experiment->measurements.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
-//    std::fill
-    
-//    experiment->measurements = this->main_rng_stream->mvnorm(experiment->setup.means(),
-//                                                             experiment->setup.sigma(),
-//                                                             experiment->setup.nobs() );
-    
-//    experiment->measurements = this->main_rng_stream->normal(experiment->setup.means(),
-//                                                             experiment->setup.vars(),
-//                                                             experiment->setup.nobs() );
 }
 
 std::vector<arma::Row<double>>
@@ -74,14 +63,11 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int 
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
     return new_values;
-//    return this->sec_rng_stream->mvnorm(experiment->setup.means(),
-//                                          experiment->setup.sigma(),
-//                                          n_new_obs);
 }
 
 arma::Row<double>
 LinearModelStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) {
-
+    // TODO: To be implemented still...
     return arma::Row<double>();
 }
 

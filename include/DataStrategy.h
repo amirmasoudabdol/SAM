@@ -43,8 +43,6 @@ namespace sam {
 
     public:
         
-        int seed1 = -1;
-        int seed2 = -1;
 
         enum class DataModel {
             LinearModel,
@@ -53,8 +51,6 @@ namespace sam {
 
         struct DataStrategyParameters {
             DataModel name;
-            int seed1 = -1;
-            int seed2 = -1;
         };
 
         DataStrategyParameters params;
@@ -133,11 +129,7 @@ namespace sam {
     public:
 
         LinearModelStrategy() {
-            seed1 = rand();
-            seed2 = rand();
             
-            main_rng_stream = new RandomNumberGenerator(seed1);
-            sec_rng_stream = new RandomNumberGenerator(seed2);
             
         };
         
@@ -146,22 +138,14 @@ namespace sam {
 
             
             // Just in case...
-            seed1 = rand();
-            seed2 = rand();
             
-            main_rng_stream = new RandomNumberGenerator(seed1);
-            sec_rng_stream = new RandomNumberGenerator(seed2);
         }
         
         LinearModelStrategy(DataStrategyParameters dsp) {
 
             params = dsp;
 
-            seed1 = rand();
-            seed2 = rand();
             
-            main_rng_stream = new RandomNumberGenerator(seed1);
-            sec_rng_stream = new RandomNumberGenerator(seed2);
         };
         
         void
@@ -174,10 +158,6 @@ namespace sam {
         genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
-//        int seed1;
-//        int seed2;
-        RandomNumberGenerator *main_rng_stream;
-        RandomNumberGenerator *sec_rng_stream;
         
         RandomLocal random{};
         Distribution dist;
@@ -196,11 +176,7 @@ namespace sam {
     public:
 
         LatentDataStrategy() {
-//            seed1 = rand();
-//            seed2 = rand();
-//
-//            main_rng_stream = new RandomNumberGenerator(seed1);
-//            sec_rng_stream = new RandomNumberGenerator(seed2);
+
         }
         
 //        LatentDataStrategy(ExperimentSetup &setup) {
@@ -209,11 +185,7 @@ namespace sam {
         
         LatentDataStrategy(DataStrategyParameters dsp) {
             params = dsp;
-//            seed1 = rand();
-//            seed2 = rand();
-//
-//            main_rng_stream = new RandomNumberGenerator(seed1);
-//            sec_rng_stream = new RandomNumberGenerator(seed2);
+
         }
         
         void genData(Experiment* experiment);
@@ -225,10 +197,6 @@ namespace sam {
         genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
-//        int seed1;
-//        int seed2;
-//        RandomNumberGenerator *main_rng_stream;
-//        RandomNumberGenerator *sec_rng_stream;
         
     };
 
