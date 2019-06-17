@@ -33,6 +33,9 @@ namespace sam {
         
         //! Journal's Selection Model/Strategy
         std::unique_ptr<SelectionStrategy> selection_strategy;
+
+        //! Effect Estimator
+        std::unique_ptr<MetaAnalysis> meta_analysis_strategy;
         
         struct JournalParameters {
             std::string name;

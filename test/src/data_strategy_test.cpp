@@ -2,7 +2,7 @@
 // Created by Amir Masoud Abdol on 2019-01-27.
 //
 
-#define BOOST_TEST_MODULE Hello Test
+#define BOOST_TEST_MODULE DataStrategy Test
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 

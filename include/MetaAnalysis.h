@@ -21,7 +21,9 @@ namespace sam {
 	public:
 //        MetaAnalysis() = default;
         
-//        ~MetaAnalysis() = 0;
+        virtual ~MetaAnalysis() = 0;
+
+        static std::unique_ptr<MetaAnalysis> build(std::string name);
 
         virtual arma::vec estimate(vector<Submission> publications) = 0;
 	    

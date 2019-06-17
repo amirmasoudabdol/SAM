@@ -19,6 +19,7 @@
 #include "SelectionStrategy.h"
 #include "HackingStrategy.h"
 #include "Researcher.h"
+#include "Submission.h"
 
 #include "effolkronium/random.hpp"
 
@@ -76,7 +77,7 @@ struct SampleResearch {
     json s_s_conf = {
         {"name", "SignificantSelection"},
         {"alpha", 0.05},
-        {"pub_bias", 42},
+        {"pub_bias", 0.95},
         {"side", 1}
     };
     
@@ -96,6 +97,8 @@ struct SampleResearch {
     };
 
     Researcher researcher;
+
+    std::vector<std::vector<Submission>> publications;
 
     SampleResearch() {
 
@@ -136,6 +139,30 @@ struct SampleResearch {
                                     .createDecisionStrategy(de_s_conf)
                                     .createJournal(j_conf)
                                     .build();
+    }
+
+
+    void runSampleSimulation(int nsims = 1) {
+        // Initializing the csv writer
+    
+        for (int i = 0; i < nsims; i++) {
+
+            while (researcher.journal->isStillAccepting()) {
+
+                researcher.prepareResearch();
+
+                researcher.performResearch();
+
+                researcher.publishResearch();
+                
+            }
+
+            publications.push_back(researcher.journal->publications_list);
+                        
+            researcher.journal->clear();
+        }
+
+
     }
 };
 

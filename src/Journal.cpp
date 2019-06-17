@@ -18,6 +18,8 @@ Journal::Journal(json& journal_config){
     
     // Setting up the SelectionStrategy
     this->selection_strategy = SelectionStrategy::build(journal_config["selection_strategy"]);
+    
+    this->meta_analysis_strategy = MetaAnalysis::build("FixedEffectEstimator");
 }
 
 //Journal::Journal(JournalParameters &jp,
