@@ -65,8 +65,16 @@ BOOST_FIXTURE_TEST_SUITE( optional_stopping, SampleResearch );
     }
 
 
+    BOOST_AUTO_TEST_CASE ( testing_updated_statistics )
+    {
+        
+    }
+
 
 BOOST_AUTO_TEST_SUITE_END();
+
+
+
 
 BOOST_FIXTURE_TEST_SUITE( outliers_removal, SampleResearch );
 
@@ -80,7 +88,7 @@ BOOST_FIXTURE_TEST_SUITE( outliers_removal, SampleResearch );
     BOOST_AUTO_TEST_CASE( testing_measurements_size )
     {
         initResearch();
-        
+
         de_s_conf["preference"] = "PreRegisteredOutcome";
         auto patient_dec_maker = DecisionStrategy::build(de_s_conf);
 
@@ -93,9 +101,16 @@ BOOST_FIXTURE_TEST_SUITE( outliers_removal, SampleResearch );
             BOOST_TEST( experiment->measurements[i].size() == setup.nobs()[i]);
 
         // Adding 3 very far values
-        RandomNumberGenerator rng;
+//        RandomNumberGenerator rng;
+
+        arma::rowvec outliers(3);
         for (int i = 0; i < setup.ng(); ++i) {
-            auto outliers = rng.normal(2, 0.1, 3);
+            
+            // adding three new outliers
+            outliers.each_col([](arma::vec &v){
+                v = Random::get<std::normal_distribution<double>>(2.0, 0.1);
+            });
+            
             experiment->measurements[i].insert_cols(experiment->measurements[i].size(), outliers);
         }
 

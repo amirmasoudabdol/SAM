@@ -8,6 +8,40 @@
 
 using Generator = std::mt19937;
 
+namespace sam {
+
+    /// A dataset of each distributions with their parameters name.
+    const std::map<std::string, std::vector<std::string>> disto_params_names =
+    {
+        {"uniform_int_distribution", {"a", "b"}},
+        {"uniform_real_distribution", {"a", "b"}},
+        {"binomial_distribution", {"p", "t"}},
+        {"exponential_distribution", {"lambda"}},
+        {"gamma_distribution", {"alpha", "beta"}},
+        {"weibull_distribution", {"a", "b"}},
+        {"extreme_value_distribution", {"a", "b"}},
+        {"normal_distribution", {"mean", "stddev"}},
+        {"lognormal_distribution", {"m", "s"}},
+        {"chi_squared_distribution", {"n"}},
+        {"cauchy_distribution", {"a", "b"}},
+        {"fisher_f_distribution", {"m", "n"}},
+        {"student_t_distribution", {"n"}},
+        {"negative_binomial_distribution", {"p", "k"}},
+        {"geometric_distribution", {"p"}},
+        {"poisson_distribution", {"mean"}},
+        {"discrete_distribution", {"probabilities"}},
+        {"piecewise_linear_distribution", {"intervals", "densities"}},
+        {"piecewise_constant_distribution", {"intervals", "densities"}},
+        {"bernoulli_distribution", {"p"}},
+        {"truncated_normal_distribution", {"mean", "stddev", "min", "max"}},
+
+        // Multivariate Distros
+        {"mvnorm_distribution", {"means", "covs"}},
+        {"truncated_mvnorm_distribution", {"means", "covs", "lowers", "uppers"}}
+    };
+
+}
+
 arma::Mat<double>
 constructCovMatrix(const arma::Row<double> &vars, const double cov, int n) {
     arma::Mat<double> cov_matrix(n, n);

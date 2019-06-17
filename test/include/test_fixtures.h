@@ -20,10 +20,13 @@
 #include "HackingStrategy.h"
 #include "Researcher.h"
 
+#include "effolkronium/random.hpp"
+
 using namespace arma;
 using namespace sam;
 using namespace std;
 using json = nlohmann::json;
+using Random = effolkronium::random_static;
 
 struct SampleResearch {
 

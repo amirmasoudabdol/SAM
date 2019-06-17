@@ -23,6 +23,7 @@ using Distribution = std::function<double(Generator &)>;
 using MultivariateDistribution = std::function<arma::mat(Generator &)>;
 using Random = effolkronium::random_static;
 
+
 // JSON to ARMA Serializer
 namespace nlohmann {
     template <typename T>
@@ -88,7 +89,6 @@ get_expr_setup_params(json const &j, int const size) {
     switch (j.type()) {
         case nlohmann::detail::value_t::object:
             try {
-                // Generator gen{std::random_device{}()};
                 
                 auto dist = make_distribution(j);
                 auto val = Random::get(dist);
