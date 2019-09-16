@@ -22,6 +22,9 @@ cling-playground/
 testBin/
 Testing/
 
+
+.vscode/
+
 # ------------------------------------------------
 # C++
 
