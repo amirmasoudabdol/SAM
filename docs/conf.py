@@ -60,7 +60,8 @@ exhale_args = {
     "exhaleDoxygenStdin": textwrap.dedent('''
         INPUT       = ../include
         EXCLUDE     = ../include/utils \
-                      ../include/csv
+                      ../include/csv \
+                      ../include/effolkronium
 
         # For this code-base, the following helps Doxygen get past a macro
         # that it has trouble with.  It is only meaningful for this code,
