@@ -39,22 +39,22 @@ namespace sam {
         friend class ExperimentSetupBuilder;
 
         //! Number of experimental conditions, e.g., treatment 1, treatment 2.
-        int nc_ = 0;
+        int nc_ {0};
 
         //! Number of _dependent variables_ in each experimental condition.
-        int nd_ = 0;
+        int nd_ {0};
 
         //! Number of items for each latent variable, if `isFactorModel` is `true`.
-        int ni_ = 0;
+        int ni_ {0};
 
         //! Total number of groups. Always calculated as
         //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
         //! variables, \f$n_g = n_c \times n_d \times n_i\f$
-        int ng_;
+        int ng_ {};
 
         //! Total number of groups in the case of latent experiment.
         //! This is a helper variable and doesn't mean anything conceptually
-        int nrows_;
+        int nrows_ {};
 
         // Experiment Parameters
         arma::Row<int> nobs_;
@@ -135,12 +135,12 @@ namespace sam {
         ExperimentSetup setup;
 
         //! Used to make sure that experiment setup has the correct size
-        bool is_expr_size_decided = false;
+        bool is_expr_size_decided {false};
         
         //! Used to make sure that variance is set before the covariance
-        bool is_vars_set = false;
+        bool is_vars_set {false};
 
-        int seed = -1;
+        int seed {-1};
 
         
         /**

@@ -87,6 +87,8 @@ namespace sam {
          @param d The pointer to a Decision Strategy
          
          @note Researcher owns its decision strategy that's why I move the pointer.
+         
+         @todo I think I need to do the `std::move` when I'm calling the function not inside it
          */
         void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
             decision_strategy = std::move(ds);

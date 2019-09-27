@@ -53,7 +53,7 @@ namespace sam {
         
         std::vector<arma::Row<double> > measurements;
         
-        bool latentDesign = false;
+        bool latentDesign {false};
         std::vector<arma::Row<double> > items;
         arma::Row<double> latent_means;
         arma::Row<double> latent_variances;
