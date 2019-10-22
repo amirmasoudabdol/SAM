@@ -18,33 +18,41 @@ public:
     class param_type
     {
         size_t dims_;
-        bool is_diag_ = false;
         result_type means_;
         result_type covs_;
-        
+                
     public:
         typedef mvnorm_distribution distribution_type;
+        
+        explicit param_type() {
+            arma::mat means(1, 1, arma::fill::zeros);
+            arma::mat covs(1, 1, arma::fill::eye);
+            
+            dims_ = means.n_elem;
+            means_ = means;
+            covs_ = covs;
+        }
 
         explicit param_type(result_type means, result_type covs)
-                : means_(means), covs_(covs) {
-            dims_ = means.n_rows;
+                : dims_(means.n_elem), means_(means), covs_(covs) {
+                    
+            if (!means.is_colvec())
+                throw std::logic_error("Mean should be a column vector.");
 
             if (covs.n_rows != dims_ )
                 throw std::length_error("Covariance matrix has the wrong dimension.");
 
             if (!covs.is_symmetric() || !covs.is_square())
                 throw std::logic_error("Covarinace matrix is not square or symmetrical.");
-                    
-            if (covs.is_diagmat())
-                is_diag_ = true;
         }
         
-        // I think I need a copy assignment operator for handling the sizes and special cases
+        // TODO: I think I need a copy assignment operator for handling the sizes and special cases
 
-        size_t ndims() const {return dims_;}
+        size_t dims() const {return dims_;}
         result_type means() const {return means_;}
         result_type covs() const {return covs_;}
-        bool is_diag() const {return is_diag_;}
+        arma::vec covs_diag() const {return covs_.diag();}
+        bool is_covs_diagmat() const {return covs_.is_diagmat();}
 
         friend
         bool operator==(const param_type& x, const param_type& y)
@@ -60,27 +68,30 @@ private:
     arma::mat covs_lower;
     arma::mat inv_covs_lower;
     arma::mat inv_covs;
-    std::normal_distribution<> nd;
+    std::normal_distribution<> norm;  // N~(0, 1)
 
     param_type p_;
     result_type tmp_;
 
 public:
+    
+    explicit mvnorm_distribution() : p_(param_type{}) {} ;
+    
     // constructor and reset functions
     explicit mvnorm_distribution(result_type means, result_type covs)
             : p_(param_type(means, covs))  {
         
         // TODO: check if it's diagonal, initiate the diag model
 
-        tmp_.resize(p_.ndims());
+        tmp_.resize(p_.dims(), 1);
 
-//        if (!p_.is_diag())
-        factorize_covariance();
+        if (!p_.is_covs_diagmat())
+            factorize_covariance();
     }
 
     explicit mvnorm_distribution(const param_type& p)
             : p_(p) {}
-    void reset() { nd.reset(); };
+    void reset() { norm.reset(); };
 
     // generating functions
     template<class URNG>
@@ -98,7 +109,11 @@ public:
     void param(const param_type& params) {
         // TODO: This needs more checks.
         p_ = params;
-        factorize_covariance();
+        
+        tmp_.resize(p_.dims());
+        
+        if (!p_.is_covs_diagmat())
+            factorize_covariance();
     }
 
     void factorize_covariance() {
@@ -136,12 +151,12 @@ template <class _URNG>
 mvnorm_distribution<double>::result_type
 mvnorm_distribution<_RealType>::operator()(_URNG &g, const mvnorm_distribution<_RealType>::param_type &parm) {
     
-    tmp_.imbue( [&]() { return nd(g); } );
-//    if (p_.is_diag()){
-//        return (arma::sqrt(p_.covs_diag() % tmp_)) + p_.means();
-//    }else{
+    tmp_.imbue( [&]() { return norm(g); } );
+    if (p_.is_covs_diagmat()){
+        return arma::sqrt(p_.covs_diag()) % tmp_ + p_.means();
+    }else{
         return covs_lower * tmp_ + p_.means();
-//    }
+    }
     
 }
 
@@ -166,7 +181,8 @@ public:
         
         explicit param_type(result_type means, result_type covs, result_type lowers, result_type uppers)
         : means_(means), covs_(covs), lowers_(lowers), uppers_(uppers) {
-            dims_ = means.n_rows;
+            
+            dims_ = means.n_elem;
 
             // Checking whether dimensions matches
             if (lowers_.n_rows != dims_ || uppers_.n_rows != dims_)
@@ -195,39 +211,25 @@ public:
     };
     
 private:
-    arma::gmm_full gf_model_;
-//    arma::gmm_diag gd_model_;
+    
+    mvnorm_distribution<> mvnorm{};   // MN ~ ((0), (1))
+    
     param_type p_;
-    result_type v_;
-    int i_ = -1;
-    int seed_ = 42;
+    result_type tmp_;
+
+    int res_;
     
 public:
     // constructor and reset functions
     explicit truncated_mvnorm_distribution(result_type means, result_type covs, result_type lowers, result_type uppers)
     : p_(param_type(means, covs, lowers, uppers)) {
-        // TODO: check if it's diagonal, initiate the diag model.
-        // This is a bit tricky since I'd need an adaptor for them... let it be for now...
-        gf_model_.reset(p_.ndims(), 1);
-
-        arma::mat m(p_.ndims(), 1);
-        arma::cube c(p_.ndims(), p_.ndims(), 1);
-        m.col(0) = p_.means();
-        c.slice(0) = p_.covs();
         
-        gf_model_.set_means(m);
-        gf_model_.set_fcovs(c);
-        
-        v_.set_size(p_.ndims());
+        mvnorm.param(mvnorm_distribution<>::param_type{means, covs});
     }
     
     explicit truncated_mvnorm_distribution(const param_type& p)
     : p_(p) {}
-    void reset() {};
-    
-    // seeding
-    int seed() const {return seed_;}
-    void seed(int s) {seed_ = s; arma::arma_rng::set_seed(seed_);}
+    void reset() {mvnorm.reset();};
     
     // generating functions
     template<class URNG>
@@ -272,13 +274,13 @@ template <class _RealType>
 template <class _URNG>
 truncated_mvnorm_distribution<double>::result_type
 truncated_mvnorm_distribution<_RealType>::operator()(_URNG &g, const truncated_mvnorm_distribution<_RealType>::param_type &parm) {
-    static int res_;
-    do {
-        v_ = gf_model_.generate();
-        res_ = arma::accu((v_ < p_.lowers()) + (v_ > p_.uppers()));
-    } while(res_ != 0);
     
-    return v_;
+    do {
+        tmp_ = mvnorm(g);
+        res_ = arma::accu((tmp_ < p_.lowers()) + (tmp_ > p_.uppers()));
+    }while(res_ != 0);
+    
+    return tmp_;
 }
 
 #endif //SAMPP_MULTIVARIATE_RANDOM_H
