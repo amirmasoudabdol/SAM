@@ -18,8 +18,10 @@ public:
     class param_type
     {
         size_t dims_;
+        bool is_diag_ = false;
         result_type means_;
         result_type covs_;
+        
     public:
         typedef mvnorm_distribution distribution_type;
 
@@ -32,11 +34,17 @@ public:
 
             if (!covs.is_symmetric() || !covs.is_square())
                 throw std::logic_error("Covarinace matrix is not square or symmetrical.");
+                    
+            if (covs.is_diagmat())
+                is_diag_ = true;
         }
+        
+        // I think I need a copy assignment operator for handling the sizes and special cases
 
         size_t ndims() const {return dims_;}
         result_type means() const {return means_;}
         result_type covs() const {return covs_;}
+        bool is_diag() const {return is_diag_;}
 
         friend
         bool operator==(const param_type& x, const param_type& y)
@@ -48,38 +56,31 @@ public:
     };
 
 private:
-    arma::gmm_full gf_model_;
-//    arma::gmm_diag gd_model_;
+
+    arma::mat covs_lower;
+    arma::mat inv_covs_lower;
+    arma::mat inv_covs;
+    std::normal_distribution<> nd;
+
     param_type p_;
-    result_type v_;
-    int i_ = -1;
-    int seed_ = 42;
+    result_type tmp_;
 
 public:
     // constructor and reset functions
     explicit mvnorm_distribution(result_type means, result_type covs)
-            : p_(param_type(means, covs)) {
-        // check if it's diagonal, initiate the diag model
-        gf_model_.reset(p_.ndims(), 1);
+            : p_(param_type(means, covs))  {
+        
+        // TODO: check if it's diagonal, initiate the diag model
 
-        arma::mat m(p_.ndims(), 1);
-        arma::cube c(p_.ndims(), p_.ndims(), 1);
-        m.col(0) = p_.means();
-        c.slice(0) = p_.covs();
+        tmp_.resize(p_.ndims());
 
-        gf_model_.set_means(m);
-        gf_model_.set_fcovs(c);
-
-        v_.set_size(p_.ndims());
+//        if (!p_.is_diag())
+        factorize_covariance();
     }
 
     explicit mvnorm_distribution(const param_type& p)
             : p_(p) {}
-    void reset() {};
-
-    // seeding
-    int seed() const {return seed_;}
-    void seed(int s) {seed_ = s; arma::arma_rng::set_seed(seed_);}
+    void reset() { nd.reset(); };
 
     // generating functions
     template<class URNG>
@@ -89,13 +90,22 @@ public:
     template<class URNG>
     result_type operator()(URNG& g, const param_type& parm);
 
-
     // property functions
     result_type means() const {return p_.means();}
     result_type covs() const {return p_.covs();}
 
-    param_type param() const {return p_;};
-    void param(const param_type& params) { p_ = params;}
+    param_type param() const {return p_;}
+    void param(const param_type& params) {
+        // TODO: This needs more checks.
+        p_ = params;
+        factorize_covariance();
+    }
+
+    void factorize_covariance() {
+        covs_lower = arma::chol(p_.covs(), "lower");
+        inv_covs_lower = arma::inv(arma::trimatl(covs_lower));
+        inv_covs = inv_covs_lower.t() * inv_covs_lower;
+    }
 
     result_type min() const {return -std::numeric_limits<_RealType>::infinity();}
     result_type max() const {return std::numeric_limits<_RealType>::infinity();}
@@ -125,7 +135,14 @@ template <class _RealType>
 template <class _URNG>
 mvnorm_distribution<double>::result_type
 mvnorm_distribution<_RealType>::operator()(_URNG &g, const mvnorm_distribution<_RealType>::param_type &parm) {
-    return gf_model_.generate();
+    
+    tmp_.imbue( [&]() { return nd(g); } );
+//    if (p_.is_diag()){
+//        return (arma::sqrt(p_.covs_diag() % tmp_)) + p_.means();
+//    }else{
+        return covs_lower * tmp_ + p_.means();
+//    }
+    
 }
 
 // Truncated Normal Distribution
@@ -157,6 +174,7 @@ public:
 
             if (!covs.is_symmetric() || !covs.is_square())
                 throw std::logic_error("Covariance matrix is not symmetric.");
+            
         }
         
         size_t ndims() const {return dims_;}
@@ -168,9 +186,9 @@ public:
         friend
         bool operator==(const param_type& x, const param_type& y)
         {return arma::approx_equal(x.means_, y.means_, "absdiff", 0.001)
-            && arma::approx_equal(x.covs_, y.covs_, "absdiff", 0.001)
-            && arma::approx_equal(x.lowers_, y.lowers_, "absdiff", 0.001)
-            && arma::approx_equal(x.uppers_, y.uppers_, "absdiff", 0.001); }
+                && arma::approx_equal(x.covs_, y.covs_, "absdiff", 0.001)
+                && arma::approx_equal(x.lowers_, y.lowers_, "absdiff", 0.001)
+                && arma::approx_equal(x.uppers_, y.uppers_, "absdiff", 0.001); }
         friend
         bool operator!=(const param_type& x, const param_type& y)
         {return !(x == y); }
