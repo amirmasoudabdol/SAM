@@ -4,7 +4,8 @@
 
 #include "Utilities.h"
 #include "utils/mvnorm_distribution.h"
-#include "utils/truncated_random.h"
+#include "utils/truncated_mvnorm_distribution.h"
+#include "utils/truncated_normal_distribution.h"
 
 using Generator = std::mt19937;
 

@@ -50,6 +50,7 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     std::generate(experiment->measurements.begin(), experiment->measurements.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
+    
 }
 
 std::vector<arma::Row<double>>
