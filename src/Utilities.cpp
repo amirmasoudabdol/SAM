@@ -3,7 +3,7 @@
 //
 
 #include "Utilities.h"
-#include "utils/multivariate_random.h"
+#include "utils/mvnorm_distribution.h"
 #include "utils/truncated_random.h"
 
 using Generator = std::mt19937;

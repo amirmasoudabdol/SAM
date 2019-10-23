@@ -12,7 +12,7 @@
 #include "Utilities.h"
 #include "ExperimentSetup.h"
 
-#include "utils/multivariate_random.h"
+#include "utils/mvnorm_distribution.h"
 
 #include "nlohmann/json.hpp"
 #include "effolkronium/random.hpp"

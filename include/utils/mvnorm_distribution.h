@@ -2,8 +2,8 @@
 // Created by Amir Masoud Abdol on 2019-06-14.
 //
 
-#ifndef SAMPP_MULTIVARIATE_RANDOM_H
-#define SAMPP_MULTIVARIATE_RANDOM_H
+#ifndef SAMPP_MVNORM_DISTRIBUTION_H
+#define SAMPP_MVNORM_DISTRIBUTION_H
 
 #include <random>
 #include <iostream>
@@ -152,10 +152,10 @@ mvnorm_distribution<double>::result_type
 mvnorm_distribution<_RealType>::operator()(_URNG &g, const mvnorm_distribution<_RealType>::param_type &parm) {
     
     tmp_.imbue( [&]() { return norm(g); } );
-    if (p_.is_covs_diagmat()){
-        return arma::sqrt(p_.covs_diag()) % tmp_ + p_.means();
+    if (parm.is_covs_diagmat()){
+        return arma::sqrt(parm.covs_diag()) % tmp_ + parm.means();
     }else{
-        return covs_lower * tmp_ + p_.means();
+        return covs_lower * tmp_ + parm.means();
     }
     
 }
@@ -212,7 +212,7 @@ public:
     
 private:
     
-    mvnorm_distribution<> mvnorm{};   // MN ~ ((0), (1))
+    mvnorm_distribution<> mvnorm{};   // MN ~ ((0), ((1)))
     
     param_type p_;
     result_type tmp_;
@@ -270,6 +270,7 @@ public:
     
 };
 
+// Implementation of rejection algorithm
 template <class _RealType>
 template <class _URNG>
 truncated_mvnorm_distribution<double>::result_type
@@ -283,4 +284,4 @@ truncated_mvnorm_distribution<_RealType>::operator()(_URNG &g, const truncated_m
     return tmp_;
 }
 
-#endif //SAMPP_MULTIVARIATE_RANDOM_H
+#endif //SAMPP_MVNORM_DISTRIBUTION_H
