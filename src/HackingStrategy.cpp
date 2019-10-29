@@ -217,6 +217,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
             row.shed_col(inx[i]);
             
             // Shifting the index back
+            // BUG: I think there is an issue when the first item is going to be removed
             inx = inx - 1;
         }
         

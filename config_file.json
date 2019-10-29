@@ -2,7 +2,7 @@
     "ExperimentParameters": {
         "covs": 0.0,
         "data_strategy": {
-            "name": "LinearModel"
+            "name": "GRM"
         },
         "effect_estimators": {
             "name": "CohensD"
@@ -32,7 +32,7 @@
         "n_conditions": 2,
         "n_dep_vars": 3,
         "n_items": 3,
-        "n_obs": 10,
+        "n_obs": 25,
         "test_strategy": {
             "alpha": 0.05,
             "name": "TTest",
@@ -59,10 +59,13 @@
             [
                 {
                     "level": "dv",
-                    "max_attempts": 10,
-                    "n_attempts": 3,
-                    "name": "OptionalStopping",
-                    "num": 10
+                    "max_attempts": 3,
+                    "order": "max first",
+                    "min_observations": 10,
+                    "n_attempts": 1,
+                    "name": "SDOutlierRemoval",
+                    "num": 3,
+                    "multipliers": [2]
                 }
             ]
         ],

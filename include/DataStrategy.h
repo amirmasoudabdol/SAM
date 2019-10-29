@@ -203,6 +203,48 @@ namespace sam {
         
     };
 
+    
+    class GRMDataStrategy : public DataStrategy {
+    public:
+        
+        GRMDataStrategy() {};
+        
+        GRMDataStrategy(DataStrategyParameters dsp) {
+            params = dsp;
+        }
+        
+        void
+        genData(Experiment* experiment);
+        
+        std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+        
+        arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+        
+    private:
+        Distribution difficulty_dist;
+        Distribution ability_dist;
+        Distribution uniform_dist;
+        
+        arma::mat poa; // probablity of answering
+        arma::umat responses; // responses to items
+        arma::mat scores;
+        arma::mat sumofscores;
+        
+        arma::mat urand;
+        
+        arma::mat betas;
+        arma::mat thetas;
+        
+        void generate_betas();
+        arma::mat generate_thetas();
+        arma::umat generate_binary_scores();
+        double generate_sum_of_scores();
+        
+        
+    };
+
 }
 
 #endif //SAMPP_DATAGENSTRATEGY_H
