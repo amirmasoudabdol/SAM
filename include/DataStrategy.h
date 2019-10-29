@@ -12,7 +12,9 @@
 #include "Utilities.h"
 #include "ExperimentSetup.h"
 
-#include "utils/mvnorm_distribution.h"
+//#include "utils/mvnorm_distribution.h"
+
+#include "mvrandom.hpp"
 
 #include "nlohmann/json.hpp"
 #include "effolkronium/random.hpp"
@@ -135,7 +137,7 @@ namespace sam {
         };
         
         LinearModelStrategy(ExperimentSetup &setup) {
-            mdist = mvnorm_distribution<>(setup.means().t(), setup.sigma());
+            mdist = mvrandom::mvnorm_distribution<>(setup.means().t(), setup.sigma());
 
             
             // Just in case...

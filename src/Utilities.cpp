@@ -3,8 +3,9 @@
 //
 
 #include "Utilities.h"
-#include "utils/mvnorm_distribution.h"
-#include "utils/truncated_mvnorm_distribution.h"
+// #include "utils/mvnorm_distribution.h"
+// #include "utils/truncated_mvnorm_distribution.h"
+#include "mvrandom.hpp"
 #include "utils/truncated_normal_distribution.h"
 
 using Generator = std::mt19937;
@@ -178,8 +179,8 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
 #define generate_multivariate_distribution_factory(name_, type_, ...) \
 if(distributionName == #name_) return make_multivariate_distribution_impl<name_<type_>>(j, ## __VA_ARGS__);
 
-    generate_multivariate_distribution_factory(mvnorm_distribution, double, "means", "covs");
-    generate_multivariate_distribution_factory(truncated_mvnorm_distribution, double, "means", "covs", "lowers", "uppers");
+    generate_multivariate_distribution_factory(mvrandom::mvnorm_distribution, double, "means", "covs");
+    generate_multivariate_distribution_factory(mvrandom::truncated_mvnorm_distribution, double, "means", "covs", "lowers", "uppers");
 
 #undef generate_multivariate_distribution_factory
 
