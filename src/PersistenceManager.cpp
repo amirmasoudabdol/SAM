@@ -101,3 +101,53 @@ void PersistenceManager::Writer::write(std::vector<arma::Row<double> > &data, in
     
 }
 
+
+void PersistenceManager::Writer::write(Experiment *experiment, string_view mode, int sid) {
+    
+    static std::vector<std::string> cols;
+    static std::map<std::string, std::string> row;
+    
+    if (mode == "full") {
+        
+    }else if (mode == "stats"){
+        if(!is_header_set){
+            cols.push_back("simid");
+            cols.push_back("inx");
+            cols.push_back("group");
+            cols.push_back("dv");
+            cols.push_back("nobs");
+            cols.push_back("means");
+            cols.push_back("vars");
+            cols.push_back("stddev");
+            cols.push_back("ses");
+            cols.push_back("statistics");
+            cols.push_back("pvalues");
+            cols.push_back("effects");
+            writer->configure_dialect().column_names(cols);
+            is_header_set = true;
+        }
+        
+        // Note: At the moment I don't write the control group data back to the file
+        row["simid"] = std::to_string(sid);
+        row["inx"] = std::to_string(++counter);
+        for (int g{experiment->setup.nd()}, d{0};
+                g < experiment->setup.ng();
+                ++g, d%=experiment->setup.ng()) {
+            row["group"] = std::to_string(g);
+            row["dv"] = std::to_string(d);
+            row["nobs"] = std::to_string(experiment->nobs[g]);
+            row["means"] = std::to_string(experiment->means[g]);
+            row["vars"] = std::to_string(experiment->vars[g]);
+            row["stddev"] = std::to_string(experiment->stddev[g]);
+            row["ses"] = std::to_string(experiment->ses[g]);
+            row["statistics"] = std::to_string(experiment->statistics[g]);
+            row["pvalues"] = std::to_string(experiment->pvalues[g]);
+            row["effects"] = std::to_string(experiment->effects[g]);
+                        
+            writer->write_row(row);
+        }
+        
+        
+    }
+}
+

@@ -35,6 +35,7 @@ namespace sam {
     class PersistenceManager::Writer {
         
         string file_name_;
+        int counter {0};
         
         std::unique_ptr<csv::Writer> writer;
         
@@ -54,6 +55,11 @@ namespace sam {
         /// Write each groups' data to a file, or a database
         /// @param data A reference to the Experiment->measurements
         void write(std::vector<arma::Row<double>> &data, int sid = 0);
+        
+        
+        /// Write part of the Experiment to a file, or a database
+        /// @param A constance reference to the Experiment
+        void write(Experiment* experiment, string_view mode, int sid);
         
     };
         
