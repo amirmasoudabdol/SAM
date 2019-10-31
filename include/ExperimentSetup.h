@@ -20,8 +20,70 @@
 #include "Utilities.h"
 
 #include "nlohmann/json.hpp"
+#include "mvrandom.hpp"
 
 namespace sam {
+
+
+    template <typename T>
+    struct Parameter {
+        int size{};
+        arma::Row<T> values{};
+        Distribution dist = std::normal_distribution<T>{};
+        MultivariateDistribution mdist = mvrandom::mvnorm_distribution<T>{};
+        
+        Parameter() = default;
+      
+        Parameter(json const &j, int size) {
+            load(j, size);
+        }
+        
+        void load(json const &j, int size) {
+            
+            values.resize(size);
+            
+            switch (j.type()) {
+                case nlohmann::detail::value_t::object:
+                    try {
+                        
+                        dist = make_distribution(j);
+                        auto val = Random::get(dist);
+
+                        values.fill(val);
+                        
+                    } catch (const std::exception& e) {
+                        throw e.what();
+                    }
+                    break;
+                    
+                case nlohmann::detail::value_t::array:
+                    {
+                        if (j.size() != size)
+                            throw std::length_error("Array size does not match with the size\
+                                                of the experiment.\n");
+                        else{
+                            values = arma::Row<T>(j.get<std::vector<T>>());
+                            size = values.size();
+                        }
+                    }
+                    break;
+                    
+                case nlohmann::detail::value_t::number_integer:
+                case nlohmann::detail::value_t::number_unsigned:
+                case nlohmann::detail::value_t::number_float:
+    
+                    values.fill(j.get<T>());
+                    break;
+                    
+                case nlohmann::detail::value_t::null:
+                default:
+                    throw std::invalid_argument("Missing parameter.\n");
+                    break;
+            }
+            
+        }
+        
+    };
 
     using json = nlohmann::json;
     
@@ -64,6 +126,7 @@ namespace sam {
         arma::Mat<double> sigma_;
 
         // TODO: Integrate Us!
+        // NOTE: Don't! I think I need to rethink the whole experiment
         arma::Row<double> loadings_;
         arma::Row<double> error_means_;
         arma::Row<double> error_vars_;
@@ -71,8 +134,22 @@ namespace sam {
         arma::Mat<double> error_sigma_;
         
         std::map<std::string, Distribution> params_dist;
+        
 
     public:
+
+        std::string ds_name {};
+
+
+        /// Note: I am expanding the Experiment here but I'd like to rewrite this part a bit
+        // GradedResponseModel
+        int n_categories;
+        int n_items;
+        arma::Row<double> difficulties_mean;
+        arma::Row<double> abilities_mean;
+        
+        Parameter<double> difficulties;
+        Parameter<double> abilities;
 
         /**
          Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.

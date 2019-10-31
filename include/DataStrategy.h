@@ -49,7 +49,8 @@ namespace sam {
 
         enum class DataModel {
             LinearModel,
-            LatentModel
+            LatentModel,
+            GradedResponseModel
         };
 
         struct DataStrategyParameters {
@@ -203,11 +204,37 @@ namespace sam {
         
     };
 
-    
+    /**
+     @brief Simulate data from Graded Response Model.
+     @Note:
+        - DVs in GRM are distinguished by their participant abilities to answer tests. Therefore, we'll
+        have `ng_` number of `abilities`. This value is being used to, in each group, to initialize a normal
+        distribution of `\theta ~ N(abilitis[i], 1)`.
+        - \f$ \beta \f$
+     */
     class GRMDataStrategy : public DataStrategy {
     public:
         
         GRMDataStrategy() {};
+        
+        GRMDataStrategy(ExperimentSetup &setup) {
+
+            difficulties_dist = std::normal_distribution<>(setup.difficulties.values[0], 1);
+            
+            /// Note: I'm a bit confused about the difficulties, and I think I'm making
+            /// a mess with the `Parameters`. This works but I need some serious cleanup
+            /// on the parameters.
+            betas.resize(setup.n_items, setup.n_categories);
+            betas.imbue([&]() { return Random::get(difficulties_dist); });
+//            beta.each_row( [this](arma::vec &v) {v = Random::get(})
+
+            poa.resize(setup.n_items, setup.n_categories);
+            responses.resize(setup.n_items, setup.n_categories);
+            urand.resize(setup.n_items, setup.n_categories);
+            scores.resize(setup.n_items, 1);
+            sumofscores.resize(setup.nobs().max(), 1);
+            
+        };
         
         GRMDataStrategy(DataStrategyParameters dsp) {
             params = dsp;
@@ -223,9 +250,20 @@ namespace sam {
         genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
-        Distribution difficulty_dist;
-        Distribution ability_dist;
-        Distribution uniform_dist;
+        //! Distribution of difficulty of items. Currently this is default to \f$ N(0, 1) \f$. Its mean
+        //! can be overwritten with the diffilcitues parameter.
+        //! TODO: I can replace this with a \f$ MN~(\mu, O) \f$ and have different
+        //! different difficulties for different items
+        Distribution difficulties_dist = std::normal_distribution<>{};
+        
+        //! Distribution of participant's ability to answer a test correctly. This is being used to build the POA matrix
+        //! which is being used later to calculate the test scores. It's default to `\f$ N(0, 1) \f$. The mean of this
+        //! distribution is used to define the difference between each group.
+        //! @Note: There should be at least `ng_` means available.
+        Distribution abilities_dist = std::normal_distribution<>{};
+        
+        // TODO: This can be replaced by `Random::get<bool>` but I need to test it first.
+        Distribution uniform_dist = std::uniform_real_distribution<>{};
         
         arma::mat poa; // probablity of answering
         arma::umat responses; // responses to items
@@ -237,10 +275,8 @@ namespace sam {
         arma::mat betas;
         arma::mat thetas;
         
-        void generate_betas();
-        arma::mat generate_thetas();
-        arma::umat generate_binary_scores();
-        double generate_sum_of_scores();
+        arma::umat generate_binary_scores(const double theta);
+        double generate_sum_of_scores(const double theta);
         
         
     };

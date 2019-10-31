@@ -45,22 +45,22 @@ namespace sam {
 
     std::ostream& operator<<(std::ostream& os, const Submission& s){
     	os <<
-        s.simid << "," <<
-        s.pubid << "," <<
-        s.tnobs << "," <<
-        s.inx << "," <<
-        s.nobs << "," <<
-        s.mean << "," <<
-        s.var << "," <<
-        s.sei << "," <<
-        s.statistic << "," <<
-        s.pvalue << "," <<
-        s.effect << ",";
-        os << s.side << ",";
+        s.simid << ",\t" <<
+        s.pubid << ",\t" <<
+        s.tnobs << ",\t" <<
+        s.inx << ",\t" <<
+        s.nobs << ",\t" <<
+        s.mean << ",\t" <<
+        s.var << ",\t" <<
+        s.sei << ",\t" <<
+        s.statistic << ",\t" <<
+        s.pvalue << ",\t" <<
+        s.effect << ",\t";
+        os << s.side << ",\t";
         for (auto &hid : s.hHistory) {
             os << hid << ";";
         }
-        os << ",";
+        os << ",\t";
         os << s.isHacked;
         
         return os;

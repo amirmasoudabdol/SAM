@@ -25,6 +25,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
 //        dsp_.name = data_model.value();
 //    }
     
+    ds_name = config["data_strategy"]["name"];
+    
     nc_ = config["n_conditions"];
     nd_ = config["n_dep_vars"];
     ni_ = config["n_items"];
@@ -68,6 +70,17 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     // Constructing the covariance matrix
     error_sigma_ = constructCovMatrix(error_vars_, error_covs_, nrows_);
+    
+    
+    // Graded Response Model
+    
+    n_categories = config["n_categories"];
+    n_items = config["n_items"];
+    difficulties.load(config["difficulties"], 1);
+    abilities.load(config["abilities"], ng_);
+    
+    std::cout << difficulties.values << std::endl;
+    
     
 }
 
@@ -114,6 +127,8 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
 //    setup.rng_stream = new RandomNumberGenerator(rand());
     
 //    setup.dsp_.name = config["data_strategy"];
+    
+    setup.ds_name = config["data_strategy"]["name"];
     
     setup.nc_ = config["n_conditions"];
     setup.nd_ = config["n_dep_vars"];
