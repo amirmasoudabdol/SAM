@@ -246,6 +246,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
         throw std::domain_error("There is not enough groups for pooling.");
     }
     
+    // Pooling groups together
     for (auto &r : params.nums){
         pool(experiment, r);
     }
@@ -265,8 +266,10 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
 }
 
 
-/// <#Description#>
-/// @param experiment <#experiment description#>
+/// Create a new group by pooling (adding) data from `r` groups together.
+/// This literally appends the data of selected groups to each other to create a new group.
+///
+/// @param experiment a pointer to the given experiment. Note: This can be a copy of the experiment, based on the preferences of the researcher.
 /// @param r Lenght of each permutation
 void GroupPooling::pool(Experiment *experiment, int r){
     // Length of each permutation
@@ -275,9 +278,14 @@ void GroupPooling::pool(Experiment *experiment, int r){
     // Original number of conditions
     const int n = experiment->setup.nc();
     
-    // Filling a range(0, n)
+    // List of groups participating in the pool.
     std::vector<int> v(n);
-    std::iota(v.begin(), v.end(), 0);
+    
+    /// Note: This starts from `1` because the first group is the control group and
+    /// it should not be included in the pooling. See #194. This is a bit different than before
+    /// where I was using population parameters to run the t-test.
+    std::iota(v.begin(), v.end(), 1); // Filling v with range(1, n)
+    
     
     // Gets the list of all permutation
     std::vector<std::vector<int>>
