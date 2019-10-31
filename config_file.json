@@ -2,7 +2,20 @@
     "ExperimentParameters": {
         "covs": 0.0,
         "data_strategy": {
-            "name": "GRM"
+            "name": "GRM",
+            "n_obs": 25,
+            "n_items": 20,
+            "n_categories": 4,
+            "difficulty": {
+                "dist": "normal_distribution",
+                "mean": 0,
+                "stddev": 1
+            },
+            "ability": {
+                "dist": "normal_distribution",
+                "mean": 0,
+                "stddev": 1
+            }
         },
         "effect_estimators": {
             "name": "CohensD"
@@ -30,7 +43,7 @@
             "stddev": 1
         },
         "n_conditions": 2,
-        "n_dep_vars": 3,
+        "n_dep_vars": 1,
         "n_items": 3,
         "n_obs": 25,
         "test_strategy": {
