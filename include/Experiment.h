@@ -45,6 +45,7 @@ namespace sam {
         arma::Row<int> nobs;
         arma::Row<double> means;
         arma::Row<double> vars;
+        arma::Row<double> stddev;
         arma::Row<double> ses;
         arma::Row<double> statistics;
         arma::Row<double> pvalues;
