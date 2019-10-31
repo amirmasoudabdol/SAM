@@ -136,7 +136,7 @@ namespace sam {
     inline
     void to_json(json& j, const SignificantSelection::Parameters& p) {
         j = json{
-            {"name", magic_enum::enum_name<SelectionMethod>(p.name)},
+            {"_name", magic_enum::enum_name<SelectionMethod>(p.name)},
             {"alpha", p.alpha},
             {"pub_bias", p.pub_bias},
             {"side", p.side}
@@ -147,7 +147,7 @@ namespace sam {
     inline
     void from_json(const json& j, SignificantSelection::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<SelectionMethod>(j["name"].get<std::string>());
+        auto name = magic_enum::enum_cast<SelectionMethod>(j["_name"].get<std::string>());
         if (name.has_value())
             p.name = name.value();
         else
@@ -198,7 +198,7 @@ namespace sam {
     inline
     void to_json(json& j, const RandomSelection::Parameters& p) {
         j = json{
-            {"name", magic_enum::enum_name<SelectionMethod>(p.name)},
+            {"_name", magic_enum::enum_name<SelectionMethod>(p.name)},
             {"seed", p.seed}
         };
     }
@@ -206,7 +206,7 @@ namespace sam {
     inline
     void from_json(const json& j, RandomSelection::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<SelectionMethod>(j["name"].get<std::string>());
+        auto name = magic_enum::enum_cast<SelectionMethod>(j["_name"].get<std::string>());
         if (name.has_value())
             p.name = name.value();
         else

@@ -267,7 +267,7 @@ namespace sam {
         inline
         void to_json(json& j, const ImpatientDecisionMaker::Parameters& p) {
             j = json{
-                {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
+                {"_name", magic_enum::enum_name<DecisionMethod>(p.name)},
                 {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
             };
         }
@@ -276,7 +276,7 @@ namespace sam {
         void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = get_enum_value_from_json<DecisionMethod>("name", j);
+            p.name = get_enum_value_from_json<DecisionMethod>("_name", j);
             
             p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
         }
@@ -308,7 +308,7 @@ namespace sam {
     inline
     void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
         j = json{
-            {"name", magic_enum::enum_name<DecisionMethod>(p.name)},
+            {"_name", magic_enum::enum_name<DecisionMethod>(p.name)},
             {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
         };
     }
@@ -317,7 +317,7 @@ namespace sam {
     void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
 
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<DecisionMethod>("name", j);
+        p.name = get_enum_value_from_json<DecisionMethod>("_name", j);
 
         p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
     }

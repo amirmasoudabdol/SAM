@@ -3,7 +3,7 @@
      [
           {
                "id": 1,
-               "name": "OptionalStopping",
+               "_name": "OptionalStopping",
                "level": "dv",
                "num": 100,
                "n_attempts": 3,
@@ -11,7 +11,7 @@
           },
           {
                "id": 2,
-               "name": "SDOutlierRemoval",
+               "_name": "SDOutlierRemoval",
                "mode": "Recursive",
                "level": "dv",
                "num": 2,
@@ -22,7 +22,7 @@
           },
           {
                "id": 3,
-               "name": "GroupPooling",
+               "_name": "GroupPooling",
                "num": 2
           }
      ]

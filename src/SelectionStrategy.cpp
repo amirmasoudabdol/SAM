@@ -15,19 +15,19 @@ SelectionStrategy::~SelectionStrategy() {
 std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_strategy_config) {
     
     int selection_seed = rand();
-    if (selection_strategy_config["name"] == "SignificantSelection") {
+    if (selection_strategy_config["_name"] == "SignificantSelection") {
 
         auto params = selection_strategy_config.get<SignificantSelection::Parameters>();
         params.seed =  selection_seed;
         return std::make_unique<SignificantSelection>(params);
         
-    }else if(selection_strategy_config["name"] == "RandomSelection") {
+    }else if(selection_strategy_config["_name"] == "RandomSelection") {
 
         auto params = selection_strategy_config.get<RandomSelection::Parameters>();
         params.seed = selection_seed;
         return std::make_unique<RandomSelection>(params);
         
-    }else if(selection_strategy_config["name"] == "FreeSelection") {
+    }else if(selection_strategy_config["_name"] == "FreeSelection") {
         return std::make_unique<FreeSelection>();
     }else{
         throw std::invalid_argument("Unknown Selection Strategy.");

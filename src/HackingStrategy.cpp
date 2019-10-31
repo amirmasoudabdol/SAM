@@ -36,27 +36,27 @@ HackingStrategy::~HackingStrategy() {
  */
 std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_config) {
     
-    if (hacking_strategy_config["name"] == "OptionalStopping"){
+    if (hacking_strategy_config["_name"] == "OptionalStopping"){
         
         auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
         return std::make_unique<OptionalStopping>(params);
         
-    }else if (hacking_strategy_config["name"] == "SDOutlierRemoval") {
+    }else if (hacking_strategy_config["_name"] == "SDOutlierRemoval") {
         
         auto params = hacking_strategy_config.get<SDOutlierRemoval::Parameters>();
         return std::make_unique<SDOutlierRemoval>(params);
         
-    }else if (hacking_strategy_config["name"] == "GroupPooling") {
+    }else if (hacking_strategy_config["_name"] == "GroupPooling") {
         
         auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
         return std::make_unique<GroupPooling>(params);
         
-    }else if (hacking_strategy_config["name"] == "ConditionDropping") {
+    }else if (hacking_strategy_config["_name"] == "ConditionDropping") {
         
         auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
         return std::make_unique<ConditionDropping>(params);
         
-    }else if (hacking_strategy_config["name"] == "NoHack") {
+    }else if (hacking_strategy_config["_name"] == "NoHack") {
         
         return std::make_unique<NoHack>();
         

@@ -40,7 +40,7 @@ void TTest::run(Experiment* experiment) {
 
 std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
     
-    if (test_strategy_config["name"] == "TTest"){
+    if (test_strategy_config["_name"] == "TTest"){
         
         auto params = test_strategy_config.get<TTest::Parameters>();
         return std::make_unique<TTest>(params);

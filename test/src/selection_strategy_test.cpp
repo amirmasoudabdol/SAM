@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
 
         double n_pubs = j_conf["max_pubs"].get<int>() * nsims;
         
-        s_s_conf["name"] = "RandomSelection";
+        s_s_conf["_name"] = "RandomSelection";
 
         initResearch();
 

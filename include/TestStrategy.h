@@ -134,7 +134,7 @@ namespace sam {
         inline
         void to_json(json& j, const TTest::Parameters& p) {
             j = json{
-                {"name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
+                {"_name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
                 {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
                 {"alpha", p.alpha}
             };
@@ -144,7 +144,7 @@ namespace sam {
         void from_json(const json& j, TTest::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = get_enum_value_from_json<TestStrategy::TestMethod>("name", j);
+            p.name = get_enum_value_from_json<TestStrategy::TestMethod>("_name", j);
             
             p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
             

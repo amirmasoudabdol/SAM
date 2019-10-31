@@ -20,12 +20,12 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     using namespace magic_enum;
     
-//    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data_strategy"]["name"].get<std::string>());
+//    auto data_model =  enum_cast<DataStrategy::DataModel>(config["data_strategy"]["_name"].get<std::string>());
 //    if (data_model.has_value()) {
 //        dsp_.name = data_model.value();
 //    }
     
-    ds_name = config["data_strategy"]["name"];
+    ds_name = config["data_strategy"]["_name"];
     
     nc_ = config["n_conditions"];
     nd_ = config["n_dep_vars"];
@@ -134,7 +134,7 @@ ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
     
 //    setup.dsp_.name = config["data_strategy"];
     
-    setup.ds_name = config["data_strategy"]["name"];
+    setup.ds_name = config["data_strategy"]["_name"];
     
     setup.nc_ = config["n_conditions"];
     setup.nd_ = config["n_dep_vars"];

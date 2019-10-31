@@ -2,24 +2,24 @@
     "ExperimentParameters": {
         "covs": 0.0,
         "data_strategy": {
+            "_name": "GradedResponseModel",
             "abilities": [
                 0,
                 0.2
             ],
             "difficulties": 0,
             "n_categories": 4,
-            "n_items": 3,
-            "name": "GradedResponseModel"
+            "n_items": 3
         },
         "effect_estimators": {
-            "name": "CohensD"
+            "_name": "CohensD"
         },
         "n_conditions": 2,
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
+            "_name": "TTest",
             "alpha": 0.05,
-            "name": "TTest",
             "side": "TwoSided"
         },
         "vars": 0.1
@@ -27,8 +27,8 @@
     "JournalParameters": {
         "max_pubs": 20,
         "selection_strategy": {
+            "_name": "FreeSelection",
             "alpha": 0.05,
-            "name": "FreeSelection",
             "pub_bias": 0.95,
             "selection_seed": 565444343,
             "side": 0
@@ -36,12 +36,13 @@
     },
     "ResearcherParameters": {
         "decision_strategy": {
-            "name": "PatientDecisionMaker",
+            "_name": "PatientDecisionMaker",
             "preference": "MinPvalue"
         },
         "hacking_strategies": [
             [
                 {
+                    "_name": "SDOutlierRemoval",
                     "level": "dv",
                     "max_attempts": 3,
                     "min_observations": 10,
@@ -49,7 +50,6 @@
                         2
                     ],
                     "n_attempts": 1,
-                    "name": "SDOutlierRemoval",
                     "num": 3,
                     "order": "max first"
                 }

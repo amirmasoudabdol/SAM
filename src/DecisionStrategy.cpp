@@ -19,17 +19,17 @@ DecisionStrategy::~DecisionStrategy() {
 
 std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strategy_config) {
 
-    if (decision_strategy_config["name"] == "ImpatientDecisionMaker"){
+    if (decision_strategy_config["_name"] == "ImpatientDecisionMaker"){
         
         auto params = decision_strategy_config.get<ImpatientDecisionMaker::Parameters>();
         return std::make_unique<ImpatientDecisionMaker>(params);
         
-    }else if (decision_strategy_config["name"] == "PatientDecisionMaker"){
+    }else if (decision_strategy_config["_name"] == "PatientDecisionMaker"){
 
         auto params = decision_strategy_config.get<PatientDecisionMaker::Parameters>();
         return std::make_unique<PatientDecisionMaker>(params);
 
-    }else if (decision_strategy_config["name"] == "HonestDecisionMaker"){
+    }else if (decision_strategy_config["_name"] == "HonestDecisionMaker"){
 
         return std::make_unique<HonestDecisionMaker>();
         
