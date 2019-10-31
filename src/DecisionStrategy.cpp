@@ -45,6 +45,9 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     /// that one.
     int selectedOutcome = pre_registered_group;
     
+    // TODO: I can probably find `min` or `max` indexes using armadillo.
+    // Tere are `index_min`, and `index_max` methods, as well as `tailing` and `heading` for filtering
+    
     switch (preference) {
         case DecisionPreference::PreRegisteredOutcome:
             selectedOutcome = pre_registered_group;
@@ -55,7 +58,8 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             break;
             
         case DecisionPreference::MinPvalue:
-            selectedOutcome = std::distance(experiment.pvalues.begin(), std::min_element(experiment.pvalues.begin(), experiment.pvalues.end()));
+            selectedOutcome = std::distance(experiment.pvalues.begin(),
+                                            std::min_element(experiment.pvalues.begin() + experiment.setup.nd(), experiment.pvalues.end()));
             break;
             
         case DecisionPreference::MaxSigEffect:
@@ -63,7 +67,8 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             break;
             
         case DecisionPreference::MaxEffect:
-            selectedOutcome = std::distance(experiment.effects.begin(), std::max_element(experiment.effects.begin(), experiment.effects.end()));
+            selectedOutcome = std::distance(experiment.effects.begin(),
+                                            std::max_element(experiment.effects.begin() + experiment.setup.nd(), experiment.effects.end()));
             break;
             
         case DecisionPreference::MinPvalueMaxEffect:
