@@ -205,9 +205,9 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
             row = sort(row);
 
         // Finding the outliers
-        arma::uvec inx = arma::find(row < (experiment->means[g] - d * sqrt(experiment->vars[g]))
+        arma::uvec inx = arma::find(row < (experiment->means[g] - d * experiment->stddev[g])
                                     ||
-                                    row > (experiment->means[g] + d * sqrt(experiment->vars[g])));
+                                    row > (experiment->means[g] + d * experiment->stddev[g]));
         
 
         for (int i = inx.size() - 1;

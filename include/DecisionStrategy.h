@@ -222,6 +222,8 @@ namespace sam {
 
         /**
          * @brief      Select the final submission by checking all logged Submissions.
+         * Each submission is from a hacked experiment by the researcher. This is often being
+         * used by the `PatientDecisionMaker` at the end of the hacking procedure.
          *
          * @return     A copy of the selected outcome
          */

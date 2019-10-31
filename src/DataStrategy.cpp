@@ -46,7 +46,8 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     
     arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
     sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
-        
+    
+    // This generates data for control and treatment groups.
     std::generate(experiment->measurements.begin(), experiment->measurements.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
