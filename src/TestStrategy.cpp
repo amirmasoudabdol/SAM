@@ -21,16 +21,16 @@ TestStrategy::~TestStrategy() {
 };
 
 void TTest::run(Experiment* experiment) {
-
-    using namespace sam;
     
-    for (int i = 0; i < experiment->measurements.size(); ++i) {        
-        TestStrategy::TestResult res = single_sample_t_test(0,
-                                              experiment->means[i],
-                                              sqrt(experiment->vars[i]),
-                                              experiment->measurements[i].size(),
-                                              this->params.alpha,
-                                              this->params.side);
+    // The first group is always the control group
+    for (int i{experiment->setup.nd()}, d{0}; i < experiment->measurements.size(); ++i, d%=experiment->setup.nd()) {
+        TestStrategy::TestResult res = two_samples_t_test_equal_sd(experiment->means[d],
+                                                                   experiment->vars[d],
+                                                                   experiment->measurements[d].size(),
+                                                                   experiment->means[i],
+                                                                   experiment->stddev[i],
+                                                                   experiment->measurements[i].size(),
+                                                                   params.alpha, params.side);
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
         experiment->sigs[i] = res.sig;

@@ -25,25 +25,27 @@ std::unique_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_confi
 
 void CohensD::computeEffects(Experiment *experiment){
     
-    for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[i] = cohens_d(experiment->setup.means()[i],
-                                                      sqrt(experiment->setup.vars()[i]),
-                                                      experiment->setup.nobs()[i],
-                                                      experiment->means[i],
-                                                      experiment->vars[i],
-                                                      experiment->measurements[i].size());
+    for (int i{experiment->setup.nd()}, d{0}; i < experiment->means.size(); i++, d%=experiment->setup.nd()) {
+        experiment->effects[i] = cohens_d(experiment->means[d],
+                                          experiment->stddev[d],
+                                          experiment->nobs[d],
+                                          experiment->means[i],
+                                          experiment->stddev[i],
+                                          experiment->measurements[i].size());
     }
 }
 
 void HedgesG::computeEffects(Experiment *experiment){
     
-    for (int i = 0; i < experiment->means.size(); i++) {
-        experiment->effects[i] = hedges_g(experiment->setup.means()[i],
-                                                        sqrt(experiment->setup.vars()[i]),
-                                                        experiment->setup.nobs()[i],
-                                                        experiment->means[i],
-                                                        experiment->vars[i],
-                                                        experiment->measurements[i].size());
+    // Skipping the first group as it's the control group
+    // TODO: This is an ugly loop. Fix it!
+    for (int i{experiment->setup.nd()}, d{0}; i < experiment->means.size(); i++, d%=experiment->setup.nd()) {
+        experiment->effects[i] = hedges_g(experiment->means[d],
+                                            experiment->stddev[d],
+                                            experiment->nobs[d],
+                                            experiment->means[i],
+                                            experiment->stddev[i],
+                                            experiment->measurements[i].size());
     }
 }
 
