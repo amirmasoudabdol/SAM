@@ -1,0 +1,12 @@
+{
+    "data_strategy": {
+	    "abilities": [
+	        0,
+	        0.2
+	    ],
+	    "difficulties": 0,
+	    "n_categories": 4,
+	    "n_items": 3,
+	    "name": "GradedResponseModel"
+	}
+}

@@ -19,6 +19,7 @@ namespace sam {
 
         inx = index;
         
+        // There are quite safe when it comes to #194 and #202
         nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
         mean = e.means[index];
         var = e.vars[index];
@@ -36,7 +37,8 @@ namespace sam {
         // storing latent means, vars with different names. **This is just not a good idea**.
         // Submission should be self-contained and I shouldn't look into another object
         // FIXME: This is fishy!
-        side = std::copysign(1.0, mean - e.setup.means()[index]);
+        // FIXME: I've been commented during the transition of #202
+//        side = std::copysign(1.0, mean - e.setup.means()[index]);
         
         isHacked = e.is_hacked;
         

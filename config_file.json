@@ -1,40 +1,21 @@
 {
     "ExperimentParameters": {
-        "abilities": [
-            0,
-            0.2
-        ],
         "covs": 0.0,
         "data_strategy": {
-            "n_obs": 25,
+            "abilities": [
+                0,
+                0.2
+            ],
+            "difficulties": 0,
+            "n_categories": 4,
+            "n_items": 3,
             "name": "GradedResponseModel"
         },
-        "difficulties": 0,
         "effect_estimators": {
             "name": "CohensD"
         },
-        "err_covs": 0.001,
-        "err_means": 0.0,
-        "err_vars": 0.01,
-        "items": {
-            "dist": "normal_distribution",
-            "mean": 1,
-            "stddev": 0.5
-        },
-        "loadings": 0.7,
-        "means": [
-            0,
-            0.2
-        ],
-        "measurements": {
-            "dist": "truncated_normal_distribution",
-            "mean": 1,
-            "stddev": 1
-        },
-        "n_categories": 4,
         "n_conditions": 2,
         "n_dep_vars": 1,
-        "n_items": 3,
         "n_obs": 25,
         "test_strategy": {
             "alpha": 0.05,

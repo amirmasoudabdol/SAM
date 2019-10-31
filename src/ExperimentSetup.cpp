@@ -29,58 +29,64 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     nc_ = config["n_conditions"];
     nd_ = config["n_dep_vars"];
-    ni_ = config["n_items"];
     ng_ = nc_ * nd_;
-    nrows_ = ng_ * ni_;
+
+    // FIXME: We are commented during the transition of #202
+//    ni_ = config["n_items"];
+//    nrows_ = ng_ * ni_;
 
     auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
     nobs_ = std::get<0>(nobs_t);
     params_dist["n_obs"] = std::get<1>(nobs_t);
-
-    auto means_t = get_expr_setup_params<double>(config["means"], ng_);
-    means_ = std::get<0>(means_t);
-    params_dist["means"] = std::get<1>(means_t);
-
-    auto vars_t = get_expr_setup_params<double>(config["vars"], ng_);
-    vars_ = std::get<0>(vars_t);
-    params_dist["vars"] = std::get<1>(vars_t);
     
-    auto covs_t = get_expr_setup_params<double>(config["covs"], ng_ * (ng_ - 1) / 2);
-    covs_ = std::get<0>(covs_t);
-    params_dist["covs"] = std::get<1>(covs_t);
     
-    // Constructing the covarinace matrix based on the given covariance and variances.
-    sigma_ = constructCovMatrix(vars_, covs_, ng_);
+    if (ds_name == "LinearModel"){
 
-    auto loadings_t = get_expr_setup_params<double>(config["loadings"], ni_);
-    loadings_ = std::get<0>(loadings_t);
-    params_dist["loadings"] = std::get<1>(loadings_t);
+        auto means_t = get_expr_setup_params<double>(config["means"], ng_);
+        means_ = std::get<0>(means_t);
+        params_dist["means"] = std::get<1>(means_t);
 
-    auto error_means_t = get_expr_setup_params<double>(config["err_means"], nrows_);
-    error_means_ = std::get<0>(error_means_t);
-    params_dist["err_means"] = std::get<1>(error_means_t);
+        auto vars_t = get_expr_setup_params<double>(config["vars"], ng_);
+        vars_ = std::get<0>(vars_t);
+        params_dist["vars"] = std::get<1>(vars_t);
+        
+        auto covs_t = get_expr_setup_params<double>(config["covs"], ng_ * (ng_ - 1) / 2);
+        covs_ = std::get<0>(covs_t);
+        params_dist["covs"] = std::get<1>(covs_t);
+        
+        // Constructing the covarinace matrix based on the given covariance and variances.
+        sigma_ = constructCovMatrix(vars_, covs_, ng_);
+    }
 
-    auto error_vars_t = get_expr_setup_params<double>(config["err_vars"], nrows_);
-    error_vars_ = std::get<0>(error_vars_t);
-    params_dist["err_vars"] = std::get<1>(error_vars_t);
+    if (ds_name == "LatentModel"){
+        auto loadings_t = get_expr_setup_params<double>(config["loadings"], ni_);
+        loadings_ = std::get<0>(loadings_t);
+        params_dist["loadings"] = std::get<1>(loadings_t);
 
-    auto error_covs_t = get_expr_setup_params<double>(config["err_covs"], nrows_ * (nrows_ - 1) / 2);
-    error_covs_ = std::get<0>(error_covs_t);
-    params_dist["err_covs"] = std::get<1>(error_covs_t);
-    
-    // Constructing the covariance matrix
-    error_sigma_ = constructCovMatrix(error_vars_, error_covs_, nrows_);
-    
+        auto error_means_t = get_expr_setup_params<double>(config["err_means"], nrows_);
+        error_means_ = std::get<0>(error_means_t);
+        params_dist["err_means"] = std::get<1>(error_means_t);
+
+        auto error_vars_t = get_expr_setup_params<double>(config["err_vars"], nrows_);
+        error_vars_ = std::get<0>(error_vars_t);
+        params_dist["err_vars"] = std::get<1>(error_vars_t);
+
+        auto error_covs_t = get_expr_setup_params<double>(config["err_covs"], nrows_ * (nrows_ - 1) / 2);
+        error_covs_ = std::get<0>(error_covs_t);
+        params_dist["err_covs"] = std::get<1>(error_covs_t);
+        
+        // Constructing the covariance matrix
+        error_sigma_ = constructCovMatrix(error_vars_, error_covs_, nrows_);
+    }
     
     // Graded Response Model
-    
-    n_categories = config["n_categories"];
-    n_items = config["n_items"];
-    difficulties.load(config["difficulties"], 1);
-    abilities.load(config["abilities"], ng_);
-    
-    std::cout << difficulties.values << std::endl;
-    
+
+    if (ds_name == "GradedResponseModel") {
+        n_categories = config["data_strategy"]["n_categories"];
+        n_items = config["data_strategy"]["n_items"];
+        difficulties.load(config["data_strategy"]["difficulties"], 1);
+        abilities.load(config["data_strategy"]["abilities"], ng_);
+    }
     
 }
 

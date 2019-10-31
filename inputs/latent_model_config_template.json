@@ -1,0 +1,27 @@
+{
+   "data_strategy": {
+        "name": "LatentModel",
+        "means": [
+            0,
+            0.2
+        ],
+        "covs": 0.0,
+        "vars": 0.1,
+        "n_items": 10,
+        "err_covs": 0.001,
+        "err_means": 0.0,
+        "err_vars": 0.01,
+        "loadings": 0.7
+    },
+    "effect_estimators": {
+        "name": "CohensD"
+    },
+    "n_conditions": 2,
+    "n_dep_vars": 1,
+    "n_obs": 25,
+    "test_strategy": {
+        "alpha": 0.05,
+        "name": "TTest",
+        "side": "TwoSided"
+    }
+}
