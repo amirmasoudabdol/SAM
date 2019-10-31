@@ -27,6 +27,8 @@ std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_stra
         params.seed = selection_seed;
         return std::make_unique<RandomSelection>(params);
         
+    }else if(selection_strategy_config["name"] == "FreeSelection") {
+        return std::make_unique<FreeSelection>();
     }else{
         throw std::invalid_argument("Unknown Selection Strategy.");
     }

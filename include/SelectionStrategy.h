@@ -215,7 +215,24 @@ namespace sam {
         j.at("seed").get_to(p.seed);
     }
     
-    
+
+    /**
+     @brief FreeSelection doesn't pose any restriction on the submission and all submissions
+     will be accepted.
+     */
+    class FreeSelection : public SelectionStrategy {
+        
+    public:
+        struct Parameters {};
+        
+        Parameters params;
+        
+        FreeSelection() {};
+        
+        /// Accepting anything!
+        bool review(Submission &s) { return true; };
+        
+    };
 
 }
 
