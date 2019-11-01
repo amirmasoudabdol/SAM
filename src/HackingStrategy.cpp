@@ -248,6 +248,8 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     if (FLAGS::VERBOSE) std::cout << "Group Pooling...\n";
     
     if (experiment->setup.nc() < 2){
+        /// TODO: This should probably not be a throw and just a
+        /// message. It's not a big deal after all, and I don't want to stop the program from running
         throw std::domain_error("There is not enough groups for pooling.");
     }
     
