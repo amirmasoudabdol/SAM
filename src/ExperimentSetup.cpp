@@ -42,15 +42,15 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
     if (ds_name == "LinearModel"){
 
-        auto means_t = get_expr_setup_params<double>(config["means"], ng_);
+        auto means_t = get_expr_setup_params<double>(config["data_strategy"]["means"], ng_);
         means_ = std::get<0>(means_t);
         params_dist["means"] = std::get<1>(means_t);
 
-        auto vars_t = get_expr_setup_params<double>(config["vars"], ng_);
+        auto vars_t = get_expr_setup_params<double>(config["data_strategy"]["vars"], ng_);
         vars_ = std::get<0>(vars_t);
         params_dist["vars"] = std::get<1>(vars_t);
         
-        auto covs_t = get_expr_setup_params<double>(config["covs"], ng_ * (ng_ - 1) / 2);
+        auto covs_t = get_expr_setup_params<double>(config["data_strategy"]["covs"], ng_ * (ng_ - 1) / 2);
         covs_ = std::get<0>(covs_t);
         params_dist["covs"] = std::get<1>(covs_t);
         
@@ -59,19 +59,19 @@ ExperimentSetup::ExperimentSetup(json& config) {
     }
 
     if (ds_name == "LatentModel"){
-        auto loadings_t = get_expr_setup_params<double>(config["loadings"], ni_);
+        auto loadings_t = get_expr_setup_params<double>(config["data_strategy"]["loadings"], ni_);
         loadings_ = std::get<0>(loadings_t);
         params_dist["loadings"] = std::get<1>(loadings_t);
 
-        auto error_means_t = get_expr_setup_params<double>(config["err_means"], nrows_);
+        auto error_means_t = get_expr_setup_params<double>(config["data_strategy"]["err_means"], nrows_);
         error_means_ = std::get<0>(error_means_t);
         params_dist["err_means"] = std::get<1>(error_means_t);
 
-        auto error_vars_t = get_expr_setup_params<double>(config["err_vars"], nrows_);
+        auto error_vars_t = get_expr_setup_params<double>(config["data_strategy"]["err_vars"], nrows_);
         error_vars_ = std::get<0>(error_vars_t);
         params_dist["err_vars"] = std::get<1>(error_vars_t);
 
-        auto error_covs_t = get_expr_setup_params<double>(config["err_covs"], nrows_ * (nrows_ - 1) / 2);
+        auto error_covs_t = get_expr_setup_params<double>(config["data_strategy"]["err_covs"], nrows_ * (nrows_ - 1) / 2);
         error_covs_ = std::get<0>(error_covs_t);
         params_dist["err_covs"] = std::get<1>(error_covs_t);
         
