@@ -192,6 +192,8 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
     
     int res = 0;
     
+    arma::rowvec standaraized;
+    
     // Removing outliers only from the original groups, see #104
     for (int i = 0; i < experiment->setup.ng(); ++i) {
         
@@ -206,12 +208,13 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
         if (params.order == "max first")
             row = sort(row);
 
-        // Finding the outliers
-        arma::uvec inx = arma::find(row < (experiment->means[g] - d * experiment->stddev[g])
-                                    ||
-                                    row > (experiment->means[g] + d * experiment->stddev[g]));
         
-
+        standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
+        
+        // Finding the outliers
+        arma::uvec inx = arma::find(standaraized > d);
+                
+        // TODO: I think this can be rewritten nicer
         for (int i = inx.size() - 1;
              i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > params.min_observations ;
              i--)
@@ -219,7 +222,6 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
             row.shed_col(inx[i]);
             
             // Shifting the index back
-            // BUG: I think there is an issue when the first item is going to be removed
             inx = inx - 1;
         }
         
