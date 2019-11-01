@@ -7,16 +7,5 @@
         ],
         "covs": 0.0,
         "vars": 0.1
-    },
-    "effect_estimators": {
-        "_name": "CohensD"
-    },
-    "n_conditions": 2,
-    "n_dep_vars": 1,
-    "n_obs": 25,
-    "test_strategy": {
-        "alpha": 0.05,
-        "_name": "TTest",
-        "side": "TwoSided"
     }
 }

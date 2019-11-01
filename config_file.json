@@ -19,8 +19,7 @@
             "_name": "TTest",
             "alpha": 0.05,
             "side": "TwoSided"
-        },
-        "vars": 0.1
+        }
     },
     "JournalParameters": {
         "max_pubs": 20,
