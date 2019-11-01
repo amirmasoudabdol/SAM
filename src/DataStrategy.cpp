@@ -61,6 +61,7 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int 
     
     arma::mat sample(experiment->setup.ng(), n_new_obs);
     sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
+    
     std::vector<arma::Row<double>> new_values(experiment->setup.ng());
     
     std::generate(new_values.begin(), new_values.end(),

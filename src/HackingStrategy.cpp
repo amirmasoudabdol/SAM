@@ -122,6 +122,8 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
 }
 
 void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
+    
+    // Get the new observations
     auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
     
     int i = 0;

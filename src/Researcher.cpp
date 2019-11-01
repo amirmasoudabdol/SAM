@@ -92,8 +92,6 @@ void Researcher::publishResearch(){
     // Ask for the final decision    
     decision_strategy->verdict(*experiment, DecisionStage::Final);
     
-//    std::cout << experiment->pvalues << std::endl;
-    
     // Setting researcher's submission record
     submission_record = decision_strategy->final_submission;
     

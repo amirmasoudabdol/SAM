@@ -5,7 +5,7 @@
             "_name": "GradedResponseModel",
             "abilities": [
                 0,
-                0.2
+                0.5
             ],
             "difficulties": 0,
             "n_categories": 4,
@@ -42,20 +42,16 @@
         "hacking_strategies": [
             [
                 {
-                    "_name": "SDOutlierRemoval",
+                    "_name": "OptionalStopping",
+                    "id": 1,
                     "level": "dv",
-                    "max_attempts": 3,
-                    "min_observations": 10,
-                    "multipliers": [
-                        2
-                    ],
-                    "n_attempts": 1,
-                    "num": 3,
-                    "order": "max first"
+                    "max_attempts": 10,
+                    "n_attempts": 3,
+                    "num": 100
                 }
             ]
         ],
-        "is_phacker": false
+        "is_phacker": true
     },
     "SimulationParameters": {
         "debug": false,

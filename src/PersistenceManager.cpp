@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <memory>
 
 #include "csv/reader.hpp"
 #include "csv/writer.hpp"

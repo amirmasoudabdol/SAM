@@ -19,6 +19,7 @@ void GRMDataStrategy::genData(Experiment* experiment) {
         experiment->measurements[g].imbue(
             [&](){
                 // TODO: Replace this with `abilities_dist` for better performance
+                // TODO: It is probably a good idea to make a function out of this, and return arma::Row<>
                 auto theta = Random::get<std::normal_distribution<>>(experiment->setup.abilities.values[g]);
                 return generate_sum_of_scores(theta);
             });
@@ -43,7 +44,23 @@ double GRMDataStrategy::generate_sum_of_scores(const double theta) {
 }
 
 std::vector<arma::Row<double> >
-GRMDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs){}
+GRMDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs){
+    
+    std::vector<arma::Row<double> > new_values(experiment->setup.ng());
+    
+    for (int g{0}; g < experiment->setup.ng(); ++g) {
+        new_values[g].resize(n_new_obs);
+        new_values[g].imbue([&](){
+            auto theta = Random::get<std::normal_distribution<>>(experiment->setup.abilities.values[g]);
+            return generate_sum_of_scores(theta);
+        });
+    }
+    
+    return new_values;
+    
+}
 
 arma::Row<double>
-GRMDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs){}
+GRMDataStrategy::genNewObservationsFor(Experiment* experiment, int g, int n_new_obs){
+    return arma::Row<double>();
+}
