@@ -9,6 +9,7 @@
 
 #include <utils/magic_enum.hpp>
 #include <boost/math/distributions/students_t.hpp>
+#include <boost/math/distributions/fisher_f.hpp>
 
 #include "Experiment.h"
 #include "TestStrategy.h"
@@ -401,6 +402,60 @@ namespace sam {
         }
         
         return TestStrategy::TestResult(t_stat, p, 1, sig);
+    }
+
+    TestStrategy::TestResult
+    f_test(
+        double sd1,     // Sample 1 std deviation
+        double sd2,     // Sample 2 std deviation
+        double N1,      // Sample 1 size
+        double N2,      // Sample 2 size
+        double alpha)  // Significance level
+    {
+
+        using boost::math::fisher_f;
+        
+        bool sig = false;
+
+        // F-statistic:
+        double f_stats = (sd1 / sd2);
+
+        //
+        // Finally define our distribution, and get the probability:
+        //
+        fisher_f dist(N1 - 1, N2 - 1);
+        double p = cdf(dist, f_stats);
+
+        double ucv = quantile(complement(dist, alpha));
+        double ucv2 = quantile(complement(dist, alpha / 2));
+        double lcv = quantile(dist, alpha);
+        double lcv2 = quantile(dist, alpha / 2);
+
+        //
+        // Finally print out results of null and alternative hypothesis:
+        //
+        if((ucv2 < f_stats) || (lcv2 > f_stats))
+            // Alternative "NOT REJECTED"
+            sig = true;
+        else
+            // Alternative "REJECTED"
+            sig = false;
+
+        if(lcv > f_stats)
+            // Alternative "NOT REJECTED"
+            sig = true;
+        else
+            // Alternative "REJECTED"
+            sig = false;
+
+        if(ucv < f_stats)
+            // Alternative "NOT REJECTED"
+            sig = true;
+        else
+            // Alternative "REJECTED"
+            sig = false;
+
+        return TestStrategy::TestResult(f_stats, p, 1, sig);
     }
 
 }

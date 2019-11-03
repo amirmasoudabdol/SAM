@@ -174,6 +174,9 @@ namespace sam {
     TestStrategy::TestResult
     two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side);
 
+    TestStrategy::TestResult
+    f_test(double sd1, double sd2, double N1, double N2, double alpha);
+
 }
 
 #endif //SAMPP_TESTSTRATEGIES_H
