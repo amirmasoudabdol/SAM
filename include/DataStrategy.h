@@ -20,7 +20,6 @@
 #include "effolkronium/random.hpp"
 
 using Random = effolkronium::random_static;
-using RandomLocal = effolkronium::random_local;
 
 namespace sam {
     
@@ -163,7 +162,6 @@ namespace sam {
         
     private:
         
-        RandomLocal random{};
         Distribution dist;
         MultivariateDistribution mdist;
     };

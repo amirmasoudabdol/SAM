@@ -12,8 +12,6 @@
 #include "utils/magic_enum.hpp"
 #include "effolkronium/random.hpp"
 
-using RandomLocal = effolkronium::random_local;
-
 namespace sam {
     
     class Journal;
@@ -36,7 +34,6 @@ namespace sam {
         
     protected:
         Distribution dist;
-        RandomLocal random;
 
     public:
 

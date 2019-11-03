@@ -49,7 +49,7 @@ bool SignificantSelection::review(Submission &s) {
 
     if (s.pvalue < params.alpha){
         return true;
-    }else if (random.get<bool>(1 - params.pub_bias)) {
+    }else if (Random::get<bool>(1 - params.pub_bias)) {
         return true;
     }else{
         return false;
@@ -64,7 +64,7 @@ bool SignificantSelection::review(Submission &s) {
  @return a boolean indicating whether the Submission is accpeted or not.
  */
 bool RandomSelection::review(Submission &s) {
-    if (random.get<bool>(0.5)) {
+    if (Random::get<bool>(0.5)) {
         return true;
     }else{
         return false;
