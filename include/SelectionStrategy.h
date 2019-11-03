@@ -103,27 +103,21 @@ namespace sam {
             //! Indicates the _selection stratgy_'s preference toward positive, `1`,
             //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
             int side = 1;
-            
-            //! Seed to be used for deicison distribution
-            int seed = 42;
         };
         
         Parameters params;
         
         SignificantSelection(const Parameters &p) : params{p} {
-            random.seed(params.seed);
+            
         };
         
-        SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1, int seed = 42) {
+        SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1) {
 
             
             params.name = SelectionMethod::SignificantSelection;
             params.alpha = alpha;
             params.pub_bias = pub_bias;
             params.side = side;
-            params.seed = seed;
-            
-            random.seed(params.seed);
             
             name = params.name;
         };
@@ -140,7 +134,6 @@ namespace sam {
             {"alpha", p.alpha},
             {"pub_bias", p.pub_bias},
             {"side", p.side}
-            // {"seed", p.seed}
         };
     }
     
@@ -156,8 +149,6 @@ namespace sam {
         j.at("alpha").get_to(p.alpha);
         j.at("pub_bias").get_to(p.pub_bias);
         j.at("side").get_to(p.side);
-        // j.at("seed").get_to(p.seed);
-        // FIXME: I do not provide seed in the config file. I need to fix this somehow.
     }
 
     /**
@@ -175,15 +166,13 @@ namespace sam {
         
         struct Parameters {
             SelectionMethod name = SelectionMethod::RandomSelection;
-            int seed = 42;
         };
         
         Parameters params;
         
-        RandomSelection(int seed) : seed(seed) {
+        RandomSelection() {
             
             params.name = SelectionMethod::RandomSelection;
-//            mainRngStream = new RandomNumberGenerator(seed);
             
             name = params.name;
         }
@@ -191,15 +180,12 @@ namespace sam {
         RandomSelection(const Parameters &p) : params{p} {};
         
         bool review(Submission& s);
-        
-        int seed;
     };
     
     inline
     void to_json(json& j, const RandomSelection::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<SelectionMethod>(p.name)},
-            {"seed", p.seed}
+            {"_name", magic_enum::enum_name<SelectionMethod>(p.name)}
         };
     }
     
@@ -211,8 +197,6 @@ namespace sam {
             p.name = name.value();
         else
             throw std::invalid_argument("Unknown selection method.");
-        
-        j.at("seed").get_to(p.seed);
     }
     
 

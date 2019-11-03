@@ -27,7 +27,6 @@
             "_name": "FreeSelection",
             "alpha": 0.05,
             "pub_bias": 0.95,
-            "selection_seed": 565444343,
             "side": 0
         }
     },
