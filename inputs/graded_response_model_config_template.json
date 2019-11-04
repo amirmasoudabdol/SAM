@@ -7,6 +7,6 @@
     "difficulties": 0,
     "n_categories": 4,
     "n_items": 3,
-    ".name": "GradedResponseModel"
+    "_name": "GradedResponseModel"
   }
 }
