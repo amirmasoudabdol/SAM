@@ -14,13 +14,15 @@ using namespace sam;
 
 void GRMDataStrategy::genData(Experiment* experiment) {
     
+    sumofscores.resize(experiment->setup.nobs().max(), 1);
+    
     for (int g{0}; g < experiment->setup.ng(); ++g) {
         experiment->measurements[g].resize(experiment->setup.nobs()[g]);
         experiment->measurements[g].imbue(
             [&](){
                 // TODO: Replace this with `abilities_dist` for better performance
                 // TODO: It is probably a good idea to make a function out of this, and return arma::Row<>
-                auto theta = Random::get<std::normal_distribution<>>(experiment->setup.abilities.values[g]);
+                auto theta = Random::get<std::normal_distribution<>>(params.abilities[g]);
                 return generate_sum_of_scores(theta);
             });
     }
@@ -51,7 +53,7 @@ GRMDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_ne
     for (int g{0}; g < experiment->setup.ng(); ++g) {
         new_values[g].resize(n_new_obs);
         new_values[g].imbue([&](){
-            auto theta = Random::get<std::normal_distribution<>>(experiment->setup.abilities.values[g]);
+            auto theta = Random::get<std::normal_distribution<>>(params.abilities[g]);
             return generate_sum_of_scores(theta);
         });
     }

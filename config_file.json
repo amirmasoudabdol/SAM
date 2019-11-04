@@ -1,13 +1,16 @@
 {
     "ExperimentParameters": {
         "data_strategy": {
-            "_name": "LinearModel",
-            "covs": 0.0,
-            "means": [
+            "_name": "GradedResponseModel",
+            "abilities": [
                 0,
                 0.2
             ],
-            "vars": 0.1
+            "difficulties": [
+                0
+            ],
+            "n_categories": 4,
+            "n_items": 3
         },
         "effect_estimators": {
             "_name": "CohensD"

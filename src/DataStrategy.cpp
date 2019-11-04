@@ -24,7 +24,8 @@ std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
     }else if (data_strategy_config["_name"] == "LatentModel") {
         return std::make_unique<LatentDataStrategy>();
     }else if (data_strategy_config["_name"] == "GradedResponseModel") {
-        return std::make_unique<GRMDataStrategy>();
+        auto params = data_strategy_config.get<GRMDataStrategy::Parameters>();
+        return std::make_unique<GRMDataStrategy>(params);
     }else{
         throw std::invalid_argument("Unknown Data Strategy.");
     }
@@ -36,7 +37,7 @@ std::unique_ptr<DataStrategy> DataStrategy::build(ExperimentSetup &setup) {
     if (setup.ds_name == "LinearModel"){
         return std::make_unique<LinearModelStrategy>(setup);
     }else if (setup.ds_name == "GradedResponseModel"){
-        return std::make_unique<GRMDataStrategy>(setup);
+//        return std::make_unique<GRMDataStrategy>(setup);
     }else{
         throw std::invalid_argument("Unknown Data Strategy.");
     }

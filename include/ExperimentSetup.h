@@ -141,16 +141,6 @@ namespace sam {
         std::string ds_name {};
 
 
-        /// Note: I am expanding the Experiment here but I'd like to rewrite this part a bit
-        // GradedResponseModel
-        int n_categories;
-        int n_items;
-        arma::Row<double> difficulties_mean;
-        arma::Row<double> abilities_mean;
-        
-        Parameter<double> difficulties;
-        Parameter<double> abilities;
-
         /**
          Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
 

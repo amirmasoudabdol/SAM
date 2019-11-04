@@ -82,9 +82,7 @@ Experiment::Experiment(json &experiment_config) {
     this->setup = ExperimentSetup(experiment_config);
 
     // Setup the Data Strategy
-    // this->data_strategy = DataStrategy::build(experiment_config["data_strategy"]);
-    // TODO: Hey! I'm changing this to let mvnorm_dist have access to means and covs...
-    this->data_strategy = DataStrategy::build(this->setup);
+    this->data_strategy = DataStrategy::build(experiment_config["data_strategy"]);
     
     // Setup the Test Strategy
     this->test_strategy = TestStrategy::build(experiment_config["test_strategy"]);

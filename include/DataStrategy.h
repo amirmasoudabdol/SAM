@@ -212,32 +212,43 @@ namespace sam {
      */
     class GRMDataStrategy : public DataStrategy {
     public:
+
+        struct Parameters {
+            
+            DataModel name;
+            
+            int n_items;
+            int n_categories;
+
+            arma::Row<double> difficulties;
+            arma::Row<double> abilities;
+            
+//            Distribution difficulties_dist;
+//            Distribution abilities_dist;
+            
+            Parameters() = default;
+            
+        };
         
         GRMDataStrategy() {};
-        
-        GRMDataStrategy(ExperimentSetup &setup) {
 
-            difficulties_dist = std::normal_distribution<>(setup.difficulties.values[0], 1);
+        GRMDataStrategy(const Parameters &p) : params(p) {
+            difficulties_dist = std::normal_distribution<>(params.difficulties.at(0), 1);
             
             /// Note: I'm a bit confused about the difficulties, and I think I'm making
             /// a mess with the `Parameters`. This works but I need some serious cleanup
             /// on the parameters.
-            betas.resize(setup.n_items, setup.n_categories);
+            betas.resize(params.n_items, params.n_categories);
             betas.imbue([&]() { return Random::get(difficulties_dist); });
 //            beta.each_row( [this](arma::vec &v) {v = Random::get(})
 
-            poa.resize(setup.n_items, setup.n_categories);
-            responses.resize(setup.n_items, setup.n_categories);
-            urand.resize(setup.n_items, setup.n_categories);
-            scores.resize(setup.n_items, 1);
-            sumofscores.resize(setup.nobs().max(), 1);
-            
+            poa.resize(params.n_items, params.n_categories);
+            responses.resize(params.n_items, params.n_categories);
+            urand.resize(params.n_items, params.n_categories);
+            scores.resize(params.n_items, 1);
         };
-        
-        GRMDataStrategy(DataStrategyParameters dsp) {
-            params = dsp;
-        }
-        
+
+
         void
         genData(Experiment* experiment);
         
@@ -248,6 +259,10 @@ namespace sam {
         genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
+        
+        Parameters params;
+        
+        
         //! Distribution of difficulty of items. Currently this is default to \f$ N(0, 1) \f$. Its mean
         //! can be overwritten with the diffilcitues parameter.
         //! TODO: I can replace this with a \f$ MN~(\mu, O) \f$ and have different
@@ -278,6 +293,33 @@ namespace sam {
         
         
     };
+
+
+            // JSON Parser for GRMDataStrategy::Parameters
+            inline
+            void to_json(json& j, const GRMDataStrategy::Parameters& p) {
+                j = json{
+                    {"_name", magic_enum::enum_name<DataStrategy::DataModel>(p.name)},
+                    {"n_items", p.n_items},
+                    {"n_categories", p.n_categories},
+                    {"difficulties", arma::conv_to<std::vector<double>>::from(p.difficulties)},
+                    {"abilities", arma::conv_to<std::vector<double>>::from(p.abilities)}
+                };
+            }
+        
+            inline
+            void from_json(const json& j, GRMDataStrategy::Parameters& p) {
+                
+                // Using a helper template function to handle the optional and throw if necessary.
+                p.name = get_enum_value_from_json<DataStrategy::DataModel>("_name", j);
+                
+                j.at("n_items").get_to(p.n_items);
+                j.at("n_categories").get_to(p.n_categories);
+                
+                p.difficulties = arma::conv_to<arma::Row<double>>::from(j.at("difficulties").get<std::vector<double>>());
+                p.abilities = arma::conv_to<arma::Row<double>>::from(j.at("abilities").get<std::vector<double>>());
+                
+            }
 
 }
 

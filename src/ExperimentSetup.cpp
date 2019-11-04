@@ -9,6 +9,7 @@
 
 #include "ExperimentSetup.h"
 #include "Utilities.h"
+#include "DataStrategy.h"
 
 using namespace sam;
 
@@ -77,15 +78,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
         
         // Constructing the covariance matrix
         error_sigma_ = constructCovMatrix(error_vars_, error_covs_, nrows_);
-    }
-    
-    // Graded Response Model
-
-    if (ds_name == "GradedResponseModel") {
-        n_categories = config["data_strategy"]["n_categories"];
-        n_items = config["data_strategy"]["n_items"];
-        difficulties.load(config["data_strategy"]["difficulties"], 1);
-        abilities.load(config["data_strategy"]["abilities"], ng_);
     }
     
 }
