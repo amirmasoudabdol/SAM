@@ -40,6 +40,8 @@ void Experiment::initResources(int len) {
     pvalues.resize(len);
     effects.resize(len);
     sigs.resize(len);
+    
+    // BUG: This conflict with GroupPooling!
     measurements.resize(len);
 }
 
