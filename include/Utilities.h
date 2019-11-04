@@ -82,7 +82,7 @@ MultivariateDistribution make_multivariate_distribution_impl(json const &j, Para
     return DistributionType{j.at(parameters)...};
 }
 
-template<typename T>
+template<typename T = double>
 std::tuple<std::vector<T>, Distribution>
 get_expr_setup_params(json const &j, int const size) {
     

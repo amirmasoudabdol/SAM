@@ -54,18 +54,6 @@ namespace sam {
         
         std::vector<arma::Row<double> > measurements;
         
-        bool latentDesign {false};
-        std::vector<arma::Row<double> > items;
-        arma::Row<double> latent_means;
-        arma::Row<double> latent_variances;
-        std::vector<std::vector<double>> latent_cov_matrix;
-        
-        //! A function for computing the latent variable
-        //! This is rather new and I still need to implement it. It's going to
-        //! use std::function, it's basically more efficient and less verbose
-        //! Strategy Pattern ;P
-        void latent_function(std::function<void(Experiment *)>);
-        
         Experiment() = default;
         
         explicit Experiment(json& experiment_config);
@@ -74,7 +62,7 @@ namespace sam {
 
             // TODO: Hey! I'm constructing this with `setup` because I want the mvnorm_dist 
             // sees the means and covs;
-            data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup));
+            data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
 
             test_strategy = std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
             effect_strategy = std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));

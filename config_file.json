@@ -1,23 +1,22 @@
 {
     "ExperimentParameters": {
         "data_strategy": {
-            "_name": "GradedResponseModel",
-            "abilities": [
+            "_name": "LinearModel",
+            "covs": 0.0,
+            "means": [
                 0,
                 0.2
             ],
-            "difficulties": [
-                0
-            ],
-            "n_categories": 4,
-            "n_items": 3
+            "stddevs": 1,
+            "vars": 1
         },
         "effect_estimators": {
             "_name": "CohensD"
         },
+        "effect_strategy": null,
         "n_conditions": 2,
         "n_dep_vars": 1,
-        "n_obs": 100,
+        "n_obs": 25,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -27,10 +26,7 @@
     "JournalParameters": {
         "max_pubs": 20,
         "selection_strategy": {
-            "_name": "FreeSelection",
-            "alpha": 0.05,
-            "pub_bias": 0.95,
-            "side": 0
+            "_name": "FreeSelection"
         }
     },
     "ResearcherParameters": {

@@ -24,67 +24,6 @@
 
 namespace sam {
 
-
-    template <typename T>
-    struct Parameter {
-        int size{};
-        arma::Row<T> values{};
-        Distribution dist = std::normal_distribution<T>{};
-        MultivariateDistribution mdist = mvrandom::mvnorm_distribution<T>{};
-        
-        Parameter() = default;
-      
-        Parameter(json const &j, int size) {
-            load(j, size);
-        }
-        
-        void load(json const &j, int size) {
-            
-            values.resize(size);
-            
-            switch (j.type()) {
-                case nlohmann::detail::value_t::object:
-                    try {
-                        
-                        dist = make_distribution(j);
-                        auto val = Random::get(dist);
-
-                        values.fill(val);
-                        
-                    } catch (const std::exception& e) {
-                        throw e.what();
-                    }
-                    break;
-                    
-                case nlohmann::detail::value_t::array:
-                    {
-                        if (j.size() != size)
-                            throw std::length_error("Array size does not match with the size\
-                                                of the experiment.\n");
-                        else{
-                            values = arma::Row<T>(j.get<std::vector<T>>());
-                            size = values.size();
-                        }
-                    }
-                    break;
-                    
-                case nlohmann::detail::value_t::number_integer:
-                case nlohmann::detail::value_t::number_unsigned:
-                case nlohmann::detail::value_t::number_float:
-    
-                    values.fill(j.get<T>());
-                    break;
-                    
-                case nlohmann::detail::value_t::null:
-                default:
-                    throw std::invalid_argument("Missing parameter.\n");
-                    break;
-            }
-            
-        }
-        
-    };
-
     using json = nlohmann::json;
     
     // Forward declration of the necessary classes.
@@ -106,32 +45,13 @@ namespace sam {
         //! Number of _dependent variables_ in each experimental condition.
         int nd_ {0};
 
-        //! Number of items for each latent variable, if `isFactorModel` is `true`.
-        int ni_ {0};
-
         //! Total number of groups. Always calculated as
         //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
         //! variables, \f$n_g = n_c \times n_d \times n_i\f$
         int ng_ {};
 
-        //! Total number of groups in the case of latent experiment.
-        //! This is a helper variable and doesn't mean anything conceptually
-        int nrows_ {};
-
         // Experiment Parameters
         arma::Row<int> nobs_;
-        arma::Row<double> means_;
-        arma::Row<double> vars_;
-        arma::Row<double> covs_;
-        arma::Mat<double> sigma_;
-
-        // TODO: Integrate Us!
-        // NOTE: Don't! I think I need to rethink the whole experiment
-        arma::Row<double> loadings_;
-        arma::Row<double> error_means_;
-        arma::Row<double> error_vars_;
-        arma::Row<double> error_covs_;
-        arma::Mat<double> error_sigma_;
         
         std::map<std::string, Distribution> params_dist;
         
@@ -163,33 +83,10 @@ namespace sam {
 
         const int nc() const { return nc_; };
         const int nd() const { return nd_; };
-        const int ni() const { return ni_; };
         const int ng() const { return ng_; };
-        const int nrows() const { return nrows_; };
 
         const arma::Row<int>& nobs() const { return nobs_; };
         void set_nobs(arma::Row<int>& val) {nobs_ = val; };
-        
-        const arma::Row<double>& means() const { return means_; };
-        void set_means(arma::Row<double>& val) {means_ = val; };
-        
-        const arma::Row<double>& vars() const { return vars_; };
-        void set_vars(arma::Row<double>& val) {vars_ = val; };
-        
-        const arma::Mat<double>& sigma() const { return sigma_; };
-        void set_sigma(arma::Mat<double>& val) {sigma_ = val; };
-
-        const arma::Row<double>& loadings() const { return loadings_; };
-        void set_loadings(arma::Row<double>& val) {loadings_ = val; };
-        
-        const arma::Row<double>& error_means() const { return error_means_; };
-        void set_error_means(arma::Row<double>& val) {error_means_ = val; };
-        
-        const arma::Row<double>& error_vars() const { return error_vars_; };
-        void set_error_vars(arma::Row<double>& val) {error_vars_ = val; };
-        
-        const arma::Mat<double>& error_sigma() const { return error_sigma_; };
-        void set_error_sigma(arma::Mat<double>& val) {error_sigma_ = val; };
         
         void randomize_parameters();
 
@@ -203,19 +100,14 @@ namespace sam {
 
         //! Used to make sure that experiment setup has the correct size
         bool is_expr_size_decided {false};
-        
-        //! Used to make sure that variance is set before the covariance
-        bool is_vars_set {false};
 
         int seed {-1};
-
         
         /**
          Calculate the experiment setup sizes
          */
         void calculate_experiment_size() {
             setup.ng_ = setup.nc_ * setup.nd_;
-            setup.nrows_ = setup.ng_ * setup.ni_;
 
             if (setup.ng_ == 0){
                 is_expr_size_decided = false;
@@ -308,72 +200,6 @@ namespace sam {
 
             return *this;
         }
-
-        ExperimentSetupBuilder& setMeans(const double mean) {
-            check_expr_size();
-
-            fill_vector<double>(setup.means_, setup.ng_, mean);
-
-            return *this;
-        }
-
-        ExperimentSetupBuilder& setMeans(const arma::Row<double> &means) {
-            check_expr_size();
-            
-            if (means.size() != setup.ng_){
-                throw std::length_error("The size of nobs does not match size of the experiment.");
-            }
-            setup.means_ = means;
-            return *this;
-        }
-
-        ExperimentSetupBuilder& setVariance(const double var) {
-            check_expr_size();
-            
-            fill_vector<double>(setup.vars_, setup.ng_, var);
-
-            is_vars_set = true;
-            return *this;
-        }
-
-        ExperimentSetupBuilder& setVariance(const arma::Row<double> &vars) {
-            check_expr_size();
-            
-            if (vars.size() != setup.ng_){
-                throw std::length_error("The size of vars does not match size of the experiment.");
-            }
-            setup.vars_ = vars;
-            is_vars_set = true;
-            return *this;
-        }
-
-        ExperimentSetupBuilder& setCovariance(const double cov) {
-            check_expr_size();
-
-            if (!is_vars_set) {
-                throw std::invalid_argument("Please set the variance before the fixed covariance.");
-            }else{
-                setup.sigma_ = constructCovMatrix(setup.vars_, cov, setup.ng_);
-            }
-
-            return *this;
-        }
-
-        ExperimentSetupBuilder& setCovarianceMatrix(const arma::Mat<double> &sigma) {
-            check_expr_size();
-            
-            setup.vars_ = arma::Row<double>(setup.ng_);
-            setup.sigma_ = arma::Mat<double>(setup.ng_, setup.ng_);
-
-            if (arma::size(setup.sigma_) != arma::size(sigma)){
-               throw std::length_error("The size of covs does not match size of the experiment.");
-            }
-            
-            setup.vars_ = sigma.diag().t();
-            setup.sigma_ = sigma;
-
-            return *this;
-        }
         
         ExperimentSetupBuilder& setTestStrategyParameters(json &test_strategy_config)
         {
@@ -381,15 +207,15 @@ namespace sam {
             return *this;
         }
         
-        ExperimentSetupBuilder& setDataStrategyParameters(json &test_strategy_config)
+        ExperimentSetupBuilder& setDataStrategyParameters(json &data_strategy_config)
         {
-            setup.dsp_conf = test_strategy_config;
+            setup.dsp_conf = data_strategy_config;
             return *this;
         }
         
-        ExperimentSetupBuilder& setEffectStrategyParameters(json &test_strategy_config)
+        ExperimentSetupBuilder& setEffectStrategyParameters(json &effect_strategy_config)
         {
-            setup.esp_conf = test_strategy_config;
+            setup.esp_conf = effect_strategy_config;
             return *this;
         }
 

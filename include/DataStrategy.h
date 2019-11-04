@@ -130,26 +130,39 @@ namespace sam {
     class LinearModelStrategy : public DataStrategy {
 
     public:
+        
+        struct Parameters {
+            DataModel name{DataModel::LinearModel};
+            
+            double mean{0};
+            arma::Row<double> means;
+            
+            double var{0};
+            arma::Row<double> vars;
+            
+            double stddev{0};
+            arma::Row<double> stddevs;
+            
+            double cov{0};
+            arma::Row<double> covs;
+            arma::Mat<double> sigma;
+            
+            Parameters() = default;
+        };
 
-        LinearModelStrategy() {
-            
-            
+        LinearModelStrategy() { };
+        
+        LinearModelStrategy(const Parameters p) : params(p) {
+            mdist = mvrandom::mvnorm_distribution<>(params.means.t(), params.sigma);
         };
         
         LinearModelStrategy(ExperimentSetup &setup) {
-            mdist = mvrandom::mvnorm_distribution<>(setup.means().t(), setup.sigma());
+//            mdist = mvrandom::mvnorm_distribution<>(setup.means().t(), setup.sigma());
 
             
             // Just in case...
             
         }
-        
-        LinearModelStrategy(DataStrategyParameters dsp) {
-
-            params = dsp;
-
-            
-        };
         
         void
         genData(Experiment* experiment);
@@ -162,9 +175,51 @@ namespace sam {
         
     private:
         
+        Parameters params;
+        
         Distribution dist;
         MultivariateDistribution mdist;
     };
+
+
+            // JSON Parser for LinearModelStrategy::Parameters
+            inline
+            void to_json(json& j, const LinearModelStrategy::Parameters& p) {
+                j = json{
+                    {"_name", magic_enum::enum_name<DataStrategy::DataModel>(p.name)},
+                    {"means", arma::conv_to<std::vector<double>>::from(p.means)},
+                    {"stddevs", arma::conv_to<std::vector<double>>::from(p.stddevs)},
+                    {"covs", arma::conv_to<std::vector<double>>::from(p.covs)}
+//                    {"sigma", arma::conv_to<std::vector<std::vector<double>>>::from(p.sigma)}
+                };
+            }
+        
+            inline
+            void from_json(const json& j, LinearModelStrategy::Parameters& p) {
+                
+                // Using a helper template function to handle the optional and throw if necessary.
+                p.name = get_enum_value_from_json<DataStrategy::DataModel>("_name", j);
+                
+                // Size of the means vector is going to be used as a reference
+                p.means = arma::conv_to<arma::Row<double>>::from(j.at("means").get<std::vector<double>>());
+                int n = p.means.n_elem;
+                
+                auto v = get_expr_setup_params<double>(j.at("vars"), n);
+                p.vars = arma::conv_to<arma::Row<double>>::from(std::get<0>(v));
+
+                auto sd = get_expr_setup_params<double>(j.at("stddevs"), n);
+                p.stddevs = arma::conv_to<arma::Row<double>>::from(std::get<0>(sd));
+
+                auto cv = get_expr_setup_params<double>(j.at("covs"), n * (n - 1) / 2);
+                p.covs = arma::conv_to<arma::Row<double>>::from(std::get<0>(cv));
+
+                p.sigma = constructCovMatrix(p.vars, p.covs, n);
+              
+            }
+
+
+    //=================================================================================//
+
 
     /**
      A Data Strategy for constructing a general
@@ -199,7 +254,11 @@ namespace sam {
         genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
         
     private:
-        
+        //! A function for computing the latent variable
+        //! This is rather new and I still need to implement it. It's going to
+        //! use std::function, it's basically more efficient and less verbose
+        //! Strategy Pattern ;P
+        void latent_function();
     };
 
     /**
