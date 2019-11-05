@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.12)
-project(SAMpp)
+
+project(SAMpp
+        LANGUAGES CXX
+        VERSION 0.1.0.0)
+
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAP)
 
 option(ENABLE_TESTS "Enable tests" OFF)
 
@@ -33,7 +38,7 @@ file(GLOB SOURCES "src/*.cpp")
 add_library(sam STATIC ${INCLUDES} ${SOURCES})
 target_link_libraries(sam mvrandom)
 
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAP)
+
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
                                     ${BOOST_INCLUDE_DIRS}
                                     ${ARMADILLO_INCLUDE_DIRS}
