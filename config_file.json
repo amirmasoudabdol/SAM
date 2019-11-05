@@ -60,6 +60,9 @@
         "output_path": "../outputs/",
         "output_prefix": "",
         "progress": false,
+        "save_pubs": true,
+        "save_sims": false,
+        "save_stats": true,
         "verbose": true
     }
 }
