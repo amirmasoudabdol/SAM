@@ -23,10 +23,11 @@ find_package(Armadillo REQUIRED)
 find_package(LAPACK)
 find_package(BLAS)
 
+set(NLOHMANN_JSON_LIBRARIES "nlohmann_json::nlohmann_json")
+
 find_library(MLPACK mlpack)
 
 include_directories(include)
-include_directories(test/include)
 include_directories(${MVRANDOM_INCLUDE_DIRS})
 include_directories(${MLPACK_SRCS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
@@ -36,7 +37,11 @@ file(GLOB INCLUDES "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
 
 add_library(sam STATIC ${INCLUDES} ${SOURCES})
-target_link_libraries(sam mvrandom)
+target_link_libraries(sam mvrandom
+                            ${ARMADILLO_LIBRARIES}
+                            ${BOOST_LIBRARIES}
+                            ${MLPACK}
+                            ${NLOHMANN_JSON_LIBRARIES})
 
 
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
@@ -47,7 +52,11 @@ set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
 # Setup Tests
 if (${ENABLE_TESTS})
 
+    include(CTest)
+
     enable_testing()
+
+    include_directories(test/include)
     file(GLOB TESTSOURCES "test/src/*.cpp")
 
     #Run through each source
