@@ -23,7 +23,8 @@ namespace sam {
     enum class DecisionMethod {
         HonestDecisionMaker,
         PatientDecisionMaker,
-        ImpatientDecisionMaker
+        ImpatientDecisionMaker,
+        NoDecision
     };
 
 
@@ -350,6 +351,22 @@ namespace sam {
         virtual void afterhackDecision(Experiment &experiment) override {};
         virtual void finalDecision(Experiment &experiment) override {};
 
+    };
+
+    class NoDecision : public DecisionStrategy {
+        
+    public:
+        
+        NoDecision() { };
+        
+        bool isStillHacking() override { return true; };
+        
+        virtual NoDecision& verdict(Experiment &experiment, DecisionStage stage) override { return *this; };
+        
+        virtual void initDecision(Experiment &experiment) override {};
+        virtual void intermediateDecision(Experiment &experiment) override {};
+        virtual void afterhackDecision(Experiment &experiment) override {};
+        virtual void finalDecision(Experiment &experiment) override {};
     };
 
 }

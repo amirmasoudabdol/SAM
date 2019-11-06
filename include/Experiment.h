@@ -41,7 +41,7 @@ namespace sam {
         std::shared_ptr<DataStrategy> data_strategy;
         std::shared_ptr<TestStrategy> test_strategy;
         std::shared_ptr<EffectStrategy> effect_strategy;
-
+        
         arma::Row<int> nobs;
         arma::Row<double> means;
         arma::Row<double> vars;
@@ -138,6 +138,14 @@ namespace sam {
          populate the `measurements` based on `setup`'s parameters.
          */
         void generateData();
+        
+        
+        /**
+         Run different pre-processing steps before passing the data to the Researcher.
+         
+         @note `pre_processing_steps` lists the available steps and their order.
+         */
+        void preProcessData();
         
         
         /**
