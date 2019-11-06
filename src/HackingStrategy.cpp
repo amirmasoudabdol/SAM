@@ -163,14 +163,14 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     
     int res = 0;
     
-    for (auto &d : params.multipliers) {
+    for (auto d : params.multipliers) {
         
         for (int t = 0; t < params.n_attempts &&
                         t < params.max_attempts &&
                         res != 1
                         ; t++) {
             
-            res = removeOutliers(experiment, params.num, d);
+            res = this->removeOutliers(experiment, params.num, d);
             
             experiment->calculateStatistics();
             experiment->calculateEffects();
@@ -182,16 +182,16 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             
         }
     }
-    std::cout << std::endl;
     
 }
 
 
-int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const int &d) {
+int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int n, const double d) {
+
     int g = 0;     // Only to access the means, vars
     
     int res = 0;
-    
+        
     arma::rowvec standaraized;
     
     // Removing outliers only from the original groups, see #104
@@ -210,20 +210,13 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int &n, const
 
         
         standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
-        
-        // Finding the outliers
-        arma::uvec inx = arma::find(standaraized > d);
                 
-        // TODO: I think this can be rewritten nicer
-        for (int i = inx.size() - 1;
-             i >= 0 && (abs((int)inx.size() - n) <= i) && row.size() > params.min_observations ;
-             i--)
-        {
-            row.shed_col(inx[i]);
-            
-            // Shifting the index back
-            inx = inx - 1;
-        }
+        // Finding the outliers
+        arma::uvec inx = arma::find(standaraized > d, n, "first");
+                
+        // TODO: Check for minmum observations and cut before that
+        // I'm still finalizing the OutliersRemovel
+        row.shed_cols(inx);
         
         g++;
     }

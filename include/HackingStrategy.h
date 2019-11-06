@@ -180,6 +180,9 @@ namespace sam {
     class SDOutlierRemoval : public HackingStrategy {
     public:
         
+        
+        /// Parameters of Outliers Removal Strategy
+        /// 
         struct Parameters {
             HackingMethod name = HackingMethod::SDOutlierRemoval;
             std::string level = "dv";
@@ -218,7 +221,7 @@ namespace sam {
         
     private:
 
-        int removeOutliers(Experiment *experiment, const int &n, const int &d);
+        int removeOutliers(Experiment *experiment, const int n, const double d);
         
     };
     
