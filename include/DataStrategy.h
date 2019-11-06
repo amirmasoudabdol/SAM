@@ -67,8 +67,6 @@ namespace sam {
 
         static std::unique_ptr<DataStrategy> build(json &data_strategy_config);
         
-        static std::unique_ptr<DataStrategy> build(ExperimentSetup &setup);
-        
         /**
          Pure deconstructor of the DataStrategy abstract class.
          */

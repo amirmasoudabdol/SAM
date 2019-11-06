@@ -41,7 +41,6 @@
                     "level": "dv",
                     "max_attempts": 10,
                     "min_observations": 20,
-                    "mode": "Recursive",
                     "multipliers": [
                         1
                     ],
@@ -58,14 +57,13 @@
                 "_name": "SDOutlierRemoval",
                 "level": "dv",
                 "max_attempts": 1000,
-                "min_observations": 1000,
-                "mode": "Recursive",
+                "min_observations": 10,
                 "multipliers": [
-                    1
+                    0.5
                 ],
                 "n_attempts": 1000,
                 "num": 1000,
-                "order": "max first"
+                "order": "random"
             }
         ]
     },

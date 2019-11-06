@@ -186,10 +186,9 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
 }
 
 
-int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int n, const double d) {
+int SDOutlierRemoval::removeOutliers(Experiment *experiment,
+                                     const int n, const double d) {
 
-    int g = 0;     // Only to access the means, vars
-    
     int res = 0;
         
     arma::rowvec standaraized;
@@ -201,7 +200,8 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int n, const 
         
         // At least one row has less than `min_observations`
         if (row.size() <= params.min_observations)
-            res = 1;
+            return 1;     // Unsuccessful retrun, nothing has removed.
+                          // TODO: I can improve this with `std::optional`
             
         
         // This trick makes finding the largest outlier easier. I'll see if I can find a better way
@@ -214,11 +214,11 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment, const int n, const 
         // Finding the outliers
         arma::uvec inx = arma::find(standaraized > d, n, "first");
                 
-        // TODO: Check for minmum observations and cut before that
-        // I'm still finalizing the OutliersRemovel
+        if ((row.n_elem - inx.n_elem) <= params.min_observations)
+            inx = inx.head(row.n_elem - params.min_observations);
+        
         row.shed_cols(inx);
         
-        g++;
     }
     
     // Success Code

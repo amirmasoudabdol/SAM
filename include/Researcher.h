@@ -160,6 +160,7 @@ namespace sam {
             
             researcher.decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision_strategy"]);
             
+            // Parsing Hacking Strategies
             researcher.is_hacker = config["ResearcherParameters"]["is_phacker"];
             if (researcher.is_hacker){
                 for (auto &set : config["ResearcherParameters"]["hacking_strategies"]) {
