@@ -62,6 +62,9 @@ namespace sam {
         std::unique_ptr<DecisionStrategy> decision_strategy;
         std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
         
+        bool is_pre_processing {false};
+        std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
+        
         bool is_hacker = false;
         bool isHacker() const {
             return is_hacker;
@@ -73,6 +76,8 @@ namespace sam {
         void hack();
 
         void prepareResearch();
+            void preProcessData();
+        
         void performResearch();
         void publishResearch();
         void research();
@@ -167,6 +172,15 @@ namespace sam {
                         .push_back(HackingStrategy::build(item));
                         
                     }
+                    
+                }
+            }
+
+            researcher.is_pre_processing = config["ResearcherParameters"]["is_pre_processing"];
+            if (researcher.is_pre_processing){
+                for (auto &item : config["ResearcherParameters"]["pre_processing_methods"]) {
+                        
+                    researcher.pre_processing_methods.push_back(HackingStrategy::build(item));
                     
                 }
             }

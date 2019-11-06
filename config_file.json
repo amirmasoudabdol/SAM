@@ -51,7 +51,23 @@
                 }
             ]
         ],
-        "is_phacker": true
+        "is_phacker": false,
+        "is_pre_processing": true,
+        "pre_processing_methods": [
+            {
+                "_name": "SDOutlierRemoval",
+                "level": "dv",
+                "max_attempts": 1000,
+                "min_observations": 1000,
+                "mode": "Recursive",
+                "multipliers": [
+                    1
+                ],
+                "n_attempts": 1000,
+                "num": 1000,
+                "order": "max first"
+            }
+        ]
     },
     "SimulationParameters": {
         "debug": false,

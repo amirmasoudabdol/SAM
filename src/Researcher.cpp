@@ -44,6 +44,29 @@ void Researcher::hack() {
     }
 }
 
+
+/**
+ Iterating over the registrated methods and run them on the current experiment.
+ 
+ @note This has a very similar implemention to the `hack()` but it doesn't perform any of
+ the secondary checks.
+ 
+ @bug I think there is a possible bug here, since pre-processing methods can be much more aggresive,
+ they can cause some issues when it comes to calculating statistics.
+ */
+void Researcher::preProcessData() {
+    
+    static NoDecision no_decision = NoDecision();
+    
+    experiment->calculateStatistics();
+    
+    for (auto &method : pre_processing_methods){
+        
+        method->perform(experiment, &no_decision);
+        
+    }
+}
+
 /**
  Prepares the research by cleaning up the memeory, randomizing the
  ExperimentSetup parameters, allocating data and finally generating the data
@@ -61,6 +84,10 @@ void Researcher::prepareResearch() {
     
     // Generating data using the dataStrategy
     experiment->generateData();
+    
+    // Performing the Pre-processing if any
+    if (is_pre_processing)
+        preProcessData();
 }
 
 /**
