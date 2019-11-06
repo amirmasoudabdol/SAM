@@ -61,7 +61,8 @@ namespace sam {
          */
         enum class TestMethod {
             TTest,           ///< T-test
-            FTest            ///< F-test
+            FTest,            ///< F-test
+            YuenTTest
         };
         
         /**
@@ -152,6 +153,55 @@ namespace sam {
         }
 
 
+    class YuenTTest : public TestStrategy {
+        
+    public:
+        
+        struct Parameters {
+            TestMethod name = TestMethod::YuenTTest;
+            TestSide side = TestSide::TwoSided;
+            double alpha = 0.95;
+            double trim = 0.20;
+        };
+        
+        Parameters params;
+        
+        YuenTTest(const Parameters &p) : params{p} {};
+        
+        // Cleanup
+        YuenTTest(TestStrategyParameters tsp) {
+//            params = tsp;
+        };
+        
+        void run(Experiment* experiment);
+        
+    };
+    
+    
+        // JSON Parser for ImpatientDecisionStrategy::Parameters
+        inline
+        void to_json(json& j, const YuenTTest::Parameters& p) {
+            j = json{
+                {"_name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
+                {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
+                {"alpha", p.alpha},
+                {"trim", p.trim}
+            };
+        }
+    
+        inline
+        void from_json(const json& j, YuenTTest::Parameters& p) {
+            
+            // Using a helper template function to handle the optional and throw if necessary.
+            p.name = get_enum_value_from_json<TestStrategy::TestMethod>("_name", j);
+            
+            p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
+            
+            j.at("alpha").get_to(p.alpha);
+            j.at("trim").get_to(p.trim);
+        }
+
+
     // Stats Utility
 
     double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestStrategy::TestSide side);
@@ -176,6 +226,26 @@ namespace sam {
 
     TestStrategy::TestResult
     f_test(double sd1, double sd2, double N1, double N2, double alpha);
+
+    TestStrategy::TestResult yuen_t_test(
+                                         const arma::Row<double> &x,
+                                         const arma::Row<double> &y,
+                                         double alpha,
+                                         const TestStrategy::TestSide side,
+                                         double trim,
+                                         double mu);
+
+    double win_var(const arma::Row<double> &x,
+                 const double trim);
+
+    std::pair<double, double>
+            win_cor_cov(const arma::Row<double> &x,
+                       const arma::Row<double> &y,
+                       const double trim);
+
+    arma::Row<double> win_val(const arma::Row<double> &x,
+                              double trim);
+
 
 }
 
