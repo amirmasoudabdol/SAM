@@ -67,7 +67,7 @@ namespace sam {
         
         //! Indicates the pre-registered outcome in the case where the
         //! Researcher prefers the PreRegisteredOutcome
-        int pre_registered_group = 0;
+        int pre_registered_group = 1;
         
         //! List of selected Submission by the researcher.
         std::vector<Submission> submissions_pool;
