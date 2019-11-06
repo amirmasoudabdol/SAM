@@ -18,9 +18,10 @@
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
-            "_name": "TTest",
+            "_name": "YuenTTest",
             "alpha": 0.05,
-            "side": "TwoSided"
+            "side": "TwoSided",
+            "trim": 0.2
         }
     },
     "JournalParameters": {

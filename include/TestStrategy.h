@@ -227,13 +227,29 @@ namespace sam {
     TestStrategy::TestResult
     f_test(double sd1, double sd2, double N1, double N2, double alpha);
 
-    TestStrategy::TestResult yuen_t_test(
+    TestStrategy::TestResult yuen_t_test_one_sample(
+                                         const arma::Row<double> &x,
+                                         double alpha,
+                                         const TestStrategy::TestSide side,
+                                         double trim,
+                                         double mu);
+
+
+    TestStrategy::TestResult yuen_t_test_paired(
                                          const arma::Row<double> &x,
                                          const arma::Row<double> &y,
                                          double alpha,
                                          const TestStrategy::TestSide side,
                                          double trim,
                                          double mu);
+
+    TestStrategy::TestResult yuen_t_test_two_samples(
+                                     const arma::Row<double> &x,
+                                     const arma::Row<double> &y,
+                                     double alpha,
+                                     const TestStrategy::TestSide side,
+                                     double trim,
+                                     double mu);
 
     double win_var(const arma::Row<double> &x,
                  const double trim);
@@ -245,6 +261,9 @@ namespace sam {
 
     arma::Row<double> win_val(const arma::Row<double> &x,
                               double trim);
+
+    double trim_mean(const arma::Row<double> &x,
+                     double trim);
 
 
 }

@@ -43,7 +43,10 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
 void TTest::run(Experiment* experiment) {
     
     // The first group is always the control group
-    for (int i{experiment->setup.nd()}, d{0}; i < experiment->measurements.size(); ++i, d%=experiment->setup.nd()) {
+    for (int i{experiment->setup.nd()}, d{0};
+         i < experiment->measurements.size();
+         ++i, d%=experiment->setup.nd()) {
+        
         TestStrategy::TestResult res = two_samples_t_test_equal_sd(experiment->means[d],
                                                                    experiment->vars[d],
                                                                    experiment->measurements[d].size(),
@@ -60,17 +63,30 @@ void TTest::run(Experiment* experiment) {
 void YuenTTest::run(Experiment* experiment) {
     
     // The first group is always the control group
+    
+    static TestStrategy::TestResult res;
+    
     for (int i{experiment->setup.nd()}, d{0};
          i < experiment->measurements.size();
          ++i, d%=experiment->setup.nd()) {
         
-        TestStrategy::TestResult res = yuen_t_test(experiment->measurements[d],
-                                                   experiment->measurements[i],
-                                                   params.alpha,
-                                                   params.side,
-                                                   params.trim,
-                                                   0);
-        
+//        if (experiment->measurements[d].size() == experiment->measurements[i].size()){
+//
+//            res = yuen_t_test_paired(experiment->measurements[d],
+//                                       experiment->measurements[i],
+//                                       params.alpha,
+//                                       params.side,
+//                                       params.trim,
+//                                       0);
+//        }else{
+            res = yuen_t_test_two_samples(experiment->measurements[d],
+                                        experiment->measurements[i],
+                                        params.alpha,
+                                        params.side,
+                                        params.trim,
+                                        0);
+//        }
+                
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
         experiment->sigs[i] = res.sig;
@@ -232,6 +248,19 @@ namespace sam {
                 sig = false;
             }
         }
+
+        if (side == TestStrategy::TestSide::Greater){
+            // Mean  > M
+            p = cdf(dist, t_stat);
+            if(p > alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }
+            else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
         
         if (side == TestStrategy::TestSide::Less){
             // Mean  < M
@@ -246,18 +275,6 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Greater){
-            // Mean  > M
-            p = cdf(dist, t_stat);
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
-                sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
-                sig = false;
-            }
-        }
         
         return TestStrategy::TestResult(t_stat, p, 1, sig);
     }
@@ -487,7 +504,7 @@ namespace sam {
     }
 
 
-    TestStrategy::TestResult yuen_t_test(
+    TestStrategy::TestResult yuen_t_test_paired(
                                          const arma::Row<double> &x,
                                          const arma::Row<double> &y,
                                          double alpha,
@@ -496,7 +513,7 @@ namespace sam {
                                          double mu = 0){
         // Do some check whether it's possible to run the test
         
-        bool sig{false};
+        bool sig {false};
         
         int h1 = x.n_elem - 2 * static_cast<int>(floor(trim * x.n_elem));
         
@@ -507,13 +524,12 @@ namespace sam {
         double q3 = (x.n_elem - 1) * std::get<1>(win_cor_cov(x, y, trim));
         
         unsigned df = h1 - 1;
-        std::cout << (q1 + q2 - 2 * q3) / (h1 * (h1 - 1)) << std::endl;
+
         double se = sqrt( (q1 + q2 - 2 * q3) / (h1 * (h1 - 1)) );
         
-        double dif = arma::mean(win_val(x, trim)) - arma::mean(win_val(y, trim));
+        double dif = trim_mean(x, trim) - trim_mean(y, trim);
         
         double t_stat = (dif - mu) / se;
-        
         
         students_t dist(df);
         double p = 0;
@@ -523,20 +539,6 @@ namespace sam {
 //            p = 2 * (1 - cdf(dist, fabs(t_stat)));
             p = 2 * cdf(complement(dist, fabs(t_stat)));
             if(p < alpha / 2){
-                // Alternative "NOT REJECTED"
-                sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
-                sig = false;
-            }
-        }
-        
-        if (side == TestStrategy::TestSide::Less){
-            // Mean  < M
-//            p = cdf(dist, t_stat);
-            p = cdf(dist, t_stat);
-            if(p > alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }
@@ -560,8 +562,92 @@ namespace sam {
             }
         }
         
+        if (side == TestStrategy::TestSide::Less){
+            // Mean  < M
+//            p = cdf(dist, t_stat);
+            p = cdf(dist, t_stat);
+            if(p > alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }
+            else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
+        
+        
         return TestStrategy::TestResult(t_stat, p, 1, sig);
     }
+
+
+    TestStrategy::TestResult yuen_t_test_two_samples(
+                                                  const arma::Row<double> &x,
+                                                  const arma::Row<double> &y,
+                                                  double alpha,
+                                                  const TestStrategy::TestSide side,
+                                                  double trim,
+                                                  double mu){
+        
+        double sig {false};
+
+        int h1 = x.n_elem - 2 * floor(trim * x.n_elem);
+        int h2 = y.n_elem - 2 * floor(trim * y.n_elem);
+
+        double d1 = (x.n_elem - 1) * win_var(x, trim) / (h1 * (h1 - 1));
+        double d2 = (y.n_elem - 1) * win_var(y, trim) / (h2 * (h2 - 1));
+
+        unsigned df = pow(d1+d2, 2) / (pow(d1, 2) / (h1-1) + pow(d2, 2) / (h2-1));
+
+        double se = sqrt(d1+d2);
+
+        double dif = trim_mean(x, trim) - trim_mean(y, trim);
+
+        double t_stat = (dif - mu) / se;
+
+        students_t dist(df);
+        double p;
+        
+        if (side == TestStrategy::TestSide::TwoSided){
+            // Sample 1 Mean != Sample 2 Mean
+            p = 2 * cdf(complement(dist, fabs(t_stat)));
+            if(p < alpha / 2){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
+        
+        if (side == TestStrategy::TestSide::Greater){
+            // Sample 1 Mean <  Sample 2 Mean
+            p = cdf(dist, t_stat);
+            if(p< alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
+        
+        if (side == TestStrategy::TestSide::Less){
+            // Sample 1 Mean >  Sample 2 Mean
+            p = cdf(complement(dist, t_stat));
+            if(p< alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }else{
+                sig = false;
+                // Alternative "REJECTED"
+            }
+        }
+
+        return TestStrategy::TestResult(t_stat, p, 1, sig);
+
+    }
+
 
     double win_var(const arma::Row<double> &x,
                    const double trim) {
@@ -573,16 +659,14 @@ namespace sam {
                    const arma::Row<double> &y,
                    const double trim){
                 
-        arma::rowvec xvec = win_val(x, trim);
-        arma::rowvec yvec = win_val(y, trim);
-        
-        arma::mat wcor = arma::cor(xvec, yvec);
-        std::cout << wcor << std::endl;
-        double vwcor = wcor.at(0, 0);
+        arma::rowvec xvec { win_val(x, trim) };
+        arma::rowvec yvec { win_val(y, trim) };
 
-        // FIXME: I don't understand why this doesn't compile!
-//        arma::mat wcov = arma::cov(xvec, yvec);
-        double vwcov = arma::mean((xvec - arma::mean(xvec)) * (yvec - arma::mean(yvec)).t());
+        arma::mat wcor { arma::cor(xvec, yvec) };
+        double vwcor { wcor.at(0, 0) };
+
+        arma::mat wcov { arma::cov(xvec, yvec) };
+        double vwcov { wcov.at(0, 0)};
 
         return std::make_pair(vwcor, vwcov);
         
@@ -590,16 +674,26 @@ namespace sam {
 
     arma::Row<double> win_val(const arma::Row<double> &x,
                               double trim){
+
+        arma::rowvec y { arma::sort(x) };
         
-        arma::rowvec y = arma::sort(x);
-        
-        int ibot = static_cast<int>(floor(trim * x.n_elem)) + 1;
+        int ibot = floor(trim * x.n_elem) + 1;
         int itop = x.n_elem - ibot + 1;
         
-        double xbot = y.at(ibot - 1);
-        double xtop = y.at(itop - 1);
+        double xbot { y.at(ibot - 1) };
+        double xtop { y.at(itop - 1) };
+
+        return arma::clamp(x, xbot, xtop);
+    }
+
+    double trim_mean(const arma::Row<double> &x,
+                     double trim){
+        arma::rowvec y { arma::sort(x) };
         
-        return arma::clamp(y, xbot, xtop);
+        int ibot = floor(trim * x.n_elem) + 1;
+        int itop = x.n_elem - ibot + 1;
+        
+        return arma::mean(y.subvec(ibot - 1, itop - 1));
     }
 
 }
