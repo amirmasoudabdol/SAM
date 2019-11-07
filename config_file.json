@@ -18,10 +18,9 @@
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
-            "_name": "YuenTTest",
+            "_name": "MannWhitneyWilcoxon",
             "alpha": 0.05,
-            "side": "TwoSided",
-            "trim": 0.2
+            "side": "TwoSided"
         }
     },
     "JournalParameters": {

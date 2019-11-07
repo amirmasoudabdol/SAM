@@ -10,6 +10,7 @@
 #include <utils/magic_enum.hpp>
 #include <boost/math/distributions/students_t.hpp>
 #include <boost/math/distributions/fisher_f.hpp>
+#include <boost/math/distributions/normal.hpp>
 
 #include "Experiment.h"
 #include "TestStrategy.h"
@@ -34,7 +35,11 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
         auto params = test_strategy_config.get<YuenTTest::Parameters>();
         return std::make_unique<YuenTTest>(params);
         
-    } else{
+    } else if (test_strategy_config["_name"] == "MannWhitneyWilcoxon"){
+        auto params = test_strategy_config.get<MannWhitneyWilcoxon::Parameters>();
+        return std::make_unique<MannWhitneyWilcoxon>(params);
+    }
+    else{
         throw std::invalid_argument("Unknown Test Strategy.");
     }
     
@@ -42,18 +47,20 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
 
 void TTest::run(Experiment* experiment) {
     
+    static TestStrategy::TestResult res;
+    
     // The first group is always the control group
     for (int i{experiment->setup.nd()}, d{0};
          i < experiment->measurements.size();
          ++i, d%=experiment->setup.nd()) {
         
-        TestStrategy::TestResult res = two_samples_t_test_equal_sd(experiment->means[d],
-                                                                   experiment->vars[d],
-                                                                   experiment->measurements[d].size(),
-                                                                   experiment->means[i],
-                                                                   experiment->stddev[i],
-                                                                   experiment->measurements[i].size(),
-                                                                   params.alpha, params.side);
+        res = two_samples_t_test_equal_sd(experiment->means[d],
+                                           experiment->vars[d],
+                                           experiment->measurements[d].size(),
+                                           experiment->means[i],
+                                           experiment->stddev[i],
+                                           experiment->measurements[i].size(),
+                                           params.alpha, params.side);
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
         experiment->sigs[i] = res.sig;
@@ -85,6 +92,38 @@ void YuenTTest::run(Experiment* experiment) {
                                         params.side,
                                         params.trim,
                                         0);
+//        }
+                
+        experiment->statistics[i] = res.statistic;
+        experiment->pvalues[i] = res.pvalue;
+        experiment->sigs[i] = res.sig;
+    }
+}
+
+
+void MannWhitneyWilcoxon::run(Experiment* experiment) {
+    
+    // The first group is always the control group
+    
+    static TestStrategy::TestResult res;
+    
+    for (int i{experiment->setup.nd()}, d{0};
+         i < experiment->measurements.size();
+         ++i, d%=experiment->setup.nd()) {
+        
+//        if (experiment->measurements[d].size() == experiment->measurements[i].size()){
+//
+//            res = yuen_t_test_paired(experiment->measurements[d],
+//                                       experiment->measurements[i],
+//                                       params.alpha,
+//                                       params.side,
+//                                       params.trim,
+//                                       0);
+//        }else{
+            res = mann_whitney_wilcoxon_u_test(experiment->measurements[d],
+                                                experiment->measurements[i],
+                                                params.alpha,
+                                                params.side);
 //        }
                 
         experiment->statistics[i] = res.statistic;
@@ -686,6 +725,9 @@ namespace sam {
         return arma::clamp(x, xbot, xtop);
     }
 
+
+    // TODO: this can be an extention to arma, something like I did for nlohmann::json
+    // I should basically put it into arma's namespace
     double trim_mean(const arma::Row<double> &x,
                      double trim){
         arma::rowvec y { arma::sort(x) };
@@ -694,6 +736,38 @@ namespace sam {
         int itop = x.n_elem - ibot + 1;
         
         return arma::mean(y.subvec(ibot - 1, itop - 1));
+    }
+
+    TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
+                                                          const arma::Row<double> &y,
+                                                          double alpha,
+                                                          const TestStrategy::TestSide side){
+        
+        arma::rowvec z = arma::join_rows(x, y);
+        arma::uvec ranks = arma::sort_index(z);
+    
+        double sum_rank_x = arma::accu(ranks.subvec(0, x.n_elem));
+        
+        double u1 = sum_rank_x - (x.n_elem * (x.n_elem + 1)) / 2;
+        
+        double u2 = x.n_elem * y.n_elem - u1;
+
+        double u_max = std::max(u1, u2);
+        
+        double u_min = x.n_elem * y.n_elem - u_max;
+        
+        long nx_ny = x.n_elem * y.n_elem;
+
+        double mu_u = nx_ny / 2.0;
+        double var_u = nx_ny * (x.n_elem + y.n_elem + 1) / 12.0;
+
+        double z_val = (u_min - mu_u) / sqrt(var_u);
+
+        normal standard_normal(0, 1);
+
+        double pval = 2 * cdf(standard_normal,z_val);
+        
+        return TestStrategy::TestResult(z_val, pval, 1, 0);
     }
 
 }

@@ -62,7 +62,8 @@ namespace sam {
         enum class TestMethod {
             TTest,           ///< T-test
             FTest,            ///< F-test
-            YuenTTest
+            YuenTTest,
+            MannWhitneyWilcoxon
         };
         
         /**
@@ -202,6 +203,52 @@ namespace sam {
         }
 
 
+    class MannWhitneyWilcoxon : public TestStrategy {
+            
+        public:
+            
+            struct Parameters {
+                TestMethod name = TestMethod::MannWhitneyWilcoxon;
+                TestSide side = TestSide::TwoSided;
+                double alpha = 0.95;
+            };
+            
+            Parameters params;
+            
+            MannWhitneyWilcoxon(const Parameters &p) : params{p} {};
+            
+            // Cleanup
+            MannWhitneyWilcoxon(TestStrategyParameters tsp) {
+    //            params = tsp;
+            };
+            
+            void run(Experiment* experiment);
+            
+        };
+        
+        
+            // JSON Parser for ImpatientDecisionStrategy::Parameters
+            inline
+            void to_json(json& j, const MannWhitneyWilcoxon::Parameters& p) {
+                j = json{
+                    {"_name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
+                    {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
+                    {"alpha", p.alpha}
+                };
+            }
+        
+            inline
+            void from_json(const json& j, MannWhitneyWilcoxon::Parameters& p) {
+                
+                // Using a helper template function to handle the optional and throw if necessary.
+                p.name = get_enum_value_from_json<TestStrategy::TestMethod>("_name", j);
+                
+                p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
+                
+                j.at("alpha").get_to(p.alpha);
+            }
+
+
     // Stats Utility
 
     double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestStrategy::TestSide side);
@@ -264,6 +311,12 @@ namespace sam {
 
     double trim_mean(const arma::Row<double> &x,
                      double trim);
+
+
+    TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
+                                                          const arma::Row<double> &y,
+                                                          double alpha,
+                                                          const TestStrategy::TestSide side);
 
 
 }
