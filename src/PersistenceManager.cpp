@@ -131,9 +131,9 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
         // Note: At the moment I don't write the control group data back to the file
         row["simid"] = std::to_string(sid);
         row["inx"] = std::to_string(++counter);
-        for (int g{experiment->setup.nd()}, d{0};
+        for (int g{experiment->setup.ng()}, d{0};
                 g < experiment->setup.ng();
-                ++g, d%=experiment->setup.ng()) {
+                ++g, d%=experiment->setup.nd()) {
             row["group"] = std::to_string(g);
             row["dv"] = std::to_string(d);
             row["nobs"] = std::to_string(experiment->nobs[g]);
