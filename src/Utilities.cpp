@@ -3,8 +3,6 @@
 //
 
 #include "Utilities.h"
-// #include "utils/mvnorm_distribution.h"
-// #include "utils/truncated_mvnorm_distribution.h"
 #include "mvrandom.hpp"
 #include "utils/truncated_normal_distribution.h"
 

@@ -116,6 +116,7 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
             cols.push_back("inx");
             cols.push_back("group");
             cols.push_back("dv");
+            cols.push_back("onobs");
             cols.push_back("nobs");
             cols.push_back("means");
             cols.push_back("vars");
@@ -136,6 +137,7 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
                 ++g, d%=experiment->setup.nd()) {
             row["group"] = std::to_string(g);
             row["dv"] = std::to_string(d);
+            row["onobs"] = std::to_string(experiment->setup.nobs()[g]);
             row["nobs"] = std::to_string(experiment->nobs[g]);
             row["means"] = std::to_string(experiment->means[g]);
             row["vars"] = std::to_string(experiment->vars[g]);
