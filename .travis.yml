@@ -32,7 +32,6 @@ addons:
   homebrew:
     taps: nlohmann/json
     packages:
-      - ccache
       - boost
       - nlohmann_json
       - armadillo
@@ -50,12 +49,7 @@ before_install:
   - sudo apt-get -y install libarmadillo-dev
 
   # Configure ccache and use it also under Linux with clang and clang++
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH="/usr/lib/ccache/bin/:$PATH"; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then if [ "$CC" == "clang" ]; then sudo ln -s ../../bin/ccache /usr/lib/ccache/clang; fi; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then if [ "$CC" == "clang" ]; then export CFLAGS="-Qunused-arguments"; fi; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then if [ "$CXX" == "clang++" ]; then sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++; fi; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then if [ "$CXX" == "clang++" ]; then export CXXFLAGS="-Qunused-arguments"; fi; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH="/usr/local/bin:$PATH"; fi
 
   # Print some more system information after installing all build tools
   - echo "-------------------- BEGIN SYSTEM INFORMATION --------------------"
@@ -82,5 +76,5 @@ before_script:
   # - cmake -DBUILD_TESTING:BOOL=ON -DCMAKE_BUILD_TYPE=${TRAVIS_BUILD_TYPE} ..
 
 script:
-  - make
+  - cmake --build .
   # - make test
