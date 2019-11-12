@@ -88,7 +88,7 @@ Experiment::Experiment(json &experiment_config) {
     this->test_strategy = TestStrategy::build(experiment_config["test_strategy"]);
     
     // Setup Effect Strategy
-    this->effect_strategy = EffectStrategy::build(experiment_config["effect_estimators"]);
+    this->effect_strategy = EffectStrategy::build(experiment_config["effect_strategy"]);
     
     // Initializing the memory
     initResources(setup.ng());

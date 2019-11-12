@@ -10,10 +10,9 @@
             "stddevs": 1,
             "vars": 1
         },
-        "effect_estimators": {
+        "effect_strategy": {
             "_name": "CohensD"
         },
-        "effect_strategy": null,
         "n_conditions": 2,
         "n_dep_vars": 1,
         "n_obs": 25,
