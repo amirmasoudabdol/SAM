@@ -30,8 +30,7 @@ env:
 # See: https://docs.travis-ci.com/user/installing-dependencies/#installing-packages-on-os-x
 addons:
   homebrew:
-    taps:
-      - nlohmann/json
+    taps: nlohmann/json
     packages:
       - ccache
       - boost
@@ -40,6 +39,16 @@ addons:
     update: true
 
 before_install:
+
+  # Configuring Linux Env
+  - sudo apt-get -q update
+  - sudo apt-get -y install libopenblas-dev
+  - sudo apt-get -y install liblapack-dev
+  - sudo apt-get -y install libarpack2-dev
+  - sudo apt-get -y install libsuperlu-dev
+  - sudo apt-get -y install libboost-all-dev
+  - sudo apt-get -y install libarmadillo-dev
+
   # Configure ccache and use it also under Linux with clang and clang++
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH="/usr/lib/ccache/bin/:$PATH"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then if [ "$CC" == "clang" ]; then sudo ln -s ../../bin/ccache /usr/lib/ccache/clang; fi; fi
