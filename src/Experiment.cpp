@@ -98,4 +98,11 @@ Experiment::Experiment(json &experiment_config) {
 
 void Experiment::randomize() {
     setup.randomize_parameters();
+    
+    // Increasing the experiment id
+    expr_uuid++;
+    
+    /// TODO: This can have a better implementation
+    /// For instance, I can have a function, like `get_id`, that yeild a UUID and everytime I
+    /// ask for an ID here. This will be more robust as I can handle parallelization better.
 }

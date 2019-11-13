@@ -66,7 +66,9 @@ namespace sam {
          * @return     A boolean indicating whether the Submission
          * should be accepted or not.
          */
-        virtual bool review(Submission& s) = 0 ;
+        virtual bool review(const Submission& s) = 0;
+        
+//        virtual bool review(Experiment &expr);
     };
 
     /**
@@ -104,22 +106,9 @@ namespace sam {
         
         Parameters params;
         
-        SignificantSelection(const Parameters &p) : params{p} {
-            
-        };
+        SignificantSelection(const Parameters &p) : params{p} { };
         
-        SignificantSelection(double alpha = 0.05, double pub_bias = 0.5, int side = 1) {
-
-            
-            params.name = SelectionMethod::SignificantSelection;
-            params.alpha = alpha;
-            params.pub_bias = pub_bias;
-            params.side = side;
-            
-            name = params.name;
-        };
-        
-        bool review(Submission& s);
+        bool review(const Submission &s) override;
 
     };
     
@@ -167,16 +156,9 @@ namespace sam {
         
         Parameters params;
         
-        RandomSelection() {
-            
-            params.name = SelectionMethod::RandomSelection;
-            
-            name = params.name;
-        }
-        
         RandomSelection(const Parameters &p) : params{p} {};
         
-        bool review(Submission& s);
+        bool review(const Submission &s) override;
     };
     
     inline
@@ -211,7 +193,7 @@ namespace sam {
         FreeSelection() {};
         
         /// Accepting anything!
-        bool review(Submission &s) { return true; };
+        bool review(const Submission &s) override { return true; };
         
     };
 

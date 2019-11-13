@@ -32,6 +32,9 @@ namespace sam {
     class Experiment {
         
     public:
+        
+        int expr_uuid{0};
+        
         ExperimentSetup setup;
         
         /// @note: While I'm still confused about these, but I'm starting to feel that it
@@ -169,6 +172,8 @@ namespace sam {
         //! Indicates if any hacking routine has been applied on the experiment
         bool is_hacked = false;
         std::vector<int> hacks_history;
+        
+        bool is_published = false;
         
     };
     

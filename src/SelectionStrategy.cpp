@@ -40,7 +40,7 @@ std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_stra
  @param s A reference to the Submission
  @return a boolean indicating whether the Submission is accepted or not.
  */
-bool SignificantSelection::review(Submission &s) {
+bool SignificantSelection::review(const Submission &s) {
 
     // Only accepting +/- results if journal cares about it, side != 0
     if (s.side != params.side && params.side != 0){
@@ -63,7 +63,7 @@ bool SignificantSelection::review(Submission &s) {
  @param s corresponding submission
  @return a boolean indicating whether the Submission is accpeted or not.
  */
-bool RandomSelection::review(Submission &s) {
+bool RandomSelection::review(const Submission &s) {
     if (Random::get<bool>(0.5)) {
         return true;
     }else{

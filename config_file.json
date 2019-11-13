@@ -74,6 +74,7 @@
         "output_prefix": "",
         "progress": false,
         "save_pubs": true,
+        "save_rejected": true,
         "save_sims": false,
         "save_stats": true,
         "verbose": true

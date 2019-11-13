@@ -23,20 +23,29 @@ namespace sam {
 
     using namespace std;
 
+    /// Perisistence Manager class, dealing with CSV Read/Write.
+    /// This is designed such that I can hopefully replace the CSV with
+    /// something more efficient later.
     class PersistenceManager {
-        
+
     public:
         class Writer;
         class Reader;
         
         ~PersistenceManager() { };
     };
-    
+
+    /// Declration of the Writer class
     class PersistenceManager::Writer {
-        
+
+        //! Filename
         string file_name_;
+
+        //! Keeps track of number of records corrently written into the file
         int counter {0};
-        
+
+        //! A unique pointer to a new writer object,
+        //! TODO: Check if there is a better way of implementing this
         std::unique_ptr<csv::Writer> writer;
         
         bool is_header_set = false;
@@ -45,8 +54,10 @@ namespace sam {
         
         Writer() = default;
         ~Writer();
-        
+
         Writer(const string &filename);
+
+        void write(const Submission &sub);
         
         /// Write a list of submission records to a file, or a database
         /// @param subs A reference to Submission container
@@ -55,8 +66,7 @@ namespace sam {
         /// Write each groups' data to a file, or a database
         /// @param data A reference to the Experiment->measurements
         void write(std::vector<arma::Row<double>> &data, int sid = 0);
-        
-        
+
         /// Write part of the Experiment to a file, or a database
         /// @param A constance reference to the Experiment
         void write(Experiment* experiment, string_view mode, int sid);

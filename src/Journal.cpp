@@ -29,7 +29,7 @@ Journal::Journal(json& journal_config){
 //    this->selection_strategy = SelectionStrategy::build(ssp);
 //}
 
-bool Journal::review(Submission s) {
+bool Journal::review(const Submission &s) {
 
     bool decision = this->selection_strategy->review(s);
     
@@ -41,9 +41,10 @@ bool Journal::review(Submission s) {
     return decision;
 }
 
-void Journal::accept(Submission s) {
+void Journal::accept(const Submission &s) {
     
     publications_list.push_back(s);
+    n_accepted++;
     
     if (publications_list.size() == max_pubs){
         still_accepting = false;
@@ -51,7 +52,10 @@ void Journal::accept(Submission s) {
     
 }
 
-void Journal::reject(Submission &s) {
+void Journal::reject(const Submission &s) {
+    
+    rejection_list.push_back(s);
+    n_rejected++;
     
 }
 
