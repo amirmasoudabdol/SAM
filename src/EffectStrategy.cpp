@@ -19,7 +19,7 @@ std::unique_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_confi
     }else if (effect_strategy_config["_name"] == "HedgesG"){
         return std::make_unique<HedgesG>();
     }else{
-        throw std::invalid_argument("Uknown effect size estimator.\n");
+        throw std::invalid_argument("Uknown effect size strategy.\n");
     }
 }
 

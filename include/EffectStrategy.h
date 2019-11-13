@@ -19,7 +19,7 @@ namespace sam {
     using json = nlohmann::json;
 
     /**
-     * \brief      Abstract class for Effect Size Estimators
+     * \brief      Abstract class for Effect Size Strategy
      * 
      * 
      */

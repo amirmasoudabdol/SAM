@@ -1,6 +1,6 @@
 language: cpp
 
-dist: xenial
+dist: bionic
 sudo: required
 osx_image: xcode11.2
 
@@ -35,17 +35,18 @@ addons:
       - nlohmann_json
       - armadillo
     update: true
+  apt:
+    packages:
+      - libopenblas-dev
+      - liblapack-dev
+      - libarpack2-dev
+      - libsuperlu-dev
+      - libboost-all-dev
+      - libarmadillo-dev
+      - nlohmann-json-dev
+    update: true
 
 before_install:
-
-  # Configuring Linux Env
-  # - sudo apt-get -q update
-  # - sudo apt-get -y install libopenblas-dev
-  # - sudo apt-get -y install liblapack-dev
-  # - sudo apt-get -y install libarpack2-dev
-  # - sudo apt-get -y install libsuperlu-dev
-  # - sudo apt-get -y install libboost-all-dev
-  # - sudo apt-get -y install libarmadillo-dev
 
   # Configure Homebrew
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH="/usr/local/bin:$PATH"; fi
