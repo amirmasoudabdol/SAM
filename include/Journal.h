@@ -28,8 +28,13 @@ namespace sam {
         
     public:
         double max_pubs;
-        //! List of all acceptec Submissions, i.e., publications
+        //! List of all accepted Submissions, i.e., publications
         std::vector<Submission> publications_list;
+        int n_accepted{0};
+        
+        //! Rejected Submissions
+        std::vector<Submission> rejection_list;
+        int n_rejected{0};
         
         //! Journal's Selection Model/Strategy
         std::unique_ptr<SelectionStrategy> selection_strategy;
@@ -37,18 +42,18 @@ namespace sam {
         //! Effect Estimator
         std::unique_ptr<MetaAnalysis> meta_analysis_strategy;
         
-        struct JournalParameters {
+        struct Parameters {
             std::string name;
             int max_pubs;
         };
 
-        JournalParameters params;
+        Parameters params;
         
         Journal() = default;
 
         explicit Journal(json& journal_config);
         
-        explicit Journal(const JournalParameters &jp);
+        explicit Journal(const Parameters &jp);
         
         // Journal(JournalParameters &jp, SelectionStrategy::SelectionStrategyParameters &ssp);
 
@@ -70,7 +75,7 @@ namespace sam {
          * @return     A boolean indicating whether the Submission should
          * be accpeted or not.
          */
-        bool review(Submission s);
+        bool review(const Submission &s);
 
         /**
          * @brief      Accept the Submission by adding it to the
@@ -78,14 +83,14 @@ namespace sam {
          *
          * @param[in]  s     A copy of the Submission
          */
-        void accept(Submission s);
+        void accept(const Submission &s);
 
         /**
          * @brief      Rejecting the Submission!
          *
          * @param[in]  s     A reference to the Submission
          */
-        void reject(Submission &s);
+        void reject(const Submission &s);
 
         bool isStillAccepting() const {
             return still_accepting;
@@ -108,6 +113,7 @@ namespace sam {
          */
         void clear() {
             publications_list.clear();
+            rejection_list.clear();
             still_accepting = true;
         }
         
