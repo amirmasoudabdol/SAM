@@ -155,7 +155,8 @@ if(distributionName == #name_) return make_distribution_impl<std::name_<type_>>(
 
 #undef generate_distribution_factory
 
-    throw std::runtime_error{&"Unknown distribution " [ distributionName]};
+//    throw std::runtime_error{&"Unknown distribution " [ distributionName]};
+    throw std::runtime_error{"Unknown distribution"};
 }
 
 
