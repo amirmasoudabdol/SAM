@@ -135,7 +135,7 @@ if(distributionName == #name_) return make_distribution_impl<std::name_<type_>>(
     // Continious Distributions
     generate_distribution_factory(uniform_int_distribution, int, "a", "b");
     generate_distribution_factory(uniform_real_distribution, double, "a", "b");
-    generate_distribution_factory(binomial_distribution, double, "p", "t");
+    generate_distribution_factory(binomial_distribution, int, "p", "t");
     generate_distribution_factory(exponential_distribution, double, "lambda");
     generate_distribution_factory(gamma_distribution, double, "alpha", "beta");
     generate_distribution_factory(weibull_distribution, double, "a", "b");
