@@ -324,9 +324,10 @@ namespace sam {
                 
                 for (int i = 0; i < m_strategies; i++) {
                     // TEST ME!
-                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, hacking_strategies_pool.size() - 1));
+                    // TODO: I'm not sure if I want to have this builder
+//                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, hacking_strategies_pool.size() - 1));
                     // I think this should use the index from the list! Test it!
-                    group.push_back(HackingStrategy::build(h_method.value()));
+//                    group.push_back(HackingStrategy::build(h_method.value()));
                 }
                 
             }
@@ -354,8 +355,8 @@ namespace sam {
             for (auto &group : researcher.hacking_strategies) {
                 
                 for (int i = 0; i < m_method; i++) {
-                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, enum_count<HackingMethod>() - 1));
-                    group.push_back(HackingStrategy::build(h_method.value()));
+//                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, enum_count<HackingMethod>() - 1));
+//                    group.push_back(HackingStrategy::build(h_method.value()));
                 }
                 
             }
