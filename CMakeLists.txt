@@ -17,6 +17,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/../mvrandom ${PROJECT_SOURCE_DIR}/../mvrandom/build)
 
+find_package(Threads REQUIRED)
+
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Armadillo REQUIRED)
@@ -41,7 +43,8 @@ target_link_libraries(sam mvrandom
                             ${ARMADILLO_LIBRARIES}
                             ${BOOST_LIBRARIES}
                             ${MLPACK}
-                            ${NLOHMANN_JSON_LIBRARIES})
+                            ${NLOHMANN_JSON_LIBRARIES}
+                            Threads::Threads)
 
 
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
