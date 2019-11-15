@@ -131,7 +131,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     // Add new observations to first `ng` group. I don't iterate over everything in
     // the `measurements` because they might actually be the results of `pooling`.
     // Therefore, I only add new values to original groups.
-    std::for_each_n(experiment->measurements.begin(), experiment->setup.ng(),
+    std::for_each(experiment->measurements.begin(), experiment->measurements.end(),
                       [&new_observations, &i](arma::Row<double> &row) {
                           row.insert_cols(row.size(), new_observations[i++]);
                       });
