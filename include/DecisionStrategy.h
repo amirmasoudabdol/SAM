@@ -27,6 +27,14 @@ namespace sam {
         NoDecision
     };
 
+    NLOHMANN_JSON_SERIALIZE_ENUM( DecisionMethod, {
+         {DecisionMethod::HonestDecisionMaker, "HonestDecisionMaker"},
+         {DecisionMethod::PatientDecisionMaker, "PatientDecisionMaker"},
+         {DecisionMethod::ImpatientDecisionMaker, "ImpatientDecisionMaker"},
+         {DecisionMethod::NoDecision, "NoDecision"},
+    })
+
+
 
     /**
      DecisionStage enum indicates on what stages of the _research_ the
@@ -39,6 +47,13 @@ namespace sam {
         DoneHacking,
         Final
     };
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( DecisionStage, {
+        {DecisionStage::Initial, "Initial"},
+        {DecisionStage::WhileHacking, "WhileHacking"},
+        {DecisionStage::DoneHacking, "DoneHacking"},
+        {DecisionStage::Final, "Final"},
+    })
 
     /**
      An enum class representing different prefeneces when it comse
@@ -55,6 +70,16 @@ namespace sam {
         MaxEffect,
         MinPvalueMaxEffect
     };
+
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( DecisionPreference, {
+        {DecisionPreference::PreRegisteredOutcome, "PreRegisteredOutcome"},
+        {DecisionPreference::MinSigPvalue, "MinSigPvalue"},
+        {DecisionPreference::MinPvalue, "MinPvalue"},
+        {DecisionPreference::MaxSigEffect, "MaxSigEffect"},
+        {DecisionPreference::MaxEffect, "MaxEffect"},
+        {DecisionPreference::MinPvalueMaxEffect, "MinPvalueMaxEffect"},
+    })
 
     /**
      @brief Abstract class for different decision strategies.
@@ -268,8 +293,8 @@ namespace sam {
         inline
         void to_json(json& j, const ImpatientDecisionMaker::Parameters& p) {
             j = json{
-                {"_name", magic_enum::enum_name<DecisionMethod>(p.name)},
-                {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
+                {"_name", p.name},
+                {"preference", p.preference}
             };
         }
     
@@ -277,9 +302,9 @@ namespace sam {
         void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = get_enum_value_from_json<DecisionMethod>("_name", j);
+            p.name = j.at("_name");
             
-            p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
+            p.preference = j.at("preference");
         }
 
 
@@ -309,8 +334,8 @@ namespace sam {
     inline
     void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<DecisionMethod>(p.name)},
-            {"preference", magic_enum::enum_name<DecisionPreference>(p.preference)}
+            {"_name", p.name},
+            {"preference", p.preference}
         };
     }
 
@@ -318,9 +343,9 @@ namespace sam {
     void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
 
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<DecisionMethod>("_name", j);
+        p.name = j.at("_name");
 
-        p.preference = get_enum_value_from_json<DecisionPreference>("preference", j);
+        p.preference = j.at("preference");
     }
 
     class HonestDecisionMaker : public DecisionStrategy {

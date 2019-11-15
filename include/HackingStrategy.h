@@ -152,7 +152,7 @@ namespace sam {
     inline
     void to_json(json& j, const OptionalStopping::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<HackingMethod>(p.name)},
+            {"_name", p.name},
             {"level", p.level},
             {"num", p.num},
             {"n_attempts", p.n_attempts},
@@ -164,7 +164,7 @@ namespace sam {
     void from_json(const json& j, OptionalStopping::Parameters& p) {
         
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<HackingMethod>("_name", j);
+        p.name = j.at("_name");
         
         j.at("level").get_to(p.level);
         j.at("num").get_to(p.num);
@@ -229,7 +229,7 @@ namespace sam {
     inline
     void to_json(json& j, const SDOutlierRemoval::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<HackingMethod>(p.name)},
+            {"_name", p.name},
             {"level", p.level},
             {"order", p.order},
             {"num", p.num},
@@ -244,7 +244,7 @@ namespace sam {
     void from_json(const json& j, SDOutlierRemoval::Parameters& p) {
         
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<HackingMethod>("_name", j);
+        p.name = j.at("_name");
         
         j.at("level").get_to(p.level);
         j.at("order").get_to(p.order);
@@ -289,7 +289,7 @@ namespace sam {
     inline
     void to_json(json& j, const GroupPooling::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<HackingMethod>(p.name)},
+            {"_name", p.name},
             {"nums", p.nums}
         };
     }
@@ -298,7 +298,7 @@ namespace sam {
     void from_json(const json& j, GroupPooling::Parameters& p) {
         
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<HackingMethod>("_name", j);
+        p.name = j.at("_name");
         
         j.at("nums").get_to(p.nums);
     }
@@ -331,7 +331,7 @@ namespace sam {
     inline
     void to_json(json& j, const ConditionDropping::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<HackingMethod>(p.name)}
+            {"_name", p.name}
         };
     }
     
@@ -339,7 +339,7 @@ namespace sam {
     void from_json(const json& j, ConditionDropping::Parameters& p) {
         
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = get_enum_value_from_json<HackingMethod>("_name", j);
+        p.name = j.at("_name");
     }
 
     //class QuestionableRounding : public HackingStrategy {

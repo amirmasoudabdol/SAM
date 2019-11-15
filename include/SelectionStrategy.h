@@ -9,7 +9,7 @@
 #include "Submission.h"
 
 #include "nlohmann/json.hpp"
-#include "utils/magic_enum.hpp"
+//#include "utils/magic_enum.hpp"
 #include "effolkronium/random.hpp"
 
 namespace sam {
@@ -22,6 +22,11 @@ namespace sam {
         SignificantSelection,
         RandomSelection
     };
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( SelectionMethod, {
+        {SelectionMethod::SignificantSelection, "SignificantSelection"},
+        {SelectionMethod::RandomSelection, "RandomSelection"},
+    })
 
     /**
      @brief Abstract class for Journal's selection strategies.
@@ -116,7 +121,7 @@ namespace sam {
     inline
     void to_json(json& j, const SignificantSelection::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<SelectionMethod>(p.name)},
+            {"_name", p.name},
             {"alpha", p.alpha},
             {"pub_bias", p.pub_bias},
             {"side", p.side}
@@ -126,11 +131,7 @@ namespace sam {
     inline
     void from_json(const json& j, SignificantSelection::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<SelectionMethod>(j["_name"].get<std::string>());
-        if (name.has_value())
-            p.name = name.value();
-        else
-            throw std::invalid_argument("Unknown selection method.");
+        j.at("_name").get_to(p.name);
         
         j.at("alpha").get_to(p.alpha);
         j.at("pub_bias").get_to(p.pub_bias);
@@ -164,18 +165,14 @@ namespace sam {
     inline
     void to_json(json& j, const RandomSelection::Parameters& p) {
         j = json{
-            {"_name", magic_enum::enum_name<SelectionMethod>(p.name)}
+            {"_name", p.name}
         };
     }
     
     inline
     void from_json(const json& j, RandomSelection::Parameters& p) {
         
-        auto name = magic_enum::enum_cast<SelectionMethod>(j["_name"].get<std::string>());
-        if (name.has_value())
-            p.name = name.value();
-        else
-            throw std::invalid_argument("Unknown selection method.");
+        j.at("_name").get_to(p.name);
     }
     
 

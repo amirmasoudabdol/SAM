@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <tuple>
 
-#include <utils/magic_enum.hpp>
+//#include <utils/magic_enum.hpp>
 
 #include "ExperimentSetup.h"
 #include "Utilities.h"
@@ -19,7 +19,7 @@ ExperimentSetupBuilder ExperimentSetup::create() {
 
 ExperimentSetup::ExperimentSetup(json& config) {
     
-    using namespace magic_enum;
+//    using namespace magic_enum;
     
     ds_name = config["data_strategy"]["_name"];
     

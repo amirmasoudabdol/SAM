@@ -6,7 +6,7 @@
 #define SAMPP_HACKINGSTRATEGYTYPES_H
 
 #include "nlohmann/json.hpp"
-#include "utils/magic_enum.hpp"
+//#include "utils/magic_enum.hpp"
 
 //using namespace magic_enum;
 
@@ -23,6 +23,15 @@ namespace sam {
         NoHack = -1
     };
 
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( HackingMethod, {
+        {HackingMethod::OptionalStopping, "OptionalStopping"},
+        {HackingMethod::SDOutlierRemoval, "SDOutlierRemoval"},
+        {HackingMethod::GroupPooling, "GroupPooling"},
+        {HackingMethod::ConditionDropping, "ConditionDropping"},
+        {HackingMethod::NoHack, "NoHack"},
+    })
+
     /*
      HackingStage indicates the stage where the hacking is being performed on
      the Experiment. Each method will be assigned a value, and Researcher can
@@ -34,6 +43,13 @@ namespace sam {
         DataProcessing,
         Reporting
     };
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( HackingStage, {
+        {HackingStage::Setup, "Setup"},
+        {HackingStage::DataCollection, "DataCollection"},
+        {HackingStage::DataProcessing, "DataProcessing"},
+        {HackingStage::Reporting, "Reporting"},
+    })
 
     struct HackingStrategyParameters {
         

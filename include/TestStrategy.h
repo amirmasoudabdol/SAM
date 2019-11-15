@@ -16,7 +16,7 @@
 #include "Utilities.h"
 
 #include "nlohmann/json.hpp"
-#include "utils/magic_enum.hpp"
+//#include "utils/magic_enum.hpp"
 
 namespace sam {
 
@@ -136,8 +136,8 @@ namespace sam {
         inline
         void to_json(json& j, const TTest::Parameters& p) {
             j = json{
-                {"_name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
-                {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
+                {"_name", p.name},
+                {"side", p.side},
                 {"alpha", p.alpha}
             };
         }
@@ -146,9 +146,9 @@ namespace sam {
         void from_json(const json& j, TTest::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = get_enum_value_from_json<TestStrategy::TestMethod>("_name", j);
+            p.name = j.at("_name");
             
-            p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
+            p.side = j.at("side");
             
             j.at("alpha").get_to(p.alpha);
         }
@@ -183,8 +183,8 @@ namespace sam {
         inline
         void to_json(json& j, const YuenTTest::Parameters& p) {
             j = json{
-                {"_name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
-                {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
+                {"_name", p.name},
+                {"side", p.side},
                 {"alpha", p.alpha},
                 {"trim", p.trim}
             };
@@ -194,9 +194,9 @@ namespace sam {
         void from_json(const json& j, YuenTTest::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = get_enum_value_from_json<TestStrategy::TestMethod>("_name", j);
+            p.name = j.at("_name");
             
-            p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
+            p.side = j.at("side");
             
             j.at("alpha").get_to(p.alpha);
             j.at("trim").get_to(p.trim);
@@ -231,8 +231,8 @@ namespace sam {
             inline
             void to_json(json& j, const MannWhitneyWilcoxon::Parameters& p) {
                 j = json{
-                    {"_name", magic_enum::enum_name<TestStrategy::TestMethod>(p.name)},
-                    {"side", magic_enum::enum_name<TestStrategy::TestSide>(p.side)},
+                    {"_name", p.name},
+                    {"side", p.side},
                     {"alpha", p.alpha}
                 };
             }
@@ -241,12 +241,26 @@ namespace sam {
             void from_json(const json& j, MannWhitneyWilcoxon::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-                p.name = get_enum_value_from_json<TestStrategy::TestMethod>("_name", j);
+                p.name = j.at("_name");
                 
-                p.side = get_enum_value_from_json<TestStrategy::TestSide>("side", j);
+                p.side = j.at("side");
                 
                 j.at("alpha").get_to(p.alpha);
             }
+
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestMethod, {
+        {TestStrategy::TestMethod::TTest, "TTest"},
+        {TestStrategy::TestMethod::FTest, "FTest"},
+        {TestStrategy::TestMethod::YuenTTest, "YuenTTest"},
+        {TestStrategy::TestMethod::MannWhitneyWilcoxon, "MannWhitneyWilcoxon"},
+    })
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestSide, {
+        {TestStrategy::TestSide::Less, "Less"},
+        {TestStrategy::TestSide::Greater, "Greater"},
+        {TestStrategy::TestSide::TwoSided, "TwoSided"},
+    })
 
 
     // Stats Utility

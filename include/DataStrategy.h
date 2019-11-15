@@ -184,7 +184,7 @@ namespace sam {
             inline
             void to_json(json& j, const LinearModelStrategy::Parameters& p) {
                 j = json{
-                    {"_name", magic_enum::enum_name<DataStrategy::DataModel>(p.name)},
+                    {"_name", p.name},
                     {"means", arma::conv_to<std::vector<double>>::from(p.means)},
                     {"stddevs", arma::conv_to<std::vector<double>>::from(p.stddevs)},
                     {"covs", arma::conv_to<std::vector<double>>::from(p.covs)}
@@ -196,7 +196,8 @@ namespace sam {
             void from_json(const json& j, LinearModelStrategy::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-                p.name = get_enum_value_from_json<DataStrategy::DataModel>("_name", j);
+//                p.name = get_enum_value_from_json<DataStrategy::DataModel>("_name", j);
+                p.name = j.at("_name");
                 
                 // Size of the means vector is going to be used as a reference
                 p.means = arma::conv_to<arma::Row<double>>::from(j.at("means").get<std::vector<double>>());
@@ -356,7 +357,8 @@ namespace sam {
             inline
             void to_json(json& j, const GRMDataStrategy::Parameters& p) {
                 j = json{
-                    {"_name", magic_enum::enum_name<DataStrategy::DataModel>(p.name)},
+//                    {"_name", magic_enum::enum_name<DataStrategy::DataModel>(p.name)},
+                    {"_name", p.name},
                     {"n_items", p.n_items},
                     {"n_categories", p.n_categories},
                     {"difficulties", arma::conv_to<std::vector<double>>::from(p.difficulties)},
@@ -368,7 +370,7 @@ namespace sam {
             void from_json(const json& j, GRMDataStrategy::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-                p.name = get_enum_value_from_json<DataStrategy::DataModel>("_name", j);
+                p.name = j.at("_name");
                 
                 j.at("n_items").get_to(p.n_items);
                 j.at("n_categories").get_to(p.n_categories);
@@ -377,6 +379,13 @@ namespace sam {
                 p.abilities = arma::conv_to<arma::Row<double>>::from(j.at("abilities").get<std::vector<double>>());
                 
             }
+
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( DataStrategy::DataModel, {
+        {DataStrategy::DataModel::LinearModel, "LinearModel"},
+        {DataStrategy::DataModel::LatentModel, "LatentModel"},
+        {DataStrategy::DataModel::GradedResponseModel, "GradedResponseModel"},
+    })
 
 }
 
