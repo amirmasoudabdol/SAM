@@ -7,12 +7,12 @@
 
 #include "MetaAnalysis.h"
 
-#include <mlpack/core.hpp>
-#include <mlpack/methods/neighbor_search/neighbor_search.hpp>
-#include <mlpack/methods/linear_regression/linear_regression.hpp>
+// #include <mlpack/core.hpp>
+// #include <mlpack/methods/neighbor_search/neighbor_search.hpp>
+// #include <mlpack/methods/linear_regression/linear_regression.hpp>
 
-using namespace mlpack;
-using namespace mlpack::regression;
+// using namespace mlpack;
+// using namespace mlpack::regression;
 
 using namespace std;
 using namespace sam;
@@ -47,9 +47,10 @@ arma::vec FixedEffectEstimator::estimate(vector<Submission> publications) {
         weights(i) = 1. / publications[i].var;
     }
 
-    LinearRegression fixed_model(predictors, responses, weights);
+    // LinearRegression fixed_model(predictors, responses, weights);
 
-    return fixed_model.Parameters();
+    // return fixed_model.Parameters();
+    return arma::vec();
     
 }
 
@@ -69,8 +70,9 @@ arma::vec RandomEffectEstimator::estimate(vector<Submission> publications) {
         weights(i) = 1. / publications[i].var;
     }
     
-    LinearRegression random_model(predictors, responses, weights);
+    // LinearRegression random_model(predictors, responses, weights);
     
-    return random_model.Parameters();
+    // return random_model.Parameters();
+    return arma::vec();
     
 }

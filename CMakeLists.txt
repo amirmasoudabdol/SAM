@@ -25,7 +25,7 @@ find_package(BLAS)
 
 set(NLOHMANN_JSON_LIBRARIES "nlohmann_json::nlohmann_json")
 
-find_library(MLPACK mlpack)
+# find_library(MLPACK mlpack)
 
 include_directories(include)
 include_directories(${MVRANDOM_INCLUDE_DIRS})
