@@ -183,5 +183,5 @@ if(distributionName == #name_) return make_multivariate_distribution_impl<name_<
 
 #undef generate_multivariate_distribution_factory
 
-    throw std::runtime_error{&"Unknown distribution " [ distributionName]};
+    throw std::runtime_error{"Unknown distribution "};
 }
