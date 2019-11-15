@@ -24,7 +24,7 @@ using Random = effolkronium::random_static;
 namespace sam {
 
     using json = nlohmann::json;
-    using namespace magic_enum;
+//    using namespace magic_enum;
     
     class ResearcherBuilder;
 
