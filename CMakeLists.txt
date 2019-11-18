@@ -13,6 +13,9 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 #set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 #set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
+# This is a hack and I need to manage it
+set(CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
+
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/../mvrandom ${PROJECT_SOURCE_DIR}/../mvrandom/build)
