@@ -22,7 +22,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/../mvrandom ${PROJECT_SOURCE_DIR}/../mvra
 
 find_package(Threads REQUIRED)
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework program_options REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(LAPACK)
@@ -49,6 +49,13 @@ target_link_libraries(sam mvrandom
                             ${NLOHMANN_JSON_LIBRARIES}
                             Threads::Threads)
 
+# Building the SAMrun
+add_executable(SAMrun main.cpp)
+target_link_libraries(SAMrun sam ${ARMADILLO_LIBRARIES}
+                                  ${Boost_LIBRARIES}
+                                  ${MLPACK}
+                                  ${NLOHMANN_JSON_LIBRARIES}
+                                  Threads::Threads)
 
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
                                     ${BOOST_INCLUDE_DIRS}
