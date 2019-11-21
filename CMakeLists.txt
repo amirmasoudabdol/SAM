@@ -7,6 +7,7 @@ project(SAMpp
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAP)
 
 option(ENABLE_TESTS "Enable tests" OFF)
+option(BUILD_SAM_EXEC "Build SAMrun executable" ON)
 
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -50,12 +51,14 @@ target_link_libraries(sam mvrandom
                             Threads::Threads)
 
 # Building the SAMrun
-add_executable(SAMrun main.cpp)
-target_link_libraries(SAMrun sam ${ARMADILLO_LIBRARIES}
-                                  ${Boost_LIBRARIES}
-                                  ${MLPACK}
-                                  ${NLOHMANN_JSON_LIBRARIES}
-                                  Threads::Threads)
+if (${BUILD_SAM_EXEC})
+    add_executable(SAMrun main.cpp)
+    target_link_libraries(SAMrun sam ${ARMADILLO_LIBRARIES}
+                                      ${Boost_LIBRARIES}
+                                      ${MLPACK}
+                                      ${NLOHMANN_JSON_LIBRARIES}
+                                      Threads::Threads)
+endif()
 
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
                                     ${BOOST_INCLUDE_DIRS}
