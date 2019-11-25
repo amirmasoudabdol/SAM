@@ -23,7 +23,7 @@ void GRMDataStrategy::genData(Experiment* experiment) {
         experiment->measurements[g].resize(experiment->setup.nobs()[g]);
         
         thetas.resize(params.n_items, params.n_categories);
-        thetas.imbue([&]() { return Random::get<std::normal_distribution<>>(params.abilities[g] ); });
+        thetas.imbue([&]() { return Random::get<std::normal_distribution<>>(params.abilities[g], 1.0); });
         
         experiment->measurements[g].imbue(
             [&](){
