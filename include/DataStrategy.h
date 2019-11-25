@@ -346,8 +346,8 @@ namespace sam {
         arma::mat betas;
         arma::mat thetas;
         
-        arma::umat generate_binary_scores(const double theta);
-        double generate_sum_of_scores(const double theta);
+        arma::umat generate_binary_scores();
+        double generate_sum_of_scores();
         
         
     };
