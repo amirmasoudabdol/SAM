@@ -55,12 +55,14 @@ void TTest::run(Experiment* experiment) {
          ++i, d%=experiment->setup.nd()) {
         
         res = two_samples_t_test_equal_sd(experiment->means[d],
-                                           experiment->vars[d],
+                                           experiment->stddev[d],
                                            experiment->measurements[d].size(),
                                            experiment->means[i],
                                            experiment->stddev[i],
                                            experiment->measurements[i].size(),
                                            params.alpha, params.side);
+        
+        
         experiment->statistics[i] = res.statistic;
         experiment->pvalues[i] = res.pvalue;
         experiment->sigs[i] = res.sig;
