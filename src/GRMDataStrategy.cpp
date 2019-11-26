@@ -14,41 +14,36 @@ using namespace sam;
 
 void GRMDataStrategy::genData(Experiment* experiment) {
     
-    sumofscores.resize(experiment->setup.nobs().max(), 1);
-    
-    betas.resize(params.n_items, params.n_categories);
     betas.imbue([&]() { return Random::get(difficulties_dist); });
     
     for (int g{0}; g < experiment->setup.ng(); ++g) {
         experiment->measurements[g].resize(experiment->setup.nobs()[g]);
         
-        thetas.resize(params.n_items, params.n_categories);
-        thetas.imbue([&]() { return Random::get<std::normal_distribution<>>(params.abilities[g], 1.0); });
+        do {
+            experiment->measurements[g].imbue(
+                [&](){
+                    // TODO: Replace this with `abilities_dist` for better performance
+                    // TODO: It is probably a good idea to make a function out of this, and return arma::Row<>
+                    auto theta = Random::get<std::normal_distribution<>>(params.abilities[g], 1.0);
+                    return generate_sum_of_scores(theta);
+                });
         
-        experiment->measurements[g].imbue(
-            [&](){
-                // TODO: Replace this with `abilities_dist` for better performance
-                // TODO: It is probably a good idea to make a function out of this, and return arma::Row<>
-//                auto theta = Random::get<std::normal_distribution<>>(params.abilities[g]);
-                return generate_sum_of_scores();
-            });
+        // This makes sure that I don't have a totally unanswered test
+        } while (!arma::any(experiment->measurements[g]));
+        
     }
     
 }
 
 // Generate persons j answer to all items
-arma::umat GRMDataStrategy::generate_binary_scores() {
-//    double theta_j = Random::get(abilities_dist);
-        
-    poa = (arma::exp(thetas - betas)) / (1 + arma::exp(thetas - betas));
+double GRMDataStrategy::generate_sum_of_scores(const double theta) {
+
+    poa = (arma::exp(theta - betas)) / (1 + arma::exp(theta - betas));
 
     urand.imbue([&]() {return Random::get(uniform_dist); });
     
-    return poa > urand;
-}
-
-double GRMDataStrategy::generate_sum_of_scores() {
-    responses = generate_binary_scores();
+    responses = poa > urand;
+            
     return arma::accu(responses);
 }
 
@@ -64,8 +59,8 @@ GRMDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_ne
         thetas.imbue([&]() { return Random::get<std::normal_distribution<>>(params.abilities[g] ); });
         
         new_values[g].imbue([&](){
-//            auto theta = Random::get<std::normal_distribution<>>(params.abilities[g]);
-            return generate_sum_of_scores();
+            auto theta = Random::get<std::normal_distribution<>>(params.abilities[g]);
+            return generate_sum_of_scores(theta);
         });
     }
     

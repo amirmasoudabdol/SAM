@@ -297,13 +297,13 @@ namespace sam {
             /// a mess with the `Parameters`. This works but I need some serious cleanup
             /// on the parameters.
             betas.resize(params.n_items, params.n_categories);
-            betas.imbue([&]() { return Random::get(difficulties_dist); });
+//            betas.imbue([&]() { return Random::get(difficulties_dist); });
 //            beta.each_row( [this](arma::vec &v) {v = Random::get(})
 
             poa.resize(params.n_items, params.n_categories);
             responses.resize(params.n_items, params.n_categories);
             urand.resize(params.n_items, params.n_categories);
-            scores.resize(params.n_items, 1);
+//            scores.resize(params.n_items, 1);
         };
 
 
@@ -337,17 +337,21 @@ namespace sam {
         Distribution uniform_dist = std::uniform_real_distribution<>{};
         
         arma::mat poa; // probablity of answering
-        arma::umat responses; // responses to items
-        arma::mat scores;
+        arma::umat responses; // responses to items, binary
+//        arma::mat scores;
         arma::mat sumofscores;
         
         arma::mat urand;
         
+        //! Item difficulties
         arma::mat betas;
+
+        //! Participants abilities
         arma::mat thetas;
         
-        arma::umat generate_binary_scores();
-        double generate_sum_of_scores();
+        // This can be implemented again if I need a direct access to item scores
+//        arma::umat generate_binary_scores(const double theta);
+        double generate_sum_of_scores(const double theta);
         
         
     };
