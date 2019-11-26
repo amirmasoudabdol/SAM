@@ -159,7 +159,8 @@ void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
-    if (FLAGS::VERBOSE) std::cout << "Outliers Removal...\n";
+    if (FLAGS::VERBOSE)
+        std::cout << ">>> Outliers Removal...\n";
     
     int res = 0;
     
@@ -182,6 +183,9 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             
         }
     }
+    
+    if (FLAGS::VERBOSE)
+        std::cout << ">>> Done Removing Outliers...\n";
     
 }
 

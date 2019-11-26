@@ -83,12 +83,20 @@ void Researcher::prepareResearch() {
     // Allocating memory
     experiment->initResources(experiment->setup.ng());
     
+    if (FLAGS::VERBOSE)
+        std::cout << ">>> Generating Data..." << std::endl;
+    
     // Generating data using the dataStrategy
     experiment->generateData();
     
     // Performing the Pre-processing if any
-    if (is_pre_processing)
+    if (is_pre_processing){
+        if (FLAGS::VERBOSE)
+            std::cout << ">>> Pre-Processing..." << std::endl;
+        
         preProcessData();
+    }
+        
 }
 
 /**
@@ -101,6 +109,9 @@ void Researcher::performResearch(){
     experiment->calculateStatistics();
     
     experiment->calculateEffects();
+    
+    if (FLAGS::VERBOSE)
+        std::cout << ">>> Running Test..." << std::endl;
     
     experiment->runTest();
 
