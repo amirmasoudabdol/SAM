@@ -51,16 +51,29 @@ void TTest::run(Experiment* experiment) {
     
     // The first group is always the control group
     for (int i{experiment->setup.nd()}, d{0};
-         i < experiment->measurements.size();
+         i < experiment->measurements.size();   // technically experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
-        res = two_samples_t_test_equal_sd(experiment->means[d],
-                                           experiment->stddev[d],
-                                           experiment->measurements[d].size(),
-                                           experiment->means[i],
-                                           experiment->stddev[i],
-                                           experiment->measurements[i].size(),
-                                           params.alpha, params.side);
+        // This is not perfect, basically I need to check the population `vars`
+//        if ((isgreater(experiment->stddev[d], experiment->stddev[i]) or isless(experiment->stddev[d], experiment->stddev[i]))){
+//
+//            res = two_samples_t_test_unequal_sd(experiment->means[d],
+//                                               experiment->stddev[d],
+//                                               experiment->measurements[d].size(),
+//                                               experiment->means[i],
+//                                               experiment->stddev[i],
+//                                               experiment->measurements[i].size(),
+//                                               params.alpha, params.side);
+//        }else {
+            // EQUAL SD
+            res = two_samples_t_test_equal_sd(experiment->means[d],
+                                               experiment->stddev[d],
+                                               experiment->measurements[d].size(),
+                                               experiment->means[i],
+                                               experiment->stddev[i],
+                                               experiment->measurements[i].size(),
+                                               params.alpha, params.side);
+//        }
         
         
         experiment->statistics[i] = res.statistic;
@@ -348,6 +361,14 @@ namespace sam {
         
         // Pooled variance and hence standard deviation:
         double sp = sqrt(((Sn1-1) * Sd1 * Sd1 + (Sn2-1) * Sd2 * Sd2) / df);
+        
+        // NOTE: I had to do this, I don't want my simulations fail.
+        // While this is not perfect, it allows me to handle an edge case
+        // SAM should not throw and should continue working.
+        if (!(isgreater(sp, 0) or isless(sp, 0))){
+            // Samples are almost equal and elements are constant
+            sp += std::numeric_limits<double>::epsilon();
+        }
         
         // t-statistic:
         double t_stat = (Sm1 - Sm2) / (sp * sqrt(1.0 / Sn1 + 1.0 / Sn2));
