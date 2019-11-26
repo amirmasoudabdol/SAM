@@ -14,7 +14,8 @@ using namespace sam;
 
 void GRMDataStrategy::genData(Experiment* experiment) {
     
-    betas.imbue([&]() { return Random::get(difficulties_dist); });
+    // TODO: This needs to be parameterized
+    betas.imbue([&]() { return Random::get<std::normal_distribution<>>(params.difficulties[0], 1.0); });
     
     for (int g{0}; g < experiment->setup.ng(); ++g) {
         experiment->measurements[g].resize(experiment->setup.nobs()[g]);
