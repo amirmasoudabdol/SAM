@@ -169,7 +169,7 @@ void runSimulation(json& simConfig){
     if (is_saving_pubs)
         pubswriter = std::make_unique<PersistenceManager::Writer>(pubsfilename);
     
-    if (is_saving_pubs)
+    if (is_saving_rejected)
         rejectedwriter = std::make_unique<PersistenceManager::Writer>(rejectedfilename);
     
     if (is_saving_stats)
