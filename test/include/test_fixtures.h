@@ -34,7 +34,7 @@ struct SampleResearch {
     int nsims = 1000;
 
     int nc = 2;
-    int nd = 3;
+    int nd = 1;
     int ni = 0;
     int ng = nc * nd;
 
@@ -51,13 +51,17 @@ struct SampleResearch {
     DataStrategy::DataStrategyParameters dsp;
     DataStrategy *ds;
     json d_s_conf = {
-        {"_name", "LinearModel"}
+        {"_name", "LinearModel"},
+        {"means", {0.0, 0.2}},
+        {"covs", 0.0},
+        {"vars", 0.1},
+        {"stddevs", 1.0}
     };
     
     TestStrategy *ts;
     json t_s_conf = {
         {"_name", "TTest"},
-        {"alpha", 0.5},
+        {"alpha", 0.05},
         {"side", "TwoSided"}
     };
 
@@ -124,9 +128,9 @@ struct SampleResearch {
                 .setNumDependentVariables(nd)
                 .setNumItems(ni)
                 .setNumObservations(nobs)
-                .setMeans(mean)
-                .setVariance(var)
-                .setCovariance(cov)
+//                .setMeans(mean)
+//                .setVariance(var)
+//                .setCovariance(cov)
                 .setDataStrategyParameters(d_s_conf)
                 .setTestStrategyParameters(t_s_conf)
                 .setEffectStrategyParameters(e_s_conf)
