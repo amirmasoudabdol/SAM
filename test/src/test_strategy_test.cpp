@@ -121,13 +121,79 @@ BOOST_AUTO_TEST_SUITE( t_test_functions )
             mean(b), stddev(b), b.size(),
             0.05, TestStrategy::TestSide::TwoSided, false);
         
-        std::cout << res;
-
         BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.001);
     }
 
 BOOST_AUTO_TEST_SUITE_END()
 
+
+BOOST_FIXTURE_TEST_SUITE ( yuen_t_test, SampleResearch )
+    
+    BOOST_AUTO_TEST_CASE( yuen_one_sample )
+    {
+        
+        ///     One sample Yuen test, trim=0.2
+        ///
+        ///     data:  x
+        ///     t = 24.479, df = 14, p-value = 6.839e-13
+        ///     alternative hypothesis: true trimmed means is not equal to 0
+        ///     95 percent confidence interval:
+        ///      2.839161 3.384451
+        ///     sample estimates:
+        ///     trimmed mean of x
+        ///              3.111806
+        
+        // a <- rnorm(25, 3, 1)
+        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368,\
+        2.634829, 3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948,\
+        2.920190, 3.402363, 2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
+        
+        double r_p_value {6.839e-13};
+        
+        auto res = yuen_t_test_one_sample(a, 0.05, TestStrategy::TestSide::TwoSided, 0.2, 0.0);
+        
+        BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.0001);
+        
+    }
+    
+    BOOST_AUTO_TEST_CASE( yuen_two_samples )
+    {
+     
+        ///     Two-sample Yuen test, trim=0.2
+        ///
+        ///     data:  x and y
+        ///     t = 5.2702, df = 24.76, p-value = 1.91e-05
+        ///     alternative hypothesis: true difference in trimmed means is not equal to 0
+        ///     95 percent confidence interval:
+        ///      0.7324855 1.6729703
+        ///     sample estimates:
+        ///     trimmed mean of x trimmed mean of y
+        ///              3.111806          1.909078
+        
+        // a <- rnorm(25, 3, 1)
+        Row<double> a = {3.290169, 3.031275, 2.701008, 3.703762, 4.633237, 2.327662, 3.050368, 2.634829,\
+        3.358146, 3.350406, 2.490066, 3.500233, 5.485966, 3.566797, 1.945628, 2.878948, 2.920190, 3.402363,\
+        2.821342, 3.640249, 4.717522, 3.353228, 2.334823, 1.997572, 2.817784};
+
+        // b <- rnorm(23, 2, 1)
+        Row<double> b = {1.8461070, 1.7434951, 2.5623408, 1.2993293, 1.7287880, 1.1736090, 2.8343341, 1.0222412,\
+        2.3009044, 1.6807970, 1.9258431, 2.3732799, 1.0147146, 1.6255013, 1.9335160, 3.2866492, 4.4683571,\
+        2.8719037, 1.8299214, 1.5066573, 1.4453529, 0.4761787, 3.2652345};
+        
+        double r_p_value {1.91e-05};
+        
+        auto res = yuen_t_test_two_samples(a, b, 0.05, TestStrategy::TestSide::TwoSided, 0.2, 0.0);
+        
+        BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.0001);
+        
+    }
+    
+    BOOST_AUTO_TEST_CASE( yuen_two_paired )
+    {
+        
+    }
+    
+BOOST_AUTO_TEST_SUITE_END()
 
 
 //BOOST_FIXTURE_TEST_SUITE( test_strategy_class, SampleResearch )

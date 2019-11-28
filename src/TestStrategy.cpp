@@ -573,6 +573,84 @@ namespace sam {
     }
 
 
+    TestStrategy::TestResult yuen_t_test_one_sample(
+                                         const arma::Row<double> &x,
+                                         double alpha,
+                                         const TestStrategy::TestSide side,
+                                         double trim = 0.2,
+                                         double mu = 0.0){
+
+        double M{0};
+        
+        bool sig {false};
+        double Sm1 = arma::mean(x);
+
+        
+        int n = x.n_elem;
+        
+        int g = static_cast<int>(floor(trim * n));
+        
+        double df = n - 2 * g - 1;
+        
+        double sw = sqrt(win_var(x, trim));
+        
+        double se = sw/((1. - 2. * trim) * sqrt(n));
+        
+        double dif = trim_mean(x, trim);
+        
+        double t_stat = (dif - mu)/se;
+        
+        students_t dist(df);
+        double p = 0;
+        
+        if (side == TestStrategy::TestSide::TwoSided){
+            // Mean != M
+//            p = 2 * (1 - cdf(dist, fabs(t_stat)));
+            p = 2 * cdf(complement(dist, fabs(t_stat)));
+            if(p < alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }
+            else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
+        
+        if (side == TestStrategy::TestSide::Greater){
+            // Mean  > M
+//            p = 1 - cdf(dist, t_stat);
+            p = cdf(complement(dist, t_stat));
+            if(p > alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }
+            else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
+        
+        if (side == TestStrategy::TestSide::Less){
+            // Mean  < M
+//            p = cdf(dist, t_stat);
+            p = cdf(dist, t_stat);
+            if(p > alpha){
+                // Alternative "NOT REJECTED"
+                sig = true;
+            }
+            else{
+                // Alternative "REJECTED"
+                sig = false;
+            }
+        }
+        
+        int mside = std::copysign(1.0, M - Sm1);
+
+        return {t_stat, p, mside, sig};
+
+    }
+
     TestStrategy::TestResult yuen_t_test_paired(
                                          const arma::Row<double> &x,
                                          const arma::Row<double> &y,
@@ -610,7 +688,7 @@ namespace sam {
             // Mean != M
 //            p = 2 * (1 - cdf(dist, fabs(t_stat)));
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha / 2){
+            if(p < alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }
@@ -687,7 +765,7 @@ namespace sam {
         if (side == TestStrategy::TestSide::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha / 2){
+            if(p < alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
