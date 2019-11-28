@@ -191,6 +191,35 @@ BOOST_FIXTURE_TEST_SUITE ( yuen_t_test, SampleResearch )
     BOOST_AUTO_TEST_CASE( yuen_two_paired )
     {
         
+        ///      Paired Yuen test, trim=0.2
+        ///
+        ///      data:  x and y
+        ///      t = 1.4826, df = 14, p-value = 0.1603
+        ///      alternative hypothesis: true difference in trimmed means is not equal to 0
+        ///      95 percent confidence interval:
+        ///       -0.1849025  1.0129415
+        ///      sample estimates:
+        ///      trimmed mean of x - trimmed mean of y
+        ///                                  0.4140195
+        
+        
+        arma::Row<double> a =
+        {0.822387266,-0.064217638,-1.181746398, 1.138105728, 0.101791859, 0.364959551, 1.050402437,\
+        1.526221058,-0.112344447, 0.299409268,-1.324905954, 0.073325737, 1.146891955, 0.213061056,\
+        -0.593373924,-2.226816464, 0.851665745,-0.006791175,-0.952173744, 0.206451596, 0.285228511,\
+            -2.153039339, 0.493613284, 0.019334722,-0.288007564};
+        arma::Row<double> b =
+        {-0.89960154,-0.25609764, 0.44374836,-0.94571778, -0.89574987,  1.37989272,-1.69240306,\
+        -0.32672914,-0.97609125, 0.69973678,-0.54648018, -0.27665633, -0.16372239,-0.59180641,\
+        0.46706682, 0.08999496, 0.08881282,-1.04699859, -1.70451863, -0.18635738, 0.55473149,\
+            1.06225983, 1.70725958,-0.39616876,-1.63021445};
+        
+        double r_p_value {0.1603};
+        
+        auto res = yuen_t_test_paired(a, b, 0.05, TestStrategy::TestSide::TwoSided, 0.2, 0.0);
+        
+        BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.0001);
+
     }
     
 BOOST_AUTO_TEST_SUITE_END()
