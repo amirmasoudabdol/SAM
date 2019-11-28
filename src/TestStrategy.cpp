@@ -293,7 +293,7 @@ namespace sam {
         if (side == TestStrategy::TestSide::TwoSided){
             // Mean != M
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha / 2){
+            if(p < alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }
@@ -386,7 +386,7 @@ namespace sam {
         if (side == TestStrategy::TestSide::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha / 2){
+            if(p < alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
@@ -475,7 +475,7 @@ namespace sam {
         if (side == TestStrategy::TestSide::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha / 2){
+            if(p < alpha){
                 // Alternative "NOT REJECTED"
                 sig = true;
             }else{
