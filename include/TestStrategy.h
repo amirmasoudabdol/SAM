@@ -45,9 +45,6 @@ namespace sam {
             bool sig = 0;
             
             TestResult() = default;
-            
-            TestResult(double statistic, double pvalue, int side, double sig) :
-            statistic(statistic), pvalue(pvalue), side(side), sig(sig) {};
 
             friend std::ostream &operator<<(std::ostream &os, const TestResult &result) {
                 os << "statistic: " << result.statistic << " pvalue: " << result.pvalue << " side: " << result.side
@@ -330,6 +327,7 @@ namespace sam {
     TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
+                                                          double continuity,
                                                           const TestStrategy::TestSide side);
 
 

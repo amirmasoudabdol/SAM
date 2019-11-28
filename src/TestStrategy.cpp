@@ -329,8 +329,9 @@ namespace sam {
             }
         }
         
-        
-        return TestStrategy::TestResult(t_stat, p, 1, sig);
+        int mside = std::copysign(1.0, M - Sm);
+
+        return {t_stat, p, mside, sig};
     }
 
 
@@ -420,7 +421,9 @@ namespace sam {
             }
         }
         
-        return TestStrategy::TestResult(t_stat, p, 1, sig);
+        int mside = std::copysign(1.0, Sm1 - Sm2);
+        
+        return {t_stat, p, mside, sig};
     }
 
 
@@ -508,7 +511,9 @@ namespace sam {
             }
         }
         
-        return TestStrategy::TestResult(t_stat, p, 1, sig);
+        int mside = std::copysign(1.0, Sm1 - Sm2);
+        
+        return {t_stat, p, mside, sig};
     }
 
     TestStrategy::TestResult
@@ -562,7 +567,9 @@ namespace sam {
             // Alternative "REJECTED"
             sig = false;
 
-        return TestStrategy::TestResult(f_stats, p, 1, sig);
+//        int mside = std::copysign(1.0, Sm1 - Sm2);
+        
+        return {f_stats, p, 1, sig};
     }
 
 
@@ -574,6 +581,9 @@ namespace sam {
                                          double trim = 0.2,
                                          double mu = 0){
         // Do some check whether it's possible to run the test
+        
+        double Sm1 = arma::mean(x);
+        double Sm2 = arma::mean(y);
         
         bool sig {false};
         
@@ -638,8 +648,9 @@ namespace sam {
             }
         }
         
+        int mside = std::copysign(1.0, Sm1 - Sm2);
         
-        return TestStrategy::TestResult(t_stat, p, 1, sig);
+        return {t_stat, p, mside, sig};
     }
 
 
@@ -651,7 +662,10 @@ namespace sam {
                                                   double trim,
                                                   double mu){
         
-        double sig {false};
+        double Sm1 = arma::mean(x);
+        double Sm2 = arma::mean(y);
+        
+        bool sig {false};
 
         int h1 = x.n_elem - 2 * floor(trim * x.n_elem);
         int h2 = y.n_elem - 2 * floor(trim * y.n_elem);
@@ -706,7 +720,9 @@ namespace sam {
             }
         }
 
-        return TestStrategy::TestResult(t_stat, p, 1, sig);
+        int mside = std::copysign(1.0, Sm1 - Sm2);
+        
+        return {t_stat, p, mside, sig};
 
     }
 
