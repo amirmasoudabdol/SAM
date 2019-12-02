@@ -137,6 +137,7 @@ void MannWhitneyWilcoxon::run(Experiment* experiment) {
 //        }else{
             res = mann_whitney_wilcoxon_u_test(experiment->measurements[d],
                                                 experiment->measurements[i],
+                                               0,
                                                 params.alpha,
                                                 params.side);
 //        }
@@ -858,7 +859,11 @@ namespace sam {
     TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
+                                                          double continuity,
                                                           const TestStrategy::TestSide side){
+        
+        double Sm1 = arma::mean(x);
+        double Sm2 = arma::mean(y);
         
         arma::rowvec z = arma::join_rows(x, y);
         arma::uvec ranks = arma::sort_index(z);
@@ -884,7 +889,7 @@ namespace sam {
 
         double pval = 2 * cdf(standard_normal,z_val);
         
-        return TestStrategy::TestResult(z_val, pval, 1, 0);
+        return {z_val, pval, 1, false};
     }
 
 }
