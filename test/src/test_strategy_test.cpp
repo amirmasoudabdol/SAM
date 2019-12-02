@@ -214,6 +214,32 @@ BOOST_FIXTURE_TEST_SUITE ( yuen_t_test, SampleResearch )
 BOOST_AUTO_TEST_SUITE_END()
 
 
+BOOST_FIXTURE_TEST_SUITE ( wilcox_test , SampleResearch )
+
+    BOOST_AUTO_TEST_CASE( wilcox_two_sample ) {
+
+        ///        > wilcox.test(a, b)
+        ///
+        ///            Wilcoxon rank sum test
+        ///
+        ///        data:  a and b
+        ///        W = 375, p-value = 0.2312
+        ///        alternative hypothesis: true location shift is not equal to 0
+         
+         
+         arma::Row<double> a = {0.822387266,-0.064217638,-1.181746398, 1.138105728, 0.101791859, 0.364959551, 1.050402437, 1.526221058,-0.112344447, 0.299409268,-1.324905954, 0.073325737, 1.146891955, 0.213061056,-0.593373924,-2.226816464, 0.851665745,-0.006791175,-0.952173744, 0.206451596, 0.285228511,-2.153039339, 0.493613284, 0.019334722,-0.288007564};
+         
+         arma::Row<double> b = {-0.89960154,-0.25609764, 0.44374836,-0.94571778, -0.89574987,  1.37989272,-1.69240306, -0.32672914,-0.97609125, 0.69973678,-0.54648018, -0.27665633, -0.16372239,-0.59180641, 0.46706682, 0.08999496, 0.08881282,-1.04699859, -1.70451863, -0.18635738, 0.55473149, 1.06225983, 1.70725958,-0.39616876,-1.63021445};
+         
+         double r_p_value {0.2312};
+         
+         auto res = mann_whitney_u_test(a, b, 0.05, 1, TestStrategy::TestSide::TwoSided);
+                 
+         BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.01);
+    }
+
+BOOST_AUTO_TEST_SUITE_END()
+
 //BOOST_FIXTURE_TEST_SUITE( test_strategy_class, SampleResearch )
 //
 //    BOOST_AUTO_TEST_CASE( test_strategy_constructor )

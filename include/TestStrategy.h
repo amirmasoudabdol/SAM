@@ -323,11 +323,21 @@ namespace sam {
     double trim_mean(const arma::Row<double> &x,
                      double trim);
 
+    double tie_correct(const arma::vec &rankval);
 
-    TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
+    arma::vec rankdata(const arma::Row<double> &arr, const std::string method);
+
+    template<typename T>
+    arma::uvec nonzeros_index(const T &x) {
+
+        return arma::find(x != 0);
+
+    }
+
+    TestStrategy::TestResult mann_whitney_u_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
-                                                          double continuity,
+                                                          double use_continuity,
                                                           const TestStrategy::TestSide side);
 
 

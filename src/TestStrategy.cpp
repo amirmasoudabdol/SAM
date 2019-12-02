@@ -135,9 +135,9 @@ void MannWhitneyWilcoxon::run(Experiment* experiment) {
 //                                       params.trim,
 //                                       0);
 //        }else{
-            res = mann_whitney_wilcoxon_u_test(experiment->measurements[d],
+            res = mann_whitney_u_test(experiment->measurements[d],
                                                 experiment->measurements[i],
-                                               0,
+                                               1,
                                                 params.alpha,
                                                 params.side);
 //        }
@@ -861,40 +861,146 @@ namespace sam {
      This is based on Apache Common Math, but I've not tested it properly yet; so,
      don't use it while this comment is here!
      */
-    TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
+    TestStrategy::TestResult mann_whitney_u_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
-                                                          double continuity,
+                                                          double use_continuity,
                                                           const TestStrategy::TestSide side){
         
-        double Sm1 = arma::mean(x);
-        double Sm2 = arma::mean(y);
+        using boost::math::normal;
         
-        arma::rowvec z = arma::join_rows(x, y);
-        arma::uvec ranks = arma::sort_index(z);
+        
+        // Getting the rank of the data
+        arma::Row<double> xy = arma::join_rows(x, y);
+        
+
+        // ranked = rankdata(np.concatenate((x, y)));
+        arma::vec ranked = rankdata(xy, "average");
+        
+
+        // rankx = ranked[0:x.n_elem]  # get the x-ranks
+        arma::vec rankx = ranked.head(x.n_elem);
+
+        // u1 = x.n_elem*y.n_elem + (x.n_elem*(x.n_elem+1))/2.0 - np.sum(rankx, axis=0)  # calc U for x
+        double u1 = x.n_elem*y.n_elem + (x.n_elem*(x.n_elem+1))/2.0 - arma::accu(rankx);  // calc U for x;
+
+        double u2 = x.n_elem*y.n_elem - u1;  // remainder is U for y
+
+        // T = tiecorrect(ranked)
+        double T = tie_correct(ranked);
+        
+        // if (T == 0.):
+        //     raise ValueError('All numbers are identical in mannwhitneyu')
+        
+        double sd = std::sqrt(T * x.n_elem * y.n_elem * (x.n_elem+y.n_elem+1) / 12.0);
+
+        double meanrank = x.n_elem*y.n_elem/2.0 + 0.5 * use_continuity;
+        
+        double bigu {0};
+        if (side == TestStrategy::TestSide::TwoSided)
+            bigu = std::max(u1, u2);
+        else if (side == TestStrategy::TestSide::Less)
+            bigu = u1;
+        else if (side == TestStrategy::TestSide::Greater)
+            bigu = u2;
+
+        double z = (bigu - meanrank) / sd;
+
+        double p{0.};
+        normal norm(0, 1);
+
+        if (side == TestStrategy::TestSide::TwoSided)
+            p = 2 * cdf(complement(norm, fabs(z)));
+        else
+            p = cdf(norm, z);
+
+        double u = u2;
+        
+        // # This behavior is deprecated.
+        // if side is None:
+        //     u = min(u1, u2)
+
+        // return MannwhitneyuResult(u, p)
+        
+        
+        return {u, p, 1, 1};
     
-        double sum_rank_x = arma::accu(ranks.subvec(0, x.n_elem));
-        
-        double u1 = sum_rank_x - (x.n_elem * (x.n_elem + 1)) / 2;
-        
-        double u2 = x.n_elem * y.n_elem - u1;
-
-        double u_max = std::max(u1, u2);
-        
-        double u_min = x.n_elem * y.n_elem - u_max;
-        
-        long nx_ny = x.n_elem * y.n_elem;
-
-        double mu_u = nx_ny / 2.0;
-        double var_u = nx_ny * (x.n_elem + y.n_elem + 1) / 12.0;
-
-        double z_val = (u_min - mu_u) / sqrt(var_u);
-
-        normal standard_normal(0, 1);
-
-        double pval = 2 * cdf(standard_normal,z_val);
-        
-        return {z_val, pval, 1, false};
     }
+
+    double tie_correct(const arma::vec &rankvals){
+        
+        
+        arma::vec arr = arma::sort(rankvals);
+
+        arma::uvec vindx = arma::join_cols(arma::uvec({1}), arr.tail(arr.n_elem - 1) != arr.head(arr.n_elem - 1));
+        
+        arma::uvec vvindx = arma::join_cols(vindx, arma::uvec({1}));
+        
+        arma::uvec indx = nonzeros_index(vvindx);
+        
+        arma::uvec cnt = arma::diff(indx);
+
+        int size = arr.n_elem;
+        
+        if (size < 2){
+            return 1.0;
+        }
+
+        return 1.0 - arma::accu(arma::pow(cnt, 3) - cnt) / (std::pow(size, 3) - size);
+    }
+
+    arma::vec rankdata(const arma::Row<double> &arr, const std::string method="average") {
+
+        
+        // if method not in ('average', 'min', 'max', 'dense', 'ordinal'):
+        //     raise ValueError('unknown method "{0}"'.format(method))
+
+        // arr = np.ravel(np.asarray(a))
+        // > This is always true, for now
+        
+        // algo = 'mergesort' if method == 'ordinal' else 'quicksort'
+        arma::uvec sorter = arma::stable_sort_index(arr);
+
+        // inv = np.empty(sorter.size, dtype=np.intp)
+        // inv[sorter] = np.arange(sorter.size, dtype=np.intp)
+
+        arma::uvec inv(sorter.n_elem);
+        
+        inv.elem(sorter) = arma::regspace<arma::uvec>(0, sorter.n_elem - 1);
+        
+//        if (method == "ordinal")
+//            return inv + 1;
+
+        arma::vec arr_sorted(arr.n_elem);
+        arr_sorted = arr(sorter);
+        
+        // obs = np.r_[True, arr[1:] != arr[:-1]]
+        arma::uvec obs = arma::join_cols(arma::uvec({1}),
+                                        arr_sorted.tail(arr_sorted.n_elem - 1) != arr_sorted.head(arr_sorted.n_elem - 1));
+        
+        
+        // dense = obs.cumsum()[inv]
+        arma::uvec dense = arma::cumsum(obs); //.elem(inv);
+        arma::uvec dense_sorted(dense.n_elem);
+        dense_sorted = dense(inv);
+
+        if (method == "dense")
+            return arma::conv_to<arma::vec>::from(dense_sorted);
+
+        // cumulative counts of each unique value
+        // count = [np.r_[np.nonzero(obs)[0], len(obs)]]
+        arma::uvec count = arma::join_cols(nonzeros_index(obs), arma::uvec({obs.n_elem}));
+
+//        if (method == "max")
+//            return count(dense_sorted);
+//
+//        if (method == "min")
+//            return count(dense_sorted - 1) + 1;
+
+        // average method
+        return .5 * arma::conv_to<arma::vec>::from((count(dense_sorted) + count(dense_sorted - 1) + 1));
+    }
+
+    
 
 }
