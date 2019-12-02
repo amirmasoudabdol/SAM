@@ -856,6 +856,11 @@ namespace sam {
         return arma::mean(y.subvec(ibot - 1, itop - 1));
     }
 
+
+    /**
+     This is based on Apache Common Math, but I've not tested it properly yet; so,
+     don't use it while this comment is here!
+     */
     TestStrategy::TestResult mann_whitney_wilcoxon_u_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
