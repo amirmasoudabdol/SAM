@@ -865,6 +865,11 @@ namespace sam {
         
         using boost::math::normal;
         
+        bool sig {false};
+        
+        double Sm1 = arma::mean(x);
+        double Sm2 = arma::mean(y);
+        
         
         // Getting the rank of the data
         arma::Row<double> xy = arma::join_rows(x, y);
@@ -905,21 +910,25 @@ namespace sam {
         double p{0.};
         normal norm(0, 1);
 
-        if (side == TestStrategy::TestSide::TwoSided)
+        if (side == TestStrategy::TestSide::TwoSided){
             p = 2 * cdf(complement(norm, fabs(z)));
-        else
+            if (p < alpha)
+                sig = true;
+            else
+                sig = false;
+        }else{
             p = cdf(norm, z);
+            if (p < alpha)
+                sig = true;
+            else
+                sig = false;
+        }
 
         double u = u2;
         
-        // # This behavior is deprecated.
-        // if side is None:
-        //     u = min(u1, u2)
-
-        // return MannwhitneyuResult(u, p)
+        int mside = std::copysign(1.0, Sm1 - Sm2);
         
-        
-        return {u, p, 1, 1};
+        return {u, p, mside, sig};
     
     }
 
