@@ -59,8 +59,8 @@ namespace sam {
         enum class TestMethod {
             TTest,           ///< T-test
             FTest,            ///< F-test
-            YuenTTest,
-            MannWhitneyWilcoxon
+            YuenTest,
+            WilcoxonTest
         };
         
         /**
@@ -151,12 +151,12 @@ namespace sam {
         }
 
 
-    class YuenTTest : public TestStrategy {
+    class YuenTest : public TestStrategy {
         
     public:
         
         struct Parameters {
-            TestMethod name = TestMethod::YuenTTest;
+            TestMethod name = TestMethod::YuenTest;
             TestSide side = TestSide::TwoSided;
             double alpha = 0.95;
             double trim = 0.20;
@@ -164,10 +164,10 @@ namespace sam {
         
         Parameters params;
         
-        YuenTTest(const Parameters &p) : params{p} {};
+        YuenTest(const Parameters &p) : params{p} {};
         
         // Cleanup
-        YuenTTest(TestStrategyParameters tsp) {
+        YuenTest(TestStrategyParameters tsp) {
 //            params = tsp;
         };
         
@@ -178,7 +178,7 @@ namespace sam {
     
         // JSON Parser for ImpatientDecisionStrategy::Parameters
         inline
-        void to_json(json& j, const YuenTTest::Parameters& p) {
+        void to_json(json& j, const YuenTest::Parameters& p) {
             j = json{
                 {"_name", p.name},
                 {"side", p.side},
@@ -188,7 +188,7 @@ namespace sam {
         }
     
         inline
-        void from_json(const json& j, YuenTTest::Parameters& p) {
+        void from_json(const json& j, YuenTest::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
             p.name = j.at("_name");
@@ -200,22 +200,22 @@ namespace sam {
         }
 
 
-    class MannWhitneyWilcoxon : public TestStrategy {
+    class WilcoxonTest : public TestStrategy {
             
         public:
             
             struct Parameters {
-                TestMethod name = TestMethod::MannWhitneyWilcoxon;
+                TestMethod name = TestMethod::WilcoxonTest;
                 TestSide side = TestSide::TwoSided;
                 double alpha = 0.95;
             };
             
             Parameters params;
             
-            MannWhitneyWilcoxon(const Parameters &p) : params{p} {};
+            WilcoxonTest(const Parameters &p) : params{p} {};
             
             // Cleanup
-            MannWhitneyWilcoxon(TestStrategyParameters tsp) {
+            WilcoxonTest(TestStrategyParameters tsp) {
     //            params = tsp;
             };
             
@@ -226,7 +226,7 @@ namespace sam {
         
             // JSON Parser for ImpatientDecisionStrategy::Parameters
             inline
-            void to_json(json& j, const MannWhitneyWilcoxon::Parameters& p) {
+            void to_json(json& j, const WilcoxonTest::Parameters& p) {
                 j = json{
                     {"_name", p.name},
                     {"side", p.side},
@@ -235,7 +235,7 @@ namespace sam {
             }
         
             inline
-            void from_json(const json& j, MannWhitneyWilcoxon::Parameters& p) {
+            void from_json(const json& j, WilcoxonTest::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
                 p.name = j.at("_name");
@@ -249,8 +249,8 @@ namespace sam {
     NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestMethod, {
         {TestStrategy::TestMethod::TTest, "TTest"},
         {TestStrategy::TestMethod::FTest, "FTest"},
-        {TestStrategy::TestMethod::YuenTTest, "YuenTTest"},
-        {TestStrategy::TestMethod::MannWhitneyWilcoxon, "MannWhitneyWilcoxon"},
+        {TestStrategy::TestMethod::YuenTest, "YuenTest"},
+        {TestStrategy::TestMethod::WilcoxonTest, "WilcoxonTest"},
     })
 
     NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestSide, {
@@ -334,7 +334,7 @@ namespace sam {
 
     }
 
-    TestStrategy::TestResult mann_whitney_u_test(const arma::Row<double> &x,
+    TestStrategy::TestResult wilcoxon_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
                                                           double use_continuity,

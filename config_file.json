@@ -19,7 +19,7 @@
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
-            "_name": "MannWhitneyWilcoxon",
+            "_name": "WilcoxonTest",
             "alpha": 0.05,
             "side": "TwoSided"
         }

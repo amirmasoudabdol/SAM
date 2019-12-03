@@ -233,7 +233,7 @@ BOOST_FIXTURE_TEST_SUITE ( wilcox_test , SampleResearch )
          
          double r_p_value {0.2312};
          
-         auto res = mann_whitney_u_test(a, b, 0.05, 1, TestStrategy::TestSide::TwoSided);
+         auto res = wilcoxon_test(a, b, 0.05, 1, TestStrategy::TestSide::TwoSided);
                  
          BOOST_CHECK_SMALL(res.pvalue - r_p_value, 0.01);
     }

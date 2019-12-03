@@ -30,14 +30,14 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
         auto params = test_strategy_config.get<TTest::Parameters>();
         return std::make_unique<TTest>(params);
         
-    } else if (test_strategy_config["_name"] == "YuenTTest") {
+    } else if (test_strategy_config["_name"] == "YuenTest") {
         
-        auto params = test_strategy_config.get<YuenTTest::Parameters>();
-        return std::make_unique<YuenTTest>(params);
+        auto params = test_strategy_config.get<YuenTest::Parameters>();
+        return std::make_unique<YuenTest>(params);
         
-    } else if (test_strategy_config["_name"] == "MannWhitneyWilcoxon"){
-        auto params = test_strategy_config.get<MannWhitneyWilcoxon::Parameters>();
-        return std::make_unique<MannWhitneyWilcoxon>(params);
+    } else if (test_strategy_config["_name"] == "WilcoxonTest"){
+        auto params = test_strategy_config.get<WilcoxonTest::Parameters>();
+        return std::make_unique<WilcoxonTest>(params);
     }
     else{
         throw std::invalid_argument("Unknown Test Strategy.");
@@ -82,7 +82,7 @@ void TTest::run(Experiment* experiment) {
     }
 }
 
-void YuenTTest::run(Experiment* experiment) {
+void YuenTest::run(Experiment* experiment) {
     
     // The first group is always the control group
     
@@ -116,7 +116,7 @@ void YuenTTest::run(Experiment* experiment) {
 }
 
 
-void MannWhitneyWilcoxon::run(Experiment* experiment) {
+void WilcoxonTest::run(Experiment* experiment) {
     
     // The first group is always the control group
     
@@ -135,7 +135,7 @@ void MannWhitneyWilcoxon::run(Experiment* experiment) {
 //                                       params.trim,
 //                                       0);
 //        }else{
-            res = mann_whitney_u_test(experiment->measurements[d],
+            res = wilcoxon_test(experiment->measurements[d],
                                                 experiment->measurements[i],
                                                1,
                                                 params.alpha,
@@ -857,11 +857,7 @@ namespace sam {
     }
 
 
-    /**
-     This is based on Apache Common Math, but I've not tested it properly yet; so,
-     don't use it while this comment is here!
-     */
-    TestStrategy::TestResult mann_whitney_u_test(const arma::Row<double> &x,
+    TestStrategy::TestResult wilcoxon_test(const arma::Row<double> &x,
                                                           const arma::Row<double> &y,
                                                           double alpha,
                                                           double use_continuity,
