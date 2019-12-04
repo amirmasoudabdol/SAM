@@ -105,7 +105,7 @@ void YuenTest::run(Experiment* experiment) {
                                         experiment->measurements[i],
                                         params.alpha,
                                         params.side,
-                                        params.trim,
+                                        0.2,
                                         0);
 //        }
                 
