@@ -749,11 +749,21 @@ namespace sam {
         int h1 = x.n_elem - 2 * floor(trim * x.n_elem);
         int h2 = y.n_elem - 2 * floor(trim * y.n_elem);
 
-        double d1 = (x.n_elem - 1) * win_var(x, trim) / (h1 * (h1 - 1));
-        double d2 = (y.n_elem - 1) * win_var(y, trim) / (h2 * (h2 - 1));
+        double d1 = (x.n_elem - 1.) * win_var(x, trim) / (h1 * (h1 - 1.));
+        double d2 = (y.n_elem - 1.) * win_var(y, trim) / (h2 * (h2 - 1.));
+        
+        if (!(isgreater(d1, 0) or isless(d1, 0))){
+            // Samples are almost equal and elements are constant
+            d1 += std::numeric_limits<double>::epsilon();
+        }
+        
+        if (!(isgreater(d2, 0) or isless(d2, 0))){
+            // Samples are almost equal and elements are constant
+            d2 += std::numeric_limits<double>::epsilon();
+        }
 
-        unsigned df = pow(d1+d2, 2) / (pow(d1, 2) / (h1-1) + pow(d2, 2) / (h2-1));
-
+        unsigned df = pow(d1+d2, 2) / (pow(d1, 2)/(h1-1.) + pow(d2, 2)/(h2-1.));
+        
         double se = sqrt(d1+d2);
 
         double dif = trim_mean(x, trim) - trim_mean(y, trim);

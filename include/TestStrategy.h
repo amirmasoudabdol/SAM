@@ -182,8 +182,9 @@ namespace sam {
             j = json{
                 {"_name", p.name},
                 {"side", p.side},
-                {"alpha", p.alpha},
-                {"trim", p.trim}
+                {"alpha", p.alpha}
+                // ,
+                // {"trim", p.trim}
             };
         }
     
@@ -196,7 +197,7 @@ namespace sam {
             p.side = j.at("side");
             
             j.at("alpha").get_to(p.alpha);
-            j.at("trim").get_to(p.trim);
+            // j.at("trim").get_to(p.trim);
         }
 
 
