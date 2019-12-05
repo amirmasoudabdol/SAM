@@ -45,40 +45,71 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     /// that one.
     int selectedOutcome = pre_registered_group;
     
-    // TODO: I can probably find `min` or `max` indexes using armadillo.
-    // Tere are `index_min`, and `index_max` methods, as well as `tailing` and `heading` for filtering
-    
     switch (preference) {
         case DecisionPreference::PreRegisteredOutcome:
             selectedOutcome = pre_registered_group;
             break;
             
-        case DecisionPreference::MinSigPvalue:
+        case DecisionPreference::MinSigPvalue: {
+
+            /// Getting the indexes corresponding to significant results
+            arma::uvec sig_indexes = arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1) + experiment.setup.nd();
             
+                if (sig_indexes.n_elem != 0) {
+                    /// Selecting the smallest p-value between the groups with significant results,
+                    /// and translating/selecting the correct index.
+                    selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_min()];
+
+                }else{
+                    selectedOutcome = pre_registered_group;
+                }
+            }
+            break;
+
+        case DecisionPreference::MaxSigPvalue: {
+
+            }
             break;
             
-        case DecisionPreference::MinPvalue:
-            selectedOutcome = std::distance(experiment.pvalues.begin(),
-                                            std::min_element(experiment.pvalues.begin() + experiment.setup.nd(), experiment.pvalues.end()));
+        case DecisionPreference::MinPvalue: {
+            
+            /// By taking the "tail" I'm basically skipping the control group, and shifting it back when I found it
+            selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
+                                + experiment.setup.nd();
+            
+            }
             break;
             
         case DecisionPreference::MaxSigEffect:
             
             break;
             
-        case DecisionPreference::MaxEffect:
-            selectedOutcome = std::distance(experiment.effects.begin(),
-                                            std::max_element(experiment.effects.begin() + experiment.setup.nd(), experiment.effects.end()));
+        case DecisionPreference::MaxEffect:{
+            
+            selectedOutcome = experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
+                                + experiment.setup.nd();
+            
+            }
             break;
             
         case DecisionPreference::MinPvalueMaxEffect:
             
             break;
+
+        case DecisionPreference ::RandomSigPvalue: {
+            /// Again taking the tail, and shifting the index back into its original range
+            arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
+            
+                if (sig_indexes.n_elem != 0) {
+                    selectedOutcome = sig_indexes.at(0);
+                }else{
+                    selectedOutcome = pre_registered_group;
+                }
+            }
+            break;
     }
     
-    Submission tmpSub(experiment, selectedOutcome);
-    
-    return tmpSub;
+    return {experiment, selectedOutcome};
 }
 
 

@@ -63,12 +63,14 @@ namespace sam {
      will prefer an outcome with the lowest p-value.
      */
     enum class DecisionPreference {
-        PreRegisteredOutcome = 0,
+        PreRegisteredOutcome,
         MinSigPvalue,
         MinPvalue,
         MaxSigEffect,
         MaxEffect,
-        MinPvalueMaxEffect
+        MinPvalueMaxEffect,
+        RandomSigPvalue,
+        MaxSigPvalue
     };
 
 
@@ -79,6 +81,8 @@ namespace sam {
         {DecisionPreference::MaxSigEffect, "MaxSigEffect"},
         {DecisionPreference::MaxEffect, "MaxEffect"},
         {DecisionPreference::MinPvalueMaxEffect, "MinPvalueMaxEffect"},
+        {DecisionPreference::RandomSigPvalue, "RandomSigPvalue"},
+        {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
     })
 
     /**
@@ -313,7 +317,7 @@ namespace sam {
     public:
 
         struct Parameters {
-            DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
+            DecisionMethod name = DecisionMethod::PatientDecisionMaker;
             DecisionPreference preference = DecisionPreference::MinPvalue;
         };
 
@@ -343,9 +347,9 @@ namespace sam {
     void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
 
         // Using a helper template function to handle the optional and throw if necessary.
-        p.name = j.at("_name");
+        j.at("_name").get_to(p.name);
 
-        p.preference = j.at("preference");
+        j.at("preference").get_to(p.preference);
     }
 
     class HonestDecisionMaker : public DecisionStrategy {
