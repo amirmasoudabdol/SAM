@@ -528,7 +528,7 @@ namespace sam {
 
         using boost::math::fisher_f;
         
-        bool sig = false;
+        bool sig {false};
 
         // F-statistic:
         double f_stats = (sd1 / sd2);

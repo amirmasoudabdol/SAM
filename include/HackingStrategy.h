@@ -200,6 +200,7 @@ namespace sam {
             name = params.name;
         };
         
+        // TODO: To be removed!
         SDOutlierRemoval(std::string level = "dv", std::string order = "max first",
                          int num = 3, int n_attempts = 1, int max_attempts = 3,
                          int min_observations = 10, std::vector<double> multipliers = {3})
@@ -254,6 +255,43 @@ namespace sam {
         j.at("min_observations").get_to(p.min_observations);
         j.at("multipliers").get_to(p.multipliers);
     }
+
+
+    class SubjectiveOutlierRemoval : public HackingStrategy {
+    public:
+        struct Parameters {
+            HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
+            std::vector<int> range {2, 4};  // TODO: This can be replaced by std::pair
+            double step_size {0.1};
+        };
+        
+        Parameters params;
+        
+        SubjectiveOutlierRemoval(const Parameters &p) : params(p) {
+            name = params.name;
+        };
+        
+        void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+    };
+
+
+        inline
+        void to_json(json& j, const SubjectiveOutlierRemoval::Parameters& p) {
+            j = json{
+                {"_name", p.name},
+                {"range", p.range},
+                {"step_size", p.step_size}
+            };
+        }
+
+        inline
+        void from_json(const json& j, SubjectiveOutlierRemoval::Parameters& p) {
+            
+            // Using a helper template function to handle the optional and throw if necessary.
+            j.at("_name").get_to(p.name);
+            j.at("range").get_to(p.range);
+            j.at("step_size").get_to(p.step_size);
+        }
     
 
     class GroupPooling : public HackingStrategy {

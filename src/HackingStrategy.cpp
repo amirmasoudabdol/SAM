@@ -56,6 +56,11 @@ std::unique_ptr<HackingStrategy> HackingStrategy::build(json &hacking_strategy_c
         auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
         return std::make_unique<ConditionDropping>(params);
         
+    }else if (hacking_strategy_config["_name"] == "SubjectiveOutlierRemoval") {
+    
+        auto params = hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
+        return std::make_unique<SubjectiveOutlierRemoval>(params);
+    
     }else if (hacking_strategy_config["_name"] == "NoHack") {
         
         return std::make_unique<NoHack>();
@@ -162,6 +167,7 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     if (FLAGS::VERBOSE)
         std::cout << ">>> Outliers Removal...\n";
     
+    /// result flag
     int res = 0;
     
     for (auto d : params.multipliers) {
@@ -197,7 +203,9 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
         
     arma::rowvec standaraized;
     
-    // Removing outliers only from the original groups, see #104
+    /// Removing outliers only from the original groups, see #104
+    /// This is addressing the GroupPooling, and it doesn't have to do anything with outlier removal
+    /// outlier removal is still being done in all groups
     for (int i = 0; i < experiment->setup.ng(); ++i) {
         
         auto &row = experiment->measurements[i];
@@ -215,7 +223,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
         
         standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
                 
-        // Finding the outliers
+        // Finding the outliers, returning only `n` of them
         arma::uvec inx = arma::find(standaraized > d, n, "first");
                 
         if ((row.n_elem - inx.n_elem) <= params.min_observations)
@@ -230,6 +238,43 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
 }
 
 
+
+void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy *decision_strategy){
+    
+    if (FLAGS::VERBOSE)
+        std::cout << ">>> Subjective Outliers Removal...\n";
+    
+    /// This probably can be done better!
+    static arma::vec Ks = arma::reverse(arma::regspace<arma::vec>(params.range[0], params.step_size, params.range[1]));
+    
+    /// The only difference between this and SDOutlierRemoval is the fact that I'll generate the
+    /// Ks and try to find the first one satsifying the results.
+    /// TODO: Check what will happen if I don't find anything!
+    for (auto &k : Ks) {
+        
+        for (int i{0}; i < experiment->setup.ng(); ++i){
+            auto &row = experiment->measurements[i];
+            
+            arma::rowvec standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
+                    
+            // Finding the outliers
+            arma::uvec inx = arma::find(standaraized > k);
+            
+            row.shed_cols(inx);
+        }
+        
+        experiment->calculateStatistics();
+        experiment->calculateEffects();
+        experiment->runTest();
+        
+        if (!decision_strategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking()){
+            return ;
+        }
+        
+    }
+    
+    
+}
 
 
 

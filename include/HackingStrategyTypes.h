@@ -20,6 +20,7 @@ namespace sam {
         SDOutlierRemoval,
         GroupPooling,
         ConditionDropping,
+        SubjectiveOutlierRemoval,
         NoHack = -1
     };
 
@@ -29,6 +30,7 @@ namespace sam {
         {HackingMethod::SDOutlierRemoval, "SDOutlierRemoval"},
         {HackingMethod::GroupPooling, "GroupPooling"},
         {HackingMethod::ConditionDropping, "ConditionDropping"},
+        {HackingMethod::SubjectiveOutlierRemoval, "ConditionDropping"},
         {HackingMethod::NoHack, "NoHack"},
     })
 
