@@ -25,10 +25,12 @@ std::unique_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_confi
 
 void CohensD::computeEffects(Experiment *experiment){
     
-    for (int i{experiment->setup.nd()}, d{0}; i < experiment->means.size(); i++, d%=experiment->setup.nd()) {
+    for (int i{experiment->setup.nd()}, d{0};
+         i < experiment->measurements.size();
+         i++, d%=experiment->setup.nd()) {
         experiment->effects[i] = cohens_d(experiment->means[d],
                                           experiment->stddev[d],
-                                          experiment->nobs[d],
+                                          experiment->measurements[d].size(),
                                           experiment->means[i],
                                           experiment->stddev[i],
                                           experiment->measurements[i].size());
@@ -39,10 +41,12 @@ void HedgesG::computeEffects(Experiment *experiment){
     
     // Skipping the first group as it's the control group
     // TODO: This is an ugly loop. Fix it!
-    for (int i{experiment->setup.nd()}, d{0}; i < experiment->means.size(); i++, d%=experiment->setup.nd()) {
+    for (int i{experiment->setup.nd()}, d{0};
+         i < experiment->measurements.size();
+         i++, d%=experiment->setup.nd()) {
         experiment->effects[i] = hedges_g(experiment->means[d],
                                             experiment->stddev[d],
-                                            experiment->nobs[d],
+                                            experiment->measurements[d].size(),
                                             experiment->means[i],
                                             experiment->stddev[i],
                                             experiment->measurements[i].size());
