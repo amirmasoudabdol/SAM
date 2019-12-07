@@ -85,6 +85,20 @@ namespace sam {
         {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
     })
 
+
+    enum class PublishingPolicy {
+        Anything,
+        AnythingSig,
+        PreRegSig
+    };
+
+
+    NLOHMANN_JSON_SERIALIZE_ENUM( PublishingPolicy, {
+        {PublishingPolicy::Anything, "Anything"},
+        {PublishingPolicy::AnythingSig, "AnythingSig"},
+        {PublishingPolicy::PreRegSig, "PreRegSig"},
+    })
+
     /**
      @brief Abstract class for different decision strategies.
      
@@ -161,6 +175,8 @@ namespace sam {
         
         DecisionMethod name;
         
+        PublishingPolicy policy;
+        
         const int preRegistetedGroup() const {
             return pre_registered_group;
         };
@@ -195,10 +211,37 @@ namespace sam {
         }
         
         /**
-         This can be used by the researcher to decide if he is going with the
-         submission or not.
+         It indicates whether the researcher is going to commit to submitting the
+         _Submission_. This acts as an another level of decision making where the
+         researcher consider another criteria if it couldn't achieve what he was
+         "looking for".
+         
+         For instance, if the researcher is determined to find "MinSigPvalue" during
+         his research, and — after all the hacking — he couldn't find anything significant, then he decide whether he wants to submit the "unpreferable"
+         result or not.
          */
         virtual bool willBeSubmitting() {
+            
+            switch (policy) {
+                case PublishingPolicy::Anything: {
+                        return true;
+                    }
+                    break;
+                case PublishingPolicy::AnythingSig: {
+                    if (this->isPublishable())
+                        return true;
+                    }
+                    break;
+                case PublishingPolicy::PreRegSig: {
+                    if (current_submission.inx != pre_registered_group)
+                        return false;
+                    else if (isPublishable()){
+                        return true;
+                    }
+                    }
+                    break;
+            }
+            
             return will_be_submitting;
         }
         
@@ -272,12 +315,13 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
             DecisionPreference preference = DecisionPreference::MinPvalue;
+            PublishingPolicy publishing_policy = PublishingPolicy::Anything;
         };
         
         Parameters params;
         
         explicit ImpatientDecisionMaker(const Parameters &p) : params{p} {
-
+            policy = p.publishing_policy;
         };
         
         bool isStillHacking() override {
@@ -298,17 +342,16 @@ namespace sam {
         void to_json(json& j, const ImpatientDecisionMaker::Parameters& p) {
             j = json{
                 {"_name", p.name},
-                {"preference", p.preference}
+                {"preference", p.preference},
+                {"publishing_policy", p.publishing_policy}
             };
         }
     
         inline
         void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
-            
-            // Using a helper template function to handle the optional and throw if necessary.
-            p.name = j.at("_name");
-            
-            p.preference = j.at("preference");
+            j.at("_name").get_to(p.name);
+            j.at("preference").get_to(p.preference);
+            j.at("publishing_policy").get_to(p.publishing_policy);
         }
 
 
@@ -319,11 +362,14 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::PatientDecisionMaker;
             DecisionPreference preference = DecisionPreference::MinPvalue;
+            PublishingPolicy publishing_policy = PublishingPolicy::Anything;
         };
 
         Parameters params;
 
-        explicit PatientDecisionMaker(const Parameters &p) : params{p} {};
+        explicit PatientDecisionMaker(const Parameters &p) : params{p} {
+            policy = p.publishing_policy;
+        };
 
         virtual PatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
 
@@ -339,17 +385,17 @@ namespace sam {
     void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
         j = json{
             {"_name", p.name},
-            {"preference", p.preference}
+            {"preference", p.preference},
+            {"publishing_policy", p.publishing_policy}
         };
     }
 
     inline
     void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
 
-        // Using a helper template function to handle the optional and throw if necessary.
         j.at("_name").get_to(p.name);
-
         j.at("preference").get_to(p.preference);
+        j.at("publishing_policy").get_to(p.publishing_policy);
     }
 
     class HonestDecisionMaker : public DecisionStrategy {
@@ -359,14 +405,17 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::HonestDecisionMaker;
             DecisionPreference preference = DecisionPreference::PreRegisteredOutcome;
+            PublishingPolicy publishing_policy = PublishingPolicy::Anything;
         };
 
         /// Parameters of the HonestDecisionMaker are fixed, he is basically the
         /// baseline researcher that report everything he finds.
         Parameters params;
+        
+        HonestDecisionMaker() {};
 
-        HonestDecisionMaker() {
-            
+        HonestDecisionMaker(const Parameters p) : params(p)  {
+            policy = p.publishing_policy;
         };
         
         bool isStillHacking() override {
@@ -385,6 +434,12 @@ namespace sam {
     class NoDecision : public DecisionStrategy {
         
     public:
+        
+        struct Parameters {
+            DecisionMethod name = DecisionMethod::NoDecision;
+        };
+        
+        Parameters params;
         
         NoDecision() { };
         

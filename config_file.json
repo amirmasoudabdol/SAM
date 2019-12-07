@@ -4,7 +4,10 @@
             "_name": "GradedResponseModel",
             "abilities": [
                 0,
-                0.2
+                0.2,
+                0.4,
+                0.6,
+                0.8
             ],
             "difficulties": [
                 0
@@ -15,11 +18,11 @@
         "effect_strategy": {
             "_name": "CohensD"
         },
-        "n_conditions": 2,
+        "n_conditions": 5,
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
-            "_name": "WilcoxonTest",
+            "_name": "TTest",
             "alpha": 0.05,
             "side": "TwoSided"
         }
@@ -33,26 +36,23 @@
     "ResearcherParameters": {
         "decision_strategy": {
             "_name": "PatientDecisionMaker",
-            "preference": "MinPvalue"
+            "preference": "MinSigPvalue",
+            "publishing_policy": "Anything"
         },
         "hacking_strategies": [
             [
                 {
-                    "_name": "SDOutlierRemoval",
-                    "level": "dv",
-                    "max_attempts": 10,
-                    "min_observations": 20,
-                    "multipliers": [
-                        1
+                    "_name": "SubjectiveOutlierRemoval",
+                    "range": [
+                        0.5,
+                        4
                     ],
-                    "n_attempts": 4,
-                    "num": 2,
-                    "order": "max first"
+                    "step_size": 0.1
                 }
             ]
         ],
-        "is_phacker": false,
-        "is_pre_processing": true,
+        "is_phacker": true,
+        "is_pre_processing": false,
         "pre_processing_methods": [
             {
                 "_name": "SDOutlierRemoval",

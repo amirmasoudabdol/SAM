@@ -135,7 +135,8 @@ void Researcher::publishResearch(){
     submission_record = decision_strategy->final_submission;
     
     // Submit the final submission to the Jouranl
-    journal->review(decision_strategy->final_submission);
+    if (decision_strategy->willBeSubmitting())
+        journal->review(decision_strategy->final_submission);
     
 }
 

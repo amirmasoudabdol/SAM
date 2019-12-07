@@ -61,7 +61,12 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                     selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_min()];
 
                 }else{
-                    selectedOutcome = pre_registered_group;
+//                    selectedOutcome = pre_registered_group;
+                    
+                    /// Update: I'm experimenting with the case where I report the min p-value
+                    /// in the case where there is no Sig p-value.
+                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
+                    + experiment.setup.nd();
                 }
             }
             break;
@@ -103,7 +108,12 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                 if (sig_indexes.n_elem != 0) {
                     selectedOutcome = sig_indexes.at(0);
                 }else{
-                    selectedOutcome = pre_registered_group;
+//                    selectedOutcome = pre_registered_group;
+
+                    /// Update: I'm experimenting with the case where I report the min p-value
+                    /// in the case where there is no Sig p-value
+                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
+                    + experiment.setup.nd();
                 }
             }
             break;
