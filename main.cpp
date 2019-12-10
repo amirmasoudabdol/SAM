@@ -90,16 +90,16 @@ int main(int argc, const char** argv){
     configFile >> jSimConfig;
 
     if (vm.count("output-path")){
-        jSimConfig["SimulationParameters"]["output_path"] = vm["output-path"].as<string>();
+        jSimConfig["simulation_parameters"]["output_path"] = vm["output-path"].as<string>();
     }else{
-        jSimConfig["SimulationParameters"]["output_path"] = "../outputs/";
+        jSimConfig["simulation_parameters"]["output_path"] = "../outputs/";
     }
 
     if (vm.count("output-prefix")){
         const string output_prefix = vm["output-prefix"].as<string>();
-        jSimConfig["SimulationParameters"]["output_prefix"] = output_prefix;
+        jSimConfig["simulation_parameters"]["output_prefix"] = output_prefix;
     }else{
-        jSimConfig["SimulationParameters"]["output_prefix"] = "";
+        jSimConfig["simulation_parameters"]["output_prefix"] = "";
     }
     
     runSimulation(jSimConfig);
@@ -118,17 +118,17 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
 
-    FLAGS::VERBOSE = simConfig["SimulationParameters"]["verbose"];
-    FLAGS::PROGRESS = simConfig["SimulationParameters"]["progress"];
-    FLAGS::DEBUG = simConfig["SimulationParameters"]["debug"];
+    FLAGS::VERBOSE = simConfig["simulation_parameters"]["verbose"];
+    FLAGS::PROGRESS = simConfig["simulation_parameters"]["progress"];
+    FLAGS::DEBUG = simConfig["simulation_parameters"]["debug"];
 
     int masterseed {0};
-    if (simConfig["SimulationParameters"]["master_seed"] == "random") {
-        simConfig["SimulationParameters"]["master_seed"] = masterseed;
+    if (simConfig["simulation_parameters"]["master_seed"] == "random") {
+        simConfig["simulation_parameters"]["master_seed"] = masterseed;
         masterseed = static_cast<int>(time(NULL));
         Random::seed(masterseed);
     }else{
-        masterseed = simConfig["SimulationParameters"]["master_seed"];
+        masterseed = simConfig["simulation_parameters"]["master_seed"];
         Random::seed(masterseed);
     }
     
@@ -138,27 +138,27 @@ void runSimulation(json& simConfig){
 
     // Initiate the csvWriter
     // I need an interface for this
-    bool is_saving_pubs = simConfig["SimulationParameters"]["save_pubs"];
-    std::string pubsfilename = simConfig["SimulationParameters"]["output_path"].get<std::string>() +\
-                                 simConfig["SimulationParameters"]["output_prefix"].get<std::string>() +\
+    bool is_saving_pubs = simConfig["simulation_parameters"]["save_pubs"];
+    std::string pubsfilename = simConfig["simulation_parameters"]["output_path"].get<std::string>() +\
+                                 simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +\
                                  "_pubs.csv";
     
-    bool is_saving_rejected = simConfig["SimulationParameters"]["save_rejected"];
-    std::string rejectedfilename = simConfig["SimulationParameters"]["output_path"].get<std::string>() +\
-                                 simConfig["SimulationParameters"]["output_prefix"].get<std::string>() +\
+    bool is_saving_rejected = simConfig["simulation_parameters"]["save_rejected"];
+    std::string rejectedfilename = simConfig["simulation_parameters"]["output_path"].get<std::string>() +\
+                                 simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +\
                                  "_rejected.csv";
     
-    bool is_saving_stats = simConfig["SimulationParameters"]["save_stats"];
-    std::string statsfilename = simConfig["SimulationParameters"]["output_path"].get<std::string>() +\
-                                simConfig["SimulationParameters"]["output_prefix"].get<std::string>() +\
+    bool is_saving_stats = simConfig["simulation_parameters"]["save_stats"];
+    std::string statsfilename = simConfig["simulation_parameters"]["output_path"].get<std::string>() +\
+                                simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +\
                                 "_stats.csv";
     
-    bool is_saving_sims = simConfig["SimulationParameters"]["save_sims"];
-    std::string simsfilename = simConfig["SimulationParameters"]["output_path"].get<std::string>() +\
-                                simConfig["SimulationParameters"]["output_prefix"].get<std::string>() +\
+    bool is_saving_sims = simConfig["simulation_parameters"]["save_sims"];
+    std::string simsfilename = simConfig["simulation_parameters"]["output_path"].get<std::string>() +\
+                                simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +\
                                 "_sims.csv";
 
-    int nSims = simConfig["SimulationParameters"]["n_sims"];
+    int nSims = simConfig["simulation_parameters"]["n_sims"];
     
     std::unique_ptr<PersistenceManager::Writer> pubswriter;
     std::unique_ptr<PersistenceManager::Writer> rejectedwriter;
@@ -179,7 +179,7 @@ void runSimulation(json& simConfig){
         simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
     
 //    std::cout << std::endl;
-    for (int i = 0; i < simConfig["SimulationParameters"]["n_sims"]; i++) {
+    for (int i = 0; i < simConfig["simulation_parameters"]["n_sims"]; i++) {
 
         while (researcher.journal->isStillAccepting()) {
 

@@ -154,16 +154,16 @@ namespace sam {
             /// TODO: I can technically replace all these direct calls with calls
             /// to their counterpart in the Builder!
             
-            researcher.experiment = new Experiment(config["ExperimentParameters"]);
+            researcher.experiment = new Experiment(config["experiment_parameters"]);
             
-            researcher.journal = new Journal(config["JournalParameters"]);
+            researcher.journal = new Journal(config["journal_parameters"]);
             
-            researcher.decision_strategy = DecisionStrategy::build(config["ResearcherParameters"]["decision_strategy"]);
+            researcher.decision_strategy = DecisionStrategy::build(config["researcher_parameters"]["decision_strategy"]);
             
             // Parsing Hacking Strategies
-            researcher.is_hacker = config["ResearcherParameters"]["is_phacker"];
+            researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
             if (researcher.is_hacker){
-                for (auto &set : config["ResearcherParameters"]["hacking_strategies"]) {
+                for (auto &set : config["researcher_parameters"]["hacking_strategies"]) {
                     
                     researcher.hacking_strategies.push_back({});
                     
@@ -177,9 +177,9 @@ namespace sam {
                 }
             }
 
-            researcher.is_pre_processing = config["ResearcherParameters"]["is_pre_processing"];
+            researcher.is_pre_processing = config["researcher_parameters"]["is_pre_processing"];
             if (researcher.is_pre_processing){
-                for (auto &item : config["ResearcherParameters"]["pre_processing_methods"]) {
+                for (auto &item : config["researcher_parameters"]["pre_processing_methods"]) {
                         
                     researcher.pre_processing_methods.push_back(HackingStrategy::build(item));
                     

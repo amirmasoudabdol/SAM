@@ -1,5 +1,18 @@
 {
-    "ExperimentParameters": {
+    "simulation_parameters": {
+        "debug": false,
+        "master_seed": 42,
+        "n_sims": 5,
+        "output_path": "../outputs/",
+        "output_prefix": "",
+        "progress": false,
+        "save_pubs": true,
+        "save_rejected": true,
+        "save_sims": false,
+        "save_stats": true,
+        "verbose": true
+    },
+    "experiment_parameters": {
         "data_strategy": {
             "_name": "GradedResponseModel",
             "abilities": [
@@ -27,13 +40,13 @@
             "side": "TwoSided"
         }
     },
-    "JournalParameters": {
+    "journal_parameters": {
         "max_pubs": 20,
         "selection_strategy": {
             "_name": "FreeSelection"
         }
     },
-    "ResearcherParameters": {
+    "researcher_parameters": {
         "decision_strategy": {
             "_name": "PatientDecisionMaker",
             "preference": "MinSigPvalue",
@@ -67,18 +80,5 @@
                 "order": "random"
             }
         ]
-    },
-    "SimulationParameters": {
-        "debug": false,
-        "master_seed": 42,
-        "n_sims": 5,
-        "output_path": "../outputs/",
-        "output_prefix": "",
-        "progress": false,
-        "save_pubs": true,
-        "save_rejected": true,
-        "save_sims": false,
-        "save_stats": true,
-        "verbose": true
     }
 }

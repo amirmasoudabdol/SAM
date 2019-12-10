@@ -48,7 +48,7 @@ namespace sam {
         //! Total number of groups. Always calculated as
         //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
         //! variables, \f$n_g = n_c \times n_d \times n_i\f$
-        int ng_ {};
+        int ng_ {0};
 
         // Experiment Parameters
         arma::Row<int> nobs_;
