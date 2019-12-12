@@ -77,9 +77,9 @@ namespace sam {
         MaxSigEffect,
         MaxEffect,
         MinPvalueMaxEffect,
-        //! Specifies a preference in which the researcher reports a random significant outcome.
-        //! @note If no significant result found, the outcome with the smallest p-value will be selected.
-        RandomSigPvalue,
+    
+        RandomSigPvalue, ///< Specifies a preference in which the researcher reports a random significant outcome.
+                         ///< @note If no significant result found, the outcome with the smallest p-value will be selected.
         
         MaxSigPvalue
     };

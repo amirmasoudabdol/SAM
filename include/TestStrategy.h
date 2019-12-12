@@ -56,10 +56,10 @@ namespace sam {
          * Specifying the significant testing method
          */
         enum class TestMethod {
-            TTest,           ///< T-test
-            FTest,            ///< F-test
-            YuenTest,
-            WilcoxonTest
+            TTest,           ///< TTest
+            FTest,           ///< FTest
+            YuenTest,        ///< YuenTest
+            WilcoxonTest     ///< WilcoxonTest
         };
         
         /**
