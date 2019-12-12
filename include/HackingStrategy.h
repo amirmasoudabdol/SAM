@@ -257,11 +257,45 @@ namespace sam {
     }
 
 
+    /**
+     @brief The subjective outlier removal refers to a type of outliers removal
+     where the researcher continiously lowers the threshold of identifying an
+     outlier, `k`, until it finds a significant (or satisfactory) result.
+     
+     @sa DecisionStrategy
+     @sa DecisionPreference
+     */
     class SubjectiveOutlierRemoval : public HackingStrategy {
     public:
+        
+        
+        /**
+         @brief SubjectiveOutlierRemoval's parameters.
+         
+         These are parameters specific to this hacking strategy. You can set them
+         either progmatically when you are constructing a new SubjectiveOutlierRemoval,
+         e.g., `SubjectiveOutlierRemoval sor{<name>, {min, max}, ssize};`.
+         
+         Or, when you are using `SAMrun` to run your simulation. In this case, your JSON
+         variable must comply with the name and type of paramters here. For example, the
+         following JSON defines the default subjective outliers removal.
+         
+         ```json
+         {
+            "_name": "SubjectiveOutlierRemoval",
+            "range": [2, 4],
+            "step_size": 0.1
+         }
+         ```
+         */
         struct Parameters {
+            //! A placeholder for the name
             HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
+            
+            //! A vector of `{min, max}`, defining the range of `K`.
             std::vector<int> range {2, 4};  // TODO: This can be replaced by std::pair
+            
+            //! Indicates the step size of walking through K's
             double step_size {0.1};
         };
         

@@ -158,9 +158,6 @@ void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
 /**
  @brief Implementation of Outliers Removal based on an item's distance from the \mu.
  
- The `sd_multiplier`, d is set at the construction, and it'll be used to check
- whether a measurement should be removed or not. Any item satisfying the
- \f$v > |\mu - d * \sigma|\f$  will be removed from the dataset.
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
@@ -238,26 +235,30 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
 }
 
 
-
+/**
+ Perform subjective outliers removal on an Experiment. There is not much difference between
+ this routine and the SDOutlierRemoval, mainly, I generate the Ks beforehand, and the entire
+ procedure is technically one hacking step.
+ 
+ */
 void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy *decision_strategy){
     
     if (FLAGS::VERBOSE)
         std::cout << ">>> Subjective Outliers Removal...\n";
     
-    /// This probably can be done better!
-    static arma::vec Ks = arma::reverse(arma::regspace<arma::vec>(params.range[0], params.step_size, params.range[1]));
+    /// Creating a regularly spaced vector of values with the given start, step, end.
+    static arma::vec Ks = arma::regspace<arma::vec>(params.range[1], -1. * params.step_size, params.range[0]);
     
-    /// The only difference between this and SDOutlierRemoval is the fact that I'll generate the
-    /// Ks and try to find the first one satsifying the results.
-    /// TODO: Check what will happen if I don't find anything!
+    /// Going through K's in order and return as soon as the deicsion_strategy is satisfied.
     for (auto &k : Ks) {
         
+        /// Removing the outliers from control groups as well.
         for (int i{0}; i < experiment->setup.ng(); ++i){
             auto &row = experiment->measurements[i];
             
             arma::rowvec standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
                     
-            // Finding the outliers
+            /// Finding the outliers
             arma::uvec inx = arma::find(standaraized > k);
             
             row.shed_cols(inx);

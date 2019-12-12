@@ -130,7 +130,7 @@ namespace sam {
     public:
         
         struct Parameters {
-            DataModel name{DataModel::LinearModel};
+            DataModel name {DataModel::LinearModel};
             
             double mean{0};
             arma::Row<double> means;

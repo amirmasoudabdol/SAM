@@ -61,10 +61,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                     selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_min()];
 
                 }else{
-//                    selectedOutcome = pre_registered_group;
-                    
-                    /// Update: I'm experimenting with the case where I report the min p-value
-                    /// in the case where there is no Sig p-value.
+                    /// Returning min p-value if I couldn't find any significant p-value
                     selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
                     + experiment.setup.nd();
                 }
@@ -101,17 +98,15 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             
             break;
 
-        case DecisionPreference ::RandomSigPvalue: {
+        case DecisionPreference::RandomSigPvalue: {
             /// Again taking the tail, and shifting the index back into its original range
+            /// Suffling the index vector before selecting the sig outcome.
             arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
             
                 if (sig_indexes.n_elem != 0) {
                     selectedOutcome = sig_indexes.at(0);
                 }else{
-//                    selectedOutcome = pre_registered_group;
-
-                    /// Update: I'm experimenting with the case where I report the min p-value
-                    /// in the case where there is no Sig p-value
+                    /// Returning min p-value if I couldn't find any significant p-value
                     selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
                     + experiment.setup.nd();
                 }
