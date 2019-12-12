@@ -6,9 +6,6 @@
 #define SAMPP_HACKINGSTRATEGYTYPES_H
 
 #include "nlohmann/json.hpp"
-//#include "utils/magic_enum.hpp"
-
-//using namespace magic_enum;
 
 namespace sam {
 

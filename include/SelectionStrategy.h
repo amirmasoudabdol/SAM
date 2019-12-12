@@ -9,7 +9,6 @@
 #include "Submission.h"
 
 #include "nlohmann/json.hpp"
-//#include "utils/magic_enum.hpp"
 #include "effolkronium/random.hpp"
 
 namespace sam {

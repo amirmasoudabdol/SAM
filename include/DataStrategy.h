@@ -353,7 +353,6 @@ namespace sam {
             inline
             void to_json(json& j, const GRMDataStrategy::Parameters& p) {
                 j = json{
-//                    {"_name", magic_enum::enum_name<DataStrategy::DataModel>(p.name)},
                     {"_name", p.name},
                     {"n_items", p.n_items},
                     {"n_categories", p.n_categories},
@@ -366,7 +365,7 @@ namespace sam {
             void from_json(const json& j, GRMDataStrategy::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-                p.name = j.at("_name");
+                j.at("_name").get_to(p.name);
                 
                 j.at("n_items").get_to(p.n_items);
                 j.at("n_categories").get_to(p.n_categories);

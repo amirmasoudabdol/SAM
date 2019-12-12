@@ -16,7 +16,6 @@
 #include "Utilities.h"
 
 #include "nlohmann/json.hpp"
-//#include "utils/magic_enum.hpp"
 
 namespace sam {
 
@@ -209,6 +208,7 @@ namespace sam {
                 TestMethod name = TestMethod::WilcoxonTest;
                 TestSide side = TestSide::TwoSided;
                 double alpha = 0.95;
+                bool use_continuity {true};
             };
             
             Parameters params;
@@ -232,6 +232,7 @@ namespace sam {
                     {"_name", p.name},
                     {"side", p.side},
                     {"alpha", p.alpha}
+                    // , {"use_continuity", p.use_continuity}
                 };
             }
         
@@ -244,6 +245,8 @@ namespace sam {
                 p.side = j.at("side");
                 
                 j.at("alpha").get_to(p.alpha);
+
+                // j.at("use_continuity").get_to(p.use_continuity);
             }
 
 

@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
 
+/**
+* \defgroup DecisionStrategies
+* @brief List of available Decision Strategies
+*
+* Description to come!
+*/
+
 #ifndef SAMPP_DECISIONSTRATEGY_H
 #define SAMPP_DECISIONSTRATEGY_H
 
@@ -55,13 +62,14 @@ namespace sam {
         {DecisionStage::Final, "Final"},
     })
 
-    /**
-     An enum class representing different prefeneces when it comse
-     to selecting an outcome. The DecisionStrategy can choose to
-     report Pre-registered outcome, or any other outcome based on
-     certain criteria, e.g., MinPvalue, where `researcher->decisionStrategy`
-     will prefer an outcome with the lowest p-value.
-     */
+
+    /// @brief An enum class representing different prefeneces.
+    /// @ingroup DecisionStrategies
+    ///
+    /// When it comes to selecting an outcome, the Researcher, i.e., DecisionStrategy,
+    /// can choose to report the pre-registered outcome, or any other outcome based on
+    /// certain criteria/preference, e.g., MinPvalue, where `researcher->decisionStrategy`
+    /// will prefer an outcome with the lowest p-value.
     enum class DecisionPreference {
         PreRegisteredOutcome,
         MinSigPvalue,
@@ -69,7 +77,10 @@ namespace sam {
         MaxSigEffect,
         MaxEffect,
         MinPvalueMaxEffect,
+        //! Specifies a preference in which the researcher reports a random significant outcome.
+        //! @note If no significant result found, the outcome with the smallest p-value will be selected.
         RandomSigPvalue,
+        
         MaxSigPvalue
     };
 
@@ -306,7 +317,10 @@ namespace sam {
     };
 
     /**
+     @ingroup DecisionStrategies
      @brief Implementation of an impatient researcher. In this case, the Researcher will stop as soon as find a significant result and will not continue exploring other hacking methods in his arsenal.
+     
+     
      */
     class ImpatientDecisionMaker : public DecisionStrategy {
         
@@ -355,6 +369,10 @@ namespace sam {
         }
 
 
+    /**
+     @ingroup DecisionStrategies
+     @brief
+     */
     class PatientDecisionMaker : public DecisionStrategy {
 
     public:
@@ -398,6 +416,10 @@ namespace sam {
         j.at("publishing_policy").get_to(p.publishing_policy);
     }
 
+    /**
+     @ingroup DecisionStrategies
+     @brief
+     */
     class HonestDecisionMaker : public DecisionStrategy {
 
     public:
@@ -431,6 +453,12 @@ namespace sam {
 
     };
 
+    /**
+     @ingroup DecisionStrategies
+     @brief A placeholder for empty decision strategy.
+     
+     @todo This should not be allowed actually. Some refactoring and cleanup is needed.
+     */
     class NoDecision : public DecisionStrategy {
         
     public:

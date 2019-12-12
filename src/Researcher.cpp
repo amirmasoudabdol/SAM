@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-//#include <utils/magic_enum.hpp>
 
 #include "Researcher.h"
 
@@ -16,9 +15,7 @@ ResearcherBuilder Researcher::create(std::string name) {
 }
 
 void Researcher::hack() {
-    
-//    using namespace magic_enum;
-    
+        
     for (auto &set : hacking_strategies){
         
         // For each set, we make a copy of the experiment and apply the given
@@ -30,8 +27,6 @@ void Researcher::hack() {
             
             h->perform(&copiedExpr, decision_strategy.get());
             copiedExpr.is_hacked = true;
-            // TODO: Fix me, commented during the magic_enum dropping
-//            copiedExpr.hacks_history.push_back(enum_integer<HackingMethod>(h->name));
             
             decision_strategy->verdict(copiedExpr,
                                             DecisionStage::DoneHacking);

@@ -16,7 +16,6 @@
 #include "DecisionStrategy.h"
 
 #include "nlohmann/json.hpp"
-//#include "utils/magic_enum.hpp"
 #include "effolkronium/random.hpp"
 
 using Random = effolkronium::random_static;
@@ -24,7 +23,6 @@ using Random = effolkronium::random_static;
 namespace sam {
 
     using json = nlohmann::json;
-//    using namespace magic_enum;
     
     class ResearcherBuilder;
 

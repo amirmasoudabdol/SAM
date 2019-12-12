@@ -15,7 +15,6 @@
 #include <random>
 
 #include "utils/permutation.h"
-//#include "utils/magic_enum.hpp"
 #include "effolkronium/random.hpp"
 
 #include "sam.h"
