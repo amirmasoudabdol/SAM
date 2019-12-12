@@ -154,12 +154,12 @@ void fill_vector(arma::Row<T> &vecc, int size, T val){
 //}
 
 arma::Mat<double>
-constructCovMatrix(const arma::Row<double> &vars, const arma::Row<double> &covs, int n);
+constructCovMatrix(const arma::Row<double> &stddevs, const arma::Row<double> &covs, int n);
 
 arma::Mat<double>
-constructCovMatrix(const arma::Row<double> &vars, const double cov, int n);
+constructCovMatrix(const arma::Row<double> &stddevs, const double cov, int n);
 
 arma::Mat<double>
-constructCovMatrix(const double var, const double cov, const int n);
+constructCovMatrix(const double stddev, const double cov, const int n);
 
 #endif //SAMPP_UTILITIES_H

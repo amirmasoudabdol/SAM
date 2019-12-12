@@ -135,9 +135,6 @@ namespace sam {
             double mean{0};
             arma::Row<double> means;
             
-            double var{0};
-            arma::Row<double> vars;
-            
             double stddev{0};
             arma::Row<double> stddevs;
             
@@ -186,10 +183,8 @@ namespace sam {
                 j = json{
                     {"_name", p.name},
                     {"means", arma::conv_to<std::vector<double>>::from(p.means)},
-                    {"vars", arma::conv_to<std::vector<double>>::from(p.vars)},
                     {"stddevs", arma::conv_to<std::vector<double>>::from(p.stddevs)},
                     {"covs", arma::conv_to<std::vector<double>>::from(p.covs)}
-//                    {"sigma", arma::conv_to<std::vector<std::vector<double>>>::from(p.sigma)}
                 };
             }
         
@@ -197,23 +192,19 @@ namespace sam {
             void from_json(const json& j, LinearModelStrategy::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-//                p.name = get_enum_value_from_json<DataStrategy::DataModel>("_name", j);
                 p.name = j.at("_name");
                 
                 // Size of the means vector is going to be used as a reference
                 p.means = arma::conv_to<arma::Row<double>>::from(j.at("means").get<std::vector<double>>());
                 int n = p.means.n_elem;
                 
-                auto v = get_expr_setup_params<double>(j.at("vars"), n);
-                p.vars = arma::conv_to<arma::Row<double>>::from(std::get<0>(v));
-
                 auto sd = get_expr_setup_params<double>(j.at("stddevs"), n);
                 p.stddevs = arma::conv_to<arma::Row<double>>::from(std::get<0>(sd));
 
                 auto cv = get_expr_setup_params<double>(j.at("covs"), n * (n - 1) / 2);
                 p.covs = arma::conv_to<arma::Row<double>>::from(std::get<0>(cv));
 
-                p.sigma = constructCovMatrix(p.vars, p.covs, n);
+                p.sigma = constructCovMatrix(p.stddevs, p.covs, n);
               
             }
 

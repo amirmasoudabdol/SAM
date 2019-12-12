@@ -43,20 +43,22 @@ namespace sam {
 }
 
 arma::Mat<double>
-constructCovMatrix(const arma::Row<double> &vars, const double cov, int n) {
+constructCovMatrix(const arma::Row<double> &stddevs, const double cov, int n) {
     arma::Mat<double> cov_matrix(n, n);
     
     cov_matrix.fill(cov);
-    cov_matrix.diag() = vars;
+    cov_matrix.diag() = arma::pow(stddevs, 2);
     
     return cov_matrix;
 }
 
 arma::Mat<double>
-constructCovMatrix(const arma::Row<double> &vars, const arma::Row<double> &covs, int n) {
+constructCovMatrix(const arma::Row<double> &stddevs, const arma::Row<double> &covs, int n) {
     using namespace arma;
 
     assert(covs.size() == n * (n - 1) / 2);
+    
+    arma::rowvec vars = arma::pow(stddevs, 2);
 
     mat temp(n, n);
     temp.fill(-1);
@@ -77,10 +79,10 @@ constructCovMatrix(const arma::Row<double> &vars, const arma::Row<double> &covs,
 }
 
 arma::Mat<double>
-constructCovMatrix(const double var, const double cov, const int n) {
-    arma::Row<double> vars(n);
-    vars.fill(var);
-    return constructCovMatrix(vars, cov, n);
+constructCovMatrix(const double stddev, const double cov, const int n) {
+    arma::Row<double> stddevs(n);
+    stddevs.fill(stddev);
+    return constructCovMatrix(stddevs, cov, n);
 }
 
 
