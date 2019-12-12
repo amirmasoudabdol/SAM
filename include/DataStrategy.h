@@ -186,6 +186,7 @@ namespace sam {
                 j = json{
                     {"_name", p.name},
                     {"means", arma::conv_to<std::vector<double>>::from(p.means)},
+                    {"vars", arma::conv_to<std::vector<double>>::from(p.vars)},
                     {"stddevs", arma::conv_to<std::vector<double>>::from(p.stddevs)},
                     {"covs", arma::conv_to<std::vector<double>>::from(p.covs)}
 //                    {"sigma", arma::conv_to<std::vector<std::vector<double>>>::from(p.sigma)}

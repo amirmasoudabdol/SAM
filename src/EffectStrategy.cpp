@@ -18,6 +18,8 @@ std::unique_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_confi
         return std::make_unique<CohensD>();
     }else if (effect_strategy_config["_name"] == "HedgesG"){
         return std::make_unique<HedgesG>();
+    }else if (effect_strategy_config["_name"] == "MeanDifference") {
+        return std::make_unique<MeanDifference>();
     }else{
         throw std::invalid_argument("Uknown effect size strategy.\n");
     }
@@ -53,7 +55,21 @@ void HedgesG::computeEffects(Experiment *experiment){
     }
 }
 
+void MeanDifference::computeEffects(Experiment *experiment) {
+    for (int i{experiment->setup.nd()}, d{0};
+        i < experiment->measurements.size();
+        i++, d%=experiment->setup.nd()) {
+        experiment->effects[i] = mean_difference(experiment->means[d], experiment->stddev[d],
+                                                 experiment->means[i], experiment->stddev[i]);
+    }
+}
+
 namespace sam {
+
+    double mean_difference(double Sm1, double Sm2,
+                           double Sd1, double Sd2) {
+        return (Sm1 - Sm2) / (0.5 * sqrt(pow(Sd1, 2) + pow(Sd2, 2)));
+    }
 
     double cohens_d(double Sm1, double Sd1, double Sn1,
     				 double Sm2, double Sd2, double Sn2){

@@ -30,7 +30,8 @@ namespace sam {
         enum class EffectEstimator {
             CohensD,
             HedgesG,
-            OddRatio
+            OddRatio,
+            MeanDifference
         };
         
         struct EffectStrategyParameters {
@@ -47,6 +48,25 @@ namespace sam {
 
         // std::string name = "";
 
+    };
+
+
+    class MeanDifference : public EffectStrategy {
+
+    public:
+
+//        std::string name = "MeanDifference";
+
+        explicit MeanDifference() {
+             // name = "MeanDifference";
+        };
+
+        explicit MeanDifference(EffectStrategyParameters esp) {
+            params = esp;
+        };
+
+        void computeEffects(Experiment *experiment);
+        
     };
 
 
@@ -126,6 +146,8 @@ namespace sam {
     //};
 
 
+    double mean_difference(double Sm1, double Sm2,
+                           double Sd1, double Sd2);
 
     void cohens_d(Experiment *expr);
 

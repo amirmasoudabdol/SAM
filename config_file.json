@@ -1,17 +1,4 @@
 {
-    "simulation_parameters": {
-        "debug": false,
-        "master_seed": 42,
-        "n_sims": 5,
-        "output_path": "../outputs/",
-        "output_prefix": "",
-        "progress": false,
-        "save_pubs": true,
-        "save_rejected": true,
-        "save_sims": false,
-        "save_stats": true,
-        "verbose": true
-    },
     "experiment_parameters": {
         "data_strategy": {
             "_name": "GradedResponseModel",
@@ -29,7 +16,7 @@
             "n_items": 3
         },
         "effect_strategy": {
-            "_name": "CohensD"
+            "_name": "MeanDifference"
         },
         "n_conditions": 5,
         "n_dep_vars": 1,
@@ -80,5 +67,18 @@
                 "order": "random"
             }
         ]
+    },
+    "simulation_parameters": {
+        "debug": false,
+        "master_seed": 42,
+        "n_sims": 5,
+        "output_path": "../outputs/",
+        "output_prefix": "",
+        "progress": false,
+        "save_pubs": true,
+        "save_rejected": true,
+        "save_sims": false,
+        "save_stats": true,
+        "verbose": true
     }
 }
