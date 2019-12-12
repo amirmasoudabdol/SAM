@@ -124,13 +124,12 @@ void runSimulation(json& simConfig){
 
     int masterseed {0};
     if (simConfig["simulation_parameters"]["master_seed"] == "random") {
-        simConfig["simulation_parameters"]["master_seed"] = masterseed;
         masterseed = static_cast<int>(time(NULL));
-        Random::seed(masterseed);
+        simConfig["simulation_parameters"]["master_seed"] = masterseed;
     }else{
-        masterseed = simConfig["simulation_parameters"]["master_seed"];
-        Random::seed(masterseed);
+        masterseed = simConfig["simulation_parameters"]["master_seed"].get<int>();
     }
+    Random::seed(masterseed);
     
     Researcher researcher = Researcher::create("Peter")
                                         .fromConfigFile(simConfig)
