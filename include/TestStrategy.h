@@ -142,9 +142,9 @@ namespace sam {
         void from_json(const json& j, TTest::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = j.at("_name");
+            j.at("_name").get_to(p.name);
             
-            p.side = j.at("side");
+            j.at("side").get_to(p.side);
             
             j.at("alpha").get_to(p.alpha);
         }
@@ -191,9 +191,9 @@ namespace sam {
         void from_json(const json& j, YuenTest::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            p.name = j.at("_name");
+            j.at("_name").get_to(p.name);
             
-            p.side = j.at("side");
+            j.at("side").get_to(p.side);
             
             j.at("alpha").get_to(p.alpha);
             // j.at("trim").get_to(p.trim);
@@ -240,9 +240,9 @@ namespace sam {
             void from_json(const json& j, WilcoxonTest::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-                p.name = j.at("_name");
+                j.at("_name").get_to(p.name);
                 
-                p.side = j.at("side");
+                j.at("side").get_to(p.side);
                 
                 j.at("alpha").get_to(p.alpha);
 

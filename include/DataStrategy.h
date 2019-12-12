@@ -192,7 +192,7 @@ namespace sam {
             void from_json(const json& j, LinearModelStrategy::Parameters& p) {
                 
                 // Using a helper template function to handle the optional and throw if necessary.
-                p.name = j.at("_name");
+                j.at("_name").get_to(p.name);
                 
                 // Size of the means vector is going to be used as a reference
                 p.means = arma::conv_to<arma::Row<double>>::from(j.at("means").get<std::vector<double>>());
