@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
+/**
+* \defgroup HackingStrategies
+* @brief List of available hacking strategies
+*
+* Description to come!
+*/
+
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
 
@@ -85,13 +92,21 @@ namespace sam {
 
     /**
      @brief Declartion of OptionalStopping hacking strategy
+     
+     @ingroup HackingStrategies
      */
     class OptionalStopping : public HackingStrategy {
         
     public:
         
+        /**
+         @ingroup HackingStrategiesParameters
+         */
         struct Parameters {
+            //! Placeholder for hacking strategy name
             HackingMethod name = HackingMethod::OptionalStopping;
+            
+            //! Indicates where the optional stopping should be applied!
             std::string level = "dv";
             
             //! Number of new observations to be added to each group
@@ -103,26 +118,15 @@ namespace sam {
             //! Maximum number of times that Researcher tries to add new observations to
             //! each group
             int max_attempts = 10;
-            
-            bool is_randomized = false;
         };
 
         Parameters params;
+        
+        OptionalStopping() = default;
 
         OptionalStopping(const Parameters &p) : params{p} {
             name = params.name;
         } ;
-
-        OptionalStopping(std::string level = "dv", int num = 3, int n_attempts = 1, int max_attempts = 10)
-        {
-            params.name = HackingMethod::OptionalStopping;
-            params.level = level;
-            params.num = num;
-            params.n_attempts = n_attempts;
-            params.max_attempts = max_attempts;
-            
-            name = params.name;
-        };
 
         void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
         
@@ -176,6 +180,7 @@ namespace sam {
      @brief Declaration of Outlier Removal hacking method based on items' distance from their
      sample mean.
      
+     @ingroup HackingStrategies
      */
     class SDOutlierRemoval : public HackingStrategy {
     public:
@@ -195,25 +200,10 @@ namespace sam {
         };
         
         Parameters params;
-                
-        SDOutlierRemoval(const Parameters &p) : params{p} {
-            name = params.name;
-        };
         
-        // TODO: To be removed!
-        SDOutlierRemoval(std::string level = "dv", std::string order = "max first",
-                         int num = 3, int n_attempts = 1, int max_attempts = 3,
-                         int min_observations = 10, std::vector<double> multipliers = {3})
-        {
-            params.name = HackingMethod::SDOutlierRemoval;
-            params.level = level;
-            params.order = order;
-            params.num = num;
-            params.n_attempts = n_attempts;
-            params.max_attempts = max_attempts;
-            params.min_observations = min_observations;
-            params.multipliers = multipliers;
-            
+        SDOutlierRemoval() = default;
+        
+        SDOutlierRemoval(const Parameters &p) : params{p} {
             name = params.name;
         };
         
@@ -301,6 +291,8 @@ namespace sam {
         
         Parameters params;
         
+        SubjectiveOutlierRemoval() = default;
+        
         SubjectiveOutlierRemoval(const Parameters &p) : params(p) {
             name = params.name;
         };
@@ -339,14 +331,9 @@ namespace sam {
         
         Parameters params;
         
-        GroupPooling(const Parameters &p) : params{p} {
-            name = params.name;
-        };
+        GroupPooling() = default;
         
-        explicit GroupPooling(std::vector<int> nums = {2}) {
-            params.name = HackingMethod::GroupPooling;
-            params.nums = nums;
-            
+        GroupPooling(const Parameters &p) : params{p} {
             name = params.name;
         };
         
