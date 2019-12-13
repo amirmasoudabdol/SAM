@@ -1,24 +1,18 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "GradedResponseModel",
-            "abilities": [
+            "_name": "LinearModel",
+            "covs": 0.5,
+            "means": [
                 0,
-                0.2,
-                0.4,
-                0.6,
-                0.8
+                0.2
             ],
-            "difficulties": [
-                0
-            ],
-            "n_categories": 4,
-            "n_items": 3
+            "stddevs": 1.0
         },
         "effect_strategy": {
             "_name": "MeanDifference"
         },
-        "n_conditions": 5,
+        "n_conditions": 2,
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
@@ -51,7 +45,7 @@
                 }
             ]
         ],
-        "is_phacker": true,
+        "is_phacker": false,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {

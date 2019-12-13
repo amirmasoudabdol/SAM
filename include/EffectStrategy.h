@@ -146,8 +146,8 @@ namespace sam {
     //};
 
 
-    double mean_difference(double Sm1, double Sm2,
-                           double Sd1, double Sd2);
+    double mean_difference(double Sm1, double Sd1,
+                           double Sm2, double Sd2);
 
     void cohens_d(Experiment *expr);
 

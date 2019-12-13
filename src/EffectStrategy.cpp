@@ -66,9 +66,9 @@ void MeanDifference::computeEffects(Experiment *experiment) {
 
 namespace sam {
 
-    double mean_difference(double Sm1, double Sm2,
-                           double Sd1, double Sd2) {
-        return (Sm1 - Sm2) / (0.5 * sqrt(pow(Sd1, 2) + pow(Sd2, 2)));
+    double mean_difference(double Sm1, double Sd1,
+                           double Sm2, double Sd2) {
+        return (Sm1 - Sm2) / sqrt( 0.5 * ( pow(Sd1, 2) + pow(Sd2, 2) ) );
     }
 
     double cohens_d(double Sm1, double Sd1, double Sn1,
