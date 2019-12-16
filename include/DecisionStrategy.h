@@ -81,7 +81,9 @@ namespace sam {
         RandomSigPvalue, ///< Specifies a preference in which the researcher reports a random significant outcome.
                          ///< @note If no significant result found, the outcome with the smallest p-value will be selected.
         
-        MaxSigPvalue
+        MaxSigPvalue,
+        
+        MarjansHacker
     };
 
 
@@ -94,6 +96,7 @@ namespace sam {
         {DecisionPreference::MinPvalueMaxEffect, "MinPvalueMaxEffect"},
         {DecisionPreference::RandomSigPvalue, "RandomSigPvalue"},
         {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
+        {DecisionPreference::MarjansHacker, "MarjansHacker"},
     })
 
 

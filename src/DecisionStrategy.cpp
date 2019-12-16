@@ -110,6 +110,33 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                 }
             }
             break;
+            
+        case DecisionPreference::MarjansHacker: {
+            
+            /// Selecting a RandomSigPvalue,
+            /// if not exist, selecting a positive effect,
+            /// if not exist, selecting a min_pvalue
+            
+            
+            arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
+            
+            if (sig_indexes.n_elem != 0) {
+                selectedOutcome = sig_indexes.at(0);
+            }else{
+                /// Returning min p-value if I couldn't find any significant p-value
+                
+                arma::uvec pos_effects = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) > 0.);
+                
+                if (pos_effects.n_elem != 0){
+                    selectedOutcome = pos_effects.at(0) + experiment.setup.nd();
+                }else{
+                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
+                    + experiment.setup.nd();
+                }
+                
+            }
+        }
+            break;
     }
     
     return {experiment, selectedOutcome};

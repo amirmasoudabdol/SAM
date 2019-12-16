@@ -30,7 +30,7 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "PatientDecisionMaker",
-            "preference": "MinSigPvalue",
+            "preference": "MarjansHacker",
             "publishing_policy": "Anything"
         },
         "hacking_strategies": [
