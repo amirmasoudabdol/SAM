@@ -37,6 +37,7 @@
             [
                 {
                     "_name": "SubjectiveOutlierRemoval",
+                    "min_observations": 5,
                     "range": [
                         0.5,
                         4
@@ -45,7 +46,7 @@
                 }
             ]
         ],
-        "is_phacker": false,
+        "is_phacker": true,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
