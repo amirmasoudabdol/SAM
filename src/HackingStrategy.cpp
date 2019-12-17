@@ -260,6 +260,10 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
             /// Finding the outliers
             arma::uvec inx = arma::find(standaraized > k);
             
+            /// Keeping at least `min_observations`
+            if ((row.n_elem - inx.n_elem) <= params.min_observations)
+                inx = inx.head(row.n_elem - params.min_observations);
+            
             row.shed_cols(inx);
         }
         
