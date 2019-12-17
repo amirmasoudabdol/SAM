@@ -287,6 +287,10 @@ namespace sam {
             
             //! Indicates the step size of walking through K's
             double step_size {0.1};
+            
+            //! Indicates minimum number of observatons
+            // TODO: Implement me!
+            int min_observations {5};
         };
         
         Parameters params;
@@ -306,7 +310,8 @@ namespace sam {
             j = json{
                 {"_name", p.name},
                 {"range", p.range},
-                {"step_size", p.step_size}
+                {"step_size", p.step_size},
+                {"min_observations", p.min_observations}
             };
         }
 
@@ -317,6 +322,7 @@ namespace sam {
             j.at("_name").get_to(p.name);
             j.at("range").get_to(p.range);
             j.at("step_size").get_to(p.step_size);
+            j.at("min_observations").get_to(p.min_observations);
         }
     
 
