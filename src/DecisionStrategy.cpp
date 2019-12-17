@@ -53,7 +53,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             /// Getting the indexes corresponding to significant results
             arma::uvec sig_indexes = arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1) + experiment.setup.nd();
             
-                if (sig_indexes.n_elem != 0) {
+                if (not sig_indexes.is_empty()) {
                     /// Selecting the smallest p-value between the groups with significant results,
                     /// and translating/selecting the correct index.
                     selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_min()];
@@ -101,7 +101,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             /// Suffling the index vector before selecting the sig outcome.
             arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
             
-                if (sig_indexes.n_elem != 0) {
+                if (not sig_indexes.is_empty()) {
                     selectedOutcome = sig_indexes.at(0);
                 }else{
                     /// Returning min p-value if I couldn't find any significant p-value
@@ -120,14 +120,14 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             
             arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
             
-            if (sig_indexes.n_elem != 0) {
+            if (not sig_indexes.is_empty()) {
                 selectedOutcome = sig_indexes.at(0);
             }else{
                 /// Returning min p-value if I couldn't find any significant p-value
                 
                 arma::uvec pos_effects = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) > 0.);
                 
-                if (pos_effects.n_elem != 0){
+                if (not pos_effects.is_empty()){
                     selectedOutcome = pos_effects.at(0) + experiment.setup.nd();
                 }else{
                     selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
@@ -149,8 +149,50 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
         case DecisionPreference::PreRegisteredOutcome:
             break;
             
-        case DecisionPreference::MinSigPvalue:
+        case DecisionPreference::MinSigPvalue: {
 
+            arma::uword inx;
+            arma::vec pvalues(submissions_pool.size());
+            pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });
+            
+            arma::vec sigs(submissions_pool.size());
+            sigs.imbue([&, i = 0]() mutable { return submissions_pool[i++].sig; });
+            
+            arma::uvec sig_inxs = arma::find(sigs == 1);
+            
+            if (not sig_inxs.is_empty()){
+                arma::uword min_sig_pvalue_inx = pvalues(sig_inxs).index_min();
+                inx = min_sig_pvalue_inx + (submissions_pool.size() - sig_inxs.n_elem + 1);
+                return submissions_pool[inx];
+            }else{
+                /// If there is no sig
+                return submissions_pool.back();
+            }
+            
+        }
+            break;
+            
+        case DecisionPreference::RandomSigPvalue: {
+            
+            arma::uword inx;
+            arma::vec pvalues(submissions_pool.size());
+            pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });
+            
+            arma::vec sigs(submissions_pool.size());
+            sigs.imbue([&, i = 0]() mutable { return submissions_pool[i++].sig; });
+            
+            arma::uvec sig_inxs = arma::shuffle(arma::find(sigs == 1));
+            
+            if (not sig_inxs.is_empty()){
+                /// It's already shuffled, so I can just take the first one
+                inx = sig_inxs.at(0);
+                return submissions_pool[inx];
+            }else{
+                /// If there is no sig
+                return submissions_pool.back();
+            }
+            
+        }
             break;
             
         case DecisionPreference::MinPvalue:
@@ -174,6 +216,35 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
             break;
             
         case DecisionPreference::MinPvalueMaxEffect:
+            
+            break;
+            
+            
+        case DecisionPreference::MarjansHacker: {
+            
+            arma::vec pvalues(submissions_pool.size());
+            pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });
+            
+            arma::vec sigs(submissions_pool.size());
+            sigs.imbue([&, i = 0]() mutable { return submissions_pool[i++].sig; });
+            
+            arma::uvec sig_inxs = arma::find(sigs == 1);
+            
+            if (not sig_inxs.is_empty()) {
+                /// Returning the first sig found
+                return submissions_pool[sig_inxs.at(0)];
+            }else{
+                arma::vec effects(submissions_pool.size());
+                effects.imbue([&, i = 0]() mutable { return submissions_pool[i++].effect; });
+                arma::uvec pos_effects = arma::find(effects > 0);
+                if (not pos_effects.is_empty()){
+                    return submissions_pool[pos_effects.at(0)];
+                }else{
+                    return submissions_pool[pvalues.index_min()];
+                }
+            }
+            
+        }
             
             break;
             
