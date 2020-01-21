@@ -58,8 +58,10 @@ exhale_args = {
     "createTreeView":        True,
     "exhaleExecutesDoxygen": True,
     "exhaleDoxygenStdin": textwrap.dedent('''
-        INPUT       = ../include
-        EXCLUDE     = ../include/utils \
+        INPUT       = 
+        EXCLUDE     = ../src \
+                      ../include \
+                      ../include/utils \
                       ../include/csv \
                       ../include/effolkronium
 
