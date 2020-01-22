@@ -53,16 +53,22 @@ diagonal row of the covariance matrix.
 ``--covs``         :math:`\Sigma`, ``double``, ``matrix``
 ================== =========================================
 
-.. _data-strategies-latent:
 
-Latent Model
-------------
+.. _data-strategies-grm:
 
-============== =============================================
-**Parameters** **Value**
-============== =============================================
-``--n-items``  :math:`n_i`, ``int``, or ``array``
-``--loadings`` :math:`\lambda`, ``double`` or ``array``
-``--err-vars`` :math:`\epsilon_\mu`, ``double`` or ``array``
-``--err-covs`` :math:`\epsilon_\sigma`, ``double``
-============== =============================================
+Graded Scale Model
+------------------
+
+.. .. _data-strategies-latent:
+
+.. Latent Model
+.. ------------
+
+.. ============== =============================================
+.. **Parameters** **Value**
+.. ============== =============================================
+.. ``--n-items``  :math:`n_i`, ``int``, or ``array``
+.. ``--loadings`` :math:`\lambda`, ``double`` or ``array``
+.. ``--err-vars`` :math:`\epsilon_\mu`, ``double`` or ``array``
+.. ``--err-covs`` :math:`\epsilon_\sigma`, ``double``
+.. ============== =============================================

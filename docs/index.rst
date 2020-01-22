@@ -29,8 +29,11 @@ designing your own simulation.
    flow
    configuration-file
    data-strategies
+   test-strategies
+   effect-strategies
    hacking-strategies
    decision-strategies
+   selection-strategies
 
 
 .. Indices and tables
