@@ -224,10 +224,16 @@ More details about will be discussed in :doc:`test-strategies` chapter.
 Effect Strategy
 ^^^^^^^^^^^^^^^
 
+
+``EffectStrategy`` defines a method of calculating the magnitude of effect between two experimental group.
+Like most other strategies, users are able to define their own effect strategy. This will be discussed in :doc:`extending-sam`.
+
+
 List of available effect strategies:
 
    - Cohen's D
    - Hedge's G
+   - Odd Ratio
    - Mean Difference
 
 
@@ -240,9 +246,9 @@ Journal
    :align: right
    :width: 50%
 
-In SAM, ``Journal`` is often a container for *accepted* publications. ``Journal`` is designed to mimic the reviewing process.
+In SAM, a ``Journal`` is often a container for *accepted* publications. ``Journal`` is designed to mimic the reviewing process.
 Therefore, it can use any arbitrary algorithms for deciding whether a
-submission will be accepted or not.
+submission will be accepted or not. 
 
 Below is a list of variables and parameters of ``Journal``.
 
@@ -257,10 +263,10 @@ Below is a list of variables and parameters of ``Journal``.
 -  ``review()``, ``accept()``, ``reject()``,
 -  ``submissionList``, a list of accepted submissions, i.e.,
    publications.
--  :ref:`more … exhale_class_class_journal`
+.. -  :ref:`more … exhale_class_class_journal`
 
-You can set these parameters using
-:ref:`config-file-journal-parameters` section of the configuration file.
+You can set these parameters using `journal_parameters <configuration-file.rst#config-file-journal-parameters>`__ 
+section of the configuration file.
 
 .. _design-selection-strategy:
 
