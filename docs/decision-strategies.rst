@@ -3,6 +3,10 @@
 Decision Strategies
 ===================
 
+
+.. pull-quote::
+    Decision Strategy executes researcher’s logic behind starting and stopping the questionable research practices.
+
 Decision strategy is one of the important components of SAM. It tries to
 implement ``Researcher``\’s intuition and logic during different stages
 of the research. While I have briefly covered the 
@@ -68,7 +72,7 @@ Impatient Decision Maker
 An “impatient researcher” stops his effort as soon as he/she finds a
 significant result. This could be before, during or after applying
 *p*-hacking methods. You can specify an *impatient decision maker* by
-setting the ``--decision-strategy`` value:
+setting the ``decision-strategy`` value:
 
 .. code:: json
 

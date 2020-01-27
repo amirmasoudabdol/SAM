@@ -3,6 +3,9 @@
 Hacking Strategies
 ==================
 
+.. pull-quote::
+    Hacking Strategy encapsulates the processes or procedures for performing different questionable research practices.
+
 SAM can execute a complicated set of hacking strategies on a given
 ``Experiment``. A list of hacking strategies will be applied one-by-one
 and in the given order. ``Researcher`` can observe their influences on
@@ -11,7 +14,7 @@ all outcome variables and decides when to stop, and what to report, see
 :ref:`here flow-perform-research`.
 
 The code below shows how you can define a chain of hacking strategies.
-The ``--p-hacking-methods`` is a *list of list of JSON objects*, see
+The ``p-hacking-methods`` is a *list of list of JSON objects*, see
 :ref:`crash course on JSON config-file-crash-course-on-json`. You
 can define several groups of hacking strategies, each listing different
 hacking strategies with different orders and parameters. Since JSON
@@ -23,8 +26,8 @@ strategies with a different number of methods in each.
 .. code:: json
 
    {
-     "--is-hacker": true,
-     "--p-hacking-methods": [
+     "is-hacker": true,
+     "p-hacking-methods": [
        [ 
           {
               "name": "H1"

@@ -7,19 +7,19 @@ In the `previous section <introduction.html#intro-research-process>`__, I listed
 and entities involving in different stages of a research, e.g.,
 Experiment Setup, Experiment, Researcher, Submission, and Journal.
 *In the abstraction*, each component is a semi-independent entity while
-the whole system and process, i.e., scientific research process, is defined
-through a set of interactions between them.
+the whole system and process, i.e., scientific research, is defined
+through their interactions.
 
 One of our main design goals with SAM was to achieve a level of
 flexibility where we could relatively easily change different aspects of
-the research process. To achieve this, we decoupled the
+this process. To achieve this, we decoupled the
 system to smaller — but conceptually meaningful — routines and
-entities. Figure 1. shows all the components of SAM and their
-dependencies and their interactions with each other.
+entities. Figure 1. shows SAM's components, and their
+dependencies and interactions with each other.
 
 This section will clarify the design principles behind each component,
 what they try to resemble in the real world and how they work and
-interact with each other in order to simulate as much as possible of the scientific process.
+interact with each other in order to simulate as much as the scientific process, as possible.
 
 .. figure:: figures/components.png
    :align: center
@@ -38,57 +38,57 @@ one of the subprocesses or entities that are discussed in the
 :doc:`introduction`. The list below briefly introduces
 each component and its role.
 
--  The :ref:`design-experiment` comprises of several subroutines and
-   objects dealing with different aspects of a research, e.g., setup,
+-  The :ref:`design-experiment` comprises of several parts, each 
+   dealing with different aspects of a research, e.g., setup,
    data, test, effect.
 
-   -  :ref:`design-experiment-setup` holds the parameters of an
-      experiment design. Researcher can only set these parameters once, at the start
-      of the experiment. In fact, the *ExperimentSetup* implementation tries to resemble the concept of *pre-registration* as close as possible.
+   -  :ref:`design-experiment-setup` holds the specification of the design. Researcher can only set these parameters once, at the start
+      of an experiment. In fact, the *ExperimentSetup* implementation tries to mimic the concept of *pre-registration* as closed as possible.
+
       -  :ref:`design-data-strategy` is a routine used to generate
          the data based on the specified parameters in the
          *ExperimentSetup*.
-      -  :ref:`design-test-strategy` is a statistical method of
-         choice in the *ExperimentSetup* for testing the result of the
+      -  :ref:`design-test-strategy` is the statistical method of
+         choice in the *ExperimentSetup* for testing the result of an
          *Experiment*.
       -  :ref:`design-effect-strategy` is the forumla for calculating effect sizes in an experiment.
 
 -  The :ref:`design-researcher` object imitates the behaviors of a
    researcher, including possible questionable research practices conducted by him/her. The researcher will define the *ExperimentSetup*, generate and collect the data, run the statistical test, decides whether to preform any
-   QRPs, prepare the *Submission* record, and finally submit the outcome to his
-   *Journal* of choice.
+   QRPs, prepare the *Submission* record, and finally submit its finding(s) to the
+   *Journal* of her/his choice.
 
    -  :ref:`decision-strategies` is the underling logic
       of selecting outcome variables between all available variables in an experiment.
    -  :ref:`hacking-strategies` is a list of
       questionable research practices in researcher’s arsenal. In the case
       where the researcher decides to hack his/her way through finding significant
-      results, he/she uses these methods.
+      results, he/she can use these methods.
 
--  The :ref:`design-journal` is a container of :ref:`design-submission`\ (s), i.e.,
-   published studies. The Journal keeps track of its publications and
+-  The :ref:`design-journal` is a container for :ref:`design-submission`\ (s), i.e.,
+   published results. The Journal keeps track of its publications and
    can utilize different metrics to adapts its selection strategy.
 
    -  :ref:`selection-strategy` is the internal
       algorithm by which the journal decides whether a submission will
-      be accepted.
+      be accepted, or not.
    -  :ref:`submission` is a short report, acting as a
-      *scientific paper*. When it gets accepted by the *Journal*, it
-      considered as a publication.
+      *scientific paper*, *a manuscript*. When it gets accepted by the *Journal*, it
+      will be a publication.
 
 .. note::
 
    Unlike a real scientific journal that covers a wide
    range of research tracks, SAM’s Journal in its current implementation
    assumes that all submitted publications are from one research track.
-   In other words, SAM’s ``Journal`` mainly acts as a pool of related studies.
+   In other words, SAM’s journals are mainly acting as a pool for related studies.
 
 .. note::
 
    SAM uses several object-oriented principles and design patterns to
    achieve the level of flexibility that is offering. Since all components
-   of SAM are technically C++ classes, from now on, I’ll refer to them as
-   objects, e.g., Experiment object.
+   of SAM are technically C++ classes, from now on, I may refer to them as
+   objects, e.g., Experiment object, and they will appear in monospace font.
 
 .. _design-experiment:
 
@@ -99,20 +99,20 @@ Experiment
    :align: right
    :width: 50%
 
-As mentioned, ``Experiment`` object acts as an umbrella object for
+As mentioned, ``Experiment`` object acts as an umbrella for
 everything related to an actual experiment. This includes metadata
 (a.k.a ``ExperimentSetup``), raw data, method/model for generating the data,
-e.g., :ref:`data-strategies-linear-model`, and methods of
+e.g., :ref:`Linear Model <data-strategies.rst#data-strategies-linear-model>`__, and methods of
 testing the hypothesis, and calculating the effect.
 The ``Researcher`` object has the complete
-control over every aspects of an ``Experiment`` **with one exception**, it
-can only read but not change the ``ExperimentSetup`` object. This is an
-important factor when later we implement the concept of
+control over every aspects of an ``Experiment`` **with one exception**: it
+can only read and not change the ``ExperimentSetup`` object. This is an
+important factor when later on we implement the concept of
 pre-registration.
 
 Below is a short list of variables and methods of ``Experiment``.
 
--  *Data Objects*
+-  ``Data`` object
 
    -  ``measurements``, a dataset of all data points for each group
    -  ``nobs``, the number of observations in each group
@@ -124,13 +124,9 @@ Below is a short list of variables and methods of ``Experiment``.
    -  ``effects``, the effect size of each group
    -  ``sign``, an indicator of significance for each group
 
--  ``dataStrategy``, a pointer to the selected
-   :doc:`data-strategies`.
--  ``testStrategy``, a pointer to the selected
-   :doc:`test-strategies`.
--  ``effectStrategy``, a pointer to the selected 
-   :doc:`effect-strategies`.
--  :ref:`more … exhale_class_class_experiment`
+- ``setup``, a reference to the :ref:`design-experiment-setup`.
+
+.. -  :ref:`more … exhale_class_class_experiment`
 
 A full list of available parameters are listed in the
 :ref:`config-file-experiment-parameters` section of the configuration file.
@@ -142,9 +138,8 @@ Experiment Setup
 
 SAM treats the ``ExperimentSetup`` object as a read-only object after
 the initialization phase. During the initialization phase, SAM
-initializes and randomizes the ``ExperimentSetup`` based on the listed
-parameters in the configuration file (link to the section). After the
-initialization phase, ``ExperimentSetup`` will persist intact in the
+initializes and randomizes the ``ExperimentSetup`` based on given criteria. After the
+initialization phase, ``ExperimentSetup`` will stay intact in the
 code and will be used as a reference point in different stages. 
 
 .. For instance, if you define a ``Journal`` in such that it requires the study
@@ -153,36 +148,43 @@ code and will be used as a reference point in different stages.
 
 Below is a list of variables and methods of ``ExperimentSetup``, read
 more `here <configuration-file.html#config-file-experiment-parameters>`__
-and :doc:`decision-strategies`.
+and :doc:`data-strategies`:
 
--  ``experimentType``, underlying model for generating data.
 -  ``nc``, the number of conditions
 -  ``nd``, the number of dependent variables
--  ``ni``, the number of items, if necessary
--  ``true_nobs``, the number of observation per group
--  ``true_means``, the mean of each group
--  ``true_vars``, the variance of each group
--  ``true_sigma``, the covariance matrix, if indicated.
--  :ref:`more … exhale_class_class_experiment_setup`
+-  ``dataStrategy``, a pointer to the selected
+   :doc:`data-strategies`.
+-  ``testStrategy``, a pointer to the selected
+   :doc:`test-strategies`.
+-  ``effectStrategy``, a pointer to the selected 
+   :doc:`effect-strategies`.
+
+.. -  ``ni``, the number of items, if necessary
+.. -  ``experimentType``, underlying model for generating data.
+.. -  :ref:`more … exhale_class_class_experiment_setup`
+.. -  ``true_nobs``, the number of observation per group
+.. -  ``true_means``, the mean of each group
+.. -  ``true_vars``, the variance of each group
+.. -  ``true_sigma``, the covariance matrix, if indicated.
 
 .. _design-data-strategy:
 
 Data Strategy
 ^^^^^^^^^^^^^
 
-``DataStrategy`` acts as the study population, i.e., *data source*. This could
-be a simple link to a certain distribution as specified in
-``ExperimentSetup`` [or it could be an interface to an input file, e.g.,
+``DataStrategy`` acts as the population for the study, i.e., *data source*. This could
+be a simple link to a certain distribution [or it could be an interface to an input file, e.g.,
 a CSV file containing measurements for each group]. In general,
 ``DataStrategy`` is responsible for initializing certain variables of
-the ``Experiment``. In most cases, an instance of ``DataStrategy``
-object uses a statistical distribution to sample number of data points
-and populates the ``measurements`` variable, but this can change based
-on the selected model. With certain *p*-hacking methods, e.g., `optional stopping <hacking-strategies.rst#optional-stopping>`__, the data strategy
-should also provide a routine for generating extra data points as
+the ``Experiment``.
+
+In most cases, an instance of ``DataStrategy`` object uses a statistical distribution to sample number of data points
+and populates the ``measurements`` variable, but this differs for different model.
+With certain *p*-hacking methods, e.g., `optional stopping <hacking-strategies.rst#optional-stopping>`__, the data strategy
+should be able to provide a routine for generating *extra* data points as
 requested by the optional stopping.
 
-Data strategies will be discussed in more details in :ref:`decision-strategies` chapter.
+Data strategies will be discussed in more details in :doc:`design-strategies` chapter.
 
 .. _design-test-strategy:
 
@@ -211,10 +213,23 @@ There are several test strategies already implemented:
 .. to add more methods to the pool. T-test needs to know the *side* of the
 .. test, whether variances assumed equal and the value of :math:`\alpha` to
 .. derive the significance. You can set these parameters using the
-.. :ref:```--test-strategy`` config-file-test-strategy`
+.. :ref:```test-strategy`` config-file-test-strategy`
 .. chapter of the configuration file.
 
 More details about will be discussed in :doc:`test-strategies` chapter.
+
+
+.. _design-effect-strategy:
+
+Effect Strategy
+^^^^^^^^^^^^^^^
+
+List of available effect strategies:
+
+   - Cohen's D
+   - Hedge's G
+   - Mean Difference
+
 
 .. _design-journal:
 
@@ -226,7 +241,7 @@ Journal
    :width: 50%
 
 In SAM, ``Journal`` is often a container for *accepted* publications. ``Journal`` is designed to mimic the reviewing process.
-Therefore, it can use any arbitrary algorithm for deciding whether a
+Therefore, it can use any arbitrary algorithms for deciding whether a
 submission will be accepted or not.
 
 Below is a list of variables and parameters of ``Journal``.

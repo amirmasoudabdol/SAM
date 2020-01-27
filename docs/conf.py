@@ -140,7 +140,7 @@ source_suffix = '.rst'
 
 # # The name of the Pygments (syntax highlighting) style to use.
 # # `sphinx` works very well with the RTD theme, but you can always change it
-pygments_style = 'monokai'
+# pygments_style = 'monokai'
 
 # # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 # on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -197,8 +197,8 @@ html_static_path = ['_static']
 latex_engine = 'xelatex'
 
 latex_elements = {
-    'papersize': r'a5paper',
-    'pointsize': r'10pt',
+    'papersize': r'a4paper',
+    'pointsize': r'14pt',
     'fontpkg': r'''
         \setmainfont[]{Nitti Grotesk}
 
@@ -215,6 +215,7 @@ latex_elements = {
         \setlength{\cftchapnumwidth}{0.75cm}
         \setlength{\cftsecindent}{\cftchapnumwidth}
         \setlength{\cftsecnumwidth}{1.25cm}
+        \definecolor{VerbatimBorderColor}{rgb}{1,1,1}
         ''',
     'fncychap': r'''
         \usepackage[Glenn]{fncychap}

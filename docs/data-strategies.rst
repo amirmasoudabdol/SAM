@@ -3,61 +3,149 @@
 Data Strategies
 ===============
 
-``DataStrategy`` provides data for the ``Experiment``. A ``Researcher``
-during the process of :ref:`preparing the research flow-prepare-research` reaches to the
-``DataStrategy`` object and based on the underlying model and parameters
-of the ``Experiment`` — stored in ``ExperimentSetup`` — populates its
-``measurements`` variable. With this routine, we have tried to simulate
-the *process of collecting data* in a scientific research.
+.. pull-quote::
+	Data Strategy is the source of data, i.e., population. It knows the underlying model, and its properties.
+
+``DataStrategy`` populates the ``Experiment``'s data variables. A ``Researcher``,
+during the `preperation process <flow.rst#flow-prepare-research>`__, reaches to ``DataStrategy`` object and based on the underlying model and parameters
+populates experiment's ``measurements`` variables. 
+
+.. With this routine, we have tried to simulate
+.. the *process of collecting data* in a scientific research.
 
 Since ``DataStrategy`` is aware of all underlying model, parameters and
 distribution, it can provide data at any points during the simulation.
-One important implication of this is during the :ref:`optional
-stopping hacking-strategies-optional-stopping` where
-``Researcher`` needs to collect *new* data from the same population he
-started from.
+One important implication of this is during the hacking process. As mentioend, methods like `optional stopping <hacking-strategies.rst#hacking-strategies-optional-stopping>`__ needs to add new data points to the already existing measurements. Requiring data strategies to produce *new* data points helps with implementation of such hacking strategies.
 
-You can select the type of your model by setting ``--data-strategy``
-parameters of the :ref:`config file chap-config-file`.
-Two available options are *Linear Model* and *Latent Model*. Based on
-your model of choice, SAM only uses fractions of parameters provided in
-the configuration file. In this section, we discuss how SAM uses the
-parameters to set up the model and how it generates data.
+.. The ability of  where
+.. ``Researcher`` needs to collect *new* data from the same population he
+.. started from.
+
+You can select the type of model by setting ``name`` variables of the ``data-strategy`` parameter in the config file.
+Two available options are *Linear Model* and *Graded Response Model*. Based on
+your model of choice, you must provide different set of variables. 
+
+..  SAM only uses fractions of parameters provided in
+.. the configuration file. In this section, we discuss how SAM uses the
+.. parameters to set up the model and how it generates data.
+
+Parameters of the ``DataStrategy`` are intertwined with the ``ExperimentSetup``
+parameters. 
+SAM determines the total number of groups, :math:`n_g` (internal
+variable), by multiplying the number of treatment conditions,
+:math:`n_c`, by the number of dependent variables in each condition,
+:math:`n_d`. After knowing the number of groups, each group is being
+populated by :math:`n_o` observations based on the given model, specified in ``data_strategy``.
+
+.. code:: json
+
+	{
+	"experiment_parameters": {
+	        "n_conditions": 2,
+	        "n_dep_vars": 1,
+	        "n_obs": 25
+	        "data_strategy": {
+	        	"_name": "Model",
+	            ...
+	        }
+	    }
+	}
+
+.. table:: General ``ExperimentSetup`` parameters
+
+	================== =========================================
+	**Parameters**     **Value**
+	================== =========================================
+	``n_conditions``   :math:`n_c`, ``int``
+	``n_dep_vars``     :math:`n_d`, ``int``
+	``n_obs``          :math:`n_o`, ``int``
+	================== =========================================
 
 .. _data-strategies-linear:
 
 Linear Model
 ------------
 
-SAM determines the total number of groups, :math:`n_g` (internal
-variable), by multiplying the number of treatment conditions,
-:math:`n_c`, by the number of dependent variables in each condition,
-:math:`n_d`. After knowing the number of groups, each group is being
-populated by :math:`n_o` observations from a multi-variate normal
-distribution with the mean of :math:`\mu` and covariance matrix of
+In the case of Linear Model, SAM uses multi-variate normal distribution with the mean of :math:`\mu` and covariance matrix of
 :math:`\Sigma`, :math:`X \sim MN(\mu, \Sigma)`.
 
 You can change the parameters accordingly to implement your own design.
 For example, in order to set up an experiment with no covariance, you
-may set the ``--covs`` to ``0``. This will prompt SAM to only use the
+may set the ``covs`` to ``0``. This will prompt SAM to only use the
 diagonal row of the covariance matrix.
 
-================== =========================================
-**Parameters**     **Value**
-================== =========================================
-``--n-conditions`` :math:`n_c`, ``int``
-``--n-dep-vars``   :math:`n_d`, ``int``
-``--n-obs``        :math:`n_o`, ``int``
-``--means``        :math:`\mu`, ``double`` or ``array``
-``--vars``         :math:`\sigma^2`, ``double`` or ``array``
-``--covs``         :math:`\Sigma`, ``double``, ``matrix``
-================== =========================================
+.. table:: Parameters of the Linear Model
+
+	================== =========================================
+	**Parameters**     **Value** / **Type**
+	================== =========================================
+	``means``          :math:`\mu`, ``double`` or ``array``
+	``stddevs``        :math:`\sigma^2`, ``double`` or ``array``
+	``covs``           :math:`\Sigma`, ``double``, ``matrix``
+	================== =========================================
+
+.. important::
+
+	Length of all parameters should complies with the given size of the study.
+	For instance, if you are planning to run a study with 2 dependent variables and 2 conditions, you need to specify an array of 4 for the mean of each group.
+
+
+.. admonition:: Example
+	
+	.. code::
+
+		{
+			"data_strategy": {
+				"_name": "LinearModel",
+				"means": [0, 0.2],
+				"covs": 0.0,
+				"stddevs": 1.0,
+			}
+		}
+
+
 
 
 .. _data-strategies-grm:
 
-Graded Scale Model
-------------------
+Graded Response Model
+---------------------
+
+Current implementation of Graded Response Model is based on the generalization of Rasch Model. The probablity of person :math:`j` answering an item :math:`i` correctly, :math:`Pr(X_{ij} = 1)`, can be calculated based on the difficulty :math:`\beta` of the item :math:`i` and the ability :math:`\theta` of a person :math:`j` with the following model [from Marjan]:
+
+
+.. math::
+
+	Pr(X_{ij} = 1) = \frac{exp(\theta_j - \beta_i)}{1 + exp(\theta_j - \beta_i)}
+
+.. table:: Parameters of the Graded Response Model
+
+	================== =========================================
+	**Parameters**     **Value** / **Type**
+	================== =========================================
+	``n_categories``   ``int``
+	``n_items``		   ``int``
+	``abilities``      :math:`\theta`, ``double`` or ``array``
+	``difficulties``   :math:`\beta`, ``double`` or ``array``
+	================== =========================================
+
+After calculating all the responses of person :math:`j` to all items, the sum score of all answers is calcuated for each person by adding all the item scores [from, Marjan 2014].
+
+
+.. admonition:: Example
+	
+	.. code:: json
+
+		{
+		    "_name": "GradedResponseModel"
+			"data_strategy": {
+				"n_categories": 4,
+			    "n_items": 3,
+				"abilities": [0, 0.2],
+				"difficulties": 0,
+		  	}
+		}
+
 
 .. .. _data-strategies-latent:
 
@@ -67,8 +155,8 @@ Graded Scale Model
 .. ============== =============================================
 .. **Parameters** **Value**
 .. ============== =============================================
-.. ``--n-items``  :math:`n_i`, ``int``, or ``array``
-.. ``--loadings`` :math:`\lambda`, ``double`` or ``array``
-.. ``--err-vars`` :math:`\epsilon_\mu`, ``double`` or ``array``
-.. ``--err-covs`` :math:`\epsilon_\sigma`, ``double``
+.. ``n-items``    :math:`n_i`, ``int``, or ``array``
+.. ``loadings``   :math:`\lambda`, ``double`` or ``array``
+.. ``err-vars``   :math:`\epsilon_\mu`, ``double`` or ``array``
+.. ``err-covs``   :math:`\epsilon_\sigma`, ``double``
 .. ============== =============================================
