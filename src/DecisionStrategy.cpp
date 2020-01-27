@@ -143,6 +143,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
 }
 
 
+/// This is often is being used by PatientDecisionMaker
 Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &preference){
     
     switch (preference) {
@@ -221,6 +222,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
             
             
         case DecisionPreference::MarjansHacker: {
+            /// I'm not convinced that this is very representative of what Marjan's does
             
             arma::vec pvalues(submissions_pool.size());
             pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });

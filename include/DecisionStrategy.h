@@ -38,7 +38,7 @@ namespace sam {
          {DecisionMethod::HonestDecisionMaker, "HonestDecisionMaker"},
          {DecisionMethod::PatientDecisionMaker, "PatientDecisionMaker"},
          {DecisionMethod::ImpatientDecisionMaker, "ImpatientDecisionMaker"},
-         {DecisionMethod::NoDecision, "NoDecision"},
+         {DecisionMethod::NoDecision, "NoDecision"}
     })
 
 
@@ -59,7 +59,7 @@ namespace sam {
         {DecisionStage::Initial, "Initial"},
         {DecisionStage::WhileHacking, "WhileHacking"},
         {DecisionStage::DoneHacking, "DoneHacking"},
-        {DecisionStage::Final, "Final"},
+        {DecisionStage::Final, "Final"}
     })
 
 
@@ -96,7 +96,7 @@ namespace sam {
         {DecisionPreference::MinPvalueMaxEffect, "MinPvalueMaxEffect"},
         {DecisionPreference::RandomSigPvalue, "RandomSigPvalue"},
         {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
-        {DecisionPreference::MarjansHacker, "MarjansHacker"},
+        {DecisionPreference::MarjansHacker, "MarjansHacker"}
     })
 
 
@@ -110,7 +110,7 @@ namespace sam {
     NLOHMANN_JSON_SERIALIZE_ENUM( PublishingPolicy, {
         {PublishingPolicy::Anything, "Anything"},
         {PublishingPolicy::AnythingSig, "AnythingSig"},
-        {PublishingPolicy::PreRegSig, "PreRegSig"},
+        {PublishingPolicy::PreRegSig, "PreRegSig"}
     })
 
     /**

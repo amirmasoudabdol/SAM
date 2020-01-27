@@ -254,13 +254,13 @@ namespace sam {
         {TestStrategy::TestMethod::TTest, "TTest"},
         {TestStrategy::TestMethod::FTest, "FTest"},
         {TestStrategy::TestMethod::YuenTest, "YuenTest"},
-        {TestStrategy::TestMethod::WilcoxonTest, "WilcoxonTest"},
+        {TestStrategy::TestMethod::WilcoxonTest, "WilcoxonTest"}
     })
 
     NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestSide, {
         {TestStrategy::TestSide::Less, "Less"},
         {TestStrategy::TestSide::Greater, "Greater"},
-        {TestStrategy::TestSide::TwoSided, "TwoSided"},
+        {TestStrategy::TestSide::TwoSided, "TwoSided"}
     })
 
 

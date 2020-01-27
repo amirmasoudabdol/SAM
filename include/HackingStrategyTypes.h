@@ -28,7 +28,7 @@ namespace sam {
         {HackingMethod::GroupPooling, "GroupPooling"},
         {HackingMethod::ConditionDropping, "ConditionDropping"},
         {HackingMethod::SubjectiveOutlierRemoval, "ConditionDropping"},
-        {HackingMethod::NoHack, "NoHack"},
+        {HackingMethod::NoHack, "NoHack"}
     })
 
     /*
@@ -47,7 +47,7 @@ namespace sam {
         {HackingStage::Setup, "Setup"},
         {HackingStage::DataCollection, "DataCollection"},
         {HackingStage::DataProcessing, "DataProcessing"},
-        {HackingStage::Reporting, "Reporting"},
+        {HackingStage::Reporting, "Reporting"}
     })
 
     struct HackingStrategyParameters {

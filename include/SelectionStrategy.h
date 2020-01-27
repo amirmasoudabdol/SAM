@@ -24,7 +24,7 @@ namespace sam {
 
     NLOHMANN_JSON_SERIALIZE_ENUM( SelectionMethod, {
         {SelectionMethod::SignificantSelection, "SignificantSelection"},
-        {SelectionMethod::RandomSelection, "RandomSelection"},
+        {SelectionMethod::RandomSelection, "RandomSelection"}
     })
 
     /**

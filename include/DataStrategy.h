@@ -379,7 +379,7 @@ namespace sam {
     NLOHMANN_JSON_SERIALIZE_ENUM( DataStrategy::DataModel, {
         {DataStrategy::DataModel::LinearModel, "LinearModel"},
         {DataStrategy::DataModel::LatentModel, "LatentModel"},
-        {DataStrategy::DataModel::GradedResponseModel, "GradedResponseModel"},
+        {DataStrategy::DataModel::GradedResponseModel, "GradedResponseModel"}
     })
 
 }
