@@ -1,4 +1,10 @@
-.. _chap-selection-strategies:
+.. _chap-journal:
+
+
+Journal
+=======
+
+
 
 Selection Strategies
-====================
+--------------------

@@ -4,25 +4,30 @@ Data Strategies
 ===============
 
 .. pull-quote::
-	Data Strategy is the source of data, i.e., population. It knows the underlying model, and its properties.
 
-``DataStrategy`` populates the ``Experiment``'s data variables. A ``Researcher``,
+	*Data Strategy is the source of data, i.e., population. It knows the underlying model, and its properties.*
+
+``DataStrategy`` populates the ``Experiment``'s ``measurements`` variables. A ``Researcher``,
 during the `preperation process <flow.rst#flow-prepare-research>`__, reaches to ``DataStrategy`` object and based on the underlying model and parameters
-populates experiment's ``measurements`` variables. 
+populates/generates/collects data for the experiment.
 
 .. With this routine, we have tried to simulate
 .. the *process of collecting data* in a scientific research.
 
-Since ``DataStrategy`` is aware of all underlying model, parameters and
-distribution, it can provide data at any points during the simulation.
-One important implication of this is during the hacking process. As mentioend, methods like `optional stopping <hacking-strategies.rst#hacking-strategies-optional-stopping>`__ needs to add new data points to the already existing measurements. Requiring data strategies to produce *new* data points helps with implementation of such hacking strategies.
+Since ``DataStrategy`` is aware of all the underlying models, parameters and
+distributions, it can provide data at any points during the simulation.
+One important implication of this is during the hacking process. As mentioend, methods like 
+`optional stopping <hacking-strategies.rst#hacking-strategies-optional-stoppin>`__
+needs to add new data points to the already existing measurements.
+Requiring data strategies to produce *new* data points helps with implementation of such hacking strategies.
 
 .. The ability of  where
 .. ``Researcher`` needs to collect *new* data from the same population he
 .. started from.
 
-You can select the type of model by setting ``name`` variables of the ``data-strategy`` parameter in the config file.
-Two available options are *Linear Model* and *Graded Response Model*. Based on
+You can select the type of model by setting ``_name`` variables of the ``data_strategy`` parameter in the config file.
+Two available options are :ref:`data-strategies-linear` 
+and :ref:`data-strategies-grm`. Based on
 your model of choice, you must provide different set of variables. 
 
 ..  SAM only uses fractions of parameters provided in
@@ -45,7 +50,7 @@ populated by :math:`n_o` observations based on the given model, specified in ``d
 	        "n_dep_vars": 1,
 	        "n_obs": 25
 	        "data_strategy": {
-	        	"_name": "Model",
+	        	"_name": "Model_Name",
 	            ...
 	        }
 	    }
@@ -54,7 +59,7 @@ populated by :math:`n_o` observations based on the given model, specified in ``d
 .. table:: General ``ExperimentSetup`` parameters
 
 	================== =========================================
-	**Parameters**     **Value**
+	**Parameters**     **Value** / **Type**
 	================== =========================================
 	``n_conditions``   :math:`n_c`, ``int``
 	``n_dep_vars``     :math:`n_d`, ``int``
@@ -92,7 +97,7 @@ diagonal row of the covariance matrix.
 
 .. admonition:: Example
 	
-	.. code::
+	.. code:: json
 
 		{
 			"data_strategy": {
@@ -129,7 +134,7 @@ Current implementation of Graded Response Model is based on the generalization o
 	``difficulties``   :math:`\beta`, ``double`` or ``array``
 	================== =========================================
 
-After calculating all the responses of person :math:`j` to all items, the sum score of all answers is calcuated for each person by adding all the item scores [from, Marjan 2014].
+After calculating all responses of person :math:`j` to all items, the sum score of all answers is calcuated for each person by adding all the item scores [from, Marjan 2014].
 
 
 .. admonition:: Example
@@ -140,7 +145,7 @@ After calculating all the responses of person :math:`j` to all items, the sum sc
 		    "_name": "GradedResponseModel"
 			"data_strategy": {
 				"n_categories": 4,
-			    "n_items": 3,
+				"n_items": 3,
 				"abilities": [0, 0.2],
 				"difficulties": 0,
 		  	}

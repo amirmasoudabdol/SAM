@@ -6,11 +6,11 @@ Configuration File
 SAM uses a `JSON <https://www.json.org>`__ file to load and save all
 simulation parameters. The code block below shows a general
 configuration file used by SAM to prepare the simulation and all its
-components. As you can see, the file is separated into 4 different
+components. As it's shown, the file is separated into 4 different
 sections, each corresponding to one of SAM’s components. After
 customizing your own configuration file, you can load it to SAM using
 ``./SAMpp --config=your-configuration-file.json``. This will start the
-simulation as described in the :ref:`chap-flow` section.
+simulation as described in the :doc:`flow` section.
 
 While most parameters are self-explanatory, this section goes into more
 details on how SAM will process and interpret them during the
@@ -18,67 +18,85 @@ initialization phase.
 
 .. code:: json
 
-   {
-     "Simulation Parameters":{
-       "debug": true,
-       "verbose": true,
-       "progress": false,
-       "n-sims": 1,
-       "master-seed": 42,
-       "save-output": true,
-       "output-path": "outputs/",
-       "output-prefix": "auto"
-     },
-     "Experiment Parameters": {
-       "meta-seed": 42,
-       "data-strategy": "Linear Model",
-       "n-conditions": 1,
-       "n-dep-vars": 3,
-       "n-items": 3,
-       "n-obs": 25,
-       "means": 0.25,
-       "vars": 0.5,
-       "covs": 0.00,
-       "loadings": 0.7,
-       "err-vars": 0.01,
-       "err-covs": 0.001,
-       "test-strategy": {
-         "name": "TTest",
-         "side": "Two Side",
-         "alpha": 0.05
-       },
-       "effect-estimators": [
-         "Cohens D",
-         "Hedges G"
-       ]
-     },
-     "Journal Parameters" :{
-       "pub-bias": 0.95,
-       "journal-selection-model": "Significant Selection",
-       "max-pubs": 20,
-       "alpha": 0.05,
-       "side": 0
-     },
-     "Researcher Parameters": {
-       "is-phacker": true,
-       "p-hacking-methods": [
-           [
-               {
-                 "name": "Optional Stopping",
-                 "mode": "Recursive",
-                 "level": "dv",
-                 "num": 3,
-                 "n_attempts": 3,
-                 "max_attempts": 10
-               }
-           ]
-       ],
-       "decision-strategy": {
-         "name": "Impatient Decision Maker",
-         "preference": "Min P-value"
-       }
-     }
-   }
+  {
+      "simulation_parameters": {
+          "debug": false,
+          "master_seed": 42,
+          "n_sims": 5,
+          "output_path": "../outputs/",
+          "output_prefix": "",
+          "progress": false,
+          "save_pubs": true,
+          "save_rejected": true,
+          "save_sims": false,
+          "save_stats": true,
+          "verbose": true
+      },
+      "experiment_parameters": {
+          "n_conditions": 2,
+          "n_dep_vars": 1,
+          "n_obs": 25,
+          "data_strategy": {
+              "_name": "LinearModel",
+              "covs": 0.5,
+              "means": [
+                  0,
+                  0.2
+              ],
+              "stddevs": 1.0
+          },
+          "test_strategy": {
+              "_name": "TTest",
+              "alpha": 0.05,
+              "side": "TwoSided"
+          },
+          "effect_strategy": {
+              "_name": "MeanDifference"
+          }
+      },
+      "journal_parameters": {
+          "max_pubs": 20,
+          "selection_strategy": {
+              "_name": "FreeSelection"
+          }
+      },
+      "researcher_parameters": {
+          "decision_strategy": {
+              "_name": "PatientDecisionMaker",
+              "preference": "MarjansHacker",
+              "publishing_policy": "Anything"
+          },
+          "hacking_strategies": [
+              [
+                  {
+                      "_name": "SubjectiveOutlierRemoval",
+                      "min_observations": 5,
+                      "range": [
+                          0.5,
+                          4
+                      ],
+                      "step_size": 0.1
+                  }
+              ]
+          ],
+          "is_phacker": true,
+          "is_pre_processing": false,
+          "pre_processing_methods": [
+              {
+                  "_name": "SDOutlierRemoval",
+                  "level": "dv",
+                  "max_attempts": 1000,
+                  "min_observations": 10,
+                  "multipliers": [
+                      0.5
+                  ],
+                  "n_attempts": 1000,
+                  "num": 1000,
+                  "order": "random"
+              }
+          ]
+      }
+  }
 
 .. _config-file-simulation-params:
 
@@ -86,36 +104,36 @@ Simulation Parameters
 ---------------------
 
 This section specifies general parameters of the simulation. These
-parameters are not necessarily influencing SAM’s components but will
+parameters are not necessarily influencing SAM components'. They
 define the overall behavior of SAM regarding input and output.
 
 
 .. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
 +---------------------+------------+-------------------------------------------------------+
-| Parameter           | Value      | Description                                           |
+| **Parameter**       | **Type**   | **Description**                                       |
 +=====================+============+=======================================================+
-| ``debug``         | ``bool``   | Runs SAM in debug mode.                               |
+| ``debug``           | ``bool``   | Runs SAM in debug mode.                               |
 +---------------------+------------+-------------------------------------------------------+
-| ``verbose``       | ``bool``   | Causes SAM to be verbose, announcing                  |
+| ``verbose``         | ``bool``   | Causes SAM to be verbose, announcing                  |
 |                     |            | the execution of dfiferent processes.                 |
 +---------------------+------------+-------------------------------------------------------+
-| ``progress``      | ``bool``   | Shows the progress bar.                               |
+| ``progress``        | ``bool``   | Shows the progress bar.                               |
 +---------------------+------------+-------------------------------------------------------+
-| ``master-seed``   | ``int``    | An integer for initiating seed’s of the               |
+| ``master_seed``     | ``int``    | An integer for initiating seed’s of the               |
 |                     |            | *main random number generator stream*. All other      |
 |                     |            | necessary streams will be seeded based on the         |
 |                     |            | given seed. Setting this to ``"random"`` tells        |
 |                     |            | SAM to use the clock to randomize the random          |
 |                     |            | seed. (default: ``42``)                               |
 +---------------------+------------+-------------------------------------------------------+
-| ``n-sims``        | ``int``    | Number of simulation repeated simulation for          |
+| ``n_sims``          | ``int``    | Number of simulation repeated simulation for          |
 |                     |            | given parameters.                                     |
 +---------------------+------------+-------------------------------------------------------+
-| ``save-output``   | ``bool``   | Tells SAM to export the simulation data to a CSV file |
+| ``save_output``     | ``bool``   | Tells SAM to export the simulation data to a CSV file |
 +---------------------+------------+-------------------------------------------------------+
-| ``output-path``   | ``string`` | A path for output files.                              |
+| ``output_path``     | ``string`` | A path for output files.                              |
 +---------------------+------------+-------------------------------------------------------+
-| ``output-prefix`` | ``string`` | A prefix to be added to output filenames. {:          |
+| ``output_prefix``   | ``string`` | A prefix to be added to output filenames. {:          |
 |                     |            | .label} Raw simulation data files ends with           |
 |                     |            | ``_sim.csv``, and meta-analysis data files ends       |
 |                     |            | with ``_meta.csv``                                    |
@@ -126,72 +144,54 @@ define the overall behavior of SAM regarding input and output.
 Experiment Parameters
 ---------------------
 
-This section lists necessary parameters of the
-:ref:`design-experiment-setup` and :ref:`design-experiment`. With ``means`` and
-other similar variables, if a single numeric value is provided, SAM sets
-the mean of each group to the given value. On the other hand, if an
-``array`` is provided, mean’s of ``i``\ th group will set to ``i``\ th
-elements of the given array. Similarly, if the parameter refers to a
-matrix, a single numeric value will initialize the entire matrix with
-the given value, while providing a ``matrix`` will set each value
-individually.
+This section lists necessary parameters of the 
+`Experiment Setup <design.rst#design-experiment-setup>`__
+and `Experiment <design.rst#design-experiment>`__. 
+
+.. With ``means`` and 
+.. other similar variables, if a single numeric value is provided, SAM sets
+.. the mean of each group to the given value. On the other hand, if an
+.. ``array`` is provided, mean’s of ``i``\ th group will set to ``i``\ th
+.. elements of the given array. Similarly, if the parameter refers to a
+.. matrix, a single numeric value will initialize the entire matrix with
+.. the given value, while providing a ``matrix`` will set each value
+.. individually.
+
+.. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
++-------------------------+------------+--------------------------------------------+
+| **Parameter**           | **Type**   | **Description**                            |
++=========================+============+============================================+
+| ``n_conditions``        | ``int``    | Number of treatment conditions, ``nc``.    |
+|                         |            |  *Excluding the control group.*            |
++-------------------------+------------+--------------------------------------------+
+| ``n_dep_vars``          | ``int``    | Number of dependent variables in each      |
+|                         |            | condition, ``nd``.                         |
++-------------------------+------------+--------------------------------------------+
+| ``n_items``             | ``int``    | Number of items. Only applicable for       |
+|                         |            | Latent Model, ``ni``.                      |
++-------------------------+------------+--------------------------------------------+
+| ``n_obs``               | ``int``,   | Number of observation per group.           |
+|                         | ``array``  |                                            |
++-------------------------+------------+--------------------------------------------+
+| ``test_strategy``       | ``string`` | Specify the underlying test strategy.      |
+|                         |            |                                            |
++-------------------------+------------+--------------------------------------------+
+| ``data_strategy``       | ``string`` | Specify the underlying data strategy.      |
+|                         |            |                                            |
++-------------------------+------------+--------------------------------------------+
+| ``effect_strategy``     | ``string``  | Specify the underlying effect strategy.    |
++-------------------------+------------+--------------------------------------------+
 
 .. note::
+  
+    Each ``Data``, ``Test``, or ``Effect`` strategy might carry its own set of parameters.
+    See, :doc:`design`, doc:`data-strategy`, doc:`test-strategy`, doc:`effect-strategy` for more info.
+
+.. important::
 
     The size of an given ``array`` or ``matrix`` must agree
     with the number of conditions, dependant variables, and items,
     otherwise an error will occur.
-
-.. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
-+-------------------------+------------+--------------------------------------------+
-| Parameter               | Value      | Description                                |
-+=========================+============+============================================+
-| ``data-strategy``     | ``string`` | Specify the underlying data model. See     |
-|                         |            | :ref:`data-strategies`      |
-+-------------------------+------------+--------------------------------------------+
-| ``n-conditions``      | ``int``    | Number of treatment conditions, ``nc``.     |
-|                         |            |  *Excluding the control group.*          |
-+-------------------------+------------+--------------------------------------------+
-| ``n-dep-vars``        | ``int``    | Number of dependent variables in each      |
-|                         |            | condition, ``nd``.                         |
-+-------------------------+------------+--------------------------------------------+
-| ``n-items``           | ``int``    | Number of items. Only applicable for       |
-|                         |            | Latent Model, ``ni``.                      |
-+-------------------------+------------+--------------------------------------------+
-| ``n-obs``             | ``int``,   | Number of observation per group.           |
-|                         | ``array``  |                                            |
-+-------------------------+------------+--------------------------------------------+
-| ``means``             | ``double`` | An array of size ``nc * nd``, or a numeric |
-|                         | ,          | value.                                     |
-|                         | ``array``  |                                            |
-+-------------------------+------------+--------------------------------------------+
-| ``vars``              | ``double`` | An array of size ``nc * nd``, or a numeric |
-|                         | ,          | value. Diagonal values of *covariance      |
-|                         | ``array``  | matrix* will set by the given array or     |
-|                         |            | value.                                     |
-+-------------------------+------------+--------------------------------------------+
-| ``covs``              | ``double`` | A matrix of size                           |
-|                         | ,          | ``(nc * nd) x (nc * nd)``. If non-zero,    |
-|                         | ``martix`` | non-diagonal values of *convariance        |
-|                         |            | matrix* will set with the given value.     |
-+-------------------------+------------+--------------------------------------------+
-| ``loadings``          | ``double`` |                                            |
-|                         | ,          |                                            |
-|                         | ``array``  |                                            |
-+-------------------------+------------+--------------------------------------------+
-| ``err-vars``          | ``double`` |                                            |
-|                         | ,          |                                            |
-|                         | ``matrix`` |                                            |
-+-------------------------+------------+--------------------------------------------+
-| ``err-covs``          | ``double`` |                                            |
-|                         | ,          |                                            |
-|                         | ``matrix`` |                                            |
-+-------------------------+------------+--------------------------------------------+
-| ``effect-estimators`` | ``array``  | List of effect size estimators to be       |
-|                         |            | calculated during the simulation. Possible |
-|                         |            | options are: “Cohens D”, “Hedges G”, “Odd  |
-|                         |            | Ratio”, “Pearson R”, “Eta Sequared”        |
-+-------------------------+------------+--------------------------------------------+
 
 .. _config-file-researcher-params:
 
@@ -201,20 +201,33 @@ Researcher Parameters
 This section defines the behavior of the ``Researcher``.
 
 .. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
-+-------------------------+-----------+---------------------------------------------------------------------+
-| Parameter               | Value     | Description                                                         |
-+=========================+===========+=====================================================================+
-| ``is-phacker``        | ``bool``  | Indicates whether the ``Researcher`` is a                           |
-|                         |           | *hacker* or not, if ``true``, the list of                           |
-|                         |           | hacking strategies will be applied on the                           |
-|                         |           | ``Experiment``.                                                     |
-+-------------------------+-----------+---------------------------------------------------------------------+
-| ``decision-strategy`` | ``dict``  | Specification of a ``DecisionStrategy``. Read                       |
-|                         |           | more :ref:`here data-strategies`.                               |
-+-------------------------+-----------+---------------------------------------------------------------------+
-| ``p-hacking-methods`` | ``array`` | A list of ``list``, each indicating a chain of ``HackingStrategy``. |
-|                         |           | Read more :ref:`here hacking-strategies`.                         |
-+-------------------------+-----------+---------------------------------------------------------------------+
++----------------------------+-----------+---------------------------------------------------------------------+
+| **Parameter**              | **Type**  | **Description**                                                     |
++============================+===========+=====================================================================+
+| ``is_phacker``             | ``bool``  | Indicates whether the ``Researcher`` is a                           |
+|                            |           | *hacker* or not, if ``true``, the list of                           |
+|                            |           | hacking strategies will be applied on the                           |
+|                            |           | ``Experiment``.                                                     |
++----------------------------+-----------+---------------------------------------------------------------------+
+| ``p_hacking_methods``      | ``list``  | A list of ``list``, each indicating a chain of ``HackingStrategy``. |
++----------------------------+-----------+---------------------------------------------------------------------+
+| ``is_pre_processing``      | ``bool``  | Indicates whether any pre-processing procedure is being performed   |
+|                            |           | on the data before passing the data to the researcher for analysis. |
++----------------------------+-----------+---------------------------------------------------------------------+
+| ``pre_processing_methods`` | ``list``  | Similar to ``p_hacking_methods``. See                               |
+|                            |           | `Pre-processing <hacking-strategies.rst#hacking-pre-processing>`__  |
++----------------------------+-----------+---------------------------------------------------------------------+
+| ``decision_strategy``      | ``dict``  | Specification of a ``DecisionStrategy``. See                        |
+|                            |           | more :doc:`decision-strategies`.                                    |
++----------------------------+-----------+---------------------------------------------------------------------+
+
+
+.. .. note::
+
+..     Pre-processing strategies are technically hacking strategies that are being applied
+..     on the data before the analysis starts. For instance, adding the outliers removals to
+..     the list of ``pre_processing_methods`` can simulate the case where the researcher recieves
+..     the already cleanup data without knowing it.
 
 .. _config-file-journal-params:
 
@@ -225,21 +238,17 @@ This section specifies the properties of the ``Journal``.
 
 .. tabularcolumns:: |\Y{0.3}|\Y{0.2}|\Y{0.5}|
 +-------------------------------+------------+--------------------------------------------------------------------------+
-| Parameter                     | Value      | Description                                                              |
+| **Parameter**                 | **Type**   | **Description**                                                          |
 +===============================+============+==========================================================================+
-| ``pub-bias``                | ``double`` | Publication bias rate.                                                   |
+| ``max_pubs``                  | ``double`` | Maximum number of publications that will be accepted by the ``Journal``. |
 +-------------------------------+------------+--------------------------------------------------------------------------+
-| ``journal-selection-model`` | ``string`` | The ``SelectionStrategy`` of the journal.                                |
+| ``selection_strategy``        | ``string`` | The ``SelectionStrategy`` of the journal.                                |
 +-------------------------------+------------+--------------------------------------------------------------------------+
-| ``max-pubs``                | ``double`` | Maximum number of publications that will be accepted by the ``Journal``. |
-+-------------------------------+------------+--------------------------------------------------------------------------+
-| ``alpha``                   | ``double`` | Journal’s significance :math:`\alpha`.                                   |
-+-------------------------------+------------+--------------------------------------------------------------------------+
-| ``side``                    | ``int``    | Indicates journal’s preference regarding                                 |
-|                               |            | the effect size. Acceptance of                                           |
-|                               |            | Positive/Negative/Neutral results will be                                |
-|                               |            | indicated by 1, -1, and 0, respectively.                                 |
-+-------------------------------+------------+--------------------------------------------------------------------------+
+
+.. note::
+
+    Parameters like ``pub_bias``, ``alpha`` or ``side`` can be set based on the ``SelectionStrategy`` of user's choice.
+    See, :doc:`selection-strategy` for more info.
 
 .. _config-file-json:
 
@@ -247,6 +256,6 @@ Crash Course on JSON
 ^^^^^^^^^^^^^^^^^^^^
 
   A JSON object is an *unordered* set of name/value pairs inserted
-  between two curly brackets, ``{"name": "Sam"}``. A JSON list/array is
+  between two curly brackets, ``{"name": "S.A.M"}``. A JSON list/array is
   an ordered set of values between two brackets,
-  ``[1, "blue", {"name": "Sam"}]``
+  ``[1, "blue", {"name": "S.A.M"}]``

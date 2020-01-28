@@ -198,15 +198,15 @@ latex_engine = 'xelatex'
 
 latex_elements = {
     'papersize': r'a4paper',
-    'pointsize': r'14pt',
+    'pointsize': r'12pt',
     'fontpkg': r'''
         \setmainfont[]{Nitti Grotesk}
 
         \setsansfont[]{Nitti Grotesk}
         
-        \setmonofont[Scale=0.9]{Nitti}
+        \setmonofont[Scale=0.95]{Nitti}
 
-        \setmathrm[Scale=0.9]{Nitti}
+        \setmathrm[Scale=0.95]{Nitti}
 
         ''',
     'preamble': r'''

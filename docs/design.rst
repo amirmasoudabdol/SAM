@@ -102,7 +102,7 @@ Experiment
 As mentioned, ``Experiment`` object acts as an umbrella for
 everything related to an actual experiment. This includes metadata
 (a.k.a ``ExperimentSetup``), raw data, method/model for generating the data,
-e.g., :ref:`Linear Model <data-strategies.rst#data-strategies-linear-model>`__, and methods of
+e.g., `Linear Model <data-strategies.rst#data-strategies-linear-model>`__, and methods of
 testing the hypothesis, and calculating the effect.
 The ``Researcher`` object has the complete
 control over every aspects of an ``Experiment`` **with one exception**: it
@@ -250,7 +250,7 @@ In SAM, a ``Journal`` is often a container for *accepted* publications. ``Journa
 Therefore, it can use any arbitrary algorithms for deciding whether a
 submission will be accepted or not. 
 
-Below is a list of variables and parameters of ``Journal``.
+Below is the list of some of the variables and methods of ``Journal``.
 
 -  ``max_pubs``, maximum number of publications before journal stops
    accepting new publications
@@ -275,7 +275,7 @@ Selection Strategy
 
 ``SelectionStrategy`` implements the logic behind accepting or rejecting
 a submission. The simplest algorithms are mainly working with *p*-values
-and based their decision on simple threshold check. However, more elaborate selection
+and based their decision on a simple threshold check. However, more elaborate selection
 strategies can incorporate different metrics or criteria (e.g.,
 pre-registration, sample sizes, or meta-analysis) into their final
 decision. For instance, if appropriate, a journal can have an updated
@@ -289,14 +289,14 @@ Submission
 
 A ``Submission`` is a small container, created by the ``Researcher`` and
 provided to the ``Journal``. It provides a simple interface between
-``Journal, Experiment`` and ``Researcher`` objects.
+``Journal, Experiment`` and ``Researcher`` objects. In fact, a ``Submission`` resembles a *manuscript* when it is
+at the hand of the researcher and a *publication* after
+being accepted by the journal.
 
 After performing the test and choosing the outcome variable, the
 ``Researcher`` puts together a report containing necessary information
 for the ``Journal`` to decide whether to accept or reject the
-``Experiment``. In fact, a ``Submission`` resembles a *manuscript* when it is
-at the hand of the researcher and a *publication* after
-being accepted by the journal.
+submitted finding(s).
 
 ``Submission``\’s variables are:
 
@@ -309,13 +309,13 @@ being accepted by the journal.
 -  ``pvalue``, the *p*-value of the test
 -  ``sig``, a boolean value indicating the significance of the test
 -  ``side``, the side of the effect, positive or negative
--  :ref:`more … exhale_class_class_submission`
+.. -  :ref:`more … exhale_class_class_submission`
 
 .. note::
 
     ``Submission`` is an abstract representation of the manuscript
-    and publication and it does not try to closely resembles a full
-    publication although it is possible to expand the list of parameters.
+    and it does not try to closely resembles a full
+    publication.
 
 .. _design-researcher:
 
@@ -330,28 +330,25 @@ Researcher
 
 After the initialization of the ``ExperimentSetup``, ``Researcher`` will
 prepare the ``Experiment`` object by collecting data through the data strategy, testing the hypothesis via the test strategy, and calculating the effect sizes using the effect strategy. Then, if programmed to, it applies different *p*-hacking methods on the dataset and hacks its way through a 
-significant result. In the end, it prepares a
+significant result. In the end, the researcher prepares a
 ``Submission`` record and send it to the ``Journal`` for review. This process is discussed in more detailed in :doc:`flow` chapter.
 
 Below is a list of main methods and variables of ``Researcher``.
 
 -  ``experiment``, an instance of :ref:`design-experiment`
--  ``journal``, an instance of :ref:`journal`
--  :ref:```decisionStrategy`` decision-strategy`, researcher’s decision
-   strategy
+-  ``journal``, an instance of :ref:`design-journal`
+-  ``decisionStrategy``, an instance of :ref:`design-decision-strategy`.
 -  *isHacker*, a flag indicating whether the researcher will perform any
    p-hacking methods on the data
--  ``hackingStrategies``, a list of :doc:`hacking-strategies`\ (s).
--  ``prepareResearch()``, a method to initialize the experiment, i.e.,
-   initializing the ```ExperimentSetup`` <#experiment-setup` and
-   generating the dataset
+-  ``hackingStrategies``, a list of :doc:`hacking-strategies`.
+-  ``prepareResearch()``, a method to initialize the experiment
 -  ``performResearch()``, a method to calculate the necessary
    statistics, running the tests, and applying p-hacking methods (if
    applicable).
 -  ``publishResearch()``, a method to prepare the final
    :ref:`submission` and submit it to the
    :ref:`journal` for review.
--  :ref:`more … exhale_class_class_researcher`
+.. -  :ref:`more … exhale_class_class_researcher`
 
 .. _design-decision-strategy:
 
@@ -369,13 +366,13 @@ the pre-registered outcome regardless of its significance.
 -  ``MaxEffectMinPvalue``
 
 ``Researcher`` can consult his *Decision Strategy* in different stages
-of the research. Just before applying any hacking strategies, a
+of the research. **1)** Just before applying any hacking strategies, a
 researcher can check if the pre-registered outcome is significant or
-not, *initial verdict*. If it is not, during the execution of a hacking
+not, *initial verdict*. **2)** If it is not, during the execution of a hacking
 strategy, it can ask the decision strategy whether to interrupt the
-hacking process, *intermediate verdict*. After the completion of a
+hacking process, *intermediate verdict*. **3)** After the completion of a
 hacking routine, the decision strategy evaluates the outcome, *hacking
-verdict*. Finally, in his *final verdict*, a researcher can look back at
+verdict*. **4)** Finally, in his *final verdict*, a researcher can look back at
 the history of his ``Experiment`` and pick the final result that is
 going to be submitted in the form of ``Submission``. 
 
@@ -391,8 +388,8 @@ Main variables and methods of ``DecisionStrategy`` are:
 -  ``experimentsPool``, a history of all modified versions of
    ``Experiment`` during the research.
 -  ``verdict(Experiment, DecisionStage)``
--  ``finalSubmission``,
--  :ref:`more … <exhale_class_class_experiment_setup>`
+.. -  ``finalSubmission``,
+.. -  :ref:`more … <exhale_class_class_experiment_setup>`
 
 .. note::
  
@@ -421,12 +418,11 @@ modified ``Experiment``.
 .. decision strategy, *hacking verdict*, to prepare a new ``Submission``.
 
 As mentioned in :ref:`design-researcher` section, a ``Researcher``
-instance can be equipped with a list **hackingStrategies**. If there is
+instance can be equipped with a list **hackingStrategies**. If
 more than one hacking strategy is registered, ``Researcher`` performs
 all hacking methods on different copies of the original experiment and
 stores the result in ``submissionsPool`` and ``experimentsPool``. After
 applying all methods, ``Researcher`` will ask the ``DecisionStrategy``
-for its *final verdict*, and choose among all results to come up with
-its *final submission*.
+for its *final verdict*, and choose among all results before preparing the *final submission*.
 
 The :doc:`hacking-strategies` chapter will shine more light on details of each hacking strategy.
