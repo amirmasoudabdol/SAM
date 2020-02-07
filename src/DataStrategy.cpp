@@ -59,6 +59,7 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int 
     
     std::vector<arma::Row<double>> new_values(experiment->setup.ng());
     
+    // Todo: Similary I think i can use something better than the std::generate
     std::generate(new_values.begin(), new_values.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
