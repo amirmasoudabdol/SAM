@@ -43,6 +43,9 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
     
     // This generates data for control and treatment groups.
+    // Todo: I can peobably use something like std::fill here. This is 
+    // kind of confusing because i don't actually generate anyting here, I'm just 
+    // filling it.
     std::generate(experiment->measurements.begin(), experiment->measurements.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
