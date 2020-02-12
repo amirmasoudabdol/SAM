@@ -22,6 +22,62 @@ using Distribution = std::function<double(Generator &)>;
 using MultivariateDistribution = std::function<arma::mat(Generator &)>;
 using Random = effolkronium::random_static;
 
+namespace arma {
+    
+    /// Set of serializer for converting arma::row, arma::rowvec, and arma::mat
+    /// to JSON objects.
+
+    template <typename T>
+    void to_json(json &j, const arma::Row<T> &row) {
+        j = arma::conv_to<std::vector<T>>::from(row);
+    }
+
+    template<typename T>
+    void from_json(const json& j, arma::Row<T> &row) {
+        row = arma::Row<T>(j.get<std::vector<T>>());
+    }
+
+    template <typename T>
+    void to_json(json &j, const arma::Col<T> &col) {
+        for (int i{0}; i < col.n_rows; i++){
+            j.push_back(arma::conv_to<std::vector<T>>::from(col.row(i)));
+        }
+    }
+
+    template<typename T>
+    void from_json(const json& j, arma::Col<T> &col) {
+        col = arma::Col<T>(j.size());
+        for (int i{0}; i < j.size(); i++) {
+            assert(j[i].size() == 1);
+            col.at(i) = j[i].get<std::vector<T>>()[0];
+        }
+    }
+
+    template <typename T>
+    void to_json(json &j, const arma::Mat<T> &mat) {
+        
+        for (int i{0}; i < mat.n_rows; i++){
+            j.push_back(arma::conv_to<std::vector<T>>::from(mat.row(i)));
+        }
+
+    }
+
+    template <typename T>
+    void from_json(const json &j, arma::Mat<T> &mat) {
+        
+        int n_rows = j.size();
+        int n_cols = j[0].size();
+        for (int i{0}; i < n_rows; i++)
+            assert(j[i].size() == n_cols);
+        
+        mat = arma::Mat<T>(n_rows, n_cols);
+        for (int i{0}; i < n_rows; i++){
+            mat.row(i) = j[i].get<arma::Row<T>>();
+        }
+
+    }
+
+}
 
 // JSON to ARMA Serializer
 namespace nlohmann {
