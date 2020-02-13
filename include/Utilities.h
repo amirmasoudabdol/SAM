@@ -181,7 +181,6 @@ namespace nlohmann {
                 }
                 arma::rowvec stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
                 arma::rowvec covs = get_expr_setup_params(j.at("covs"), n_dims * (n_dims - 1) / 2);
-                // construct sigma
                 sigma = constructCovMatrix(stddevs, covs, n_dims);
             }
 
@@ -223,7 +222,6 @@ namespace nlohmann {
                 
                 arma::rowvec stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
                 arma::rowvec covs = get_expr_setup_params(j.at("covs"), n_dims * (n_dims - 1) / 2);
-                // construct sigma
                 sigma = constructCovMatrix(stddevs, covs, n_dims);
             }
             
