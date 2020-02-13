@@ -165,6 +165,14 @@ if(distributionName == #name_) return make_distribution_impl<std::name_<type_>>(
 MultivariateDistribution make_multivariate_distribution(json const &j) {
 
     auto const &distributionName = j.at("dist");
+    
+    if (distributionName == "mvnorm_distribution") {
+        return j.get<mvrandom::mvnorm_distribution<double>>();
+    }
+    
+    if (distributionName == "truncated_mvnorm_distribution") {
+        return j.get<mvrandom::truncated_mvnorm_distribution<double>>();
+    }
 
 /**
  A macro generating different functions calls based on the given distribution. The main difference here is
