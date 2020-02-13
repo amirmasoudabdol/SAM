@@ -227,6 +227,9 @@ namespace nlohmann {
                 sigma = constructCovMatrix(stddevs, covs, n_dims);
             }
             
+            if(j.find("lowers") == j.end() || j.find("uppers") == j.end())
+                std::invalid_argument("lower or upper boundries are missing.");
+            
             lowers = get_expr_setup_params(j.at("lowers"), n_dims);
             uppers = get_expr_setup_params(j.at("uppers"), n_dims);
 
