@@ -65,9 +65,14 @@ namespace sam {
 
             // TODO: Hey! I'm constructing this with `setup` because I want the mvnorm_dist 
             // sees the means and covs;
+            
+            /// TODO: If I want to have the size of the experiment setup in the dsp_conf, I have
+            /// to inject it to the `dsp_conf` here and then pass it to the builder. This way, 
+            /// from_json could use it as a reference and construct a properly sized object.
             data_strategy = std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
 
             test_strategy = std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
+
             effect_strategy = std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
             
             initResources(setup.ng());

@@ -239,6 +239,18 @@ namespace nlohmann {
 
     };
 
+    template<>
+    struct adl_serializer<MultivariateDistribution> {
+        
+        static void to_json(json &j, const MultivariateDistribution &mdistro) {
+            
+        }
+        
+        static void from_json(const json &j, MultivariateDistribution &mdistro) {
+            
+        }
+    };
+
 }
 
 
