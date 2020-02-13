@@ -26,8 +26,8 @@ ExperimentSetup::ExperimentSetup(json& config) {
     ng_ = nc_ * nd_;
 
     auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
-    nobs_ = std::get<0>(nobs_t);
-    params_dist["n_obs"] = std::get<1>(nobs_t);
+    nobs_ = nobs_t;
+//    params_dist["n_obs"] = std::get<1>(nobs_t);
     
     tsp_conf = config["test_strategy"];
     dsp_conf = config["data_strategy"];

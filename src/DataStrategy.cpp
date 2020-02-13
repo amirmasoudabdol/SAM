@@ -40,7 +40,7 @@ std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
 void LinearModelStrategy::genData(Experiment* experiment)  {
     
     arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
-    sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
+    sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist);});
     
     // This generates data for control and treatment groups.
     // Todo: I can peobably use something like std::fill here. This is 
@@ -49,13 +49,15 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     std::generate(experiment->measurements.begin(), experiment->measurements.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
     
+    // TODO: Add some error, if `error_dist` exists
+    
 }
 
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     
     arma::mat sample(experiment->setup.ng(), n_new_obs);
-    sample.each_col([this](arma::vec &v){v = Random::get(this->mdist);});
+    sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist);});
     
     std::vector<arma::Row<double>> new_values(experiment->setup.ng());
     

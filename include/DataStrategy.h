@@ -6,13 +6,13 @@
 #define SAMPP_DATAGENSTRATEGY_H
 
 #include <vector>
+#include <optional>
 
 #include "sam.h"
 
 #include "Utilities.h"
 #include "ExperimentSetup.h"
 
-//#include "utils/mvnorm_distribution.h"
 
 #include "mvrandom.hpp"
 
@@ -138,15 +138,8 @@ namespace sam {
         struct Parameters {
             DataModel name {DataModel::LinearModel};
             
-            double mean{0};
-            arma::Row<double> means;
-            
-            double stddev{0};
-            arma::Row<double> stddevs;
-            
-            double cov{0};
-            arma::Row<double> covs;
-            arma::Mat<double> sigma;
+            MultivariateDistribution meas_dist;
+            MultivariateDistribution erro_dist;
             
             Parameters() = default;
         };
@@ -154,16 +147,8 @@ namespace sam {
         LinearModelStrategy() { };
         
         LinearModelStrategy(const Parameters p) : params(p) {
-            mdist = mvrandom::mvnorm_distribution<>(params.means.t(), params.sigma);
-        };
-        
-        LinearModelStrategy(ExperimentSetup &setup) {
-//            mdist = mvrandom::mvnorm_distribution<>(setup.means().t(), setup.sigma());
 
-            
-            // Just in case...
-            
-        }
+        };
         
         void
         genData(Experiment* experiment);
@@ -178,8 +163,6 @@ namespace sam {
         
         Parameters params;
         
-        Distribution dist;
-        MultivariateDistribution mdist;
     };
 
 
@@ -187,11 +170,12 @@ namespace sam {
             inline
             void to_json(json& j, const LinearModelStrategy::Parameters& p) {
                 j = json{
-                    {"_name", p.name},
-                    {"means", arma::conv_to<std::vector<double>>::from(p.means)},
-                    {"stddevs", arma::conv_to<std::vector<double>>::from(p.stddevs)},
-                    {"covs", arma::conv_to<std::vector<double>>::from(p.covs)}
+                    {"_name", p.name}
+//                    {"measurements", p.meas_dist}
                 };
+                /// TODO: For now, I cannot actually write that back to the file. That's because `mdist`
+                /// is actually a MultivariateDistribution type, and not a mvnorm, etc., that I already
+                /// have a serializer for. I think I need to have another serializer, see #227.
             }
         
             inline
@@ -200,18 +184,8 @@ namespace sam {
                 // Using a helper template function to handle the optional and throw if necessary.
                 j.at("_name").get_to(p.name);
                 
-                // Size of the means vector is going to be used as a reference
-                p.means = arma::conv_to<arma::Row<double>>::from(j.at("means").get<std::vector<double>>());
-                int n = p.means.n_elem;
-                
-                auto sd = get_expr_setup_params<double>(j.at("stddevs"), n);
-                p.stddevs = arma::conv_to<arma::Row<double>>::from(std::get<0>(sd));
-
-                auto cv = get_expr_setup_params<double>(j.at("covs"), n * (n - 1) / 2);
-                p.covs = arma::conv_to<arma::Row<double>>::from(std::get<0>(cv));
-
-                p.sigma = constructCovMatrix(p.stddevs, p.covs, n);
-              
+                p.meas_dist = make_multivariate_distribution(j.at("measurements"));
+                              
             }
 
 

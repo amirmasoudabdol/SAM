@@ -2,12 +2,17 @@
     "experiment_parameters": {
         "data_strategy": {
             "_name": "LinearModel",
-            "covs": 0.5,
-            "means": [
-                0,
-                0.2
-            ],
-            "stddevs": 1.0
+            "measurements": {
+                "covs": 0.5,
+                "dist": "truncated_mvnorm_distribution",
+                "lowers": 0,
+                "means": [
+                    0,
+                    0.3
+                ],
+                "stddevs": 1.0,
+                "uppers": 0.5
+            }
         },
         "effect_strategy": {
             "_name": "MeanDifference"
