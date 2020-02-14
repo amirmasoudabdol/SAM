@@ -132,8 +132,11 @@ namespace sam {
         struct Parameters {
             DataModel name {DataModel::LinearModel};
             
-            MultivariateDistribution meas_dist;
-            MultivariateDistribution erro_dist;
+            std::optional<std::vector<Distribution>> meas_dists;
+            std::optional<std::vector<Distribution>> erro_dists;
+                        
+            std::optional<MultivariateDistribution> meas_dist;
+            std::optional<MultivariateDistribution> erro_dist;
             
             Parameters() = default;
         };
@@ -178,7 +181,17 @@ namespace sam {
                 // Using a helper template function to handle the optional and throw if necessary.
                 j.at("_name").get_to(p.name);
                 
-                p.meas_dist = make_multivariate_distribution(j.at("measurements"));
+                if (j.at("measurements").type() == nlohmann::detail::value_t::object) {
+                    p.meas_dist = make_multivariate_distribution(j.at("measurements"));
+                }
+                
+                if (j.at("measurements").type() == nlohmann::detail::value_t::array) {
+                    std::vector<Distribution> dists;
+                    for (auto &value : j["measurements"]) {
+                        dists.push_back(make_distribution(value));
+                    }
+                    p.meas_dists = dists;
+                }
                               
             }
 
@@ -200,10 +213,6 @@ namespace sam {
         LatentDataStrategy() {
 
         }
-        
-//        LatentDataStrategy(ExperimentSetup &setup) {
-//            
-//        }
         
         LatentDataStrategy(DataStrategyParameters dsp) {
             params = dsp;

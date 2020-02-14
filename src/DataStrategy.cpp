@@ -40,24 +40,75 @@ std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
 void LinearModelStrategy::genData(Experiment* experiment)  {
     
     arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
-    sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist);});
     
-    // This generates data for control and treatment groups.
-    // Todo: I can peobably use something like std::fill here. This is 
-    // kind of confusing because i don't actually generate anyting here, I'm just 
-    // filling it.
+    // Refactor Me!
+    if (params.meas_dist){  // Multivariate Distributions
+        sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist.value());});
+    }else{
+        if (params.meas_dists) {
+            
+            sample.each_row([this, i = 0](arma::rowvec &v) mutable {
+                v.imbue([&](){return Random::get(this->params.meas_dists.value()[i]);});
+                i++;
+            });
+        }
+    }
+        
+    // Adding some noise if specified
+    if (params.erro_dist) { // Multivariate Distributions
+        arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
+        errors.each_col([this](arma::vec &v){v = Random::get(params.erro_dist.value());});
+        sample += errors;
+    }else{
+        if (params.erro_dists) {
+            arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
+            
+            errors.each_row([this, i = 0](arma::rowvec &v) mutable {
+                v.imbue([&](){return Random::get(this->params.erro_dists.value()[i]);});
+                i++;
+            });
+            sample += errors;
+        }
+    }
+    
     std::generate(experiment->measurements.begin(), experiment->measurements.end(),
                   [sample, i = 0]() mutable {return sample.row(i++);});
-    
-    // TODO: Add some error, if `error_dist` exists
-    
+        
 }
 
 std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
     
     arma::mat sample(experiment->setup.ng(), n_new_obs);
-    sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist);});
+    
+    if (params.meas_dist){  // Multivariate Distributions
+        sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist.value());});
+    }else{
+        if (params.meas_dists) {
+            
+            sample.each_row([this, i = 0](arma::rowvec &v) mutable {
+                v.imbue([&](){return Random::get(this->params.meas_dists.value()[i]);});
+                i++;
+            });
+        }
+    }
+        
+    // Adding some noise if specified
+    if (params.erro_dist) { // Multivariate Distributions
+        arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
+        errors.each_col([this](arma::vec &v){v = Random::get(params.erro_dist.value());});
+        sample += errors;
+    }else{
+        if (params.erro_dists) {
+            arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
+            
+            errors.each_row([this, i = 0](arma::rowvec &v) mutable {
+                v.imbue([&](){return Random::get(this->params.erro_dists.value()[i]);});
+                i++;
+            });
+            sample += errors;
+        }
+    }
     
     std::vector<arma::Row<double>> new_values(experiment->setup.ng());
     
