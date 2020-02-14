@@ -283,13 +283,12 @@ namespace sam {
             HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
             
             //! A vector of `{min, max}`, defining the range of `K`.
-            std::vector<int> range {2, 4};  // TODO: This can be replaced by std::pair
+            std::vector<int> range {2, 4};
             
             //! Indicates the step size of walking through K's
             double step_size {0.1};
             
             //! Indicates minimum number of observatons
-            // TODO: Implement me!
             int min_observations {5};
         };
         

@@ -62,9 +62,6 @@ namespace sam {
         explicit Experiment(json& experiment_config);
         
         explicit Experiment(ExperimentSetup& e) : setup{e} {
-
-            // TODO: Hey! I'm constructing this with `setup` because I want the mvnorm_dist 
-            // sees the means and covs;
             
             /// TODO: If I want to have the size of the experiment setup in the dsp_conf, I have
             /// to inject it to the `dsp_conf` here and then pass it to the builder. This way, 

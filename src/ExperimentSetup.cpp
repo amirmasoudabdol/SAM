@@ -16,9 +16,7 @@ ExperimentSetupBuilder ExperimentSetup::create() {
 }
 
 ExperimentSetup::ExperimentSetup(json& config) {
-    
-//    using namespace magic_enum;
-    
+        
     ds_name = config["data_strategy"]["_name"];
     
     nc_ = config["n_conditions"];
@@ -27,7 +25,6 @@ ExperimentSetup::ExperimentSetup(json& config) {
 
     auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
     nobs_ = nobs_t;
-//    params_dist["n_obs"] = std::get<1>(nobs_t);
     
     tsp_conf = config["test_strategy"];
     dsp_conf = config["data_strategy"];

@@ -52,12 +52,6 @@ namespace sam {
             GradedResponseModel
         };
 
-        struct DataStrategyParameters {
-            DataModel name;
-        };
-
-        DataStrategyParameters params;
-        
         /**
          Factory method for DataStrategy.
 
@@ -144,7 +138,7 @@ namespace sam {
         LinearModelStrategy() { };
         
         LinearModelStrategy(const Parameters p) : params(p) {
-
+            
         };
         
         void
@@ -168,9 +162,9 @@ namespace sam {
             void to_json(json& j, const LinearModelStrategy::Parameters& p) {
                 j = json{
                     {"_name", p.name}
-//                    {"measurements", p.meas_dist}
+//                    {"measurements", p.m_meas_dist}
                 };
-                /// TODO: For now, I cannot actually write that back to the file. That's because `mdist`
+                /// Issue: For now, I cannot actually write that back to the file. That's because `mdist`
                 /// is actually a MultivariateDistribution type, and not a mvnorm, etc., that I already
                 /// have a serializer for. I think I need to have another serializer, see #227.
             }
@@ -214,11 +208,6 @@ namespace sam {
 
         }
         
-        LatentDataStrategy(DataStrategyParameters dsp) {
-            params = dsp;
-
-        }
-        
         void genData(Experiment* experiment);
         
         std::vector<arma::Row<double> >
@@ -248,7 +237,9 @@ namespace sam {
 
         struct Parameters {
             
-            DataModel name;
+            DataModel name {DataModel::GradedResponseModel};
+            
+            int n_dims;
             
             int n_items;
             int n_categories;
@@ -266,19 +257,16 @@ namespace sam {
         GRMDataStrategy() {};
 
         GRMDataStrategy(const Parameters &p) : params(p) {
-//            difficulties_dist = std::normal_distribution<>(params.difficulties.at(0), 1);
             
             /// Note: I'm a bit confused about the difficulties, and I think I'm making
             /// a mess with the `Parameters`. This works but I need some serious cleanup
             /// on the parameters.
+            
+            /// Some initialization
             betas.resize(params.n_items, params.n_categories);
-//            betas.imbue([&]() { return Random::get(difficulties_dist); });
-//            beta.each_row( [this](arma::vec &v) {v = Random::get(})
-
             poa.resize(params.n_items, params.n_categories);
             responses.resize(params.n_items, params.n_categories);
             urand.resize(params.n_items, params.n_categories);
-//            scores.resize(params.n_items, 1);
         };
 
 
@@ -295,12 +283,11 @@ namespace sam {
         
         Parameters params;
         
-        // TODO: This can be replaced by `Random::get<bool>` but I need to test it first.
+        /// Improvement: This can be replaced by `Random::get<bool>` but I need to test it first.
         Distribution uniform_dist = std::uniform_real_distribution<>{};
         
-        arma::mat poa; // probablity of answering
-        arma::umat responses; // responses to items, binary
-//        arma::mat scores;
+        arma::mat poa;           //! probablity of answering
+        arma::umat responses;    //! responses to items, binary
         arma::mat sumofscores;
         
         arma::mat urand;
