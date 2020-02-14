@@ -15,17 +15,23 @@ using namespace sam;
 void GRMDataStrategy::genData(Experiment* experiment) {
     
     // TODO: This needs to be parameterized
-    betas.imbue([&]() { return Random::get<std::normal_distribution<>>(params.difficulties[0], 1.0); });
+    if (params.diff_dists)
+        betas.imbue([&]() { return Random::get(params.diff_dists.value()[0]); });
     
     for (int g{0}; g < experiment->setup.ng(); ++g) {
         experiment->measurements[g].resize(experiment->setup.nobs()[g]);
         
         do {
+            double theta;
             experiment->measurements[g].imbue(
                 [&](){
                     // TODO: Replace this with `abilities_dist` for better performance
                     // TODO: It is probably a good idea to make a function out of this, and return arma::Row<>
-                    auto theta = Random::get<std::normal_distribution<>>(params.abilities[g], 1.0);
+//                    auto theta = Random::get<std::normal_distribution<>>(params.abilities[g], 1.0);
+//                    double theta;
+                    if (params.abil_dists)
+                        theta = Random::get(params.abil_dists.value()[g]);
+                    
                     return generate_sum_of_scores(theta);
                 });
         

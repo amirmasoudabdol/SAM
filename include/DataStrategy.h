@@ -135,7 +135,7 @@ namespace sam {
             std::optional<std::vector<Distribution>> meas_dists;
             std::optional<std::vector<Distribution>> erro_dists;
                         
-            std::optional<MultivariateDistribution> meas_dist;
+            std::optional<MultivariateDistribution> m_meas_dist;
             std::optional<MultivariateDistribution> erro_dist;
             
             Parameters() = default;
@@ -182,7 +182,7 @@ namespace sam {
                 j.at("_name").get_to(p.name);
                 
                 if (j.at("measurements").type() == nlohmann::detail::value_t::object) {
-                    p.meas_dist = make_multivariate_distribution(j.at("measurements"));
+                    p.m_meas_dist = make_multivariate_distribution(j.at("measurements"));
                 }
                 
                 if (j.at("measurements").type() == nlohmann::detail::value_t::array) {
@@ -252,12 +252,12 @@ namespace sam {
             
             int n_items;
             int n_categories;
-
-            arma::Row<double> difficulties;
-            arma::Row<double> abilities;
             
-//            Distribution difficulties_dist;
-//            Distribution abilities_dist;
+            std::optional<MultivariateDistribution> m_diff_dist;
+            std::optional<MultivariateDistribution> m_abil_dist;
+            
+            std::optional<std::vector<Distribution>> diff_dists;
+            std::optional<std::vector<Distribution>> abil_dists;
             
             Parameters() = default;
             
@@ -266,7 +266,7 @@ namespace sam {
         GRMDataStrategy() {};
 
         GRMDataStrategy(const Parameters &p) : params(p) {
-            difficulties_dist = std::normal_distribution<>(params.difficulties.at(0), 1);
+//            difficulties_dist = std::normal_distribution<>(params.difficulties.at(0), 1);
             
             /// Note: I'm a bit confused about the difficulties, and I think I'm making
             /// a mess with the `Parameters`. This works but I need some serious cleanup
@@ -294,19 +294,6 @@ namespace sam {
     private:
         
         Parameters params;
-        
-        
-        //! Distribution of difficulty of items. Currently this is default to \f$ N(0, 1) \f$. Its mean
-        //! can be overwritten with the diffilcitues parameter.
-        //! TODO: I can replace this with a \f$ MN~(\mu, O) \f$ and have different
-        //! different difficulties for different items
-        Distribution difficulties_dist = std::normal_distribution<>{};
-        
-        //! Distribution of participant's ability to answer a test correctly. This is being used to build the POA matrix
-        //! which is being used later to calculate the test scores. It's default to `\f$ N(0, 1) \f$. The mean of this
-        //! distribution is used to define the difference between each group.
-        //! @Note: There should be at least `ng_` means available.
-        Distribution abilities_dist = std::normal_distribution<>{};
         
         // TODO: This can be replaced by `Random::get<bool>` but I need to test it first.
         Distribution uniform_dist = std::uniform_real_distribution<>{};
@@ -339,9 +326,10 @@ namespace sam {
                     {"_name", p.name},
                     {"n_items", p.n_items},
                     {"n_categories", p.n_categories},
-                    {"difficulties", arma::conv_to<std::vector<double>>::from(p.difficulties)},
-                    {"abilities", arma::conv_to<std::vector<double>>::from(p.abilities)}
+//                    {"difficulties", p.diff_dists},
+//                    {"abilities", p.abil_dists}
                 };
+                // Issue: There is similar to LinearModel where I cannot serialize a Distribution to JSON yet.
             }
         
             inline
@@ -353,8 +341,29 @@ namespace sam {
                 j.at("n_items").get_to(p.n_items);
                 j.at("n_categories").get_to(p.n_categories);
                 
-                p.difficulties = arma::conv_to<arma::Row<double>>::from(j.at("difficulties").get<std::vector<double>>());
-                p.abilities = arma::conv_to<arma::Row<double>>::from(j.at("abilities").get<std::vector<double>>());
+                // Collecting difficulties
+                if (j.at("difficulties").type() == nlohmann::detail::value_t::object)
+                    p.m_diff_dist = make_multivariate_distribution(j.at("difficulties"));
+                else{
+                    if (j.at("difficulties").type() == nlohmann::detail::value_t::array) {
+                        std::vector<Distribution> dists;
+                        for (auto &value : j["difficulties"])
+                            dists.push_back(make_distribution(value));
+                        p.diff_dists = dists;
+                    }
+                }
+                
+                // Collecting abilities
+                if (j.at("abilities").type() == nlohmann::detail::value_t::object)
+                    p.m_abil_dist = make_multivariate_distribution(j.at("abilities"));
+                else{
+                    if (j.at("abilities").type() == nlohmann::detail::value_t::array) {
+                        std::vector<Distribution> dists;
+                        for (auto &value : j["abilities"]) 
+                            dists.push_back(make_distribution(value));
+                        p.abil_dists = dists;
+                    }
+                }
                 
             }
 

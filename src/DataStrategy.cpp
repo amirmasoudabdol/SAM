@@ -42,8 +42,8 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
     
     // Refactor Me!
-    if (params.meas_dist){  // Multivariate Distributions
-        sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist.value());});
+    if (params.m_meas_dist){  // Multivariate Distributions
+        sample.each_col([this](arma::vec &v){v = Random::get(this->params.m_meas_dist.value());});
     }else{
         if (params.meas_dists) {
             
@@ -81,8 +81,8 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment* experiment, int 
     
     arma::mat sample(experiment->setup.ng(), n_new_obs);
     
-    if (params.meas_dist){  // Multivariate Distributions
-        sample.each_col([this](arma::vec &v){v = Random::get(this->params.meas_dist.value());});
+    if (params.m_meas_dist){  // Multivariate Distributions
+        sample.each_col([this](arma::vec &v){v = Random::get(this->params.m_meas_dist.value());});
     }else{
         if (params.meas_dists) {
             

@@ -1,19 +1,28 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "LinearModel",
-            "measurements": [
+            "_name": "GradedResponseModel",
+            "abilities": [
                 {
                     "dist": "normal_distribution",
                     "mean": 0,
-                    "stddev": 0.01
+                    "stddev": 1
                 },
                 {
                     "dist": "normal_distribution",
-                    "mean": 1,
-                    "stddev": 0.1
+                    "mean": 0.2,
+                    "stddev": 1
                 }
-            ]
+            ],
+            "difficulties": [
+                {
+                    "dist": "normal_distribution",
+                    "mean": 0.2,
+                    "stddev": 1
+                }
+            ],
+            "n_categories": 4,
+            "n_items": 3
         },
         "effect_strategy": {
             "_name": "MeanDifference"
