@@ -247,12 +247,16 @@ namespace sam {
                 case PublishingPolicy::AnythingSig: {
                     if (this->isPublishable())
                         return true;
+                    else
+                        return false;
                     }
                     break;
                 case PublishingPolicy::ComplyingWithPreference: {
                     if (this->complying_with_preference)
                         return true;
-                }
+                    else
+                        return false;
+                    }
                     break;
                 case PublishingPolicy::PreRegSig: {
                     if (current_submission.inx != pre_registered_group)
