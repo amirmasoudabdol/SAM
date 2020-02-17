@@ -67,7 +67,18 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             break;
 
         case DecisionPreference::MaxSigPvalue: {
-
+            /// Getting the indexes corresponding to significant results
+            arma::uvec sig_indexes = arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1) + experiment.setup.nd();
+            
+                if (not sig_indexes.is_empty()) {
+                    /// Selecting the smallest p-value between the groups with significant results,
+                    /// and translating/selecting the correct index.
+                    selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_max()];
+                }else{
+                    /// Returning min p-value if I couldn't find any significant p-value
+                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
+                    + experiment.setup.nd();
+                }
             }
             break;
             
