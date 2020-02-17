@@ -44,8 +44,10 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     int selectedOutcome = pre_registered_group;
     
     switch (preference) {
-        case DecisionPreference::PreRegisteredOutcome:
+        case DecisionPreference::PreRegisteredOutcome: {
             selectedOutcome = pre_registered_group;
+            this->complying_with_preference = true;
+        }
             break;
             
         case DecisionPreference::MinSigPvalue: {
@@ -57,11 +59,14 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                     /// Selecting the smallest p-value between the groups with significant results,
                     /// and translating/selecting the correct index.
                     selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_min()];
-
+                    
+                    this->complying_with_preference = true;
                 }else{
                     /// Returning min p-value if I couldn't find any significant p-value
                     selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
                     + experiment.setup.nd();
+                    
+                    this->complying_with_preference = false;
                 }
             }
             break;
@@ -74,10 +79,14 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                     /// Selecting the smallest p-value between the groups with significant results,
                     /// and translating/selecting the correct index.
                     selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_max()];
+                    
+                    this->complying_with_preference = true;
                 }else{
                     /// Returning min p-value if I couldn't find any significant p-value
                     selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
                     + experiment.setup.nd();
+                    
+                    this->complying_with_preference = false;
                 }
             }
             break;
@@ -88,6 +97,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
                                 + experiment.setup.nd();
             
+            this->complying_with_preference = true;
             }
             break;
             
@@ -100,6 +110,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             selectedOutcome = experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
                                 + experiment.setup.nd();
             
+            this->complying_with_preference = true;
             }
             break;
             
@@ -114,10 +125,12 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             
                 if (not sig_indexes.is_empty()) {
                     selectedOutcome = sig_indexes.at(0);
+                    this->complying_with_preference = true;
                 }else{
                     /// Returning min p-value if I couldn't find any significant p-value
                     selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
                     + experiment.setup.nd();
+                    this->complying_with_preference = false;
                 }
             }
             break;
@@ -158,7 +171,9 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
 Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &preference){
     
     switch (preference) {
-        case DecisionPreference::PreRegisteredOutcome:
+        case DecisionPreference::PreRegisteredOutcome:{
+            this->complying_with_preference = true;
+        }
             break;
             
         case DecisionPreference::MinSigPvalue: {
@@ -175,9 +190,12 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
             if (not sig_inxs.is_empty()){
                 arma::uword min_sig_pvalue_inx = pvalues(sig_inxs).index_min();
                 inx = min_sig_pvalue_inx + (submissions_pool.size() - sig_inxs.n_elem + 1);
+                
+                this->complying_with_preference = true;
                 return submissions_pool[inx];
             }else{
                 /// If there is no sig
+                this->complying_with_preference = false;
                 return submissions_pool.back();
             }
             
@@ -197,9 +215,12 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
              if (not sig_inxs.is_empty()){
                  arma::uword max_sig_pvalue_inx = pvalues(sig_inxs).index_max();
                  inx = max_sig_pvalue_inx + (submissions_pool.size() - sig_inxs.n_elem + 1);
+                 
+                 this->complying_with_preference = true;
                  return submissions_pool[inx];
              }else{
                  /// If there is no sig
+                 this->complying_with_preference = false;
                  return submissions_pool.back();
              }
         }
@@ -219,9 +240,12 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
             if (not sig_inxs.is_empty()){
                 /// It's already shuffled, so I can just take the first one
                 inx = sig_inxs.at(0);
+                
+                this->complying_with_preference = true;
                 return submissions_pool[inx];
             }else{
                 /// If there is no sig
+                this->complying_with_preference = false;
                 return submissions_pool.back();
             }
             
@@ -236,6 +260,8 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
                 int min_pvalue_inx = std::distance(pvalues.begin(),
                                                    std::min_element(pvalues.begin(),
                                                                     pvalues.end()));
+                
+                this->complying_with_preference = true;
                 return submissions_pool[min_pvalue_inx];
             }
             break;

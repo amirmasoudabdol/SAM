@@ -103,6 +103,7 @@ namespace sam {
     enum class PublishingPolicy {
         Anything,
         AnythingSig,
+        ComplyingWithPreference,
         PreRegSig
     };
 
@@ -110,6 +111,7 @@ namespace sam {
     NLOHMANN_JSON_SERIALIZE_ENUM( PublishingPolicy, {
         {PublishingPolicy::Anything, "Anything"},
         {PublishingPolicy::AnythingSig, "AnythingSig"},
+        {PublishingPolicy::ComplyingWithPreference, "BasedOnThePreference"},
         {PublishingPolicy::PreRegSig, "PreRegSig"}
     })
 
@@ -142,6 +144,7 @@ namespace sam {
         
         bool will_be_submitting = false;
         
+        bool complying_with_preference = true;
         
         /**
          A method implementing the Initial decision making logic.
@@ -246,13 +249,18 @@ namespace sam {
                         return true;
                     }
                     break;
+                case PublishingPolicy::ComplyingWithPreference: {
+                    if (this->complying_with_preference)
+                        return true;
+                }
+                    break;
                 case PublishingPolicy::PreRegSig: {
                     if (current_submission.inx != pre_registered_group)
                         return false;
                     else if (isPublishable()){
                         return true;
                     }
-                    }
+                }
                     break;
             }
             
