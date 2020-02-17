@@ -173,6 +173,27 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
         }
             break;
             
+        case DecisionPreference::MaxSigPvalue: {
+             arma::uword inx;
+             arma::vec pvalues(submissions_pool.size());
+             pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });
+             
+             arma::vec sigs(submissions_pool.size());
+             sigs.imbue([&, i = 0]() mutable { return submissions_pool[i++].sig; });
+             
+             arma::uvec sig_inxs = arma::find(sigs == 1);
+             
+             if (not sig_inxs.is_empty()){
+                 arma::uword max_sig_pvalue_inx = pvalues(sig_inxs).index_max();
+                 inx = max_sig_pvalue_inx + (submissions_pool.size() - sig_inxs.n_elem + 1);
+                 return submissions_pool[inx];
+             }else{
+                 /// If there is no sig
+                 return submissions_pool.back();
+             }
+        }
+            break;
+            
         case DecisionPreference::RandomSigPvalue: {
             
             arma::uword inx;
