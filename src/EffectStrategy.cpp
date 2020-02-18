@@ -59,8 +59,8 @@ void MeanDifference::computeEffects(Experiment *experiment) {
     for (int i{experiment->setup.nd()}, d{0};
         i < experiment->measurements.size();
         i++, d%=experiment->setup.nd()) {
-        experiment->effects[i] = mean_difference(experiment->means[d], experiment->stddev[d],
-                                                 experiment->means[i], experiment->stddev[i]);
+        experiment->effects[i] = mean_difference(experiment->means[i], experiment->stddev[i],
+                                                 experiment->means[d], experiment->stddev[d]);
     }
 }
 
