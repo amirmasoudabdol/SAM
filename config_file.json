@@ -1,33 +1,35 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "GradedResponseModel",
-            "abilities": [
-                {
-                    "dist": "normal_distribution",
-                    "mean": 0,
-                    "stddev": 1
-                },
-                {
-                    "dist": "normal_distribution",
-                    "mean": 0.2,
-                    "stddev": 1
-                }
-            ],
-            "difficulties": [
-                {
-                    "dist": "normal_distribution",
-                    "mean": 0.2,
-                    "stddev": 1
-                }
-            ],
-            "n_categories": 4,
-            "n_items": 3
+            "_name": "LinearModel",
+            "measurements": {
+                "covs": 0.0,
+                "dist": "mvnorm_distribution",
+                "lowers": [
+                    -10,
+                    -10,
+                    0.65,
+                    0.65
+                ],
+                "means": [
+                    0.0,
+                    0.0,
+                    0.1,
+                    0.1
+                ],
+                "stddevs": 0.5,
+                "uppers": [
+                    10,
+                    10,
+                    10,
+                    10
+                ]
+            }
         },
         "effect_strategy": {
             "_name": "MeanDifference"
         },
-        "n_conditions": 2,
+        "n_conditions": 4,
         "n_dep_vars": 1,
         "n_obs": 25,
         "test_strategy": {
@@ -44,8 +46,8 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "PatientDecisionMaker",
-            "preference": "MarjansHacker",
+            "_name": "ImpatientDecisionMaker",
+            "preference": "RevisedMarjanHacker",
             "publishing_policy": "Anything"
         },
         "hacking_strategies": [
@@ -61,7 +63,7 @@
                 }
             ]
         ],
-        "is_phacker": true,
+        "is_phacker": false,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {

@@ -83,7 +83,8 @@ namespace sam {
         
         MaxSigPvalue,
         
-        MarjansHacker
+        MarjansHacker,
+        RevisedMarjanHacker
     };
 
 
@@ -96,7 +97,8 @@ namespace sam {
         {DecisionPreference::MinPvalueMaxEffect, "MinPvalueMaxEffect"},
         {DecisionPreference::RandomSigPvalue, "RandomSigPvalue"},
         {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
-        {DecisionPreference::MarjansHacker, "MarjansHacker"}
+        {DecisionPreference::MarjansHacker, "MarjansHacker"},
+        {DecisionPreference::RevisedMarjanHacker, "RevisedMarjanHacker"}
     })
 
 

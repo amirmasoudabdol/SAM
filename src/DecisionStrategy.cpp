@@ -161,6 +161,34 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             }
         }
             break;
+            
+        case DecisionPreference::RevisedMarjanHacker: {
+            /// Marjan:
+            ///     Select first significant study without QRPs with a positive ES if non is significant, select best study.
+            ///     The best study is the study with max p-value between those with min negative effect
+            
+            arma::uvec pos_effects_inx = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) > 0.) + experiment.setup.nd();
+            
+            if (not pos_effects_inx.is_empty()) {
+                arma::uvec sig_inx = arma::find(experiment.sigs.elem(pos_effects_inx) == 1);
+                
+                if (not sig_inx.is_empty()) {
+                    selectedOutcome = pos_effects_inx.at(sig_inx.at(0));
+                }else{
+                    selectedOutcome = pos_effects_inx.at(experiment.pvalues.elem(pos_effects_inx).index_min());
+                }
+                
+            }else{
+                arma::uvec neg_effects_inx = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) < 0.)  + experiment.setup.nd();
+                               
+                if (not neg_effects_inx.is_empty()){
+                    selectedOutcome = neg_effects_inx.at(experiment.pvalues.elem(neg_effects_inx).index_max());
+                }
+                
+            }
+            
+        }
+            break;
     }
     
     return {experiment, selectedOutcome};
@@ -171,7 +199,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
 Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &preference){
     
     switch (preference) {
-        case DecisionPreference::PreRegisteredOutcome:{
+        case DecisionPreference::PreRegisteredOutcome: {
             this->complying_with_preference = true;
         }
             break;
@@ -282,6 +310,8 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
         case DecisionPreference::MarjansHacker: {
             /// I'm not convinced that this is very representative of what Marjan's does
             
+            /// In fact, Marjan doesn't do any sort of patient
+            
             arma::vec pvalues(submissions_pool.size());
             pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });
             
@@ -306,6 +336,36 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
             
         }
             
+            break;
+            
+        case DecisionPreference::RevisedMarjanHacker: {
+            arma::vec pvalues(submissions_pool.size());
+            pvalues.imbue([&, i = 0]() mutable { return submissions_pool[i++].pvalue; });
+            
+            arma::vec sigs(submissions_pool.size());
+            sigs.imbue([&, i = 0]() mutable { return submissions_pool[i++].sig; });
+            
+            arma::vec effects(submissions_pool.size());
+            effects.imbue([&, i = 0]() mutable { return submissions_pool[i++].effect; });
+            
+            arma::uvec pos_effects_inx = arma::find(effects > 0);
+            
+            if (not pos_effects_inx.empty()) {
+                arma::uvec sig_inx = arma::find(sigs.elem(pos_effects_inx));
+                
+                if(not sig_inx.empty()){
+                    return submissions_pool[pos_effects_inx.at(sig_inx.at(0))];
+                }else{
+                    return submissions_pool[pos_effects_inx.at(pvalues.elem(pos_effects_inx).index_min())];
+                }
+            }else{
+                arma::uvec neg_effects_inx = arma::find(effects < 0);
+                
+                if (not neg_effects_inx.empty()){
+                    return submissions_pool[neg_effects_inx.at(pvalues.elem(neg_effects_inx).index_max())];
+                }
+            }
+        }
             break;
             
         default:
