@@ -189,7 +189,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
             
             if (not sig_inxs.is_empty()){
                 arma::uword min_sig_pvalue_inx = pvalues(sig_inxs).index_min();
-                inx = min_sig_pvalue_inx + (submissions_pool.size() - sig_inxs.n_elem + 1);
+                inx = min_sig_pvalue_inx; // + (submissions_pool.size() - sig_inxs.n_elem + 1);
                 
                 this->complying_with_preference = true;
                 return submissions_pool[inx];
@@ -214,7 +214,7 @@ Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &
              
              if (not sig_inxs.is_empty()){
                  arma::uword max_sig_pvalue_inx = pvalues(sig_inxs).index_max();
-                 inx = max_sig_pvalue_inx + (submissions_pool.size() - sig_inxs.n_elem + 1);
+                 inx = max_sig_pvalue_inx; // + (submissions_pool.size() - sig_inxs.n_elem + 1);
                  
                  this->complying_with_preference = true;
                  return submissions_pool[inx];
