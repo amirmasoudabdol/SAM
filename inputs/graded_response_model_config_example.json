@@ -1,0 +1,23 @@
+{
+  "data_strategy": {
+    "_name": "GradedResponseModel",
+    "abilities": {
+      "covs": 0.5,
+      "dist": "mvnorm_distribution",
+      "means": [
+        0,
+        0.2
+      ],
+      "stddevs": 1
+    },
+    "difficulties": [
+      {
+        "dist": "normal_distribution",
+        "mean": 0,
+        "stddev": 1.0
+      }
+    ],
+    "n_categories": 4,
+    "n_items": 3
+  }
+}

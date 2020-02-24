@@ -9,6 +9,13 @@
 * Description to come!
 */
 
+/**
+* \defgroup HackingStrategiesParameters
+* @brief Description of hacking strategies parameters
+*
+* Description to come!
+*/
+
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
 
@@ -41,6 +48,8 @@ namespace sam {
     public:
         
         //! Hacking Strategy name.
+        //! @note I don't necessarily need this, and I only use it to track which method
+        //! has been applied on the given experiment.
         HackingMethod name;
         
         /**
@@ -185,17 +194,52 @@ namespace sam {
     class SDOutlierRemoval : public HackingStrategy {
     public:
         
-        
-        /// Parameters of Outliers Removal Strategy
-        /// 
+        /**
+         Parameters of Outliers Removal Strategy
+         
+         
+         @code
+         {
+             "_name": "SDOutlierRemoval",
+             "level": "dv",
+             "max_attempts": 1000,
+             "min_observations": 10,
+             "multipliers": [
+                 0.5
+             ],
+             "n_attempts": 1000,
+             "num": 1000,
+             "order": "random"
+         }
+         @endcode
+         
+         @ingroup HackingStrategiesParameters
+         
+         */
         struct Parameters {
             HackingMethod name = HackingMethod::SDOutlierRemoval;
+            
+            //! TO BE IMPLEMENTED!
             std::string level = "dv";
+            
+            //! Indicates the order where outliers are going to be removed from the experiment.
+            //! \li `max first`, removes the biggest outlier first
+            //! \li `random`, removes the first outlier first, this is as a random outlier is being removed
             std::string order = "max first";
+            
+            //! Indicates the number of outliers to be removed in each iteration
             int num {3};
+            
+            //! Indicates the total number of attempts, i.e., _iterations_, to remove outliers
             int n_attempts {1};
+            
+            //! Indicates the maximum number of attempts
             int max_attempts {10};
+            
+            //! Indicates the minimum number of observations allowed during the process
             int min_observations {15};
+            
+            //! A list of standard deviation multipliers for identidying outliers
             std::vector<double> multipliers = {3};
         };
         
@@ -274,9 +318,12 @@ namespace sam {
          {
             "_name": "SubjectiveOutlierRemoval",
             "range": [2, 4],
-            "step_size": 0.1
+            "step_size": 0.1,
+            "min_observations": 5
          }
          ```
+         
+         @ingroup HackingStrategiesParameters
          */
         struct Parameters {
             //! A placeholder for the name
