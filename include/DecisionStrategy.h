@@ -129,7 +129,7 @@ namespace sam {
         
         //! Indicates the pre-registered outcome in the case where the
         //! Researcher prefers the PreRegisteredOutcome
-        int pre_registered_group = 1;
+        int pre_registered_group;
         
         //! List of selected Submission by the researcher.
         std::vector<Submission> submissions_pool;
@@ -196,13 +196,13 @@ namespace sam {
         
         PublishingPolicy policy;
         
-        const int preRegistetedGroup() const {
-            return pre_registered_group;
-        };
+//        const int preRegistetedGroup() const {
+//            return pre_registered_group;
+//        };
         
-        void preRegisteredGroup(int g) {
-            pre_registered_group = g;
-        }
+//        void preRegisteredGroup(int g) {
+//            pre_registered_group = g;
+//        }
         
         /**
          DecisionStrategy factory method.

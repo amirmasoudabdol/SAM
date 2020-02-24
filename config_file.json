@@ -1,30 +1,25 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "LinearModel",
-            "measurements": {
-                "covs": 0.0,
+            "_name": "GradedResponseModel",
+            "abilities": {
+                "covs": 0.5,
                 "dist": "mvnorm_distribution",
-                "lowers": [
-                    -10,
-                    -10,
-                    0.65,
-                    0.65
-                ],
                 "means": [
-                    0.0,
-                    0.0,
-                    0.1,
-                    0.1
+                    0,
+                    0.2
                 ],
-                "stddevs": 0.5,
-                "uppers": [
-                    10,
-                    10,
-                    10,
-                    10
-                ]
-            }
+                "stddevs": 1
+            },
+            "difficulties": [
+                {
+                    "dist": "normal_distribution",
+                    "mean": 0,
+                    "stddev": 1.0
+                }
+            ],
+            "n_categories": 4,
+            "n_items": 3
         },
         "effect_strategy": {
             "_name": "MeanDifference"
@@ -47,7 +42,7 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
-            "preference": "RevisedMarjanHacker",
+            "preference": "PreRegisteredOutcome",
             "publishing_policy": "Anything"
         },
         "hacking_strategies": [

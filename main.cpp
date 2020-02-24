@@ -178,6 +178,7 @@ void runSimulation(json& simConfig){
         simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
     
 //    std::cout << std::endl;
+    // This loop can be parallelized
     for (int i = 0; i < simConfig["simulation_parameters"]["n_sims"]; i++) {
 
         while (researcher.journal->isStillAccepting()) {
