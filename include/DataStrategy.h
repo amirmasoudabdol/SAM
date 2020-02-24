@@ -227,8 +227,6 @@ namespace sam {
     /**
      @brief Simulate data from Graded Response Model.
      
-     
-     
      @Note:
         - DVs in GRM are distinguished by their participant abilities to answer tests. Therefore, we'll
         have `ng_` number of `abilities`. This value is being used to, in each group, to initialize a normal
