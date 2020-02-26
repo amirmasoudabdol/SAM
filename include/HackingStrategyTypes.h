@@ -22,14 +22,14 @@ namespace sam {
     };
 
 
-//    NLOHMANN_JSON_SERIALIZE_ENUM( HackingMethod, {
-//        {HackingMethod::OptionalStopping, "OptionalStopping"},
-//        {HackingMethod::SDOutlierRemoval, "SDOutlierRemoval"},
-//        {HackingMethod::GroupPooling, "GroupPooling"},
-//        {HackingMethod::ConditionDropping, "ConditionDropping"},
-//        {HackingMethod::SubjectiveOutlierRemoval, "ConditionDropping"},
-//        {HackingMethod::NoHack, "NoHack"}
-//    })
+    NLOHMANN_JSON_SERIALIZE_ENUM( HackingMethod, {
+        {HackingMethod::OptionalStopping, "OptionalStopping"},
+        {HackingMethod::SDOutlierRemoval, "SDOutlierRemoval"},
+        {HackingMethod::GroupPooling, "GroupPooling"},
+        {HackingMethod::ConditionDropping, "ConditionDropping"},
+        {HackingMethod::SubjectiveOutlierRemoval, "ConditionDropping"},
+        {HackingMethod::NoHack, "NoHack"}
+    })
 
     /*
      HackingStage indicates the stage where the hacking is being performed on

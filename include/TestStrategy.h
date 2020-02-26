@@ -16,7 +16,6 @@
 #include "Utilities.h"
 
 #include "nlohmann/json.hpp"
-#include "utils/magic_enum.hpp"
 
 namespace sam {
 
@@ -46,11 +45,11 @@ namespace sam {
             
             TestResult() = default;
 
-//            friend std::ostream &operator<<(std::ostream &os, const TestResult &result) {
-//                os << "statistic: " << result.statistic << " pvalue: " << result.pvalue << " side: " << result.side
-//                   << " sig: " << result.sig;
-//                return os;
-//            }
+            friend std::ostream &operator<<(std::ostream &os, const TestResult &result) {
+                os << "statistic: " << result.statistic << " pvalue: " << result.pvalue << " side: " << result.side
+                   << " sig: " << result.sig;
+                return os;
+            }
         };
         
         /**
@@ -61,7 +60,6 @@ namespace sam {
             FTest,           ///< FTest
             YuenTest,        ///< YuenTest
             WilcoxonTest     ///< WilcoxonTest
-            
         };
         
         /**
