@@ -21,6 +21,7 @@
 
 #include <string>
 #include <map>
+#include <ostream>
 
 #include "Experiment.h"
 #include "Submission.h"
@@ -29,6 +30,7 @@
 #include "Utilities.h"
 
 #include "nlohmann/json.hpp"
+#include "utils/magic_enum.hpp"
 
 namespace sam {
 
@@ -198,7 +200,7 @@ namespace sam {
          Parameters of Outliers Removal Strategy
          
          
-         @code
+         ```json
          {
              "_name": "SDOutlierRemoval",
              "level": "dv",
@@ -211,7 +213,7 @@ namespace sam {
              "num": 1000,
              "order": "random"
          }
-         @endcode
+         ```
          
          @ingroup HackingStrategiesParameters
          
@@ -241,6 +243,7 @@ namespace sam {
             
             //! A list of standard deviation multipliers for identidying outliers
             std::vector<double> multipliers = {3};
+            
         };
         
         Parameters params;
@@ -298,6 +301,8 @@ namespace sam {
      
      @sa DecisionStrategy
      @sa DecisionPreference
+     
+     @ingroup HackingStrategies
      */
     class SubjectiveOutlierRemoval : public HackingStrategy {
     public:
@@ -354,7 +359,7 @@ namespace sam {
         inline
         void to_json(json& j, const SubjectiveOutlierRemoval::Parameters& p) {
             j = json{
-                {"_name", p.name},
+                {"_name", magic_enum::enum_name(p.name)},
                 {"range", p.range},
                 {"step_size", p.step_size},
                 {"min_observations", p.min_observations}
@@ -365,7 +370,8 @@ namespace sam {
         void from_json(const json& j, SubjectiveOutlierRemoval::Parameters& p) {
             
             // Using a helper template function to handle the optional and throw if necessary.
-            j.at("_name").get_to(p.name);
+            p.name = magic_enum::enum_cast<HackingMethod>(j.at("_name")).value();
+//            j.at("_name").get_to(p.name);
             j.at("range").get_to(p.range);
             j.at("step_size").get_to(p.step_size);
             j.at("min_observations").get_to(p.min_observations);
