@@ -33,7 +33,6 @@ void runSimulation(json& simConfig);
 
 tqdm progressBar;
 
-bool FLAGS::VERBOSE = false;
 bool FLAGS::PROGRESS = false;
 bool FLAGS::DEBUG = false;
 bool FLAGS::UPDATECONFIG = false;
@@ -100,7 +99,7 @@ int main(int argc, const char** argv){
         const string output_prefix = vm["output-prefix"].as<string>();
         jSimConfig["simulation_parameters"]["output_prefix"] = output_prefix;
     }else{
-        jSimConfig["simulation_parameters"]["output_prefix"] = "";
+//        jSimConfig["simulation_parameters"]["output_prefix"] = "";
     }
 
     
@@ -131,7 +130,6 @@ int main(int argc, const char** argv){
 
 void runSimulation(json& simConfig){
 
-    FLAGS::VERBOSE = simConfig["simulation_parameters"]["verbose"];
     FLAGS::PROGRESS = simConfig["simulation_parameters"]["progress"];
     FLAGS::DEBUG = simConfig["simulation_parameters"]["debug"];
 
@@ -226,17 +224,17 @@ void runSimulation(json& simConfig){
 
     if (FLAGS::PROGRESS) progressBar.finish();
 
-    if (FLAGS::VERBOSE){
-        if (is_saving_pubs)
-            std::cout << "\nSaved to: " << pubsfilename << "\n";
-        
-        if (is_saving_rejected)
-            std::cout << "\nSaved to: " << rejectedfilename << "\n";
-        
-        if (is_saving_stats)
-            std::cout << "\nSaved to: " << statsfilename << "\n";
-        
-        if (is_saving_sims)
-            std::cout << "\nSaved to: " << simsfilename << "\n";
-    }
+
+    if (is_saving_pubs)
+        std::cout << "\nSaved to: " << pubsfilename << "\n";
+    
+    if (is_saving_rejected)
+        std::cout << "\nSaved to: " << rejectedfilename << "\n";
+    
+    if (is_saving_stats)
+        std::cout << "\nSaved to: " << statsfilename << "\n";
+    
+    if (is_saving_sims)
+        std::cout << "\nSaved to: " << simsfilename << "\n";
+    
 }

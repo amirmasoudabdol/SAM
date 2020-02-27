@@ -85,10 +85,10 @@
         "master_seed": 42,
         "n_sims": 5,
         "output_path": "../outputs/",
-        "output_prefix": "",
+        "output_prefix": "debug",
         "progress": false,
         "save_pubs": true,
-        "save_rejected": true,
+        "save_rejected": false,
         "save_sims": false,
         "save_stats": true,
         "verbose": false

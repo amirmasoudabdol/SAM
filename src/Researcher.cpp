@@ -87,8 +87,7 @@ void Researcher::prepareResearch() {
     
     // Performing the Pre-processing if any
     if (is_pre_processing){
-        if (FLAGS::VERBOSE)
-            std::cout << ">>> Pre-Processing..." << std::endl;
+        spdlog::debug("Pre-processing");
         
         preProcessData();
     }

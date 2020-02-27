@@ -20,7 +20,6 @@ namespace sam {
     struct FLAGS {
         static bool PROGRESS;
         static bool DEBUG;
-        static bool VERBOSE;
         static bool UPDATECONFIG;
     };
 }
