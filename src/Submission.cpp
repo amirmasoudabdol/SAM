@@ -43,11 +43,7 @@ namespace sam {
         isHacked = e.is_hacked;
         
         hHistory = e.hacks_history;
-    };
-
-
-
-    
+    };    
     
     std::vector<std::string> Submission::cols() {
          if (!record.empty()){
@@ -57,21 +53,6 @@ namespace sam {
          }
         return columns;
     }
-
-
-//    std::string Submission::header(const json &effectslist) {
-//
-//        std::string header{"simid,pid,inx,nobs,yi,vi,sei,statistic,pvalue,"};
-//
-//        for (auto &estimator : effectslist){
-//            header += estimator;
-//            header += ",";
-//        }
-//
-//        header += "side,hids,ish";
-//        
-//        return header;
-//    }
 
     Submission::operator std::map<std::string, std::string>() {
             

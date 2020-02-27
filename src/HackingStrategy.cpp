@@ -107,7 +107,7 @@ std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingMethod method) {
  */
 void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
     
-    if (FLAGS::VERBOSE) std::cout << "Optional Stopping...\n";
+    spdlog::debug("Optional Stopping");
     
     for (int t = 0; t < params.n_attempts && t < params.max_attempts ; t++) {
         
@@ -161,10 +161,7 @@ void OptionalStopping::randomize(int min_n = 1, int max_n = 10) {
  */
 void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisionStrategy){
     
-    if (FLAGS::VERBOSE)
-        std::cout << ">>> Outliers Removal...\n";
-    
-    spdlog::info("Outliers Removal");
+    spdlog::debug("Outliers Removal");
     
     /// result flag
     int res = 0;
@@ -188,9 +185,6 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
             
         }
     }
-    
-    if (FLAGS::VERBOSE)
-        std::cout << ">>> Done Removing Outliers...\n";
     
 }
 
@@ -245,8 +239,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
  */
 void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy *decision_strategy){
     
-    if (FLAGS::VERBOSE)
-        std::cout << ">>> Subjective Outliers Removal...\n";
+    spdlog::debug("Subjective Outliers Removal");
     
     /// Creating a regularly spaced vector of values with the given start, step, end.
     static arma::vec Ks = arma::regspace<arma::vec>(params.range[1], -1. * params.step_size, params.range[0]);
@@ -294,7 +287,7 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
  */
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
-    if (FLAGS::VERBOSE) std::cout << "Group Pooling...\n";
+    spdlog::debug("Group Pooling");
     
     if (experiment->setup.nc() < 2){
         /// TODO: This should probably not be a throw and just a

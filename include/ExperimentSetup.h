@@ -50,15 +50,12 @@ namespace sam {
         //! variables, \f$n_g = n_c \times n_d \times n_i\f$
         int ng_ {0};
 
-        // Experiment Parameters
+        ///! Indicates the number of observations in each group
         arma::Row<int> nobs_;
         
-        std::map<std::string, Distribution> params_dist;
-        
-
     public:
 
-        std::string ds_name {};
+//        std::string ds_name {};
 
 
         /**
@@ -68,6 +65,8 @@ namespace sam {
          */
         static ExperimentSetupBuilder create();
         
+        /// Default constructor of the ExperimentSetup. This is necessary because of the
+        /// ExperimentSetupBuilder
         ExperimentSetup() = default;
         
         explicit ExperimentSetup(json& config);

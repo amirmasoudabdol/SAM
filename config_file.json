@@ -26,7 +26,12 @@
         },
         "n_conditions": 4,
         "n_dep_vars": 1,
-        "n_obs": 25,
+        "n_obs": [
+            10,
+            20,
+            30,
+            40
+        ],
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,

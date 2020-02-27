@@ -16,8 +16,6 @@ ExperimentSetupBuilder ExperimentSetup::create() {
 }
 
 ExperimentSetup::ExperimentSetup(json& config) {
-        
-    ds_name = config["data_strategy"]["_name"];
     
     nc_ = config["n_conditions"];
     nd_ = config["n_dep_vars"];
@@ -35,17 +33,15 @@ ExperimentSetup::ExperimentSetup(json& config) {
 // TODO: Rethink this fuction!
 void ExperimentSetup::randomize_parameters() {
     
-    if (params_dist["n_obs"]){
-        fill_vector<int>(nobs_, nobs_.size(), Random::get(params_dist["n_obs"]));
-    }
+//    if (params_dist["n_obs"]){
+//        fill_vector<int>(nobs_, nobs_.size(), Random::get(params_dist["n_obs"]));
+//    }
 
 }
 
 
 
 ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
-    
-    setup.ds_name = config["data_strategy"]["_name"];
     
     setup.nc_ = config["n_conditions"];
     setup.nd_ = config["n_dep_vars"];
