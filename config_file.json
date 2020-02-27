@@ -42,7 +42,7 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
-            "preference": "PreRegisteredOutcome",
+            "preference": "PreRegieredOutcome",
             "publishing_policy": "Anything"
         },
         "hacking_strategies": [
@@ -62,7 +62,7 @@
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "_name": "SDOutlierRemoval",
+                "_name": "SDutlierRemoval",
                 "level": "dv",
                 "max_attempts": 1000,
                 "min_observations": 10,
@@ -76,7 +76,7 @@
         ]
     },
     "simulation_parameters": {
-        "debug": false,
+        "debug": true,
         "master_seed": 42,
         "n_sims": 5,
         "output_path": "../outputs/",
@@ -86,6 +86,6 @@
         "save_rejected": true,
         "save_sims": false,
         "save_stats": true,
-        "verbose": true
+        "verbose": false
     }
 }

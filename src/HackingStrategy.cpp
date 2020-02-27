@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <random>
 
+#include "spdlog/spdlog.h"
 #include "utils/permutation.h"
 #include "effolkronium/random.hpp"
 
@@ -162,6 +163,8 @@ void SDOutlierRemoval::perform(Experiment* experiment, DecisionStrategy* decisio
     
     if (FLAGS::VERBOSE)
         std::cout << ">>> Outliers Removal...\n";
+    
+    spdlog::info("Outliers Removal");
     
     /// result flag
     int res = 0;

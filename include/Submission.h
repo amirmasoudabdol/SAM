@@ -11,6 +11,9 @@
 #include <iostream>
 #include <Experiment.h>
 
+#include "spdlog/fmt/ostr.h" // must be included
+
+
 namespace sam {
 
     class Submission {
@@ -70,7 +73,31 @@ namespace sam {
             return sig;
         }
 
-        friend std::ostream& operator<<(std::ostream& os, const Submission& s);
+//        friend std::ostream& operator<<(std::ostream& os, const Submission& s);
+        
+        template<typename OStream>
+        friend OStream &operator<<(OStream &os, const Submission &s){
+            os <<
+            s.simid << ",\t" <<
+            s.pubid << ",\t" <<
+            s.tnobs << ",\t" <<
+            s.inx << ",\t" <<
+            s.nobs << ",\t" <<
+            s.mean << ",\t" <<
+            s.var << ",\t" <<
+            s.sei << ",\t" <<
+            s.statistic << ",\t" <<
+            s.pvalue << ",\t" <<
+            s.effect << ",\t";
+            os << s.side << ",\t";
+            for (auto &hid : s.hHistory) {
+                os << hid << ";";
+            }
+            os << ",\t";
+            os << s.isHacked;
+            
+            return os;
+        }
 
         operator std::map<std::string, std::string>();
 

@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "spdlog/spdlog.h"
+
 #include "Researcher.h"
 
 using namespace sam;
@@ -78,8 +80,7 @@ void Researcher::prepareResearch() {
     // Allocating memory
     experiment->initResources(experiment->setup.ng());
     
-    if (FLAGS::VERBOSE)
-        std::cout << ">>> Generating Data..." << std::endl;
+    spdlog::debug("Generating Data");
     
     // Generating data using the dataStrategy
     experiment->generateData();
@@ -105,8 +106,7 @@ void Researcher::performResearch(){
     
     experiment->calculateEffects();
     
-    if (FLAGS::VERBOSE)
-        std::cout << ">>> Running Test..." << std::endl;
+    spdlog::debug("Running Test");
     
     experiment->runTest();
 

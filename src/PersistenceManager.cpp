@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 
+#include "spdlog/spdlog.h"
 #include "csv/reader.hpp"
 #include "csv/writer.hpp"
 
@@ -41,9 +42,10 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
     }
 
     // TODO: Fix me! I'm fine but it's be nicer if there is a more elegant way to do this.
-    if (FLAGS::VERBOSE) {
+    if (FLAGS::DEBUG) {
         for (auto &s : subs) {
-            std::cout << s << std::endl;
+            spdlog::debug("{}", s);
+//            std::cout << s << std::endl;
         }
     }
 }

@@ -45,28 +45,8 @@ namespace sam {
         hHistory = e.hacks_history;
     };
 
-    std::ostream& operator<<(std::ostream& os, const Submission& s){
-    	os <<
-        s.simid << ",\t" <<
-        s.pubid << ",\t" <<
-        s.tnobs << ",\t" <<
-        s.inx << ",\t" <<
-        s.nobs << ",\t" <<
-        s.mean << ",\t" <<
-        s.var << ",\t" <<
-        s.sei << ",\t" <<
-        s.statistic << ",\t" <<
-        s.pvalue << ",\t" <<
-        s.effect << ",\t";
-        os << s.side << ",\t";
-        for (auto &hid : s.hHistory) {
-            os << hid << ";";
-        }
-        os << ",\t";
-        os << s.isHacked;
-        
-        return os;
-    }
+
+
     
     
     std::vector<std::string> Submission::cols() {

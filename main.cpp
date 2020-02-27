@@ -11,6 +11,7 @@
 
 #include "sam.h"
 
+#include "spdlog/spdlog.h"
 #include "utils/tqdm.h"
 #include "effolkronium/random.hpp"
 
@@ -101,6 +102,18 @@ int main(int argc, const char** argv){
     }else{
         jSimConfig["simulation_parameters"]["output_prefix"] = "";
     }
+
+    
+    spdlog::set_pattern("[%R] %^[%l]%$ %v");
+    
+    spdlog::set_level(spdlog::level::off);
+
+    if (jSimConfig["simulation_parameters"]["verbose"].get<bool>())
+        spdlog::set_level(spdlog::level::info);
+    
+    if (jSimConfig["simulation_parameters"]["debug"].get<bool>())
+        spdlog::set_level(spdlog::level::debug);
+    
     
     runSimulation(jSimConfig);
 

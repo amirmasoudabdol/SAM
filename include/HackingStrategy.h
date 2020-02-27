@@ -42,6 +42,7 @@ namespace sam {
      Researcher decides if this is a pointer to a *fresh* copy of the Experiment or a pointer
      to a previously "hacked" Experiment.
 
+     @ingroup HackingStrategies
      */
     class HackingStrategy {
         
@@ -178,7 +179,6 @@ namespace sam {
         
         // Using a helper template function to handle the optional and throw if necessary.
         j.at("_name").get_to(p.name);
-        
         j.at("level").get_to(p.level);
         j.at("num").get_to(p.num);
         j.at("n_attempts").get_to(p.n_attempts);
@@ -198,7 +198,7 @@ namespace sam {
          Parameters of Outliers Removal Strategy
          
          
-         @code
+         ```json
          {
              "_name": "SDOutlierRemoval",
              "level": "dv",
@@ -211,7 +211,7 @@ namespace sam {
              "num": 1000,
              "order": "random"
          }
-         @endcode
+         ```
          
          @ingroup HackingStrategiesParameters
          

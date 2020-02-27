@@ -28,8 +28,11 @@ find_package(nlohmann_json REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(LAPACK)
 find_package(BLAS)
+find_package(spdlog REQUIRED)
+
 
 set(NLOHMANN_JSON_LIBRARIES "nlohmann_json::nlohmann_json")
+set(SPDLOG_LIBRARIES "spdlog::spdlog")
 
 # find_library(MLPACK mlpack)
 
@@ -48,6 +51,7 @@ target_link_libraries(sam mvrandom
                             ${BOOST_LIBRARIES}
                             ${MLPACK}
                             ${NLOHMANN_JSON_LIBRARIES}
+                            ${SPDLOG_LIBRARIES}
                             Threads::Threads)
 
 # Building the SAMrun
