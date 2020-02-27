@@ -42,7 +42,9 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     /// results based on researchers' preference, then we replace it, and report
     /// that one.
     /// CHECK ME: I'm not sure if this is a good way of doing this...
-    int selectedOutcome = experiment.setup.nd();
+    int selectedOutcome {0};
+    
+    pre_registered_group = experiment.setup.nd();
     
     switch (preference) {
         case DecisionPreference::PreRegisteredOutcome: {
