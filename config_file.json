@@ -81,7 +81,7 @@
         ]
     },
     "simulation_parameters": {
-        "debug": true,
+        "debug": false,
         "master_seed": 42,
         "n_sims": 5,
         "output_path": "../outputs/",

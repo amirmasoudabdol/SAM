@@ -98,8 +98,6 @@ int main(int argc, const char** argv){
     if (vm.count("output-prefix")){
         const string output_prefix = vm["output-prefix"].as<string>();
         jSimConfig["simulation_parameters"]["output_prefix"] = output_prefix;
-    }else{
-//        jSimConfig["simulation_parameters"]["output_prefix"] = "";
     }
 
     
@@ -188,7 +186,6 @@ void runSimulation(json& simConfig){
     if (is_saving_sims)
         simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
     
-//    std::cout << std::endl;
     // This loop can be parallelized
     for (int i = 0; i < simConfig["simulation_parameters"]["n_sims"]; i++) {
 
@@ -202,7 +199,6 @@ void runSimulation(json& simConfig){
             
             // If Experiment handles the Submission, it can handle the
             // stats output as well.
-            // TODO: `i` should be adjusted
             if (is_saving_stats)
                 statswriter->write(researcher.experiment, "stats", i);
 

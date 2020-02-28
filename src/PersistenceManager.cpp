@@ -41,12 +41,8 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
         writer->write_row(s);
     }
 
-    // TODO: Fix me! I'm fine but it's be nicer if there is a more elegant way to do this.
-    if (FLAGS::DEBUG) {
-        for (auto &s : subs) {
-            spdlog::debug("{}", s);
-//            std::cout << s << std::endl;
-        }
+    for (auto &s : subs) {
+        spdlog::debug("{}", s);
     }
 }
 
