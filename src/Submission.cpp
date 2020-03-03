@@ -67,7 +67,7 @@ namespace sam {
             record["pvalue"] = std::to_string(pvalue);
             record["effect"] = std::to_string(effect);
             record["sig"] = std::to_string(sig);
-            record["side"] = std::to_string(side);
+            record["side"] = std::to_string(eff_side);
             record["isHacked"] = std::to_string(isHacked);
             record["tnobs"] = std::to_string(tnobs);
             

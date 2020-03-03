@@ -48,7 +48,7 @@ namespace sam {
         //! Indicates if the submission is significant or not
         bool sig = false;
         //! The side of the observed effect
-        short side = 1;
+        short eff_side = 1;
         //! Whether the experiment is hacked or not
         bool isHacked = false;
         //! Stores the ID of hacking strategies applied on the experiment
@@ -89,7 +89,7 @@ namespace sam {
             s.statistic << ",\t" <<
             s.pvalue << ",\t" <<
             s.effect << ",\t";
-            os << s.side << ",\t";
+            os << s.eff_side << ",\t";
             for (auto &hid : s.hHistory) {
                 os << hid << ";";
             }

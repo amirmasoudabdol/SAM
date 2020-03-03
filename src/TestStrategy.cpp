@@ -329,9 +329,9 @@ namespace sam {
             }
         }
         
-        int mside = std::copysign(1.0, M - Sm);
+        int eff_side = std::copysign(1.0, M - Sm);
 
-        return {t_stat, p, mside, sig};
+        return {t_stat, p, eff_side, sig};
     }
 
 
@@ -421,9 +421,9 @@ namespace sam {
             }
         }
         
-        int mside = std::copysign(1.0, Sm1 - Sm2);
+        int eff_side = std::copysign(1.0, Sm1 - Sm2);
         
-        return {t_stat, p, mside, sig};
+        return {t_stat, p, eff_side, sig};
     }
 
 
@@ -511,9 +511,9 @@ namespace sam {
             }
         }
         
-        int mside = std::copysign(1.0, Sm1 - Sm2);
+        int eff_side = std::copysign(1.0, Sm1 - Sm2);
         
-        return {t_stat, p, mside, sig};
+        return {t_stat, p, eff_side, sig};
     }
 
     TestStrategy::TestResult
@@ -567,7 +567,7 @@ namespace sam {
             // Alternative "REJECTED"
             sig = false;
 
-//        int mside = std::copysign(1.0, Sm1 - Sm2);
+//        int eff_side = std::copysign(1.0, Sm1 - Sm2);
         
         return {f_stats, p, 1, sig};
     }
@@ -645,9 +645,9 @@ namespace sam {
             }
         }
         
-        int mside = std::copysign(1.0, M - Sm1);
+        int eff_side = std::copysign(1.0, M - Sm1);
 
-        return {t_stat, p, mside, sig};
+        return {t_stat, p, eff_side, sig};
 
     }
 
@@ -726,9 +726,9 @@ namespace sam {
             }
         }
         
-        int mside = std::copysign(1.0, Sm1 - Sm2);
+        int eff_side = std::copysign(1.0, Sm1 - Sm2);
         
-        return {t_stat, p, mside, sig};
+        return {t_stat, p, eff_side, sig};
     }
 
 
@@ -808,9 +808,9 @@ namespace sam {
             }
         }
 
-        int mside = std::copysign(1.0, Sm1 - Sm2);
+        int eff_side = std::copysign(1.0, Sm1 - Sm2);
         
-        return {t_stat, p, mside, sig};
+        return {t_stat, p, eff_side, sig};
 
     }
 
@@ -935,9 +935,9 @@ namespace sam {
 
         double u = u2;
         
-        int mside = std::copysign(1.0, Sm1 - Sm2);
+        int eff_side = std::copysign(1.0, Sm1 - Sm2);
         
-        return {u, p, mside, sig};
+        return {u, p, eff_side, sig};
     
     }
 

@@ -43,7 +43,7 @@ std::unique_ptr<SelectionStrategy> SelectionStrategy::build(json &selection_stra
 bool SignificantSelection::review(const Submission &s) {
 
     // Only accepting +/- results if journal cares about it, side != 0
-    if (s.side != params.side && params.side != 0){
+    if (s.eff_side != params.side && params.side != 0){
         return false;
     }
 
