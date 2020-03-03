@@ -104,11 +104,12 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             }
             break;
             
-        case DecisionPreference::MaxSigEffect:
+        case DecisionPreference::MaxSigEffect: {
             
+            }
             break;
             
-        case DecisionPreference::MaxEffect:{
+        case DecisionPreference::MaxEffect: {
             
             selectedOutcome = experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
                                 + experiment.setup.nd();
@@ -391,7 +392,7 @@ void ImpatientDecisionMaker::initDecision(Experiment &experiment) {
     experiments_pool.push_back(experiment);
     submissions_pool.push_back(current_submission);
     
-    is_still_hacking = !isPublishable();
+    is_still_hacking = !isSubmittable();
 }
 
 /// Impatient decision maker check if the check current submission is publishable
@@ -400,19 +401,19 @@ void ImpatientDecisionMaker::initDecision(Experiment &experiment) {
 /// decision maker for instance.
 void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
-    is_still_hacking = !isPublishable();
+    is_still_hacking = !isSubmittable();
 }
 
 
 void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
     
     
-    if (isPublishable()){
+    if (isSubmittable()){
         experiments_pool.push_back(experiment);
         submissions_pool.push_back(current_submission);
     }
 
-    is_still_hacking = !isPublishable();
+    is_still_hacking = !isSubmittable();
     
 }
 
@@ -474,7 +475,7 @@ void PatientDecisionMaker::initDecision(Experiment &experiment) {
 /// @param experiment A reference to the experiment
 void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
-    is_still_hacking = !isPublishable();
+    is_still_hacking = !isSubmittable();
 }
 
 
@@ -484,7 +485,7 @@ void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 /// @param experiment A reference to the experiment
 void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
-    if (isPublishable()){
+    if (isSubmittable()){
         experiments_pool.push_back(experiment);
         submissions_pool.push_back(current_submission);
     }

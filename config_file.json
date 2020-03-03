@@ -48,7 +48,7 @@
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
             "preference": "PreRegieredOutcome",
-            "publishing_policy": "Anything"
+            "submission_policy": "Anything"
         },
         "hacking_strategies": [
             [
@@ -81,7 +81,7 @@
         ]
     },
     "simulation_parameters": {
-        "debug": false,
+        "debug": true,
         "master_seed": 42,
         "n_sims": 5,
         "output_path": "../outputs/",

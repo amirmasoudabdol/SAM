@@ -16,32 +16,16 @@ namespace sam {
             tnobs = 0;
         }
         
-
         inx = index;
-        
-        // There are quite safe when it comes to #194 and #202
-        nobs = e.measurements[index].size();        // TODO: I think this needs to be generalized
+        nobs = e.measurements[index].size();
         mean = e.means[index];
         var = e.vars[index];
         sei = e.ses[index];
-
         statistic = e.statistics[index];
         pvalue = e.pvalues[index];
-        
         effect = e.effects[index];
-        
         sig = e.sigs[index];
-        
-        // CHECK: This will cause problem if I do GroupPooling!
-        // BUG: This is also a problem if I'm working with the LatentModel because I'm
-        // storing latent means, vars with different names. **This is just not a good idea**.
-        // Submission should be self-contained and I shouldn't look into another object
-        // FIXME: This is fishy!
-        // FIXME: I've been commented during the transition of #202
-//        side = std::copysign(1.0, mean - e.setup.means()[index]);
-        
         isHacked = e.is_hacked;
-        
         hHistory = e.hacks_history;
     };    
     

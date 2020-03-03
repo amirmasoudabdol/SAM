@@ -102,7 +102,7 @@ namespace sam {
     })
 
 
-    enum class PublishingPolicy {
+    enum class SubmissionPolicy {
         Anything,
         AnythingSig,
         ComplyingWithPreference,
@@ -110,11 +110,11 @@ namespace sam {
     };
 
 
-    NLOHMANN_JSON_SERIALIZE_ENUM( PublishingPolicy, {
-        {PublishingPolicy::Anything, "Anything"},
-        {PublishingPolicy::AnythingSig, "AnythingSig"},
-        {PublishingPolicy::ComplyingWithPreference, "BasedOnThePreference"},
-        {PublishingPolicy::PreRegSig, "PreRegSig"}
+    NLOHMANN_JSON_SERIALIZE_ENUM( SubmissionPolicy, {
+        {SubmissionPolicy::Anything, "Anything"},
+        {SubmissionPolicy::AnythingSig, "AnythingSig"},
+        {SubmissionPolicy::ComplyingWithPreference, "BasedOnThePreference"},
+        {SubmissionPolicy::PreRegSig, "PreRegSig"}
     })
 
     /**
@@ -194,15 +194,7 @@ namespace sam {
         
         DecisionMethod name;
         
-        PublishingPolicy policy;
-        
-//        const int preRegistetedGroup() const {
-//            return pre_registered_group;
-//        };
-        
-//        void preRegisteredGroup(int g) {
-//            pre_registered_group = g;
-//        }
+        SubmissionPolicy submission_policy;
         
         /**
          DecisionStrategy factory method.
@@ -225,7 +217,7 @@ namespace sam {
         /// It indicates whether the current_submission is significant or not.
         /// This can be overwritten to adopt to different type of studies or
         /// logics.
-        virtual bool isPublishable() {
+        virtual bool isSubmittable() {
             return current_submission.isSig();
         }
         
@@ -241,29 +233,29 @@ namespace sam {
          */
         virtual bool willBeSubmitting() {
             
-            switch (policy) {
-                case PublishingPolicy::Anything: {
+            switch (submission_policy) {
+                case SubmissionPolicy::Anything: {
                         return true;
                     }
                     break;
-                case PublishingPolicy::AnythingSig: {
-                    if (this->isPublishable())
+                case SubmissionPolicy::AnythingSig: {
+                    if (this->isSubmittable())
                         return true;
                     else
                         return false;
                     }
                     break;
-                case PublishingPolicy::ComplyingWithPreference: {
+                case SubmissionPolicy::ComplyingWithPreference: {
                     if (this->complying_with_preference)
                         return true;
                     else
                         return false;
                     }
                     break;
-                case PublishingPolicy::PreRegSig: {
+                case SubmissionPolicy::PreRegSig: {
                     if (current_submission.inx != pre_registered_group)
                         return false;
-                    else if (isPublishable()){
+                    else if (isSubmittable()){
                         return true;
                     }
                 }
@@ -346,13 +338,13 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
             DecisionPreference preference = DecisionPreference::MinPvalue;
-            PublishingPolicy publishing_policy = PublishingPolicy::Anything;
+            SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
         
         Parameters params;
         
         explicit ImpatientDecisionMaker(const Parameters &p) : params{p} {
-            policy = p.publishing_policy;
+            submission_policy = p.publishing_policy;
         };
         
         bool isStillHacking() override {
@@ -374,7 +366,7 @@ namespace sam {
             j = json{
                 {"_name", p.name},
                 {"preference", p.preference},
-                {"publishing_policy", p.publishing_policy}
+                {"submission_policy", p.publishing_policy}
             };
         }
     
@@ -382,7 +374,7 @@ namespace sam {
         void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
             j.at("_name").get_to(p.name);
             j.at("preference").get_to(p.preference);
-            j.at("publishing_policy").get_to(p.publishing_policy);
+            j.at("submission_policy").get_to(p.publishing_policy);
         }
 
 
@@ -397,13 +389,13 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::PatientDecisionMaker;
             DecisionPreference preference = DecisionPreference::MinPvalue;
-            PublishingPolicy publishing_policy = PublishingPolicy::Anything;
+            SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
 
         Parameters params;
 
         explicit PatientDecisionMaker(const Parameters &p) : params{p} {
-            policy = p.publishing_policy;
+            submission_policy = p.publishing_policy;
         };
 
         virtual PatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
@@ -421,7 +413,7 @@ namespace sam {
         j = json{
             {"_name", p.name},
             {"preference", p.preference},
-            {"publishing_policy", p.publishing_policy}
+            {"submission_policy", p.publishing_policy}
         };
     }
 
@@ -430,7 +422,7 @@ namespace sam {
 
         j.at("_name").get_to(p.name);
         j.at("preference").get_to(p.preference);
-        j.at("publishing_policy").get_to(p.publishing_policy);
+        j.at("submission_policy").get_to(p.publishing_policy);
     }
 
     /**
@@ -444,7 +436,7 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::HonestDecisionMaker;
             DecisionPreference preference = DecisionPreference::PreRegisteredOutcome;
-            PublishingPolicy publishing_policy = PublishingPolicy::Anything;
+            SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
 
         /// Parameters of the HonestDecisionMaker are fixed, he is basically the
@@ -454,7 +446,7 @@ namespace sam {
         HonestDecisionMaker() {};
 
         HonestDecisionMaker(const Parameters p) : params(p)  {
-            policy = p.publishing_policy;
+            submission_policy = p.publishing_policy;
         };
         
         bool isStillHacking() override {

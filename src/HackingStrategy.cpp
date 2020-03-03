@@ -109,7 +109,7 @@ void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisio
     
     spdlog::debug("Optional Stopping");
     
-    for (int t = 0; t < params.n_attempts && t < params.max_attempts ; t++) {
+    for (int t = 0; t < params.n_attempts && t < params.max_attempts; t++) {
         
         addObservations(experiment, params.num);
         
