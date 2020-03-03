@@ -35,7 +35,7 @@
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
-            "side": "TwoSided"
+            "alternative": "TwoSided"
         }
     },
     "journal_parameters": {

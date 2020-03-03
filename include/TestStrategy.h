@@ -65,7 +65,7 @@ namespace sam {
         /**
          Specify the side of the test
          */
-        enum class TestSide {
+        enum class TestAlternative {
             Less,
             Greater,
             TwoSided
@@ -80,7 +80,7 @@ namespace sam {
          */
         struct TestStrategyParameters {
             TestMethod name;
-            TestSide side = TestSide::TwoSided;
+            TestAlternative alternative = TestAlternative::TwoSided;
             double alpha = 0.05;
         };
 //
@@ -110,7 +110,7 @@ namespace sam {
         
         struct Parameters {
             TestMethod name = TestMethod::TTest;
-            TestSide side = TestSide::TwoSided;
+            TestAlternative alternative = TestAlternative::TwoSided;
             double alpha;
         };
         
@@ -133,7 +133,7 @@ namespace sam {
         void to_json(json& j, const TTest::Parameters& p) {
             j = json{
                 {"_name", p.name},
-                {"side", p.side},
+                {"alternative", p.alternative},
                 {"alpha", p.alpha}
             };
         }
@@ -144,7 +144,7 @@ namespace sam {
             // Using a helper template function to handle the optional and throw if necessary.
             j.at("_name").get_to(p.name);
             
-            j.at("side").get_to(p.side);
+            j.at("alternative").get_to(p.alternative);
             
             j.at("alpha").get_to(p.alpha);
         }
@@ -156,7 +156,7 @@ namespace sam {
         
         struct Parameters {
             TestMethod name = TestMethod::YuenTest;
-            TestSide side = TestSide::TwoSided;
+            TestAlternative alternative = TestAlternative::TwoSided;
             double alpha = 0.95;
             double trim = 0.20;
         };
@@ -180,7 +180,7 @@ namespace sam {
         void to_json(json& j, const YuenTest::Parameters& p) {
             j = json{
                 {"_name", p.name},
-                {"side", p.side},
+                {"alternative", p.alternative},
                 {"alpha", p.alpha}
                 // ,
                 // {"trim", p.trim}
@@ -193,7 +193,7 @@ namespace sam {
             // Using a helper template function to handle the optional and throw if necessary.
             j.at("_name").get_to(p.name);
             
-            j.at("side").get_to(p.side);
+            j.at("alternative").get_to(p.alternative);
             
             j.at("alpha").get_to(p.alpha);
             // j.at("trim").get_to(p.trim);
@@ -206,7 +206,7 @@ namespace sam {
             
             struct Parameters {
                 TestMethod name = TestMethod::WilcoxonTest;
-                TestSide side = TestSide::TwoSided;
+                TestAlternative alternative = TestAlternative::TwoSided;
                 double alpha = 0.95;
                 bool use_continuity {true};
             };
@@ -230,7 +230,7 @@ namespace sam {
             void to_json(json& j, const WilcoxonTest::Parameters& p) {
                 j = json{
                     {"_name", p.name},
-                    {"side", p.side},
+                    {"alternative", p.alternative},
                     {"alpha", p.alpha}
                     // , {"use_continuity", p.use_continuity}
                 };
@@ -242,7 +242,7 @@ namespace sam {
                 // Using a helper template function to handle the optional and throw if necessary.
                 j.at("_name").get_to(p.name);
                 
-                j.at("side").get_to(p.side);
+                j.at("alternative").get_to(p.alternative);
                 
                 j.at("alpha").get_to(p.alpha);
 
@@ -257,34 +257,34 @@ namespace sam {
         {TestStrategy::TestMethod::WilcoxonTest, "WilcoxonTest"}
     })
 
-    NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestSide, {
-        {TestStrategy::TestSide::Less, "Less"},
-        {TestStrategy::TestSide::Greater, "Greater"},
-        {TestStrategy::TestSide::TwoSided, "TwoSided"}
+    NLOHMANN_JSON_SERIALIZE_ENUM( TestStrategy::TestAlternative, {
+        {TestStrategy::TestAlternative::Less, "Less"},
+        {TestStrategy::TestAlternative::Greater, "Greater"},
+        {TestStrategy::TestAlternative::TwoSided, "TwoSided"}
     })
 
 
     // Stats Utility
 
-    double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestStrategy::TestSide side);
+    double single_sample_find_df(double M, double Sm, double Sd, double alpha, TestStrategy::TestAlternative alternative);
 
     std::pair<double, double>
-    confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side);
+    confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestAlternative alternative);
 
     TestStrategy::TestResult
-    t_test(const arma::Row<double> &d1, const arma::Row<double> &d2, double alpha, TestStrategy::TestSide side);
+    t_test(const arma::Row<double> &d1, const arma::Row<double> &d2, double alpha, TestStrategy::TestAlternative alternative);
 
     TestStrategy::TestResult
-    t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestStrategy::TestSide side, bool equal_var);
+    t_test(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2, double Sn2, double alpha, TestStrategy::TestAlternative alternative, bool equal_var);
 
     TestStrategy::TestResult
-    single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side);
+    single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestAlternative alternative);
 
     TestStrategy::TestResult
-    two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side);
+    two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative);
 
     TestStrategy::TestResult
-    two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side);
+    two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative);
 
     TestStrategy::TestResult
     f_test(double sd1, double sd2, double N1, double N2, double alpha);
@@ -292,7 +292,7 @@ namespace sam {
     TestStrategy::TestResult yuen_t_test_one_sample(
                                          const arma::Row<double> &x,
                                          double alpha,
-                                         const TestStrategy::TestSide side,
+                                         const TestStrategy::TestAlternative alternative,
                                          double trim,
                                          double mu);
 
@@ -301,7 +301,7 @@ namespace sam {
                                          const arma::Row<double> &x,
                                          const arma::Row<double> &y,
                                          double alpha,
-                                         const TestStrategy::TestSide side,
+                                         const TestStrategy::TestAlternative alternative,
                                          double trim,
                                          double mu);
 
@@ -309,7 +309,7 @@ namespace sam {
                                      const arma::Row<double> &x,
                                      const arma::Row<double> &y,
                                      double alpha,
-                                     const TestStrategy::TestSide side,
+                                     const TestStrategy::TestAlternative alternative,
                                      double trim,
                                      double mu);
 
@@ -342,7 +342,7 @@ namespace sam {
                                                           const arma::Row<double> &y,
                                                           double alpha,
                                                           double use_continuity,
-                                                          const TestStrategy::TestSide side);
+                                                          const TestStrategy::TestAlternative alternative);
 
 
 }

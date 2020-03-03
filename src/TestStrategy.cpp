@@ -62,7 +62,7 @@ void TTest::run(Experiment* experiment) {
 //                                               experiment->means[i],
 //                                               experiment->stddev[i],
 //                                               experiment->measurements[i].size(),
-//                                               params.alpha, params.side);
+//                                               params.alpha, params.alternative);
 //        }else {
             // EQUAL SD
             res = two_samples_t_test_equal_sd(experiment->means[d],
@@ -71,7 +71,7 @@ void TTest::run(Experiment* experiment) {
                                                experiment->means[i],
                                                experiment->stddev[i],
                                                experiment->measurements[i].size(),
-                                               params.alpha, params.side);
+                                               params.alpha, params.alternative);
 //        }
         
         
@@ -96,16 +96,16 @@ void YuenTest::run(Experiment* experiment) {
 //            res = yuen_t_test_paired(experiment->measurements[d],
 //                                       experiment->measurements[i],
 //                                       params.alpha,
-//                                       params.side,
+//                                       params.alternative,
 //                                       params.trim,
 //                                       0);
 //        }else{
             res = yuen_t_test_two_samples(experiment->measurements[d],
-                                        experiment->measurements[i],
-                                        params.alpha,
-                                        params.side,
-                                        0.2,
-                                        0);
+                                            experiment->measurements[i],
+                                            params.alpha,
+                                            params.alternative,
+                                            0.2,
+                                            0);
 //        }
                 
         experiment->statistics[i] = res.statistic;
@@ -130,7 +130,7 @@ void WilcoxonTest::run(Experiment* experiment) {
 //            res = yuen_t_test_paired(experiment->measurements[d],
 //                                       experiment->measurements[i],
 //                                       params.alpha,
-//                                       params.side,
+//                                       params.alternative,
 //                                       params.trim,
 //                                       0);
 //        }else{
@@ -138,7 +138,7 @@ void WilcoxonTest::run(Experiment* experiment) {
                                                 experiment->measurements[i],
                                                1,
                                                 params.alpha,
-                                                params.side);
+                                                params.alternative);
 //        }
                 
         experiment->statistics[i] = res.statistic;
@@ -171,7 +171,7 @@ namespace sam {
      @param Sn Sample Size.
      */
     std::pair<double, double>
-    confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestSide side)
+    confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha, TestStrategy::TestAlternative alternative)
     {
 
         using namespace sam;
@@ -198,14 +198,14 @@ namespace sam {
      @param Sd Sample Standard Deviation.
      */
     double single_sample_find_df(double M,
-                                 double Sm, double Sd, double alpha, TestStrategy::TestSide side)
+                                 double Sm, double Sd, double alpha, TestStrategy::TestAlternative alternative)
     {
         using namespace sam;
         using boost::math::students_t;
         
         // calculate df for one-sided or two-sided test:
         double df = students_t::find_degrees_of_freedom(fabs(M - Sm),
-                                                        (side == TestStrategy::TestSide::Greater) ? alpha : alpha / 2. ,
+                                                        (alternative == TestStrategy::TestAlternative::Greater) ? alpha : alpha / 2. ,
                                                         alpha,
                                                         Sd);
         
@@ -215,34 +215,34 @@ namespace sam {
 
     TestStrategy::TestResult t_test(const arma::Row<double> &dt1,
                                     const arma::Row<double> &dt2,
-                                    double alpha, TestStrategy::TestSide side){
+                                    double alpha, TestStrategy::TestAlternative alternative){
         return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
                       arma::mean(dt2), arma::stddev(dt2), dt2.size(),
-                      alpha, side, true);
+                      alpha, alternative, true);
     }
 
 
     TestStrategy::TestResult
     t_test(double Sm1, double Sd1, double Sn1,
            double Sm2, double Sd2, double Sn2,
-           double alpha, TestStrategy::TestSide side, bool equal_var = false){
+           double alpha, TestStrategy::TestAlternative alternative, bool equal_var = false){
 
         using namespace sam;
 
         if (Sm1 == 0.){
             return single_sample_t_test(Sm1,
                                         Sm2, Sd2, Sn2,
-                                        alpha, side);
+                                        alpha, alternative);
         }
         
         if (equal_var) {
             return two_samples_t_test_equal_sd(Sm1, Sd1, Sn1,
                                                Sm2, Sd2, Sn2,
-                                               alpha, side);
+                                               alpha, alternative);
         }else{
             return two_samples_t_test_unequal_sd(Sm1, Sd1, Sn1,
                                                  Sm2, Sd2, Sn2,
-                                                 alpha, side);
+                                                 alpha, alternative);
         }
     }
 
@@ -266,7 +266,7 @@ namespace sam {
     TestStrategy::TestResult
     single_sample_t_test(double M,
                          double Sm, double Sd, unsigned Sn,
-                         double alpha, TestStrategy::TestSide side)
+                         double alpha, TestStrategy::TestAlternative alternative)
     {
         
         bool sig = false;
@@ -290,7 +290,7 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Mean != M
             p = 2 * cdf(complement(dist, fabs(t_stat)));
             if(p < alpha){
@@ -303,7 +303,7 @@ namespace sam {
             }
         }
 
-        if (side == TestStrategy::TestSide::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater){
             // Mean  > M
             p = cdf(dist, t_stat);
             if(p > alpha){
@@ -316,7 +316,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Less){
+        if (alternative == TestStrategy::TestAlternative::Less){
             // Mean  < M
             p = cdf(complement(dist, t_stat));
             if(p > alpha){
@@ -352,7 +352,7 @@ namespace sam {
      @param alpha Significance Level.
      @return TestStrategy::TestResult
      */
-    TestStrategy::TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side)
+    TestStrategy::TestResult two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative)
     {
         
         bool sig = false;
@@ -384,7 +384,7 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
             if(p < alpha){
@@ -396,7 +396,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater){
             // Sample 1 Mean <  Sample 2 Mean
             p = cdf(dist, t_stat);
             if(p< alpha){
@@ -408,7 +408,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Less){
+        if (alternative == TestStrategy::TestAlternative::Less){
             
             // Sample 1 Mean >  Sample 2 Mean
             p = cdf(complement(dist, t_stat));
@@ -444,7 +444,7 @@ namespace sam {
      @param alpha Significance Level.
      @return TestStrategy::TestResult
      */
-    TestStrategy::TestResult two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestSide side)
+    TestStrategy::TestResult two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative)
     {
         
         
@@ -475,7 +475,7 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
             if(p < alpha){
@@ -487,7 +487,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater){
             // Sample 1 Mean <  Sample 2 Mean
             p = cdf(dist, t_stat);
             if(p< alpha){
@@ -499,7 +499,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Less){
+        if (alternative == TestStrategy::TestAlternative::Less){
             // Sample 1 Mean >  Sample 2 Mean
             p = cdf(complement(dist, t_stat));
             if(p< alpha){
@@ -576,7 +576,7 @@ namespace sam {
     TestStrategy::TestResult yuen_t_test_one_sample(
                                          const arma::Row<double> &x,
                                          double alpha,
-                                         const TestStrategy::TestSide side,
+                                         const TestStrategy::TestAlternative alternative,
                                          double trim = 0.2,
                                          double mu = 0.0){
 
@@ -603,7 +603,7 @@ namespace sam {
         students_t dist(df);
         double p = 0;
         
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Mean != M
 //            p = 2 * (1 - cdf(dist, fabs(t_stat)));
             p = 2 * cdf(complement(dist, fabs(t_stat)));
@@ -617,7 +617,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater){
             // Mean  > M
 //            p = 1 - cdf(dist, t_stat);
             p = cdf(complement(dist, t_stat));
@@ -631,7 +631,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Less){
+        if (alternative == TestStrategy::TestAlternative::Less){
             // Mean  < M
 //            p = cdf(dist, t_stat);
             p = cdf(dist, t_stat);
@@ -655,7 +655,7 @@ namespace sam {
                                          const arma::Row<double> &x,
                                          const arma::Row<double> &y,
                                          double alpha,
-                                         const TestStrategy::TestSide side,
+                                         const TestStrategy::TestAlternative alternative,
                                          double trim = 0.2,
                                          double mu = 0){
         // Do some check whether it's possible to run the test
@@ -684,7 +684,7 @@ namespace sam {
         students_t dist(df);
         double p = 0;
         
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Mean != M
 //            p = 2 * (1 - cdf(dist, fabs(t_stat)));
             p = 2 * cdf(complement(dist, fabs(t_stat)));
@@ -698,7 +698,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater){
             // Mean  > M
 //            p = 1 - cdf(dist, t_stat);
             p = cdf(complement(dist, t_stat));
@@ -712,7 +712,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Less){
+        if (alternative == TestStrategy::TestAlternative::Less){
             // Mean  < M
 //            p = cdf(dist, t_stat);
             p = cdf(dist, t_stat);
@@ -736,7 +736,7 @@ namespace sam {
                                                   const arma::Row<double> &x,
                                                   const arma::Row<double> &y,
                                                   double alpha,
-                                                  const TestStrategy::TestSide side,
+                                                  const TestStrategy::TestAlternative alternative,
                                                   double trim,
                                                   double mu){
         
@@ -772,7 +772,7 @@ namespace sam {
         students_t dist(df);
         double p;
         
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
             if(p < alpha){
@@ -784,7 +784,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater){
             // Sample 1 Mean <  Sample 2 Mean
             p = cdf(dist, t_stat);
             if(p< alpha){
@@ -796,7 +796,7 @@ namespace sam {
             }
         }
         
-        if (side == TestStrategy::TestSide::Less){
+        if (alternative == TestStrategy::TestAlternative::Less){
             // Sample 1 Mean >  Sample 2 Mean
             p = cdf(complement(dist, t_stat));
             if(p< alpha){
@@ -870,7 +870,7 @@ namespace sam {
                                                           const arma::Row<double> &y,
                                                           double alpha,
                                                           double use_continuity,
-                                                          const TestStrategy::TestSide side){
+                                                          const TestStrategy::TestAlternative alternative){
         
         using boost::math::normal;
         
@@ -907,11 +907,11 @@ namespace sam {
         double meanrank = x.n_elem*y.n_elem/2.0 + 0.5 * use_continuity;
         
         double bigu {0};
-        if (side == TestStrategy::TestSide::TwoSided)
+        if (alternative == TestStrategy::TestAlternative::TwoSided)
             bigu = std::max(u1, u2);
-        else if (side == TestStrategy::TestSide::Less)
+        else if (alternative == TestStrategy::TestAlternative::Less)
             bigu = u1;
-        else if (side == TestStrategy::TestSide::Greater)
+        else if (alternative == TestStrategy::TestAlternative::Greater)
             bigu = u2;
 
         double z = (bigu - meanrank) / sd;
@@ -919,7 +919,7 @@ namespace sam {
         double p{0.};
         normal norm(0, 1);
 
-        if (side == TestStrategy::TestSide::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided){
             p = 2 * cdf(complement(norm, fabs(z)));
             if (p < alpha)
                 sig = true;
