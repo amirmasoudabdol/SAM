@@ -15,7 +15,7 @@
 #include "sam.h"
 #include "nlohmann/json.hpp"
 #include "effolkronium/random.hpp"
-#include "mvrandom.hpp"
+#include "baaraan.hpp"
 
 using json = nlohmann::json;
 using Generator = std::mt19937;
@@ -156,9 +156,9 @@ namespace nlohmann {
 
 
     template <typename T>
-    struct adl_serializer<mvrandom::mvnorm_distribution<T>> {
+    struct adl_serializer<baaraan::mvnorm_distribution<T>> {
         
-        static void to_json(json &j, const mvrandom::mvnorm_distribution<T> &mdist) {
+        static void to_json(json &j, const baaraan::mvnorm_distribution<T> &mdist) {
 
             j["dist"] = "mvnorm_distribution";
             j["means"] = arma::rowvec(mdist.means().as_row());
@@ -166,7 +166,7 @@ namespace nlohmann {
             
         }
 
-        static mvrandom::mvnorm_distribution<T> from_json(const json &j) {
+        static baaraan::mvnorm_distribution<T> from_json(const json &j) {
             
             auto means = j.at("means").get<arma::Row<double>>();
             arma::Mat<T> sigma;
@@ -184,16 +184,16 @@ namespace nlohmann {
                 sigma = constructCovMatrix(stddevs, covs, n_dims);
             }
 
-            return mvrandom::mvnorm_distribution<T>{means.t(), sigma};
+            return baaraan::mvnorm_distribution<T>{means.t(), sigma};
         }
 
     };
 
 
     template <typename T>
-    struct adl_serializer<mvrandom::truncated_mvnorm_distribution<T>> {
+    struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
         
-        static void to_json(json &j, const mvrandom::truncated_mvnorm_distribution<T> &mdist) {
+        static void to_json(json &j, const baaraan::truncated_mvnorm_distribution<T> &mdist) {
 
             j["dist"] = "truncated_mvnorm_distribution";
             j["means"] = arma::rowvec(mdist.means().as_row());
@@ -203,7 +203,7 @@ namespace nlohmann {
             
         }
 
-        static mvrandom::truncated_mvnorm_distribution<T> from_json(const json &j) {
+        static baaraan::truncated_mvnorm_distribution<T> from_json(const json &j) {
             
             auto means = j.at("means").get<arma::Row<double>>();
             auto n_dims = means.n_elem;
@@ -231,7 +231,7 @@ namespace nlohmann {
             lowers = get_expr_setup_params(j.at("lowers"), n_dims);
             uppers = get_expr_setup_params(j.at("uppers"), n_dims);
 
-            return mvrandom::truncated_mvnorm_distribution<T>{means.t(), sigma, lowers, uppers};
+            return baaraan::truncated_mvnorm_distribution<T>{means.t(), sigma, lowers, uppers};
 
         }
 

@@ -3,7 +3,7 @@
 //
 
 #include "Utilities.h"
-#include "mvrandom.hpp"
+#include "baaraan.hpp"
 #include "utils/truncated_normal_distribution.h"
 
 using Generator = std::mt19937;
@@ -167,11 +167,11 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
     auto const &distributionName = j.at("dist");
     
     if (distributionName == "mvnorm_distribution") {
-        return j.get<mvrandom::mvnorm_distribution<double>>();
+        return j.get<baaraan::mvnorm_distribution<double>>();
     }
     
     if (distributionName == "truncated_mvnorm_distribution") {
-        return j.get<mvrandom::truncated_mvnorm_distribution<double>>();
+        return j.get<baaraan::truncated_mvnorm_distribution<double>>();
     }
 
 /**
@@ -188,8 +188,8 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
 #define generate_multivariate_distribution_factory(name_, type_, ...) \
 if(distributionName == #name_) return make_multivariate_distribution_impl<name_<type_>>(j, ## __VA_ARGS__);
 
-    generate_multivariate_distribution_factory(mvrandom::mvnorm_distribution, double, "means", "covs");
-    generate_multivariate_distribution_factory(mvrandom::truncated_mvnorm_distribution, double, "means", "covs", "lowers", "uppers");
+    generate_multivariate_distribution_factory(baaraan::mvnorm_distribution, double, "means", "covs");
+    generate_multivariate_distribution_factory(baaraan::truncated_mvnorm_distribution, double, "means", "covs", "lowers", "uppers");
 
 #undef generate_multivariate_distribution_factory
 

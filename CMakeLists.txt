@@ -19,7 +19,7 @@ set(CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/../mvrandom ${PROJECT_SOURCE_DIR}/../mvrandom/build)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../baaraan ${PROJECT_SOURCE_DIR}/../baaraan/build)
 
 find_package(Threads REQUIRED)
 
@@ -37,7 +37,7 @@ set(SPDLOG_LIBRARIES "spdlog::spdlog")
 # find_library(MLPACK mlpack)
 
 include_directories(include)
-include_directories(${MVRANDOM_INCLUDE_DIRS})
+include_directories(${BAARAAN_INCLUDE_DIRS})
 include_directories(${MLPACK_SRCS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
@@ -46,7 +46,7 @@ file(GLOB INCLUDES "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
 
 add_library(sam STATIC ${INCLUDES} ${SOURCES})
-target_link_libraries(sam mvrandom
+target_link_libraries(sam baaraan
                             ${ARMADILLO_LIBRARIES}
                             ${BOOST_LIBRARIES}
                             ${MLPACK}
