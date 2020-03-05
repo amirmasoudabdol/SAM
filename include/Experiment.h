@@ -15,6 +15,7 @@
 #include "EffectStrategy.h"
 #include "TestStrategy.h"
 #include "Submission.h"
+#include "GroupData.h"
 
 namespace sam {
 
@@ -64,6 +65,9 @@ namespace sam {
         
         std::vector<arma::Row<double> > measurements;
         
+        
+        std::vector<GroupData> data_;
+        
         Experiment() = default;
         
         explicit Experiment(json& experiment_config);
@@ -93,6 +97,10 @@ namespace sam {
             initResources(setup.ng());
         };
         
+        
+        GroupData& operator[](int i) {
+            return data_[i];
+        };
         
         /**
          Runs the Test Strategy

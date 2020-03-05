@@ -5,17 +5,17 @@
 #ifndef SAMPP_TESTSTRATEGIES_H
 #define SAMPP_TESTSTRATEGIES_H
 
-// #include <Experiment.h>
 #include <memory>
 #include <iostream>
 #include <string>
 #include <map>
 #include <string>
 
+#include "nlohmann/json.hpp"
+
 #include "sam.h"
 #include "Utilities.h"
-
-#include "nlohmann/json.hpp"
+#include "GroupData.h"
 
 namespace sam {
 
@@ -38,10 +38,10 @@ namespace sam {
     public:
         
         struct TestResult {
-            double statistic = 0;
-            double pvalue = 0;
-            int side = 0;
-            bool sig = 0;
+            double statistic {0};
+            double pvalue {0};
+            int side {0};
+            bool sig {0};
             
             TestResult() = default;
 
@@ -91,6 +91,8 @@ namespace sam {
         virtual ~TestStrategy() = 0;
         
         virtual void run(Experiment* experiment) = 0;
+        
+        virtual void run(GroupData &group_1, GroupData &group_2) = 0;
 
     };
 
@@ -123,7 +125,9 @@ namespace sam {
 //            params = tsp;
         };
         
-        void run(Experiment* experiment);
+        void run(Experiment* experiment) override;
+        
+        void run(GroupData &group_1, GroupData &group_2) override {};
         
     };
     
@@ -170,7 +174,9 @@ namespace sam {
 //            params = tsp;
         };
         
-        void run(Experiment* experiment);
+        void run(Experiment* experiment) override;
+        
+        void run(GroupData &group_1, GroupData &group_2) override {};
         
     };
     
@@ -220,7 +226,9 @@ namespace sam {
     //            params = tsp;
             };
             
-            void run(Experiment* experiment);
+            void run(Experiment* experiment) override;
+        
+        void run(GroupData &group_1, GroupData &group_2) override {};
             
         };
         
