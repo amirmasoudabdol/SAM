@@ -42,6 +42,31 @@ namespace sam {
 
 }
 
+std::map<std::string, std::string> flatten_json_to_map(const json& j) {
+    
+    std::map<std::string, std::string> result;
+
+    auto flattened_j = j.flatten();
+
+    for (auto entry : flattened_j.items())
+    {
+        switch (entry.value().type())
+        {
+            // avoid escaping string value
+            case nlohmann::detail::value_t::string:
+                result[entry.key()] = entry.value();
+                break;
+
+                // use dump() for all other value types
+            default:
+                result[entry.key()] = entry.value().dump();
+                break;
+        }
+    }
+
+    return result;
+}
+
 arma::Mat<double>
 constructCovMatrix(const arma::Row<double> &stddevs, const double cov, int n) {
     arma::Mat<double> cov_matrix(n, n);

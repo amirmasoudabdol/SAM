@@ -26,6 +26,8 @@ using Random = effolkronium::random_static;
 Distribution make_distribution(json const &j);
 MultivariateDistribution make_multivariate_distribution(json const &j);
 
+std::map<std::string, std::string> flatten_json_to_map(const json& j);
+
 template<typename T = double>
 std::vector<T>
 get_expr_setup_params(json const &j, int const size) {

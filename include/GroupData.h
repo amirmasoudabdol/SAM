@@ -18,6 +18,8 @@ enum class GroupType {
 
 class GroupData {
     
+public: // Public for now
+    
     int id;
     GroupType gtype;
     
@@ -31,48 +33,74 @@ class GroupData {
     bool is_stats_updated_ {false};
     
     /// --- Test statistics
+    /// ... These can be their own type, and determined by the TestStrategies
+    double stats_ {0};
     double pvalue_ {0};
     double effect_ {0};
     bool sig_ {false};
-    
     bool is_test_stats_updated_ {false};
         
     //! Measurements
-    arma::Row<double> data_;
+    arma::Row<double> measurements_;
     bool is_measurements_initd_ {false};
     
-public:
+    /// --- Distribution/Population Parameters
+    /// These can be their own type, and determined by the DataStrategies
+    double true_mean_ {0};
+    double true_std_ {0};
+    double true_nobs_ {0};
+    
+//public:
+    
+    GroupData() {};
+    
+    GroupData(int id_, GroupType type_) : id{id_}, gtype{type_} {};
     
     GroupData(int n): nobs_{n} {
-        data_.resize(n);
+        measurements_.resize(n);
     };
     
-    GroupData(arma::Row<double> &data) : data_{data} {
-        nobs_ = data.size();
-        mean_ = arma::mean(data);
-        var_ = arma::var(data);
-        stddev_ = arma::stddev(data);
-        ses_ = sqrt( var_ / nobs_ );
+    GroupData(arma::Row<double> &data) : measurements_{data} {
+        updateStats();
     };
     
     double& operator[](int i){
-        return data_.at(i);
+        return measurements_.at(i);
     };
     
     template <typename OStream>
     friend OStream &operator<<(OStream &os, const GroupData &data) {
-        os << "nobs" << data.nobs_ <<
-                "mean" << data.mean_ <<
-                "var" << data.var_ <<
-                "stddev" << data.stddev_ <<
-                "ses" << data.ses_ <<
-                "pvalue" << data.pvalue_ <<
-                "effect" << data.effect_ <<
-                "sig" << data.sig_;
+        os << "nobs: " << data.nobs_ <<
+                "mean: " << data.mean_ <<
+                "var: " << data.var_ <<
+                "stddev: " << data.stddev_ <<
+                "ses: " << data.ses_ <<
+                "pvalue: " << data.pvalue_ <<
+                "effect: " << data.effect_ <<
+                "sig: " << data.sig_;
 
         return os;
     }
     
+    operator std::map<std::string, std::string>() {
+        
+        std::map<std::string, std::string> out_map;
+        
+        out_map["nobs"] = nobs_;
+        out_map["mean"] = mean_;
+        out_map["var"] = var_;
+        out_map["stddev"] = stddev_;
+        out_map["ses"] = ses_;
+        
+        /// This can be replaced with an map.insert() and basically
+        /// just insert TestStrategy's map() operator
+        out_map["pvalue"] = pvalue_;
+        out_map["effect"] = effect_;
+        out_map["sig"] = sig_;
+        
+        return std::map<std::string, std::string>();
+    };
+ 
     void updateStats();
     
     void testAgaist(GroupData &other_group, TestStrategy &test_strategy);

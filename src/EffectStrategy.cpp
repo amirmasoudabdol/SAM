@@ -28,15 +28,18 @@ std::unique_ptr<EffectStrategy>EffectStrategy::build(json &effect_strategy_confi
 void CohensD::computeEffects(Experiment *experiment){
     
     for (int i{experiment->setup.nd()}, d{0};
-         i < experiment->measurements.size();
+         i < experiment->groups_.size();
          i++, d%=experiment->setup.nd()) {
-        experiment->effects[i] = cohens_d(experiment->means[d],
-                                          experiment->stddev[d],
-                                          experiment->measurements[d].size(),
-                                          experiment->means[i],
-                                          experiment->stddev[i],
-                                          experiment->measurements[i].size());
+        experiment->groups_[i].effect_ = cohens_d(experiment->groups_[d].mean_,
+                                                  experiment->groups_[d].stddev_,
+                                                  experiment->groups_[d].nobs_,
+                                                  experiment->groups_[i].mean_,
+                                                  experiment->groups_[i].stddev_,
+                                                  experiment->groups_[i].nobs_);
+        
     }
+    
+    
 }
 
 void HedgesG::computeEffects(Experiment *experiment){
@@ -44,23 +47,23 @@ void HedgesG::computeEffects(Experiment *experiment){
     // Skipping the first group as it's the control group
     // TODO: This is an ugly loop. Fix it!
     for (int i{experiment->setup.nd()}, d{0};
-         i < experiment->measurements.size();
+         i < experiment->groups_.size();
          i++, d%=experiment->setup.nd()) {
-        experiment->effects[i] = hedges_g(experiment->means[d],
-                                            experiment->stddev[d],
-                                            experiment->measurements[d].size(),
-                                            experiment->means[i],
-                                            experiment->stddev[i],
-                                            experiment->measurements[i].size());
+        experiment->groups_[i].effect_ = hedges_g(experiment->groups_[d].mean_,
+                                                    experiment->groups_[d].stddev_,
+                                                    experiment->groups_[d].nobs_,
+                                                    experiment->groups_[i].mean_,
+                                                    experiment->groups_[i].stddev_,
+                                                    experiment->groups_[i].nobs_);
     }
 }
 
 void MeanDifference::computeEffects(Experiment *experiment) {
     for (int i{experiment->setup.nd()}, d{0};
-        i < experiment->measurements.size();
+        i < experiment->groups_.size();
         i++, d%=experiment->setup.nd()) {
-        experiment->effects[i] = mean_difference(experiment->means[i], experiment->stddev[i],
-                                                 experiment->means[d], experiment->stddev[d]);
+        experiment->groups_[i].effect_ = mean_difference(experiment->groups_[i].mean_, experiment->groups_[i].stddev_,
+                                                            experiment->groups_[d].mean_, experiment->groups_[d].stddev_);
     }
 }
 

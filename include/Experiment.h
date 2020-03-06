@@ -53,20 +53,7 @@ namespace sam {
         std::shared_ptr<TestStrategy> test_strategy;
         std::shared_ptr<EffectStrategy> effect_strategy;
         
-        arma::Row<int> nobs;
-        arma::Row<double> means;
-        arma::Row<double> vars;
-        arma::Row<double> stddev;
-        arma::Row<double> ses;
-        arma::Row<double> statistics;
-        arma::Row<double> pvalues;
-        arma::Row<double> effects;
-        arma::Row<short> sigs;
-        
-        std::vector<arma::Row<double> > measurements;
-        
-        
-        std::vector<GroupData> data_;
+        std::vector<GroupData> groups_;
         
         Experiment() = default;
         
@@ -99,7 +86,7 @@ namespace sam {
         
         
         GroupData& operator[](int i) {
-            return data_[i];
+            return groups_[i];
         };
         
         /**

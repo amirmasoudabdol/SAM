@@ -136,9 +136,9 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     // Add new observations to first `ng` group. I don't iterate over everything in
     // the `measurements` because they might actually be the results of `pooling`.
     // Therefore, I only add new values to original groups.
-    std::for_each(experiment->measurements.begin(), experiment->measurements.end(),
-                      [&new_observations, &i](arma::Row<double> &row) {
-                          row.insert_cols(row.size(), new_observations[i++]);
+    std::for_each(experiment->groups_.begin(), experiment->groups_.end(),
+                      [&new_observations, &i](auto &group) {
+                          group.measurements_.insert_cols(group.measurements_.size(), new_observations[i++]);
                       });
     
 }
@@ -201,7 +201,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
     /// outlier removal is still being done in all groups
     for (int i = 0; i < experiment->setup.ng(); ++i) {
         
-        auto &row = experiment->measurements[i];
+        auto &row = experiment->groups_[i].measurements_;
         
         // At least one row has less than `min_observations`
         if (row.size() <= params.min_observations)
@@ -214,7 +214,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
             row = sort(row);
 
         
-        standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
+        standaraized = arma::abs(row - experiment->groups_[i].mean_) / experiment->groups_[i].stddev_;
                 
         // Finding the outliers, returning only `n` of them
         arma::uvec inx = arma::find(standaraized > d, n, "first");
@@ -249,9 +249,9 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
         
         /// Removing the outliers from control groups as well.
         for (int i{0}; i < experiment->setup.ng(); ++i){
-            auto &row = experiment->measurements[i];
+            auto &row = experiment->groups_[i].measurements_;
             
-            arma::rowvec standaraized = arma::abs(row - experiment->means[i]) / experiment->stddev[i];
+            arma::rowvec standaraized = arma::abs(row - experiment->groups_[i].mean_) / experiment->groups_[i].stddev_;
                     
             /// Finding the outliers
             arma::uvec inx = arma::find(standaraized > k);
@@ -301,7 +301,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     }
     
     // TODO: Improve me! This is very ugly and prune to error
-    int new_ng = experiment->measurements.size();
+    int new_ng = experiment->groups_.size();
     experiment->initResources(new_ng);
     
     experiment->calculateStatistics();
@@ -346,30 +346,30 @@ void GroupPooling::pool(Experiment *experiment, int r){
     std::vector<arma::Row<double>> pooled_groups;
     
     // Extending the measurements to avoid over-pooling, see #104
-    experiment->measurements.resize(experiment->setup.ng() + permutations.size() * experiment->setup.nd());
-    
-    for (auto &per : permutations) {
-        
-        for (int d = 0; d < experiment->setup.nd(); d++) {
-            
-            // Creating an empty new group
-//            experiment->measurements.push_back(arma::Row<double>());
-            
-//            arma::Row<double> new_group{experiment->measurements[per[0]]};
-            
-            for (int i = 0; i < r ; i++){
-                
-//                new_group += experiment->measurements[per[i] * (n - 1) + d];
-                experiment->measurements[experiment->setup.ng() + d]
-                                .insert_cols(experiment->measurements.back().size(),
-                                              experiment->measurements[per[i] * (n - 1) + d]);
-                
-            }
-//            std::cout << new_group  << std::endl;
-            // Fill the new group by pooling members of the selected permutation, `per`.
-//            experiment->measurements[experiment->setup.ng() + d] = new_group;
-            
-        }
-        
-    }
+//    experiment->measurements.resize(experiment->setup.ng() + permutations.size() * experiment->setup.nd());
+
+//    for (auto &per : permutations) {
+//
+//        for (int d = 0; d < experiment->setup.nd(); d++) {
+//
+//            // Creating an empty new group
+////            experiment->measurements.push_back(arma::Row<double>());
+//
+////            arma::Row<double> new_group{experiment->measurements[per[0]]};
+//
+//            for (int i = 0; i < r ; i++){
+//
+////                new_group += experiment->measurements[per[i] * (n - 1) + d];
+//                experiment->measurements[experiment->setup.ng() + d]
+//                                .insert_cols(experiment->measurements.back().size(),
+//                                              experiment->measurements[per[i] * (n - 1) + d]);
+//
+//            }
+////            std::cout << new_group  << std::endl;
+//            // Fill the new group by pooling members of the selected permutation, `per`.
+////            experiment->measurements[experiment->setup.ng() + d] = new_group;
+//
+//        }
+//
+//    }
 }

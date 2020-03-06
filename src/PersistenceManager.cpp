@@ -69,7 +69,7 @@ void PersistenceManager::Reader::read_raw_data(Experiment *expr) {
     
     for (int r = 0; r < rows.size(); r++) {
         for (auto &col : reader->cols()) {
-            expr->measurements[std::stoi(col)][r] = std::stod(rows[r][col]);
+            expr->groups_[std::stoi(col)].measurements_[r] = std::stod(rows[r][col]);
         }
     }
     
@@ -136,14 +136,14 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
             row["group"] = std::to_string(g);
             row["dv"] = std::to_string(d);
             row["onobs"] = std::to_string(experiment->setup.nobs()[g]);
-            row["nobs"] = std::to_string(experiment->nobs[g]);
-            row["means"] = std::to_string(experiment->means[g]);
-            row["vars"] = std::to_string(experiment->vars[g]);
-            row["stddev"] = std::to_string(experiment->stddev[g]);
-            row["ses"] = std::to_string(experiment->ses[g]);
-            row["statistics"] = std::to_string(experiment->statistics[g]);
-            row["pvalues"] = std::to_string(experiment->pvalues[g]);
-            row["effects"] = std::to_string(experiment->effects[g]);
+            row["nobs"] = std::to_string(experiment->groups_[g].nobs_);
+            row["means"] = std::to_string(experiment->groups_[g].mean_);
+            row["vars"] = std::to_string(experiment->groups_[g].var_);
+            row["stddev"] = std::to_string(experiment->groups_[g].stddev_);
+            row["ses"] = std::to_string(experiment->groups_[g].ses_);
+            row["statistics"] = std::to_string(experiment->groups_[g].stats_);
+            row["pvalues"] = std::to_string(experiment->groups_[g].pvalue_);
+            row["effects"] = std::to_string(experiment->groups_[g].effect_);
                         
             writer->write_row(row);
         }

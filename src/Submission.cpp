@@ -17,14 +17,14 @@ namespace sam {
         }
         
         inx = index;
-        nobs = e.measurements[index].size();
-        mean = e.means[index];
-        var = e.vars[index];
-        sei = e.ses[index];
-        statistic = e.statistics[index];
-        pvalue = e.pvalues[index];
-        effect = e.effects[index];
-        sig = e.sigs[index];
+        nobs = e.groups_[index].nobs_;
+        mean = e.groups_[index].mean_;
+        var = e.groups_[index].var_;
+        sei = e.groups_[index].ses_;
+        statistic = e.groups_[index].stats_;
+        pvalue = e.groups_[index].pvalue_;
+        effect = e.groups_[index].effect_;
+        sig = e.groups_[index].sig_;
         isHacked = e.is_hacked;
         hHistory = e.hacks_history;
     };    
