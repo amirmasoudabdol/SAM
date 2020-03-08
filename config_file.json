@@ -44,9 +44,8 @@
                 "PreRegOutcome"
             ],
             "decision_policies": [
-                "sig",
                 "effect > 0",
-                "min(pvalue)"
+                "random"
             ],
             "preference": "Policies",
             "submission_policy": "Anything"

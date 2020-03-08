@@ -129,7 +129,8 @@ namespace sam {
     enum class PolicyType {
         Min,
         Max,
-        Comp
+        Comp,
+        Random
     };
 
     /**
@@ -357,7 +358,7 @@ namespace sam {
         
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-            DecisionPreference preference = DecisionPreference::MinPvalue;
+            DecisionPreference preference;
             std::vector<std::string> decision_policies;
             SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
@@ -467,9 +468,14 @@ namespace sam {
                     
                     std::cout << f_def << std::endl;
                 
+                } else if (s.find("random") != std::string::npos) {
                 
+                    policies_type.push_back(PolicyType::Random);
+                    policies_func.push_back(sol::function());
                 
-                }else if (std::any_of(cops.begin(), cops.end(),
+                    std::cout << "random" << std::endl;
+                
+                } else if (std::any_of(cops.begin(), cops.end(),
                                       [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
                     // Found a comparision
                     
@@ -544,7 +550,7 @@ namespace sam {
 
         struct Parameters {
             DecisionMethod name = DecisionMethod::PatientDecisionMaker;
-            DecisionPreference preference = DecisionPreference::MinPvalue;
+            DecisionPreference preference;
             SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
 
