@@ -72,177 +72,48 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                 auto &type = policies_type[i];
                 auto &func = policies_func[i];
                 
-//                std::cout << type << std::endl;
-                
-                if (type.find("min") != std::string::npos) {
-                    auto it = std::min_element(begin, end, func);
-//                    std::cout << "\t min: " << *it << std::endl;
-                    selectedOutcome = it->id_;
-                } else if (type.find("max") != std::string::npos) {
-                    auto it = std::max_element(begin, end, func);
-//                    std::cout << "\t max: " << *it << std::endl;
-                    selectedOutcome = it->id_;
-                }
-                else {
-                    auto pit = std::partition(begin, end, func);
-//                    for (auto it {begin}; it != pit; ++it) {
-//                        std::cout << "\t cond: " << *it << std::endl;
-//                    }
-                    end = pit;
+                switch (type) {
+                        
+                    case PolicyType::Min: {
+                        auto it = std::min_element(begin, end, func);
+                        std::cout << "\t min: " << *it << std::endl;
+                        selectedOutcome = it->id_;
+                    }
+                    break;
+                    
+                    case PolicyType::Max: {
+                        auto it = std::max_element(begin, end, func);
+                        std::cout << "\t max: " << *it << std::endl;
+                        selectedOutcome = it->id_;
+                    }
+                    
+                    
+                    break;
+                    
+                    case PolicyType::Comp: {
+                        auto pit = std::partition(begin, end, func);
+                        for (auto it {begin}; it != pit; ++it) {
+                            std::cout << "\t cond: " << *it << std::endl;
+                        }
+                        end = pit;
+                    }
+                    
+                        break;
+                    
                 }
                 
                 if (begin == end) {
-                    spdlog::debug("Using the fallback policy.");
-                    selectedOutcome = pre_registered_group;
-                    break;
-                }
+                     spdlog::debug("Using the fallback policy.");
+                     selectedOutcome = pre_registered_group;
+                     break;
+                 }
+
                     
             }
             
-            std::cout << "------------------------\n\n\n";
         }
             break;
             
-//        case DecisionPreference::MinSigPvalue: {
-//
-//            /// Getting the indexes corresponding to significant results
-//            arma::uvec sig_indexes = arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1) + experiment.setup.nd();
-//
-//                if (not sig_indexes.is_empty()) {
-//                    /// Selecting the smallest p-value between the groups with significant results,
-//                    /// and translating/selecting the correct index.
-//                    selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_min()];
-//
-//                    this->complying_with_preference = true;
-//                }else{
-//                    /// Returning min p-value if I couldn't find any significant p-value
-//                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
-//                    + experiment.setup.nd();
-//
-//                    this->complying_with_preference = false;
-//                }
-//            }
-//            break;
-//
-//        case DecisionPreference::MaxSigPvalue: {
-//            /// Getting the indexes corresponding to significant results
-//            arma::uvec sig_indexes = arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1) + experiment.setup.nd();
-//
-//                if (not sig_indexes.is_empty()) {
-//                    /// Selecting the smallest p-value between the groups with significant results,
-//                    /// and translating/selecting the correct index.
-//                    selectedOutcome = sig_indexes[experiment.pvalues.elem(sig_indexes).index_max()];
-//
-//                    this->complying_with_preference = true;
-//                }else{
-//                    /// Returning min p-value if I couldn't find any significant p-value
-//                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
-//                    + experiment.setup.nd();
-//
-//                    this->complying_with_preference = false;
-//                }
-//            }
-//            break;
-//
-//        case DecisionPreference::MinPvalue: {
-//
-//            /// By taking the "tail" I'm basically skipping the control group, and shifting it back when I found it
-//            selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
-//                                + experiment.setup.nd();
-//
-//            this->complying_with_preference = true;
-//            }
-//            break;
-//
-//        case DecisionPreference::MaxSigEffect: {
-//
-//            }
-//            break;
-//
-//        case DecisionPreference::MaxEffect: {
-//
-//            selectedOutcome = experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()).index_max()
-//                                + experiment.setup.nd();
-//
-//            this->complying_with_preference = true;
-//            }
-//            break;
-//
-//        case DecisionPreference::MinPvalueMaxEffect:
-//
-//            break;
-//
-//        case DecisionPreference::RandomSigPvalue: {
-//            /// Again taking the tail, and shifting the index back into its original range
-//            /// Suffling the index vector before selecting the sig outcome.
-//            arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
-//
-//                if (not sig_indexes.is_empty()) {
-//                    selectedOutcome = sig_indexes.at(0);
-//                    this->complying_with_preference = true;
-//                }else{
-//                    /// Returning min p-value if I couldn't find any significant p-value
-//                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
-//                    + experiment.setup.nd();
-//                    this->complying_with_preference = false;
-//                }
-//            }
-//            break;
-//
-//        case DecisionPreference::MarjansHacker: {
-//
-//            /// Selecting a RandomSigPvalue,
-//            /// if not exist, selecting a positive effect,
-//            /// if not exist, selecting a min_pvalue
-//
-//
-//            arma::uvec sig_indexes = arma::shuffle(arma::find(experiment.sigs.tail(experiment.setup.ng() - experiment.setup.nd()) == 1)) + experiment.setup.nd();
-//
-//            if (not sig_indexes.is_empty()) {
-//                selectedOutcome = sig_indexes.at(0);
-//            }else{
-//                /// Returning min p-value if I couldn't find any significant p-value
-//
-//                arma::uvec pos_effects = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) > 0.);
-//
-//                if (not pos_effects.is_empty()){
-//                    selectedOutcome = pos_effects.at(0) + experiment.setup.nd();
-//                }else{
-//                    selectedOutcome = experiment.pvalues.tail(experiment.setup.ng() - experiment.setup.nd()).index_min()
-//                    + experiment.setup.nd();
-//                }
-//
-//            }
-//        }
-//            break;
-//
-//        case DecisionPreference::RevisedMarjanHacker: {
-//            /// Marjan:
-//            ///     Select first significant study without QRPs with a positive ES if non is significant, select best study.
-//            ///     The best study is the study with max p-value between those with min negative effect
-//
-//            arma::uvec pos_effects_inx = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) > 0.) + experiment.setup.nd();
-//
-//            if (not pos_effects_inx.is_empty()) {
-//                arma::uvec sig_inx = arma::find(experiment.sigs.elem(pos_effects_inx) == 1);
-//
-//                if (not sig_inx.is_empty()) {
-//                    selectedOutcome = pos_effects_inx.at(sig_inx.at(0));
-//                }else{
-//                    selectedOutcome = pos_effects_inx.at(experiment.pvalues.elem(pos_effects_inx).index_min());
-//                }
-//
-//            }else{
-//                arma::uvec neg_effects_inx = arma::find(experiment.effects.tail(experiment.setup.ng() - experiment.setup.nd()) < 0.)  + experiment.setup.nd();
-//
-//                if (not neg_effects_inx.is_empty()){
-//                    selectedOutcome = neg_effects_inx.at(experiment.pvalues.elem(neg_effects_inx).index_max());
-//                }
-//
-//            }
-//
-//        }
-//            break;
     }
     
     return {experiment, selectedOutcome};

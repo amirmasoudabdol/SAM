@@ -7,14 +7,12 @@
                 "dist": "mvnorm_distribution",
                 "means": [
                     0,
-                    0,
+                    0.5,
                     0.5,
                     0.5
                 ],
                 "stddevs": 1
-            },
-            "n_categories": 4,
-            "n_items": 3
+            }
         },
         "effect_strategy": {
             "_name": "MeanDifference"
@@ -22,10 +20,10 @@
         "n_conditions": 4,
         "n_dep_vars": 1,
         "n_obs": [
-            10,
             20,
-            30,
-            40
+            20,
+            20,
+            20
         ],
         "test_strategy": {
             "_name": "TTest",
@@ -46,7 +44,7 @@
                 "PreRegOutcome"
             ],
             "decision_policies": [
-                "pvalue > 0.3",
+                "sig",
                 "effect > 0",
                 "min(pvalue)"
             ],

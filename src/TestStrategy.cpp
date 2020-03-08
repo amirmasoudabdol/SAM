@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <cmath>
+#include <spdlog/spdlog.h>
 
 #include <boost/math/distributions/students_t.hpp>
 #include <boost/math/distributions/fisher_f.hpp>
@@ -86,7 +87,7 @@ void TTest::run(Experiment* experiment) {
         experiment->groups_[i].pvalue_ = res.pvalue;
         experiment->groups_[i].sig_ = res.sig;
         
-        std::cout << "group[" << i << "]: " << experiment->groups_[i] << std::endl;
+        spdlog::debug(experiment->groups_[i]);
     }
 }
 

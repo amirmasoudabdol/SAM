@@ -126,6 +126,12 @@ namespace sam {
     })
 
 
+    enum class PolicyType {
+        Min,
+        Max,
+        Comp
+    };
+
     /**
      @brief Abstract class for different decision strategies.
      
@@ -146,7 +152,7 @@ namespace sam {
         //! List of selected Experiment by the researcher.
         std::vector<Experiment> experiments_pool;
         
-        std::vector<std::string> policies_type;
+        std::vector<PolicyType> policies_type;
         std::vector<sol::function> policies_func;
 
         //! If `true`, the Researcher will continue traversing through the
@@ -422,7 +428,7 @@ namespace sam {
                     
                     lua.script(f_def);
                     
-                    policies_type.push_back(f_name);
+                    policies_type.push_back(PolicyType::Min);
                     policies_func.push_back(lua[f_name]);
                     
                     std::cout << f_def << std::endl;
@@ -442,10 +448,27 @@ namespace sam {
                     
                     lua.script(f_def);
                     
-                    policies_type.push_back(f_name);
+                    policies_type.push_back(PolicyType::Max);
                     policies_func.push_back(lua[f_name]);
                     
                     std::cout << f_def << std::endl;
+                }else if (s.find("sig") != std::string::npos) {
+                    
+//                    auto var_name = "sig";
+                    auto f_name = "cond_sig";
+                    
+                    auto f_def = fmt::format(lua_temp_scripts["comp_script"],
+                                             f_name, "sig == 1");
+                    
+                    lua.script(f_def);
+                    
+                    policies_type.push_back(PolicyType::Comp);
+                    policies_func.push_back(lua[f_name]);
+                    
+                    std::cout << f_def << std::endl;
+                
+                
+                
                 }else if (std::any_of(cops.begin(), cops.end(),
                                       [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
                     // Found a comparision
@@ -465,7 +488,7 @@ namespace sam {
                     
                     lua.script(f_def);
                     
-                    policies_type.push_back(f_name);
+                    policies_type.push_back(PolicyType::Comp);
                     policies_func.push_back(lua[f_name]);
                     
                     std::cout << f_def << std::endl;
