@@ -67,28 +67,32 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             auto begin = experiment.groups_.begin() + 1;
             auto end = experiment.groups_.end();
             
-            for (auto &[type, func] : policies) {
+            for (int i{0}; i < policies_type.size(); ++i) {
                 
-                std::cout << type << std::endl;
+                auto &type = policies_type[i];
+                auto &func = policies_func[i];
+                
+//                std::cout << type << std::endl;
                 
                 if (type.find("min") != std::string::npos) {
                     auto it = std::min_element(begin, end, func);
-                    std::cout << "\t min: " << *it << std::endl;
+//                    std::cout << "\t min: " << *it << std::endl;
                     selectedOutcome = it->id_;
                 } else if (type.find("max") != std::string::npos) {
                     auto it = std::max_element(begin, end, func);
-                    std::cout << "\t max: " << *it << std::endl;
+//                    std::cout << "\t max: " << *it << std::endl;
                     selectedOutcome = it->id_;
                 }
                 else {
                     auto pit = std::partition(begin, end, func);
-                    for (auto it {begin}; it != pit; ++it) {
-                        std::cout << "\t cond: " << *it << std::endl;
-                    }
+//                    for (auto it {begin}; it != pit; ++it) {
+//                        std::cout << "\t cond: " << *it << std::endl;
+//                    }
                     end = pit;
                 }
                 
                 if (begin == end) {
+                    spdlog::debug("Using the fallback policy.");
                     selectedOutcome = pre_registered_group;
                     break;
                 }

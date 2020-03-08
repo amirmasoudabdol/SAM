@@ -17,6 +17,8 @@
 #include <sol/sol.hpp>
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <spdlog/spdlog.h>
+#include <nlohmann/json.hpp>
 
 #include "sam.h"
 
@@ -25,7 +27,7 @@
 #include "Utilities.h"
 #include "GroupData.h"
 
-#include "nlohmann/json.hpp"
+
 
 
 using json = nlohmann::json;
@@ -144,7 +146,8 @@ namespace sam {
         //! List of selected Experiment by the researcher.
         std::vector<Experiment> experiments_pool;
         
-        std::map<std::string, sol::function> policies;
+        std::vector<std::string> policies_type;
+        std::vector<sol::function> policies_func;
 
         //! If `true`, the Researcher will continue traversing through the
         //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -399,8 +402,12 @@ namespace sam {
                 {"!=", "not_equal"}
             };
             
+            spdlog::debug("Registering decision policies...");
             for (auto &s : p.decision_policies) {
-                if (s.find_first_of("min") != std::string::npos) {
+                
+                std::cout << s << std::endl;
+                
+                if (s.find("min") != std::string::npos) {
                     
                     auto open_par = s.find("(");
                     auto close_par = s.find(")");
@@ -415,11 +422,12 @@ namespace sam {
                     
                     lua.script(f_def);
                     
-                    policies.insert({f_name, lua[f_name]});
+                    policies_type.push_back(f_name);
+                    policies_func.push_back(lua[f_name]);
                     
                     std::cout << f_def << std::endl;
                     
-                }else if (s.find_first_of("max") != std::string::npos) {
+                }else if (s.find("max") != std::string::npos) {
                     
                     auto open_par = s.find("(");
                     auto close_par = s.find(")");
@@ -434,7 +442,8 @@ namespace sam {
                     
                     lua.script(f_def);
                     
-                    policies.insert({f_name, lua[f_name]});
+                    policies_type.push_back(f_name);
+                    policies_func.push_back(lua[f_name]);
                     
                     std::cout << f_def << std::endl;
                 }else if (std::any_of(cops.begin(), cops.end(),
@@ -456,7 +465,8 @@ namespace sam {
                     
                     lua.script(f_def);
                     
-                    policies.insert({f_name, lua[f_name]});
+                    policies_type.push_back(f_name);
+                    policies_func.push_back(lua[f_name]);
                     
                     std::cout << f_def << std::endl;
                     

@@ -42,11 +42,14 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
+            "decision_fallback": [
+                "PreRegOutcome"
+            ],
             "decision_policies": [
+                "pvalue > 0.3",
                 "effect > 0",
                 "min(pvalue)"
             ],
-            "decision_fallback": ["PreRegOutcome"],
             "preference": "Policies",
             "submission_policy": "Anything"
         },
