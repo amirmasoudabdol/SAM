@@ -87,7 +87,9 @@ namespace sam {
         MaxSigPvalue,
         
         MarjansHacker,
-        RevisedMarjanHacker
+        RevisedMarjanHacker,
+        
+        Policies
     };
 
 
@@ -101,7 +103,8 @@ namespace sam {
         {DecisionPreference::RandomSigPvalue, "RandomSigPvalue"},
         {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
         {DecisionPreference::MarjansHacker, "MarjansHacker"},
-        {DecisionPreference::RevisedMarjanHacker, "RevisedMarjanHacker"}
+        {DecisionPreference::RevisedMarjanHacker, "RevisedMarjanHacker"},
+        {DecisionPreference::Policies, "Policies"}
     })
 
 
@@ -119,6 +122,7 @@ namespace sam {
         {SubmissionPolicy::ComplyingWithPreference, "BasedOnThePreference"},
         {SubmissionPolicy::PreRegSig, "PreRegSig"}
     })
+
 
     /**
      @brief Abstract class for different decision strategies.
@@ -139,6 +143,8 @@ namespace sam {
 
         //! List of selected Experiment by the researcher.
         std::vector<Experiment> experiments_pool;
+        
+        std::map<std::string, sol::function> policies;
 
         //! If `true`, the Researcher will continue traversing through the
         //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -354,19 +360,19 @@ namespace sam {
             
             std::map<std::string, std::string> lua_temp_scripts {
                 {"min_script", R"(
-                    function min_f (l, r)
+                    function {} (l, r)
                         return l.{} < r.{}
                     end
                     )"},
 
                 {"max_script", R"(
-                    function max_f (l, r)
-                        return l.{} < r.{}
+                    function {} (l, r)
+                        return l.{} > r.{}
                     end
                     )"},
 
                 {"comp_script", R"(
-                    function comp_f (d)
+                    function {} (d)
                         return d.{}
                     end
                     )"}
@@ -381,6 +387,18 @@ namespace sam {
                                           "sig", &GroupData::sig_
             );
             
+            std::vector<std::string> comp_ops = {">=", "<=", ">", "<", "==", "!="};
+            std::vector<std::string> ops_names = {"greater_eq", "lesser_eq", "greater", "lesser", "equal", "not_equal"};
+            
+            std::map<std::string, std::string> cops = {
+                {">=", "greater_eq"},
+                {"<=", "lesser_eq"},
+                {">", "greater"},
+                {"<", "lesser"},
+                {"==", "equal"},
+                {"!=", "not_equal"}
+            };
+            
             for (auto &s : p.decision_policies) {
                 if (s.find_first_of("min") != std::string::npos) {
                     
@@ -391,18 +409,58 @@ namespace sam {
                     
                     std::cout << var_name << std::endl;
                     
-                    auto min_script = fmt::format(lua_temp_scripts["min_script"],
-                                                         var_name, var_name);
+                    auto f_name = fmt::format("min_{}", var_name);
+                    auto f_def = fmt::format(lua_temp_scripts["min_script"],
+                                                         f_name, var_name, var_name);
                     
-                    lua.script(min_script);
+                    lua.script(f_def);
                     
-                    std::cout << min_script << std::endl;
+                    policies.insert({f_name, lua[f_name]});
+                    
+                    std::cout << f_def << std::endl;
                     
                 }else if (s.find_first_of("max") != std::string::npos) {
+                    
                     auto open_par = s.find("(");
                     auto close_par = s.find(")");
                     
-                    std::cout << s.substr(open_par, close_par);
+                    auto var_name = s.substr(open_par+1, close_par - open_par - 1);
+                    
+                    std::cout << var_name << std::endl;
+                    
+                    auto f_name = fmt::format("max_{}", var_name);
+                    auto f_def = fmt::format(lua_temp_scripts["max_script"],
+                                                         f_name, var_name, var_name);
+                    
+                    lua.script(f_def);
+                    
+                    policies.insert({f_name, lua[f_name]});
+                    
+                    std::cout << f_def << std::endl;
+                }else if (std::any_of(cops.begin(), cops.end(),
+                                      [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
+                    // Found a comparision
+                    
+                    std::string s_op {};
+                    for (auto &op : cops)
+                        if (s.find(op.first) != std::string::npos) {
+                            s_op = op.first;
+                            break;
+                        }
+                        
+                    auto op_start = s.find(s_op);
+                    
+                    auto var_name = s.substr(0, op_start - 1);
+                    auto f_name = fmt::format("cond_{}", var_name + "_" + cops[s_op]);
+                    auto f_def = fmt::format(lua_temp_scripts["comp_script"], f_name, s);    // Full text goes here
+                    
+                    lua.script(f_def);
+                    
+                    policies.insert({f_name, lua[f_name]});
+                    
+                    std::cout << f_def << std::endl;
+                    
+                    
                 }
                 
             }

@@ -52,39 +52,17 @@ void Experiment::initExperiment() {
 
 // TODO: Still not happy with this!
 void Experiment::initResources(int len) {
-
-//    nobs.resize(len);
-//    means.resize(len);
-//    vars.resize(len);
-//    stddev.resize(len);
-//    ses.resize(len);
-//    statistics.resize(len);
-//    pvalues.resize(len);
-//    effects.resize(len);
-//    sigs.resize(len);
-//    
-//    // BUG: This conflict with GroupPooling!
-//    measurements.resize(len);
     
     // GroupData
     groups_.resize(len);
-    for (int i {0}; i < len; ++i) {
-        groups_[i].id_ = i;
+    for (int g {0}; g < len; ++g) {
+        groups_[g].id_ = g;
     }
     
     
 }
 
 void Experiment::calculateStatistics() {
-    
-    // TODO: This can be replaced by std::algorithm
-//    for (int i = 0; i < experiment->groups_.size(); ++i) {
-//        nobs[i] = measurements[i].size();
-//        means[i] = arma::mean(measurements[i]);
-//        vars[i] = arma::var(measurements[i]);
-//        stddev[i] = arma::stddev(measurements[i]);
-//        ses[i] = sqrt(vars[i] / measurements[i].size());
-//    }
     
     for (int g{0}; g < groups_.size(); ++g)
         groups_[g].updateStats();

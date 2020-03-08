@@ -58,9 +58,44 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             selectedOutcome = pre_registered_group;
             this->complying_with_preference = true;
             
-            auto min_it = std::min_element(experiment.groups_.begin()+1, experiment.groups_.end(),
-            [this](const GroupData& l, const GroupData& r) { return this->lua["min_f"](l, r); });
+
+        }
+            break;
             
+        case DecisionPreference::Policies: {
+            
+            auto begin = experiment.groups_.begin() + 1;
+            auto end = experiment.groups_.end();
+            
+            for (auto &[type, func] : policies) {
+                
+                std::cout << type << std::endl;
+                
+                if (type.find("min") != std::string::npos) {
+                    auto it = std::min_element(begin, end, func);
+                    std::cout << "\t min: " << *it << std::endl;
+                    selectedOutcome = it->id_;
+                } else if (type.find("max") != std::string::npos) {
+                    auto it = std::max_element(begin, end, func);
+                    std::cout << "\t max: " << *it << std::endl;
+                    selectedOutcome = it->id_;
+                }
+                else {
+                    auto pit = std::partition(begin, end, func);
+                    for (auto it {begin}; it != pit; ++it) {
+                        std::cout << "\t cond: " << *it << std::endl;
+                    }
+                    end = pit;
+                }
+                
+                if (begin == end) {
+                    selectedOutcome = pre_registered_group;
+                    break;
+                }
+                    
+            }
+            
+            std::cout << "------------------------\n\n\n";
         }
             break;
             

@@ -43,9 +43,11 @@
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
             "decision_policies": [
+                "effect > 0",
                 "min(pvalue)"
             ],
-            "preference": "PreRegieredOutcome",
+            "decision_fallback": ["PreRegOutcome"],
+            "preference": "Policies",
             "submission_policy": "Anything"
         },
         "hacking_strategies": [
