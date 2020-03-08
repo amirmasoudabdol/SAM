@@ -70,8 +70,6 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
             this->complying_with_preference = true;
             for (int i {0}; i < policies_type.size(); ++i) {
                 
-                std::cout << i << std::endl << std::endl;
-                
                 auto &type = policies_type[i];
                 auto &func = policies_func[i];
                 
