@@ -20,7 +20,7 @@ class GroupData {
     
 public: // Public for now
     
-    int id;
+    int id_;
     GroupType gtype;
     
     /// --- Descriptive statistics
@@ -54,7 +54,7 @@ public: // Public for now
     
     GroupData() {};
     
-    GroupData(int id_, GroupType type_) : id{id_}, gtype{type_} {};
+    GroupData(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
     
     GroupData(int n): nobs_{n} {
         measurements_.resize(n);
@@ -70,14 +70,16 @@ public: // Public for now
     
     template <typename OStream>
     friend OStream &operator<<(OStream &os, const GroupData &data) {
-        os << "nobs: " << data.nobs_ <<
-                "mean: " << data.mean_ <<
-                "var: " << data.var_ <<
-                "stddev: " << data.stddev_ <<
-                "ses: " << data.ses_ <<
-                "pvalue: " << data.pvalue_ <<
-                "effect: " << data.effect_ <<
-                "sig: " << data.sig_;
+        os <<   "id: " << data.id_ <<
+                " nobs: " << data.nobs_ <<
+                " mean: " << data.mean_ <<
+                " var: " << data.var_ <<
+                " stddev: " << data.stddev_ <<
+                " ses: " << data.ses_ <<
+                " stats: " << data.stats_ <<
+                " pvalue: " << data.pvalue_ <<
+                " effect: " << data.effect_ <<
+                " sig: " << data.sig_;
 
         return os;
     }

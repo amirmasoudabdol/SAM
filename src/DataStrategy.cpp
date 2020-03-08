@@ -76,7 +76,7 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
     
     // This is ugly but it should work
     for (int g {0}; g < experiment->setup.ng(); ++g) {
-        experiment->groups_[g].measurements_ = sample.row(g);
+        experiment->groups_[g].measurements_ = sample.row(g).head(experiment->setup.nobs()[g]);
     }
         
 }

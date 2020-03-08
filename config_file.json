@@ -1,23 +1,18 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "GradedResponseModel",
-            "abilities": {
+            "_name": "LinearModel",
+            "measurements": {
                 "covs": 0.5,
                 "dist": "mvnorm_distribution",
                 "means": [
                     0,
-                    0.2
+                    0,
+                    0.5,
+                    0.5
                 ],
                 "stddevs": 1
             },
-            "difficulties": [
-                {
-                    "dist": "normal_distribution",
-                    "mean": 0,
-                    "stddev": 1.0
-                }
-            ],
             "n_categories": 4,
             "n_items": 3
         },
@@ -47,6 +42,9 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
+            "decision_policies": [
+                "min(pvalue)"
+            ],
             "preference": "PreRegieredOutcome",
             "submission_policy": "Anything"
         },

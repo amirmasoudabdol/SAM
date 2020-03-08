@@ -14,14 +14,19 @@
 
 #include <vector>
 #include <memory>
+#include <sol/sol.hpp>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "sam.h"
 
 #include "Submission.h"
 #include "Experiment.h"
 #include "Utilities.h"
+#include "GroupData.h"
 
 #include "nlohmann/json.hpp"
+
 
 using json = nlohmann::json;
 
@@ -40,8 +45,6 @@ namespace sam {
          {DecisionMethod::ImpatientDecisionMaker, "ImpatientDecisionMaker"},
          {DecisionMethod::NoDecision, "NoDecision"}
     })
-
-
 
     /**
      DecisionStage enum indicates on what stages of the _research_ the
@@ -196,6 +199,8 @@ namespace sam {
         
         SubmissionPolicy submission_policy;
         
+        sol::state lua;
+        
         /**
          DecisionStrategy factory method.
          
@@ -338,6 +343,7 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
             DecisionPreference preference = DecisionPreference::MinPvalue;
+            std::vector<std::string> decision_policies;
             SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
         
@@ -345,6 +351,63 @@ namespace sam {
         
         explicit ImpatientDecisionMaker(const Parameters &p) : params{p} {
             submission_policy = p.publishing_policy;
+            
+            std::map<std::string, std::string> lua_temp_scripts {
+                {"min_script", R"(
+                    function min_f (l, r)
+                        return l.{} < r.{}
+                    end
+                    )"},
+
+                {"max_script", R"(
+                    function max_f (l, r)
+                        return l.{} < r.{}
+                    end
+                    )"},
+
+                {"comp_script", R"(
+                    function comp_f (d)
+                        return d.{}
+                    end
+                    )"}
+            };
+            
+            lua.open_libraries();
+            
+            lua.new_usertype<GroupData>("GroupData",
+                                          "nobs", &GroupData::nobs_,
+                                          "pvalue", &GroupData::pvalue_,
+                                          "effect", &GroupData::effect_,
+                                          "sig", &GroupData::sig_
+            );
+            
+            for (auto &s : p.decision_policies) {
+                if (s.find_first_of("min") != std::string::npos) {
+                    
+                    auto open_par = s.find("(");
+                    auto close_par = s.find(")");
+                    
+                    auto var_name = s.substr(open_par+1, close_par - open_par - 1);
+                    
+                    std::cout << var_name << std::endl;
+                    
+                    auto min_script = fmt::format(lua_temp_scripts["min_script"],
+                                                         var_name, var_name);
+                    
+                    lua.script(min_script);
+                    
+                    std::cout << min_script << std::endl;
+                    
+                }else if (s.find_first_of("max") != std::string::npos) {
+                    auto open_par = s.find("(");
+                    auto close_par = s.find(")");
+                    
+                    std::cout << s.substr(open_par, close_par);
+                }
+                
+            }
+            
+            
         };
         
         bool isStillHacking() override {
@@ -366,6 +429,7 @@ namespace sam {
             j = json{
                 {"_name", p.name},
                 {"preference", p.preference},
+                {"decision_policies", p.decision_policies},
                 {"submission_policy", p.publishing_policy}
             };
         }
@@ -374,6 +438,7 @@ namespace sam {
         void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
             j.at("_name").get_to(p.name);
             j.at("preference").get_to(p.preference);
+            j.at("decision_policies").get_to(p.decision_policies);
             j.at("submission_policy").get_to(p.publishing_policy);
         }
 

@@ -29,6 +29,9 @@ find_package(Armadillo REQUIRED)
 find_package(LAPACK)
 find_package(BLAS)
 find_package(spdlog REQUIRED)
+find_package(sol2 REQUIRED)
+find_package(lua REQUIRED)
+find_package(fmt REQUIRED)
 
 
 set(NLOHMANN_JSON_LIBRARIES "nlohmann_json::nlohmann_json")
@@ -41,6 +44,8 @@ include_directories(${BAARAAN_INCLUDE_DIRS})
 include_directories(${MLPACK_SRCS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${SOL2_INCLUDE_DIRS})
+include_directories(${LUA_INCLUDE_DIR})
 
 file(GLOB INCLUDES "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
@@ -52,6 +57,9 @@ target_link_libraries(sam baaraan
                             ${MLPACK}
                             ${NLOHMANN_JSON_LIBRARIES}
                             ${SPDLOG_LIBRARIES}
+                            ${LUA_LIBRARIES}
+                            fmt::fmt
+                            sol2::sol2
                             Threads::Threads)
 
 # Building the SAMrun

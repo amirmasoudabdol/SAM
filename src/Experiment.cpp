@@ -68,6 +68,9 @@ void Experiment::initResources(int len) {
     
     // GroupData
     groups_.resize(len);
+    for (int i {0}; i < len; ++i) {
+        groups_[i].id_ = i;
+    }
     
     
 }

@@ -82,9 +82,13 @@ void TTest::run(Experiment* experiment) {
         // experiment->pvalues[i] = res.pvalue;
         // experiment->sigs[i] = res.sig;
         
+        std::cout << "res: " <<  res << std::endl;
+        
         experiment->groups_[i].stats_ = res.statistic;
         experiment->groups_[i].pvalue_ = res.pvalue;
         experiment->groups_[i].sig_ = res.sig;
+        
+        std::cout << "group[" << i << "]: " << experiment->groups_[i] << std::endl;
     }
 }
 

@@ -4,6 +4,11 @@
 
 #include "DecisionStrategy.h"
 
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <sol/sol.hpp>
+#include <spdlog/spdlog.h>
+
 using namespace sam;
 
 /**
@@ -44,12 +49,18 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     /// CHECK ME: I'm not sure if this is a good way of doing this...
     int selectedOutcome {0};
     
+    
+    
     pre_registered_group = experiment.setup.nd();
     
     switch (preference) {
         case DecisionPreference::PreRegisteredOutcome: {
             selectedOutcome = pre_registered_group;
             this->complying_with_preference = true;
+            
+            auto min_it = std::min_element(experiment.groups_.begin()+1, experiment.groups_.end(),
+            [this](const GroupData& l, const GroupData& r) { return this->lua["min_f"](l, r); });
+            
         }
             break;
             
