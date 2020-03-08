@@ -49,85 +49,67 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     /// CHECK ME: I'm not sure if this is a good way of doing this...
     int selectedOutcome {0};
     
-    
-    
     pre_registered_group = experiment.setup.nd();
+                
+    auto begin = experiment.groups_.begin() + 1;
+    auto end = experiment.groups_.end();
     
-//    switch (preference) {
-//        case DecisionPreference::PreRegisteredOutcome: {
-//            selectedOutcome = pre_registered_group;
-//            this->complying_with_preference = true;
-//
-//
-//        }
-//            break;
-            
-//        case DecisionPreference::Policies: {
-            
-            auto begin = experiment.groups_.begin() + 1;
-            auto end = experiment.groups_.end();
-            
-            this->complying_with_preference = true;
-            for (int i {0}; i < policies_type.size(); ++i) {
+    this->complying_with_preference = true;
+    for (int i {0}; i < policies_type.size(); ++i) {
+        
+        auto &type = policies_type[i];
+        auto &func = policies_func[i];
+        
+        switch (type) {
                 
-                auto &type = policies_type[i];
-                auto &func = policies_func[i];
-                
-                switch (type) {
-                        
-                    case PolicyType::Min: {
-                        auto it = std::min_element(begin, end, func);
-                        spdlog::debug("min: ");
-                        spdlog::debug(*it);
-                        selectedOutcome = it->id_;
-                    }
-                    break;
-                    
-                    case PolicyType::Max: {
-                        auto it = std::max_element(begin, end, func);
-                        spdlog::debug("max: ");
-                        spdlog::debug(*it);
-                        selectedOutcome = it->id_;
-                    }
-                    break;
-                        
-                    case PolicyType::Comp: {
-                        auto pit = std::partition(begin, end, func);
-                        spdlog::debug("comp: ");
-                        for (auto it {begin}; it != pit; ++it) {
-                            spdlog::debug(*it);
-                        }
-                        end = pit;
-                    }
-                    
-                        break;
-                        
-                    case PolicyType::Random: {
-                        /// Shuffling the array and setting the end pointer to the first time,
-                        /// this basically mimic the process of selecting a random element from
-                        /// the list.
-                        Random::shuffle(begin, end);
-                        spdlog::debug("random");
-                        spdlog::debug(*begin);
-                        end = begin + 1;
-                    }
-                        break;
-                }
-                
-                if (begin == end) {
-                    spdlog::debug("Using the fallback policy.");
-                    selectedOutcome = pre_registered_group;
-                    this->complying_with_preference = false;
-                    break;
-                }
-    
+            case PolicyType::Min: {
+                auto it = std::min_element(begin, end, func);
+                spdlog::debug("min: ");
+                spdlog::debug(*it);
+                selectedOutcome = it->id_;
             }
-            
-//        }
-//            break;
-            
-            
-//    }
+                break;
+                
+            case PolicyType::Max: {
+                auto it = std::max_element(begin, end, func);
+                spdlog::debug("max: ");
+                spdlog::debug(*it);
+                selectedOutcome = it->id_;
+            }
+                break;
+                
+            case PolicyType::Comp: {
+                auto pit = std::partition(begin, end, func);
+                spdlog::debug("comp: ");
+                for (auto it {begin}; it != pit; ++it) {
+                    spdlog::debug(*it);
+                }
+                end = pit;
+            }
+                
+                break;
+                
+            case PolicyType::Random: {
+                /// Shuffling the array and setting the end pointer to the first time,
+                /// this basically mimic the process of selecting a random element from
+                /// the list.
+                Random::shuffle(begin, end);
+                spdlog::debug("random");
+                spdlog::debug(*begin);
+                end = begin;
+            }
+                break;
+        }
+        
+        if (begin == end) {
+            spdlog::debug("Using the fallback policy.");
+            selectedOutcome = pre_registered_group;
+            this->complying_with_preference = false;
+            break;
+        }
+        
+    }
+
     
     return {experiment, selectedOutcome};
 }
