@@ -68,48 +68,6 @@ namespace sam {
         {DecisionStage::Final, "Final"}
     })
 
-
-    /// @brief An enum class representing different prefeneces.
-    /// @ingroup DecisionStrategies
-    ///
-    /// When it comes to selecting an outcome, the Researcher, i.e., DecisionStrategy,
-    /// can choose to report the pre-registered outcome, or any other outcome based on
-    /// certain criteria/preference, e.g., MinPvalue, where `researcher->decisionStrategy`
-    /// will prefer an outcome with the lowest p-value.
-    enum class DecisionPreference {
-        PreRegisteredOutcome,
-        MinSigPvalue,
-        MinPvalue,
-        MaxSigEffect,
-        MaxEffect,
-        MinPvalueMaxEffect,
-    
-        RandomSigPvalue, ///< Specifies a preference in which the researcher reports a random significant outcome.
-                         ///< @note If no significant result found, the outcome with the smallest p-value will be selected.
-        
-        MaxSigPvalue,
-        
-        MarjansHacker,
-        RevisedMarjanHacker,
-        
-        Policies
-    };
-
-
-    NLOHMANN_JSON_SERIALIZE_ENUM( DecisionPreference, {
-        {DecisionPreference::PreRegisteredOutcome, "PreRegisteredOutcome"},
-        {DecisionPreference::MinSigPvalue, "MinSigPvalue"},
-        {DecisionPreference::MinPvalue, "MinPvalue"},
-        {DecisionPreference::MaxSigEffect, "MaxSigEffect"},
-        {DecisionPreference::MaxEffect, "MaxEffect"},
-        {DecisionPreference::MinPvalueMaxEffect, "MinPvalueMaxEffect"},
-        {DecisionPreference::RandomSigPvalue, "RandomSigPvalue"},
-        {DecisionPreference::MaxSigPvalue, "MaxSigPvalue"},
-        {DecisionPreference::MarjansHacker, "MarjansHacker"},
-        {DecisionPreference::RevisedMarjanHacker, "RevisedMarjanHacker"},
-        {DecisionPreference::Policies, "Policies"}
-    })
-
     enum class PolicyType {
         Min,
         Max,
@@ -336,14 +294,6 @@ namespace sam {
             return is_still_hacking;
         }
         
-        
-        /// It indicates whether the current_submission is significant or not.
-        /// This can be overwritten to adopt to different type of studies or
-        /// logics.
-//        virtual bool isSubmittable() {
-//            return current_submission.isSig();
-//        }
-        
         /**
          It indicates whether the researcher is going to commit to submitting the
          _Submission_. This acts as an another level of decision making where the
@@ -401,7 +351,7 @@ namespace sam {
          *
          * @return     A copy of the selected outcome
          */
-        Submission selectOutcome(Experiment &experiment, const DecisionPreference &preference);
+        Submission selectOutcome(Experiment &experiment);
 
         /**
          * @brief      Select the final submission by checking all logged Submissions.
@@ -410,7 +360,7 @@ namespace sam {
          *
          * @return     A copy of the selected outcome
          */
-        Submission selectBetweenSubmissions(const DecisionPreference &preference);
+        Submission selectBetweenSubmissions();
         
 //        Experiment selectBetweenExperiments();
     };
@@ -427,7 +377,6 @@ namespace sam {
         
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-            DecisionPreference preference;
             std::vector<std::string> decision_policies;
             
             std::vector<std::string> submission_policies;
@@ -494,7 +443,6 @@ namespace sam {
         void to_json(json& j, const ImpatientDecisionMaker::Parameters& p) {
             j = json{
                 {"_name", p.name},
-                {"preference", p.preference},
                 {"decision_policies", p.decision_policies},
                 {"submission_policies", p.submission_policies},
             };
@@ -503,7 +451,6 @@ namespace sam {
         inline
         void from_json(const json& j, ImpatientDecisionMaker::Parameters& p) {
             j.at("_name").get_to(p.name);
-            j.at("preference").get_to(p.preference);
             j.at("decision_policies").get_to(p.decision_policies);
             j.at("submission_policies").get_to(p.submission_policies);
         }
@@ -519,7 +466,6 @@ namespace sam {
 
         struct Parameters {
             DecisionMethod name = DecisionMethod::PatientDecisionMaker;
-            DecisionPreference preference;
         };
 
         Parameters params;
@@ -541,15 +487,12 @@ namespace sam {
     void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
         j = json{
             {"_name", p.name},
-            {"preference", p.preference},
         };
     }
 
     inline
     void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
-
         j.at("_name").get_to(p.name);
-        j.at("preference").get_to(p.preference);
     }
 
     /**
@@ -562,7 +505,6 @@ namespace sam {
 
         struct Parameters {
             DecisionMethod name = DecisionMethod::HonestDecisionMaker;
-            DecisionPreference preference = DecisionPreference::PreRegisteredOutcome;
         };
 
         /// Parameters of the HonestDecisionMaker are fixed, he is basically the

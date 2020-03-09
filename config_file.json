@@ -41,17 +41,14 @@
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
             "decision_policies": [
-                "effect > 0",
                 "random"
             ],
             "decision_policies_fallback": [
                 "PreRegOutcome"
             ],
-            "preference": "Policies",
             "submission_policies": [
-                "effect > 0"
-            ],
-            "submission_policy": "Anything"
+                "effect > 0.7"
+            ]
         },
         "hacking_strategies": [
             [
@@ -79,7 +76,7 @@
                 ],
                 "n_attempts": 1000,
                 "num": 1000,
-                "order": "random"
+                "order": "max first"
             }
         ]
     },
