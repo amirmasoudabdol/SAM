@@ -19,8 +19,10 @@
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
 
-#include <string>
 #include <map>
+#include <string>
+
+#include <nlohmann/json.hpp>
 
 #include "Experiment.h"
 #include "Submission.h"
@@ -28,7 +30,7 @@
 #include "DecisionStrategy.h"
 #include "Utilities.h"
 
-#include "nlohmann/json.hpp"
+
 
 namespace sam {
 

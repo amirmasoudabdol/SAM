@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <memory>
+#include <utility>
 #include <sol/sol.hpp>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -26,7 +27,7 @@
 #include "Experiment.h"
 #include "Utilities.h"
 #include "GroupData.h"
-
+//#include "LuaUtils.h"
 
 
 
@@ -122,7 +123,124 @@ namespace sam {
      */
     class DecisionStrategy {
         
+        
     protected:
+        
+        // This should not be here, but I don't feel fixing include collision now!
+        std::pair<PolicyType, sol::function> make_function(const std::string &s, sol::state &lua) {
+            
+            std::map<std::string, std::string> lua_temp_scripts {
+                {"min_script", "function {} (l, r) return l.{} < r.{} end"},
+
+                {"max_script", "function {} (l, r) return l.{} > r.{} end"},
+
+                {"comp_script", "function {} (d) return d.{} end"}
+            };
+
+            std::map<std::string, std::string> cops = {
+                {">=", "greater_eq"},
+                {"<=", "lesser_eq"},
+                {">", "greater"},
+                {"<", "lesser"},
+                {"==", "equal"},
+                {"!=", "not_equal"}
+            };
+
+         
+            std::cout << s << std::endl;
+            
+            PolicyType policy_type;
+            sol::function policy_func;
+            
+            if (s.find("min") != std::string::npos) {
+                
+                auto open_par = s.find("(");
+                auto close_par = s.find(")");
+                
+                auto var_name = s.substr(open_par+1, close_par - open_par - 1);
+                
+                std::cout << var_name << std::endl;
+                
+                auto f_name = fmt::format("min_{}", var_name);
+                auto f_def = fmt::format(lua_temp_scripts["min_script"],
+                                                     f_name, var_name, var_name);
+                
+                lua.script(f_def);
+                
+                policy_type = PolicyType::Min;
+                policy_func = lua[f_name];
+                
+                std::cout << f_def << std::endl;
+                
+            }else if (s.find("max") != std::string::npos) {
+                
+                auto open_par = s.find("(");
+                auto close_par = s.find(")");
+                
+                auto var_name = s.substr(open_par+1, close_par - open_par - 1);
+                
+                std::cout << var_name << std::endl;
+                
+                auto f_name = fmt::format("max_{}", var_name);
+                auto f_def = fmt::format(lua_temp_scripts["max_script"],
+                                                     f_name, var_name, var_name);
+                
+                lua.script(f_def);
+                
+                policy_type = PolicyType::Max;
+                policy_func = lua[f_name];
+                
+                std::cout << f_def << std::endl;
+            }else if (s.find("sig") != std::string::npos) {
+                
+                auto f_name = "cond_sig";
+                
+                auto f_def = fmt::format(lua_temp_scripts["comp_script"],
+                                         f_name, "sig == 1");
+                
+                lua.script(f_def);
+                
+                policy_type = PolicyType::Comp;
+                policy_func = lua[f_name];
+                
+                std::cout << f_def << std::endl;
+            
+            } else if (s.find("random") != std::string::npos) {
+            
+                policy_type = PolicyType::Random;
+                policy_func = sol::function();
+            
+                std::cout << "random" << std::endl;
+            
+            } else if (std::any_of(cops.begin(), cops.end(),
+                                  [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
+                // Found a comparision
+                
+                std::string s_op {};
+                for (auto &op : cops)
+                    if (s.find(op.first) != std::string::npos) {
+                        s_op = op.first;
+                        break;
+                    }
+                    
+                auto op_start = s.find(s_op);
+                
+                auto var_name = s.substr(0, op_start - 1);
+                auto f_name = fmt::format("cond_{}", var_name + "_" + cops[s_op]);
+                auto f_def = fmt::format(lua_temp_scripts["comp_script"], f_name, s);    // Full text goes here
+                
+                lua.script(f_def);
+                
+                policy_type = PolicyType::Comp;
+                policy_func = lua[f_name];
+                
+                std::cout << f_def << std::endl;
+                
+            }
+            
+            return std::make_pair(policy_type, policy_func);
+
+        }
 
         json config_;
         
@@ -136,8 +254,11 @@ namespace sam {
         //! List of selected Experiment by the researcher.
         std::vector<Experiment> experiments_pool;
         
-        std::vector<PolicyType> policies_type;
-        std::vector<sol::function> policies_func;
+        std::vector<PolicyType> decision_policies_type;
+        std::vector<sol::function> decision_policies_func;
+        
+        std::vector<PolicyType> submission_policies_type;
+        std::vector<sol::function> submission_policies_func;
 
         //! If `true`, the Researcher will continue traversing through the
         //! hacknig methods, otherwise, he/she will stop the hacking and
