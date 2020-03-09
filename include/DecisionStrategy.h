@@ -109,23 +109,6 @@ namespace sam {
         {DecisionPreference::Policies, "Policies"}
     })
 
-
-    enum class SubmissionPolicy {
-        Anything,
-        AnythingSig,
-        ComplyingWithPreference,
-        PreRegSig
-    };
-
-
-    NLOHMANN_JSON_SERIALIZE_ENUM( SubmissionPolicy, {
-        {SubmissionPolicy::Anything, "Anything"},
-        {SubmissionPolicy::AnythingSig, "AnythingSig"},
-        {SubmissionPolicy::ComplyingWithPreference, "BasedOnThePreference"},
-        {SubmissionPolicy::PreRegSig, "PreRegSig"}
-    })
-
-
     enum class PolicyType {
         Min,
         Max,
@@ -213,8 +196,6 @@ namespace sam {
         
         DecisionMethod name;
         
-        SubmissionPolicy submission_policy;
-        
         sol::state lua;
         
         /**
@@ -238,9 +219,9 @@ namespace sam {
         /// It indicates whether the current_submission is significant or not.
         /// This can be overwritten to adopt to different type of studies or
         /// logics.
-        virtual bool isSubmittable() {
-            return current_submission.isSig();
-        }
+//        virtual bool isSubmittable() {
+//            return current_submission.isSig();
+//        }
         
         /**
          It indicates whether the researcher is going to commit to submitting the
@@ -252,40 +233,7 @@ namespace sam {
          his research, and — after all the hacking — he couldn't find anything significant, then he decide whether he wants to submit the "unpreferable"
          result or not.
          */
-        virtual bool willBeSubmitting() {
-            
-            switch (submission_policy) {
-                case SubmissionPolicy::Anything: {
-                        return true;
-                    }
-                    break;
-                case SubmissionPolicy::AnythingSig: {
-                    if (this->isSubmittable())
-                        return true;
-                    else
-                        return false;
-                    }
-                    break;
-                case SubmissionPolicy::ComplyingWithPreference: {
-                    if (this->complying_with_preference)
-                        return true;
-                    else
-                        return false;
-                    }
-                    break;
-                case SubmissionPolicy::PreRegSig: {
-                    if (current_submission.inx != pre_registered_group)
-                        return false;
-                    else if (isSubmittable()){
-                        return true;
-                    }
-                }
-                    break;
-            }
-            
-            return will_be_submitting;
-        }
-        
+        virtual bool willBeSubmitting();
         
         DecisionStage current_stage;
         
@@ -360,152 +308,52 @@ namespace sam {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
             DecisionPreference preference;
             std::vector<std::string> decision_policies;
-            SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
+            
+            std::vector<std::string> submission_policies;
         };
         
         Parameters params;
         
-        explicit ImpatientDecisionMaker(const Parameters &p) : params{p} {
-            submission_policy = p.publishing_policy;
+        explicit ImpatientDecisionMaker(const Parameters &p) {
             
-            std::map<std::string, std::string> lua_temp_scripts {
-                {"min_script", R"(
-                    function {} (l, r)
-                        return l.{} < r.{}
-                    end
-                    )"},
-
-                {"max_script", R"(
-                    function {} (l, r)
-                        return l.{} > r.{}
-                    end
-                    )"},
-
-                {"comp_script", R"(
-                    function {} (d)
-                        return d.{}
-                    end
-                    )"}
-            };
             
             lua.open_libraries();
             
             lua.new_usertype<GroupData>("GroupData",
-                                          "nobs", &GroupData::nobs_,
-                                          "pvalue", &GroupData::pvalue_,
-                                          "effect", &GroupData::effect_,
-                                          "sig", &GroupData::sig_
-            );
+                                        "nobs", &GroupData::nobs_,
+                                        "pvalue", &GroupData::pvalue_,
+                                        "effect", &GroupData::effect_,
+                                        "sig", &GroupData::sig_
+                                        );
             
-            std::vector<std::string> comp_ops = {">=", "<=", ">", "<", "==", "!="};
-            std::vector<std::string> ops_names = {"greater_eq", "lesser_eq", "greater", "lesser", "equal", "not_equal"};
-            
-            std::map<std::string, std::string> cops = {
-                {">=", "greater_eq"},
-                {"<=", "lesser_eq"},
-                {">", "greater"},
-                {"<", "lesser"},
-                {"==", "equal"},
-                {"!=", "not_equal"}
-            };
+            lua.new_usertype<Submission>("Submission",
+                                         "mean", &Submission::mean,
+                                         "pvalue", &Submission::pvalue,
+                                         "effect", &Submission::effect,
+                                         "sig", &Submission::sig
+                                         );
+     
             
             spdlog::debug("Registering decision policies...");
             for (auto &s : p.decision_policies) {
                 
                 std::cout << s << std::endl;
                 
-                if (s.find("min") != std::string::npos) {
-                    
-                    auto open_par = s.find("(");
-                    auto close_par = s.find(")");
-                    
-                    auto var_name = s.substr(open_par+1, close_par - open_par - 1);
-                    
-                    std::cout << var_name << std::endl;
-                    
-                    auto f_name = fmt::format("min_{}", var_name);
-                    auto f_def = fmt::format(lua_temp_scripts["min_script"],
-                                                         f_name, var_name, var_name);
-                    
-                    lua.script(f_def);
-                    
-                    policies_type.push_back(PolicyType::Min);
-                    policies_func.push_back(lua[f_name]);
-                    
-                    std::cout << f_def << std::endl;
-                    
-                }else if (s.find("max") != std::string::npos) {
-                    
-                    auto open_par = s.find("(");
-                    auto close_par = s.find(")");
-                    
-                    auto var_name = s.substr(open_par+1, close_par - open_par - 1);
-                    
-                    std::cout << var_name << std::endl;
-                    
-                    auto f_name = fmt::format("max_{}", var_name);
-                    auto f_def = fmt::format(lua_temp_scripts["max_script"],
-                                                         f_name, var_name, var_name);
-                    
-                    lua.script(f_def);
-                    
-                    policies_type.push_back(PolicyType::Max);
-                    policies_func.push_back(lua[f_name]);
-                    
-                    std::cout << f_def << std::endl;
-                }else if (s.find("sig") != std::string::npos) {
-                    
-//                    auto var_name = "sig";
-                    auto f_name = "cond_sig";
-                    
-                    auto f_def = fmt::format(lua_temp_scripts["comp_script"],
-                                             f_name, "sig == 1");
-                    
-                    lua.script(f_def);
-                    
-                    policies_type.push_back(PolicyType::Comp);
-                    policies_func.push_back(lua[f_name]);
-                    
-                    std::cout << f_def << std::endl;
+                auto policy = make_function(s, lua);
                 
-                } else if (s.find("random") != std::string::npos) {
-                
-                    policies_type.push_back(PolicyType::Random);
-                    policies_func.push_back(sol::function());
-                
-                    std::cout << "random" << std::endl;
-                
-                } else if (std::any_of(cops.begin(), cops.end(),
-                                      [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
-                    // Found a comparision
-                    
-                    std::string s_op {};
-                    for (auto &op : cops)
-                        if (s.find(op.first) != std::string::npos) {
-                            s_op = op.first;
-                            break;
-                        }
-                        
-                    auto op_start = s.find(s_op);
-                    
-                    auto var_name = s.substr(0, op_start - 1);
-                    auto f_name = fmt::format("cond_{}", var_name + "_" + cops[s_op]);
-                    auto f_def = fmt::format(lua_temp_scripts["comp_script"], f_name, s);    // Full text goes here
-                    
-                    lua.script(f_def);
-                    
-                    policies_type.push_back(PolicyType::Comp);
-                    policies_func.push_back(lua[f_name]);
-                    
-                    std::cout << f_def << std::endl;
-                    
-                    
-                }
-                
+                decision_policies_type.push_back(policy.first);
+                decision_policies_func.push_back(policy.second);
             }
             
-            
-        };
+            for (auto &s : p.submission_policies) {
+                std::cout << s << std::endl;
+                
+                auto policy = make_function(s, lua);
+                
+                submission_policies_type.push_back(policy.first);
+                submission_policies_func.push_back(policy.second);
+            }
+        }
         
         bool isStillHacking() override {
             return is_still_hacking;
@@ -527,7 +375,7 @@ namespace sam {
                 {"_name", p.name},
                 {"preference", p.preference},
                 {"decision_policies", p.decision_policies},
-                {"submission_policy", p.publishing_policy}
+                {"submission_policies", p.submission_policies},
             };
         }
     
@@ -536,7 +384,7 @@ namespace sam {
             j.at("_name").get_to(p.name);
             j.at("preference").get_to(p.preference);
             j.at("decision_policies").get_to(p.decision_policies);
-            j.at("submission_policy").get_to(p.publishing_policy);
+            j.at("submission_policies").get_to(p.submission_policies);
         }
 
 
@@ -551,13 +399,11 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::PatientDecisionMaker;
             DecisionPreference preference;
-            SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
 
         Parameters params;
 
         explicit PatientDecisionMaker(const Parameters &p) : params{p} {
-            submission_policy = p.publishing_policy;
         };
 
         virtual PatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
@@ -575,7 +421,6 @@ namespace sam {
         j = json{
             {"_name", p.name},
             {"preference", p.preference},
-            {"submission_policy", p.publishing_policy}
         };
     }
 
@@ -584,7 +429,6 @@ namespace sam {
 
         j.at("_name").get_to(p.name);
         j.at("preference").get_to(p.preference);
-        j.at("submission_policy").get_to(p.publishing_policy);
     }
 
     /**
@@ -598,7 +442,6 @@ namespace sam {
         struct Parameters {
             DecisionMethod name = DecisionMethod::HonestDecisionMaker;
             DecisionPreference preference = DecisionPreference::PreRegisteredOutcome;
-            SubmissionPolicy publishing_policy = SubmissionPolicy::Anything;
         };
 
         /// Parameters of the HonestDecisionMaker are fixed, he is basically the
@@ -608,7 +451,6 @@ namespace sam {
         HonestDecisionMaker() {};
 
         HonestDecisionMaker(const Parameters p) : params(p)  {
-            submission_policy = p.publishing_policy;
         };
         
         bool isStillHacking() override {
