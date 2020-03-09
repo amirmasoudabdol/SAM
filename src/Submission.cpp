@@ -25,7 +25,7 @@ namespace sam {
         pvalue = e.groups_[index].pvalue_;
         effect = e.groups_[index].effect_;
         sig = e.groups_[index].sig_;
-        isHacked = e.is_hacked;
+        is_hacked = e.is_hacked;
         hHistory = e.hacks_history;
     };    
     
@@ -52,7 +52,7 @@ namespace sam {
             record["effect"] = std::to_string(effect);
             record["sig"] = std::to_string(sig);
             record["side"] = std::to_string(eff_side);
-            record["isHacked"] = std::to_string(isHacked);
+            record["isHacked"] = std::to_string(is_hacked);
             record["tnobs"] = std::to_string(tnobs);
             
             return record;

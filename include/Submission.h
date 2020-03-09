@@ -50,7 +50,7 @@ namespace sam {
         //! The side of the observed effect
         short eff_side = 1;
         //! Whether the experiment is hacked or not
-        bool isHacked = false;
+        bool is_hacked = false;
         //! Stores the ID of hacking strategies applied on the experiment
         std::vector<int> hHistory;
         
@@ -94,7 +94,7 @@ namespace sam {
                 os << hid << ";";
             }
             os << ",\t";
-            os << s.isHacked;
+            os << s.is_hacked;
             
             return os;
         }
