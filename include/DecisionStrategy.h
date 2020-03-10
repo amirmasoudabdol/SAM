@@ -337,7 +337,7 @@ namespace sam {
                     
                 case PolicyType::Min: {
                     auto it = std::min_element(begin, end, func);
-                    spdlog::debug("min: ");
+                    spdlog::debug("Min: ");
                     spdlog::debug(*it);
                     return {true, it, it};
                 }
@@ -345,7 +345,7 @@ namespace sam {
                     
                 case PolicyType::Max: {
                     auto it = std::max_element(begin, end, func);
-                    spdlog::debug("max: ");
+                    spdlog::debug("Max: ");
                     spdlog::debug(*it);
                     return {true, it, it};
                 }
@@ -353,15 +353,13 @@ namespace sam {
                     
                 case PolicyType::Comp: {
                     auto pit = std::partition(begin, end, func);
-                    spdlog::debug("comp: ");
+                    spdlog::debug("Comp: ");
                     for (auto it {begin}; it != pit; ++it) {
-                        spdlog::debug(*it);
+                        spdlog::debug("\t {}", *it);
                     }
                     if (begin == pit) {
                         end = begin;
                     }
-                    
-//                    end = pit;
                     
                     return {false, begin, pit};
                     
@@ -374,14 +372,10 @@ namespace sam {
                     /// this basically mimic the process of selecting a random element from
                     /// the list.
                     Random::shuffle(begin, end);
+                    spdlog::debug("Shuffled: ");
                     for (auto it {begin}; it != end; ++it) {
                         spdlog::debug("\t {}", *it);
                     }
-                    spdlog::debug("random: ");
-                    spdlog::debug(*begin);
-                    spdlog::debug(*end);
-                    
-                    spdlog::debug(*end);
                     end = begin;
                     return {true, begin, end};
                     
@@ -393,7 +387,7 @@ namespace sam {
                     // Sorting the groups based on their index
                     std::sort(begin, end, func);
                     
-                    spdlog::debug("first: ");
+                    spdlog::debug("First: ");
                     spdlog::debug(*begin);
                     end = begin;
                     return {true, begin, end};
