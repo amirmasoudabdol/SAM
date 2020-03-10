@@ -149,7 +149,8 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
 
 
 bool DecisionStrategy::willBeSubmitting() {
-        
+    
+    // Checking whether all policies are returning `true`
     auto is_it_submittable = std::all_of(submission_policies_func.begin(), submission_policies_func.end(),
                                            [this](auto &pred){return pred(this->current_submission); });
     
@@ -182,7 +183,7 @@ void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
 void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
     
-    
+    /// TODO: I think this can be optimized, there are a few unnecessary calls here
     if (willBeSubmitting()){
         experiments_pool.push_back(experiment);
         submissions_pool.push_back(current_submission);
@@ -194,6 +195,9 @@ void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
 void ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
 
+
+    // I'm not sure if this is valid anymore considering the fact that there
+    // is a willBeSubmitting() and policies in place now
     final_submission = submissions_pool.back();
     
     clearHistory();
