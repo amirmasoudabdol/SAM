@@ -337,16 +337,14 @@ namespace sam {
                     
                 case PolicyType::Min: {
                     auto it = std::min_element(begin, end, func);
-                    spdlog::debug("Min: ");
-                    spdlog::debug(*it);
+                    spdlog::debug("Min: {}", *it);
                     return {true, it, it};
                 }
                     break;
                     
                 case PolicyType::Max: {
                     auto it = std::max_element(begin, end, func);
-                    spdlog::debug("Max: ");
-                    spdlog::debug(*it);
+                    spdlog::debug("Max: ", *it);
                     return {true, it, it};
                 }
                     break;
@@ -356,9 +354,6 @@ namespace sam {
                     spdlog::debug("Comp: ");
                     for (auto it {begin}; it != pit; ++it) {
                         spdlog::debug("\t {}", *it);
-                    }
-                    if (begin == pit) {
-                        end = begin;
                     }
                     
                     return {false, begin, pit};
@@ -376,7 +371,6 @@ namespace sam {
                     for (auto it {begin}; it != end; ++it) {
                         spdlog::debug("\t {}", *it);
                     }
-                    end = begin;
                     return {true, begin, end};
                     
                 }
@@ -387,9 +381,8 @@ namespace sam {
                     // Sorting the groups based on their index
                     std::sort(begin, end, func);
                     
-                    spdlog::debug("First: ");
-                    spdlog::debug(*begin);
-                    end = begin;
+                    spdlog::debug("First: {}", *begin);
+                    
                     return {true, begin, end};
                     
                 }

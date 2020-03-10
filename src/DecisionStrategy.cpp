@@ -75,15 +75,16 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
                 spdlog::debug("Found something!");
                 selectedOutcome = begin->id_;
                 return {experiment, selectedOutcome};
-            }
-            
-            if (begin == end) {
+            } else {
                 /// The range is empty! This only happens when Comp case cannot find anything
                 /// with the given comparison. Then, we break out the loop, and move into the
                 /// new set of policies
-                spdlog::debug("Going to the next set of policies.");
-                found_something = false;
-                break;  // Out of the for-loop, going to the next chain
+                if (begin == end){
+                    spdlog::debug("Going to the next set of policies.");
+                    break;  // Out of the for-loop, going to the next chain
+                }
+                /// else:
+                ///     We are still looking!
             }
             
         }
@@ -113,6 +114,12 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
         if (found_something) {
             spdlog::debug("Found something in the pile!");
             return *begin;
+        }else{
+            if (begin == end) {
+                break;
+            }
+            /// else:
+            ///     We are still looking. This happens when I'm testing a comparison
         }
         
     }
