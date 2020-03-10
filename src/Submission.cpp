@@ -16,7 +16,7 @@ namespace sam {
             tnobs = 0;
         }
         
-        inx = index;
+        id_ = index;
         nobs = e.groups_[index].nobs_;
         mean = e.groups_[index].mean_;
         var = e.groups_[index].var_;
@@ -42,7 +42,7 @@ namespace sam {
             
             record["simid"] = std::to_string(simid);
             record["pubid"] = std::to_string(pubid);
-            record["inx"] = std::to_string(inx);
+            record["inx"] = std::to_string(id_);
             record["nobs"] = std::to_string(nobs);
             record["yi"] = std::to_string(mean);
             record["vi"] = std::to_string(var);

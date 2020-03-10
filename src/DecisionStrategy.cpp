@@ -2,12 +2,14 @@
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
 
-#include "DecisionStrategy.h"
+
 
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <sol/sol.hpp>
 #include <spdlog/spdlog.h>
+
+#include "DecisionStrategy.h"
 
 using namespace sam;
 
@@ -41,7 +43,7 @@ std::unique_ptr<DecisionStrategy> DecisionStrategy::build(json &decision_strateg
     }
 }
 
-Submission DecisionStrategy::selectOutcome(Experiment& experiment, const DecisionPreference &preference) {
+Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     
     /// We always start with the pre_registered_group, and if we find others
     /// results based on researchers' preference, then we replace it, and report
@@ -55,10 +57,10 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
     auto end = experiment.groups_.end();
     
     this->complying_with_preference = true;
-    for (int i {0}; i < policies_type.size(); ++i) {
+    for (int i {0}; i < decision_policies_type.size(); ++i) {
         
-        auto &type = policies_type[i];
-        auto &func = policies_func[i];
+        auto &type = decision_policies_type[i];
+        auto &func = decision_policies_func[i];
         
         switch (type) {
                 
@@ -94,9 +96,32 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
                 /// this basically mimic the process of selecting a random element from
                 /// the list.
                 Random::shuffle(begin, end);
-                spdlog::debug("random");
+                for (auto it {begin}; it != end; ++it) {
+                     spdlog::debug("\t {}", *it);
+                }
+                spdlog::debug("random: ");
                 spdlog::debug(*begin);
+                spdlog::debug(*end);
+                
+                spdlog::debug(*end);
+                selectedOutcome = begin->id_;
+                break;
                 end = begin;
+            }
+                break;
+                
+            case PolicyType::First: {
+                    
+                // Sorting the groups based on their index
+                std::sort(begin, end, func);
+
+                
+                spdlog::debug("first: ");
+                spdlog::debug(*begin);
+                selectedOutcome = begin->id_;
+                break;
+                end = begin;
+                
             }
                 break;
         }
@@ -115,9 +140,8 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment, const Decisio
 
 
 /// This is often is being used by PatientDecisionMaker
-Submission DecisionStrategy::selectBetweenSubmissions(const DecisionPreference &preference){
+Submission DecisionStrategy::selectBetweenSubmissions(){
     
-
 
     return submissions_pool.back();
     
@@ -182,7 +206,7 @@ void ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
 
 ImpatientDecisionMaker& ImpatientDecisionMaker::verdict(Experiment &experiment, DecisionStage stage) {
     
-    current_submission = selectOutcome(experiment, params.preference);
+    current_submission = selectOutcome(experiment);
     
     switch(stage){
         case DecisionStage::Initial:
@@ -252,7 +276,7 @@ void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 /// @param experiment A reference to the experiment.
 void PatientDecisionMaker::finalDecision(Experiment &experiment) {
 
-    final_submission = selectBetweenSubmissions(params.preference);
+    final_submission = selectBetweenSubmissions();
 
     clearHistory();
 
@@ -263,7 +287,7 @@ void PatientDecisionMaker::finalDecision(Experiment &experiment) {
 PatientDecisionMaker& PatientDecisionMaker::verdict(Experiment &experiment,
                                                         DecisionStage stage) {
     
-    current_submission = selectOutcome(experiment, params.preference);
+    current_submission = selectOutcome(experiment);
     
     switch (stage) {
 
@@ -288,7 +312,7 @@ PatientDecisionMaker& PatientDecisionMaker::verdict(Experiment &experiment,
 HonestDecisionMaker& HonestDecisionMaker::verdict(Experiment &experiment,
 DecisionStage stage) {
     
-    current_submission = selectOutcome(experiment, params.preference);
+    current_submission = selectOutcome(experiment);
     
     submissions_pool.push_back(current_submission);
     experiments_pool.push_back(experiment);

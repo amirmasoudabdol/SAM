@@ -31,7 +31,7 @@ namespace sam {
         //! Publication ID
         int pubid = 0;
         //! Index of the selected group
-        int inx;
+        int id_;
         //! Number of observation in submitted group
         int nobs;
         //! Effect size of the submitted group
@@ -81,7 +81,7 @@ namespace sam {
             s.simid << ",\t" <<
             s.pubid << ",\t" <<
             s.tnobs << ",\t" <<
-            s.inx << ",\t" <<
+            s.id_ << ",\t" <<
             s.nobs << ",\t" <<
             s.mean << ",\t" <<
             s.var << ",\t" <<

@@ -72,7 +72,8 @@ namespace sam {
         Min,
         Max,
         Comp,
-        Random
+        Random,
+        First
     };
 
     /**
@@ -141,7 +142,7 @@ namespace sam {
                 
                 auto f_name = fmt::format("max_{}", var_name);
                 auto f_def = fmt::format(lua_temp_scripts["max_script"],
-                                                     f_name, var_name, var_name);
+                                         f_name, var_name, var_name);
                 
                 lua.script(f_def);
                 
@@ -169,6 +170,21 @@ namespace sam {
                 policy_func = sol::function();
             
                 std::cout << "random" << std::endl;
+            
+            } else if (s.find("first") != std::string::npos) {
+                
+                
+                auto var_name = "id";
+                auto f_name = fmt::format("min_{}", var_name);
+                auto f_def = fmt::format(lua_temp_scripts["min_script"],
+                                         f_name, var_name, var_name);
+                
+                lua.script(f_def);
+                
+                policy_type = PolicyType::First;
+                policy_func = lua[f_name];
+            
+                std::cout << "first" << std::endl;
             
             } else if (std::any_of(cops.begin(), cops.end(),
                                   [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
@@ -391,6 +407,7 @@ namespace sam {
             lua.open_libraries();
             
             lua.new_usertype<GroupData>("GroupData",
+                                        "id", &GroupData::id_,
                                         "nobs", &GroupData::nobs_,
                                         "pvalue", &GroupData::pvalue_,
                                         "effect", &GroupData::effect_,
@@ -398,6 +415,7 @@ namespace sam {
                                         );
             
             lua.new_usertype<Submission>("Submission",
+                                         "id", &Submission::id_,
                                          "mean", &Submission::mean,
                                          "pvalue", &Submission::pvalue,
                                          "effect", &Submission::effect,
