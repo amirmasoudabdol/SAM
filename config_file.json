@@ -41,8 +41,14 @@
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
             "decision_policies": [
-                "id >= 2",
-                "first"
+                [
+                    "sig",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
+                ]
             ],
             "decision_policies_fallback": [
                 "PreRegOutcome"

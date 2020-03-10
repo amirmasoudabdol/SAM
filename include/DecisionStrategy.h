@@ -230,12 +230,11 @@ namespace sam {
         
         // Lua state
         sol::state lua;
-        
-        std::vector<PolicyType> decision_policies_type;
-        std::vector<sol::function> decision_policies_func;
-        
-        std::vector<PolicyType> submission_policies_type;
-        std::vector<sol::function> submission_policies_func;
+
+        using Policy = std::pair<PolicyType, sol::function>;
+
+        std::vector<std::vector<Policy>> decision_policies;
+        std::vector<Policy> submission_policies;
 
         //! If `true`, the Researcher will continue traversing through the
         //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -394,7 +393,7 @@ namespace sam {
         
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-            std::vector<std::string> decision_policies;
+            std::vector<std::vector<std::string>> decision_policies;
             
             std::vector<std::string> submission_policies;
         };
@@ -424,23 +423,29 @@ namespace sam {
      
             
             spdlog::debug("Registering decision policies...");
-            for (auto &s : p.decision_policies) {
-                
-                std::cout << s << std::endl;
-                
-                auto policy = make_function(s, lua);
-                
-                decision_policies_type.push_back(policy.first);
-                decision_policies_func.push_back(policy.second);
+
+            for (auto &policies : p.decision_policies) {
+
+                decision_policies.push_back(std::vector<Policy>());
+                for (auto &s : policies) {
+                    
+                    std::cout << s << std::endl;
+                    
+                    auto policy = make_function(s, lua);
+                    
+                    decision_policies.back().push_back(policy);
+                    
+                }
+
             }
+
             
             for (auto &s : p.submission_policies) {
                 std::cout << s << std::endl;
                 
                 auto policy = make_function(s, lua);
-                
-                submission_policies_type.push_back(policy.first);
-                submission_policies_func.push_back(policy.second);
+
+                submission_policies.push_back(policy);
             }
         }
         

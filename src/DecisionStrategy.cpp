@@ -52,87 +52,114 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     int selectedOutcome {0};
     
     pre_registered_group = experiment.setup.nd();
-                
-    auto begin = experiment.groups_.begin() + 1;
-    auto end = experiment.groups_.end();
-    
-    this->complying_with_preference = true;
-    for (int i {0}; i < decision_policies_type.size(); ++i) {
-        
-        auto &type = decision_policies_type[i];
-        auto &func = decision_policies_func[i];
-        
-        switch (type) {
-                
-            case PolicyType::Min: {
-                auto it = std::min_element(begin, end, func);
-                spdlog::debug("min: ");
-                spdlog::debug(*it);
-                selectedOutcome = it->id_;
-            }
-                break;
-                
-            case PolicyType::Max: {
-                auto it = std::max_element(begin, end, func);
-                spdlog::debug("max: ");
-                spdlog::debug(*it);
-                selectedOutcome = it->id_;
-            }
-                break;
-                
-            case PolicyType::Comp: {
-                auto pit = std::partition(begin, end, func);
-                spdlog::debug("comp: ");
-                for (auto it {begin}; it != pit; ++it) {
-                    spdlog::debug(*it);
-                }
-                end = pit;
-            }
-                
-                break;
-                
-            case PolicyType::Random: {
-                /// Shuffling the array and setting the end pointer to the first time,
-                /// this basically mimic the process of selecting a random element from
-                /// the list.
-                Random::shuffle(begin, end);
-                for (auto it {begin}; it != end; ++it) {
-                     spdlog::debug("\t {}", *it);
-                }
-                spdlog::debug("random: ");
-                spdlog::debug(*begin);
-                spdlog::debug(*end);
-                
-                spdlog::debug(*end);
-                selectedOutcome = begin->id_;
-                break;
-                end = begin;
-            }
-                break;
-                
-            case PolicyType::First: {
-                    
-                // Sorting the groups based on their index
-                std::sort(begin, end, func);
 
-                
-                spdlog::debug("first: ");
-                spdlog::debug(*begin);
-                selectedOutcome = begin->id_;
-                break;
-                end = begin;
-                
+    this->complying_with_preference = true;
+    
+    auto found_something {false};
+    
+    for (auto &policy_set : decision_policies) {
+        
+        /// These needs to be reset since I'm starting a new set of policies
+        /// New policies will scan the set again!
+        auto begin = experiment.groups_.begin() + 1;
+        auto end = experiment.groups_.end();
+        
+        for (auto &p : policy_set) {
+            auto &type = p.first;
+            auto &func = p.second;
+            
+            switch (type) {
+                    
+                case PolicyType::Min: {
+                    auto it = std::min_element(begin, end, func);
+                    spdlog::debug("min: ");
+                    spdlog::debug(*it);
+                    selectedOutcome = it->id_;
+                    found_something = true;
+                }
+                    break;
+                    
+                case PolicyType::Max: {
+                    auto it = std::max_element(begin, end, func);
+                    spdlog::debug("max: ");
+                    spdlog::debug(*it);
+                    selectedOutcome = it->id_;
+                    found_something = true;
+                }
+                    break;
+                    
+                case PolicyType::Comp: {
+                    auto pit = std::partition(begin, end, func);
+                    spdlog::debug("comp: ");
+                    for (auto it {begin}; it != pit; ++it) {
+                        spdlog::debug(*it);
+                    }
+                    if (begin == pit) {
+                        end = begin;
+                    }
+                        
+                    end = pit;
+                }
+                    
+                    break;
+                    
+                case PolicyType::Random: {
+                    /// Shuffling the array and setting the end pointer to the first time,
+                    /// this basically mimic the process of selecting a random element from
+                    /// the list.
+                    Random::shuffle(begin, end);
+                    for (auto it {begin}; it != end; ++it) {
+                         spdlog::debug("\t {}", *it);
+                    }
+                    spdlog::debug("random: ");
+                    spdlog::debug(*begin);
+                    spdlog::debug(*end);
+                    
+                    spdlog::debug(*end);
+                    selectedOutcome = begin->id_;
+                    end = begin;
+                    found_something = true;
+                }
+                    break;
+                    
+                case PolicyType::First: {
+                        
+                    // Sorting the groups based on their index
+                    std::sort(begin, end, func);
+
+                    
+                    spdlog::debug("first: ");
+                    spdlog::debug(*begin);
+                    selectedOutcome = begin->id_;
+                    end = begin;
+                    found_something = true;
+                    
+                }
+                    break;
             }
-                break;
+            
+            if (found_something) {
+                /// If we have a hit, mainly after going to Min, Max, First, Random; then,
+                /// we are done!
+                spdlog::debug("Found something!");
+                return {experiment, selectedOutcome};
+            }
+            
+            if (begin == end) {
+                /// The range is empty! This only happens when Comp case cannot find anything
+                /// with the given comparison. Then, we break out the loop, and move into the
+                /// new set of policies
+                spdlog::debug("Going to the next set of policies.");
+                break;  // Out of the for-loop, going to the next chain
+            }
+            
         }
         
-        if (begin == end) {
-            spdlog::debug("Using the fallback policy.");
-            selectedOutcome = pre_registered_group;
-            this->complying_with_preference = false;
-            break;
-        }
-        
+    }
+    
+    if (!found_something) {
+        spdlog::debug("Found nothing!");
+        selectedOutcome = 0;
     }
     
     return {experiment, selectedOutcome};
@@ -150,9 +177,16 @@ Submission DecisionStrategy::selectBetweenSubmissions(){
 
 bool DecisionStrategy::willBeSubmitting() {
     
+    /// This is signal from selectSubmission and it means that we couldn't find anything!
+    /// So, we are not going to submit anything either
+    if (current_submission.id_ == 0) {
+        return false;
+    }
+    
     // Checking whether all policies are returning `true`
-    auto is_it_submittable = std::all_of(submission_policies_func.begin(), submission_policies_func.end(),
-                                           [this](auto &pred){return pred(this->current_submission); });
+    auto is_it_submittable = std::all_of(submission_policies.begin(),
+                                         submission_policies.end(),
+                                           [this](auto &policy){return policy.second(this->current_submission); });
     
     return is_it_submittable;
     
