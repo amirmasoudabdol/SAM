@@ -212,6 +212,9 @@ namespace sam {
         //! List of selected Experiment by the researcher.
         std::vector<Experiment> experiments_pool;
         
+        // Lua state
+        sol::state lua;
+        
         std::vector<PolicyType> decision_policies_type;
         std::vector<sol::function> decision_policies_func;
         
@@ -274,8 +277,6 @@ namespace sam {
     public:
         
         DecisionMethod name;
-        
-        sol::state lua;
         
         /**
          DecisionStrategy factory method.
