@@ -233,8 +233,10 @@ namespace sam {
 
         using Policy = std::pair<PolicyType, sol::function>;
 
+        /// TODO: These guys should move to their own class, I don't have to keep everything here!
         std::vector<std::vector<Policy>> decision_policies;
         std::vector<Policy> submission_policies;
+        std::vector<Policy> final_decision_policies;
 
         //! If `true`, the Researcher will continue traversing through the
         //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -302,6 +304,104 @@ namespace sam {
         static std::unique_ptr<DecisionStrategy> build(json &decision_strategy_config);
         
         virtual ~DecisionStrategy() = 0;
+
+        DecisionStrategy() {
+
+            lua.open_libraries();
+            
+            lua.new_usertype<GroupData>("GroupData",
+                                        "id", &GroupData::id_,
+                                        "nobs", &GroupData::nobs_,
+                                        "pvalue", &GroupData::pvalue_,
+                                        "effect", &GroupData::effect_,
+                                        "sig", &GroupData::sig_
+                                        );
+            
+            lua.new_usertype<Submission>("Submission",
+                                         "id", &Submission::id_,
+                                         "mean", &Submission::mean,
+                                         "pvalue", &Submission::pvalue,
+                                         "effect", &Submission::effect,
+                                         "sig", &Submission::sig
+                                         );
+        };
+        
+        
+        template <typename ForwardIt>
+        std::tuple<bool, ForwardIt, ForwardIt> checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy) {
+            
+            auto type = policy.first;
+            auto func = policy.second;
+            
+            switch (type) {
+                    
+                case PolicyType::Min: {
+                    auto it = std::min_element(begin, end, func);
+                    spdlog::debug("min: ");
+                    spdlog::debug(*it);
+                    return {true, it, it};
+                }
+                    break;
+                    
+                case PolicyType::Max: {
+                    auto it = std::max_element(begin, end, func);
+                    spdlog::debug("max: ");
+                    spdlog::debug(*it);
+                    return {true, it, it};
+                }
+                    break;
+                    
+                case PolicyType::Comp: {
+                    auto pit = std::partition(begin, end, func);
+                    spdlog::debug("comp: ");
+                    for (auto it {begin}; it != pit; ++it) {
+                        spdlog::debug(*it);
+                    }
+                    if (begin == pit) {
+                        end = begin;
+                    }
+                    
+//                    end = pit;
+                    
+                    return {false, begin, pit};
+                    
+                }
+                    
+                    break;
+                    
+                case PolicyType::Random: {
+                    /// Shuffling the array and setting the end pointer to the first time,
+                    /// this basically mimic the process of selecting a random element from
+                    /// the list.
+                    Random::shuffle(begin, end);
+                    for (auto it {begin}; it != end; ++it) {
+                        spdlog::debug("\t {}", *it);
+                    }
+                    spdlog::debug("random: ");
+                    spdlog::debug(*begin);
+                    spdlog::debug(*end);
+                    
+                    spdlog::debug(*end);
+                    end = begin;
+                    return {true, begin, end};
+                    
+                }
+                    break;
+                    
+                case PolicyType::First: {
+                    
+                    // Sorting the groups based on their index
+                    std::sort(begin, end, func);
+                    
+                    spdlog::debug("first: ");
+                    spdlog::debug(*begin);
+                    end = begin;
+                    return {true, begin, end};
+                    
+                }
+                    break;
+            }
+        }
         
         
         /// The logic of continoution should be implemented here. Researcher will
@@ -359,6 +459,8 @@ namespace sam {
             submissions_pool.push_back(current_submission);
         };
         
+        void extracted(const std::__wrap_iter<sam::GroupData *> &begin, std::__wrap_iter<sam::GroupData *> &end, bool &found_something, sol::basic_function<sol::basic_reference<false>, false> &func, int &selectedOutcome, sam::PolicyType &type);
+        
         /**
          * @brief      Based on the DecisionPreference, it'll select the outcome
          * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece will
@@ -393,8 +495,8 @@ namespace sam {
         
         struct Parameters {
             DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-            std::vector<std::vector<std::string>> decision_policies;
             
+            std::vector<std::vector<std::string>> decision_policies;
             std::vector<std::string> submission_policies;
         };
         
@@ -402,35 +504,14 @@ namespace sam {
         
         explicit ImpatientDecisionMaker(const Parameters &p) {
             
-            
-            lua.open_libraries();
-            
-            lua.new_usertype<GroupData>("GroupData",
-                                        "id", &GroupData::id_,
-                                        "nobs", &GroupData::nobs_,
-                                        "pvalue", &GroupData::pvalue_,
-                                        "effect", &GroupData::effect_,
-                                        "sig", &GroupData::sig_
-                                        );
-            
-            lua.new_usertype<Submission>("Submission",
-                                         "id", &Submission::id_,
-                                         "mean", &Submission::mean,
-                                         "pvalue", &Submission::pvalue,
-                                         "effect", &Submission::effect,
-                                         "sig", &Submission::sig
-                                         );
-     
-            
             spdlog::debug("Registering decision policies...");
 
             for (auto &policies : p.decision_policies) {
 
                 decision_policies.push_back(std::vector<Policy>());
+
                 for (auto &s : policies) {
-                    
-                    std::cout << s << std::endl;
-                    
+                                        
                     auto policy = make_function(s, lua);
                     
                     decision_policies.back().push_back(policy);
@@ -441,7 +522,6 @@ namespace sam {
 
             
             for (auto &s : p.submission_policies) {
-                std::cout << s << std::endl;
                 
                 auto policy = make_function(s, lua);
 
@@ -490,11 +570,40 @@ namespace sam {
 
         struct Parameters {
             DecisionMethod name = DecisionMethod::PatientDecisionMaker;
+            
+            std::vector<std::vector<std::string>> decision_policies;
+            std::vector<std::string> submission_policies;
+            std::vector<std::string> final_decision_policies;
         };
 
         Parameters params;
 
         explicit PatientDecisionMaker(const Parameters &p) : params{p} {
+
+            for (auto &policies : p.decision_policies) {
+
+                decision_policies.push_back(std::vector<Policy>());
+
+                for (auto &s : policies) {
+
+                    auto policy = make_function(s, lua);
+                    
+                    decision_policies.back().push_back(policy);
+                    
+                }
+
+            }
+
+            
+            for (auto &s : p.submission_policies) {
+
+                auto policy = make_function(s, lua);
+
+                submission_policies.push_back(policy);
+            }
+
+
+
         };
 
         virtual PatientDecisionMaker& verdict(Experiment &experiment, DecisionStage stage) override;
@@ -511,12 +620,18 @@ namespace sam {
     void to_json(json& j, const PatientDecisionMaker::Parameters& p) {
         j = json{
             {"_name", p.name},
+            {"decision_policies", p.decision_policies},
+            {"submission_policies", p.submission_policies},
+            {"final_decision_policies", p.final_decision_policies}
         };
     }
 
     inline
     void from_json(const json& j, PatientDecisionMaker::Parameters& p) {
         j.at("_name").get_to(p.name);
+        j.at("decision_policies").get_to(p.decision_policies);
+        j.at("submission_policies").get_to(p.submission_policies);
+        j.at("final_decision_policies").get_to(p.final_decision_policies);
     }
 
     /**

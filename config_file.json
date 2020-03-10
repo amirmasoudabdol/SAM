@@ -39,19 +39,14 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "ImpatientDecisionMaker",
+            "_name": "PatientDecisionMaker",
             "decision_policies": [
                 [
-                    "sig",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
+                    "random"
                 ]
             ],
-            "decision_policies_fallback": [
-                "PreRegOutcome"
+            "final_decision_policies": [
+                "effect > 0"
             ],
             "submission_policies": []
         },
@@ -61,14 +56,14 @@
                     "_name": "SubjectiveOutlierRemoval",
                     "min_observations": 5,
                     "range": [
-                        0.5,
+                        1,
                         4
                     ],
                     "step_size": 0.1
                 }
             ]
         ],
-        "is_phacker": false,
+        "is_phacker": true,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
