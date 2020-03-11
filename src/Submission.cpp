@@ -17,16 +17,18 @@ namespace sam {
         }
         
         id_ = index;
-        nobs = e.groups_[index].nobs_;
-        mean = e.groups_[index].mean_;
-        var = e.groups_[index].var_;
-        sei = e.groups_[index].ses_;
-        statistic = e.groups_[index].stats_;
-        pvalue = e.groups_[index].pvalue_;
-        effect = e.groups_[index].effect_;
-        sig = e.groups_[index].sig_;
-        is_hacked = e.is_hacked;
-        hHistory = e.hacks_history;
+        nobs_ = e.groups_[index].nobs_;
+        mean_ = e.groups_[index].mean_;
+        var_ = e.groups_[index].var_;
+        ses_ = e.groups_[index].ses_;
+        stats_ = e.groups_[index].stats_;
+        pvalue_ = e.groups_[index].pvalue_;
+        effect_ = e.groups_[index].effect_;
+        sig_ = e.groups_[index].sig_;
+//        is_hacked = e.is_hacked;
+//        hHistory = e.hacks_history;
+        
+        group_ = e[index];
     };    
     
     std::vector<std::string> Submission::cols() {
@@ -40,23 +42,29 @@ namespace sam {
 
     Submission::operator std::map<std::string, std::string>() {
             
-            record["simid"] = std::to_string(simid);
-            record["pubid"] = std::to_string(pubid);
-            record["inx"] = std::to_string(id_);
-            record["nobs"] = std::to_string(nobs);
-            record["yi"] = std::to_string(mean);
-            record["vi"] = std::to_string(var);
-            record["sei"] = std::to_string(sei);
-            record["statistic"] = std::to_string(statistic);
-            record["pvalue"] = std::to_string(pvalue);
-            record["effect"] = std::to_string(effect);
-            record["sig"] = std::to_string(sig);
-            record["side"] = std::to_string(eff_side);
-            record["isHacked"] = std::to_string(is_hacked);
-            record["tnobs"] = std::to_string(tnobs);
-            
-            return record;
-        }
+        record["simid"] = std::to_string(simid);
+        record["pubid"] = std::to_string(pubid);
+    
+        record["tnobs"] = std::to_string(tnobs);
+        
+        std::map<std::string, std::string> g_record = group_;
+        record.insert(g_record.begin(), g_record.end());
+    
+//        record["inx"] = std::to_string(group_.id_);
+//        record["nobs"] = std::to_string(group_.nobs_);
+//        record["yi"] = std::to_string(group_.mean_);
+//        record["vi"] = std::to_string(group_.var_);
+//        record["ses"] = std::to_string(group_.ses_);
+//        record["stats"] = std::to_string(group_.stats_);
+//        record["pvalue"] = std::to_string(group_.pvalue_);
+//        record["effect"] = std::to_string(group_.effect_);
+//        record["sig"] = std::to_string(group_.sig_);
+////        record["side"] = std::to_string(eff_side);
+//        record["isHacked"] = std::to_string(group_.is_hacked_);
+        
+        
+        return record;
+    }
 
 
 }

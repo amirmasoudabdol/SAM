@@ -136,7 +136,7 @@ bool DecisionStrategy::willBeSubmitting() {
     
     /// This is signal from selectSubmission and it means that we couldn't find anything!
     /// So, we are not going to submit anything either
-    if (current_submission.id_ == 0) {
+    if (current_submission.group_.id_ == 0) {
         return false;
     }
     

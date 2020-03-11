@@ -52,6 +52,7 @@ public: // Public for now
     double stats_ {0};
     double pvalue_ {0};
     double effect_ {0};
+    int eff_side_ {0};
     bool sig_ {false};
     bool is_test_stats_updated_ {false};
     
@@ -100,28 +101,7 @@ public: // Public for now
         return os;
     }
     
-    operator std::map<std::string, std::string>() {
-        
-        std::map<std::string, std::string> record;
-        
-        record["gid"] = std::to_string(id_);
-        
-        record["nobs"] = std::to_string(nobs_);
-        record["mean"] = std::to_string(mean_);
-        record["var"] = std::to_string(var_);
-        record["stddev"] = std::to_string(stddev_);
-        record["ses"] = std::to_string(ses_);
-        
-        /// This can be replaced with an map.insert() and basically
-        /// just insert TestStrategy's map() operator
-        record["pvalue"] = std::to_string(pvalue_);
-        record["effect"] = std::to_string(effect_);
-        record["sig"] = std::to_string(sig_);
-        
-        record["is_hacked"] = std::to_string(is_hacked_);
-        
-        return std::map<std::string, std::string>();
-    };
+    operator std::map<std::string, std::string>();
  
     void updateStats();
     

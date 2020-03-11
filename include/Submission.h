@@ -16,6 +16,8 @@
 
 namespace sam {
 
+    class GroupData;
+
     class Submission {
 
         std::vector<std::string> columns;
@@ -31,31 +33,37 @@ namespace sam {
         //! Publication ID
         int pubid = 0;
         //! Index of the selected group
-        int id_;
-        //! Number of observation in submitted group
-        int nobs;
-        //! Effect size of the submitted group
-        double mean;
-        double var;
-        //! Standard error of the submitted group
-        double sei;
-        //! Corresponding statistics of the submitted group
-        double statistic;
-        //! _P_-value of the submitted group
-        double pvalue;
-        //! Effect size estimation
-        double effect;
-        //! Indicates if the submission is significant or not
-        bool sig = false;
-        //! The side of the observed effect
-        short eff_side = 1;
-        //! Whether the experiment is hacked or not
-        bool is_hacked = false;
-        //! Stores the ID of hacking strategies applied on the experiment
-        std::vector<int> hHistory;
         
         //! True number of observations
         int tnobs;
+        
+        
+        GroupData group_;
+        
+        int id_;
+        //! Number of observation in submitted group
+        int nobs_;
+        //! Effect size of the submitted group
+        double mean_;
+        
+        double var_;
+        //! Standard error of the submitted group
+        double ses_;
+        //! Corresponding statistics of the submitted group
+        double stats_;
+        //! _P_-value of the submitted group
+        double pvalue_;
+        //! Effect size estimation
+        double effect_;
+        //! Indicates if the submission is significant or not
+        bool sig_;
+//        //! The side of the observed effect
+//        short eff_side = 1;
+//        //! Whether the experiment is hacked or not
+//        bool is_hacked = false;
+//        //! Stores the ID of hacking strategies applied on the experiment
+//        std::vector<int> hHistory;
+        
         
 
 
@@ -70,31 +78,29 @@ namespace sam {
          @return `true` if the Submission is significant, `false` otherwise
          */
         bool isSig() const {
-            return sig;
+            return group_.sig_;
         }
-
-//        friend std::ostream& operator<<(std::ostream& os, const Submission& s);
         
         template<typename OStream>
-        friend OStream &operator<<(OStream &os, const Submission &s){
+        friend OStream &operator<<(OStream &os, const Submission &s) {
             os <<
             s.simid << ",\t" <<
             s.pubid << ",\t" <<
             s.tnobs << ",\t" <<
-            s.id_ << ",\t" <<
-            s.nobs << ",\t" <<
-            s.mean << ",\t" <<
-            s.var << ",\t" <<
-            s.sei << ",\t" <<
-            s.statistic << ",\t" <<
-            s.pvalue << ",\t" <<
-            s.effect << ",\t";
-            os << s.eff_side << ",\t";
-            for (auto &hid : s.hHistory) {
-                os << hid << ";";
-            }
+            s.group_.id_ << ",\t" <<
+            s.group_.nobs_ << ",\t" <<
+            s.group_.mean_ << ",\t" <<
+            s.group_.var_ << ",\t" <<
+            s.group_.ses_ << ",\t" <<
+            s.group_.stats_ << ",\t" <<
+            s.group_.pvalue_ << ",\t" <<
+            s.group_.effect_ << ",\t";
+//            os << s.eff_side << ",\t";
+//            for (auto &hid : s.hHistory) {
+//                os << hid << ";";
+//            }
             os << ",\t";
-            os << s.is_hacked;
+            os << s.group_.is_hacked_;
             
             return os;
         }

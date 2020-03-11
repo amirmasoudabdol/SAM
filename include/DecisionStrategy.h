@@ -319,10 +319,11 @@ namespace sam {
             
             lua.new_usertype<Submission>("Submission",
                                          "id", &Submission::id_,
-                                         "mean", &Submission::mean,
-                                         "pvalue", &Submission::pvalue,
-                                         "effect", &Submission::effect,
-                                         "sig", &Submission::sig
+                                         "nobs", &Submission::nobs_,
+                                         "mean", &Submission::mean_,
+                                         "pvalue", &Submission::pvalue_,
+                                         "effect", &Submission::effect_,
+                                         "sig", &Submission::sig_
                                          );
         };
         

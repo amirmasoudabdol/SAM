@@ -43,8 +43,8 @@ arma::vec FixedEffectEstimator::estimate(vector<Submission> publications) {
 
     for (int i = 0; i < publications.size(); i++) {
         predictors(0, i) = 0;
-        responses(i) = publications[i].mean;
-        weights(i) = 1. / publications[i].var;
+        responses(i) = publications[i].group_.mean_;
+        weights(i) = 1. / publications[i].group_.var_;
     }
 
     // LinearRegression fixed_model(predictors, responses, weights);
@@ -65,9 +65,9 @@ arma::vec RandomEffectEstimator::estimate(vector<Submission> publications) {
     
     for (int i = 0; i < publications.size(); i++) {
         predictors(0, i) = 1;
-        predictors(1, i) = publications[0].mean;
-        responses(i) = publications[i].mean;
-        weights(i) = 1. / publications[i].var;
+        predictors(1, i) = publications[0].group_.mean_;
+        responses(i) = publications[i].group_.mean_;
+        weights(i) = 1. / publications[i].group_.var_;
     }
     
     // LinearRegression random_model(predictors, responses, weights);
