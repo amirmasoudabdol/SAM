@@ -25,7 +25,6 @@ namespace sam {
         
     public:
 
-//        static std::string header(const json &effectslist);
         std::vector<std::string> cols();
 
         //! Simulation ID
