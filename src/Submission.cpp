@@ -15,19 +15,7 @@ namespace sam {
         }else{
             tnobs = 0;
         }
-        
-        id_ = index;
-        nobs_ = e.groups_[index].nobs_;
-        mean_ = e.groups_[index].mean_;
-        var_ = e.groups_[index].var_;
-        ses_ = e.groups_[index].ses_;
-        stats_ = e.groups_[index].stats_;
-        pvalue_ = e.groups_[index].pvalue_;
-        effect_ = e.groups_[index].effect_;
-        sig_ = e.groups_[index].sig_;
-//        is_hacked = e.is_hacked;
-//        hHistory = e.hacks_history;
-        
+                
         group_ = e[index];
     };    
     

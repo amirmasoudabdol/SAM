@@ -38,33 +38,6 @@ namespace sam {
         
         
         GroupData group_;
-        
-        int id_;
-        //! Number of observation in submitted group
-        int nobs_;
-        //! Effect size of the submitted group
-        double mean_;
-        
-        double var_;
-        //! Standard error of the submitted group
-        double ses_;
-        //! Corresponding statistics of the submitted group
-        double stats_;
-        //! _P_-value of the submitted group
-        double pvalue_;
-        //! Effect size estimation
-        double effect_;
-        //! Indicates if the submission is significant or not
-        bool sig_;
-//        //! The side of the observed effect
-//        short eff_side = 1;
-//        //! Whether the experiment is hacked or not
-//        bool is_hacked = false;
-//        //! Stores the ID of hacking strategies applied on the experiment
-//        std::vector<int> hHistory;
-        
-        
-
 
         Submission() = default;
         Submission(Experiment& e, const int &index);

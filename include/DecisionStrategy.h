@@ -318,12 +318,12 @@ namespace sam {
                                         );
             
             lua.new_usertype<Submission>("Submission",
-                                         "id", &Submission::id_,
-                                         "nobs", &Submission::nobs_,
-                                         "mean", &Submission::mean_,
-                                         "pvalue", &Submission::pvalue_,
-                                         "effect", &Submission::effect_,
-                                         "sig", &Submission::sig_
+                                         "id", sol::property([](Submission &s) { return s.group_.id_; }),
+                                         "nobs", sol::property([](Submission &s) { return s.group_.nobs_; }),
+                                         "mean", sol::property([](Submission &s) { return s.group_.mean_; }),
+                                         "pvalue", sol::property([](Submission &s) { return s.group_.pvalue_; }),
+                                         "effect", sol::property([](Submission &s) { return s.group_.effect_; }),
+                                         "sig", sol::property([](Submission &s) { return s.group_.sig_; })
                                          );
         };
         
