@@ -21,6 +21,10 @@ enum class GroupType {
 
 class GroupData {
     
+    //! Measurements
+    arma::Row<double> measurements_;
+    bool is_measurements_initd_ {false};
+    
 public: // Public for now
     
     int id_;
@@ -50,18 +54,12 @@ public: // Public for now
     double effect_ {0};
     bool sig_ {false};
     bool is_test_stats_updated_ {false};
-        
-    //! Measurements
-    arma::Row<double> measurements_;
-    bool is_measurements_initd_ {false};
     
     /// --- Hacking Meta
     bool is_hacked_ {false};
     std::vector<HackingMethod> hacking_history_;
     int n_added_obs {0};
     int n_removed_obs {0};
-    
-//public:
     
     GroupData() {};
     
@@ -77,9 +75,12 @@ public: // Public for now
     
     /// Getter / Setter
     
-    arma::Row<double> measurements() const { return measurements_; };
-    void set_measurements(arma::Row<double> &meas) {
+    arma::Row<double>& measurements() { return measurements_; };
+    const arma::Row<double>& measurements() const {return measurements_; };
+    
+    void set_measurements(const arma::Row<double> meas) {
         measurements_ = meas;
+        nobs_ = meas.size();
         is_stats_updated_ = false;
     }
     
@@ -101,23 +102,23 @@ public: // Public for now
     
     operator std::map<std::string, std::string>() {
         
-        std::map<std::string, std::string> out_map;
+        std::map<std::string, std::string> record;
         
-        out_map["gid"] = std::to_string(id_);
+        record["gid"] = std::to_string(id_);
         
-        out_map["nobs"] = std::to_string(nobs_);
-        out_map["mean"] = std::to_string(mean_);
-        out_map["var"] = std::to_string(var_);
-        out_map["stddev"] = std::to_string(stddev_);
-        out_map["ses"] = std::to_string(ses_);
+        record["nobs"] = std::to_string(nobs_);
+        record["mean"] = std::to_string(mean_);
+        record["var"] = std::to_string(var_);
+        record["stddev"] = std::to_string(stddev_);
+        record["ses"] = std::to_string(ses_);
         
         /// This can be replaced with an map.insert() and basically
         /// just insert TestStrategy's map() operator
-        out_map["pvalue"] = std::to_string(pvalue_);
-        out_map["effect"] = std::to_string(effect_);
-        out_map["sig"] = std::to_string(sig_);
+        record["pvalue"] = std::to_string(pvalue_);
+        record["effect"] = std::to_string(effect_);
+        record["sig"] = std::to_string(sig_);
         
-        out_map["is_hacked"] = std::to_string(is_hacked_);
+        record["is_hacked"] = std::to_string(is_hacked_);
         
         return std::map<std::string, std::string>();
     };

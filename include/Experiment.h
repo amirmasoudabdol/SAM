@@ -85,9 +85,14 @@ namespace sam {
         };
         
         
-        GroupData& operator[](int i) {
-            return groups_[i];
-        };
+        GroupData& operator[](std::size_t idx) { return groups_[idx]; };
+        const GroupData& operator[](std::size_t idx) const { return groups_[idx]; };
+        
+        GroupData& get_group(std::size_t idx) {return groups_[idx]; };
+        const GroupData& get_group(std::size_t idx) const {return groups_[idx]; };
+        
+        auto begin() {return groups_.begin(); };
+        auto end() {return groups_.end(); };
         
         /**
          Runs the Test Strategy
@@ -99,7 +104,7 @@ namespace sam {
 
          @param t A reference to a Test Strategy instance
          
-         TODO: I think I need to re-evalute passing a shared_ptr by reference.
+         TODO: I think I need to re-evaluate passing a shared_ptr by reference.
          */
         void setTestStrategy(std::shared_ptr<TestStrategy> &ts){
             test_strategy = ts;

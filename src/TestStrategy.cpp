@@ -51,7 +51,7 @@ void TTest::run(Experiment* experiment) {
     
     // The first group is always the control group
     for (int i{experiment->setup.nd()}, d{0};
-         i < experiment->groups_.size();   // technically experiment->setup.ng();
+         i < experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
         // This is not perfect, basically I need to check the population `vars`
@@ -66,28 +66,22 @@ void TTest::run(Experiment* experiment) {
 //                                               params.alpha, params.alternative);
 //        }else {
             // EQUAL SD
-            res = two_samples_t_test_equal_sd(experiment->groups_[d].mean_,
-                                               experiment->groups_[d].stddev_,
-                                               experiment->groups_[d].nobs_,
-                                               experiment->groups_[i].mean_,
-                                               experiment->groups_[i].stddev_,
-                                               experiment->groups_[i].nobs_,
+            res = two_samples_t_test_equal_sd((*experiment)[d].mean_,
+                                               (*experiment)[d].stddev_,
+                                               (*experiment)[d].nobs_,
+                                               (*experiment)[i].mean_,
+                                               (*experiment)[i].stddev_,
+                                               (*experiment)[i].nobs_,
                                                params.alpha, params.alternative);
         
         
         
 //        }
+                
+        (*experiment)[i].stats_ = res.statistic;
+        (*experiment)[i].pvalue_ = res.pvalue;
+        (*experiment)[i].sig_ = res.sig;
         
-        
-        // experiment->statistics[i] = res.statistic;
-        // experiment->pvalues[i] = res.pvalue;
-        // experiment->sigs[i] = res.sig;
-        
-        experiment->groups_[i].stats_ = res.statistic;
-        experiment->groups_[i].pvalue_ = res.pvalue;
-        experiment->groups_[i].sig_ = res.sig;
-        
-        spdlog::debug(experiment->groups_[i]);
     }
 }
 
@@ -98,7 +92,7 @@ void YuenTest::run(Experiment* experiment) {
     static TestStrategy::TestResult res;
     
     for (int i{experiment->setup.nd()}, d{0};
-         i < experiment->groups_.size();
+         i < experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
 //        if (experiment->measurements[d].size() == experiment->measurements[i].size()){
@@ -110,8 +104,8 @@ void YuenTest::run(Experiment* experiment) {
 //                                       params.trim,
 //                                       0);
 //        }else{
-            res = yuen_t_test_two_samples(experiment->groups_[d].measurements_,
-                                            experiment->groups_[i].measurements_,
+            res = yuen_t_test_two_samples((*experiment)[d].measurements(),
+                                            (*experiment)[i].measurements(),
                                             params.alpha,
                                             params.alternative,
                                             0.2,
@@ -122,9 +116,9 @@ void YuenTest::run(Experiment* experiment) {
         // experiment->pvalues[i] = res.pvalue;
         // experiment->sigs[i] = res.sig;
 
-        experiment->groups_[i].stats_ = res.statistic;
-        experiment->groups_[i].pvalue_ = res.pvalue;
-        experiment->groups_[i].sig_ = res.sig;
+        (*experiment)[i].stats_ = res.statistic;
+        (*experiment)[i].pvalue_ = res.pvalue;
+        (*experiment)[i].sig_ = res.sig;
     }
 }
 
@@ -136,7 +130,7 @@ void WilcoxonTest::run(Experiment* experiment) {
     static TestStrategy::TestResult res;
     
     for (int i{experiment->setup.nd()}, d{0};
-         i < experiment->groups_.size();
+         i < experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
 //        if (experiment->measurements[d].size() == experiment->measurements[i].size()){
@@ -148,8 +142,8 @@ void WilcoxonTest::run(Experiment* experiment) {
 //                                       params.trim,
 //                                       0);
 //        }else{
-            res = wilcoxon_test(experiment->groups_[d].measurements_,
-                                    experiment->groups_[i].measurements_,
+            res = wilcoxon_test((*experiment)[d].measurements(),
+                                    (*experiment)[i].measurements(),
                                     1,
                                     params.alpha,
                                     params.alternative);
@@ -159,9 +153,9 @@ void WilcoxonTest::run(Experiment* experiment) {
         // experiment->pvalues[i] = res.pvalue;
         // experiment->sigs[i] = res.sig;
 
-        experiment->groups_[i].stats_ = res.statistic;
-        experiment->groups_[i].pvalue_ = res.pvalue;
-        experiment->groups_[i].sig_ = res.sig;
+        (*experiment)[i].stats_ = res.statistic;
+        (*experiment)[i].pvalue_ = res.pvalue;
+        (*experiment)[i].sig_ = res.sig;
     }
 }
 

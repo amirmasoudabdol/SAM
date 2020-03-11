@@ -67,11 +67,12 @@ void PersistenceManager::Reader::read_raw_data(Experiment *expr) {
                                 the experiment size.");
     
     
-    for (int r = 0; r < rows.size(); r++) {
-        for (auto &col : reader->cols()) {
-            expr->groups_[std::stoi(col)].measurements_[r] = std::stod(rows[r][col]);
-        }
-    }
+    /// TODO: Re-implement me!
+//    for (int r = 0; r < rows.size(); r++) {
+//        for (auto &col : reader->cols()) {
+//            expr[std::stoi(col)].measurements_[r] = std::stod(rows[r][col]);
+//        }
+//    }
     
 }
 
@@ -136,14 +137,14 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
             row["group"] = std::to_string(g);
             row["dv"] = std::to_string(d);
             row["onobs"] = std::to_string(experiment->setup.nobs()[g]);
-            row["nobs"] = std::to_string(experiment->groups_[g].nobs_);
-            row["means"] = std::to_string(experiment->groups_[g].mean_);
-            row["vars"] = std::to_string(experiment->groups_[g].var_);
-            row["stddev"] = std::to_string(experiment->groups_[g].stddev_);
-            row["ses"] = std::to_string(experiment->groups_[g].ses_);
-            row["statistics"] = std::to_string(experiment->groups_[g].stats_);
-            row["pvalues"] = std::to_string(experiment->groups_[g].pvalue_);
-            row["effects"] = std::to_string(experiment->groups_[g].effect_);
+            row["nobs"] = std::to_string((*experiment)[g].nobs_);
+            row["means"] = std::to_string((*experiment)[g].mean_);
+            row["vars"] = std::to_string((*experiment)[g].var_);
+            row["stddev"] = std::to_string((*experiment)[g].stddev_);
+            row["ses"] = std::to_string((*experiment)[g].ses_);
+            row["statistics"] = std::to_string((*experiment)[g].stats_);
+            row["pvalues"] = std::to_string((*experiment)[g].pvalue_);
+            row["effects"] = std::to_string((*experiment)[g].effect_);
                         
             writer->write_row(row);
         }

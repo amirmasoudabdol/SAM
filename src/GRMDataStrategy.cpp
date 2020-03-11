@@ -21,11 +21,14 @@ void GRMDataStrategy::genData(Experiment* experiment) {
         betas.imbue([&]() { return Random::get(params.diff_dists.value()[0]); });
     
     for (int g{0}; g < experiment->setup.ng(); ++g) {
-        experiment->groups_[g].measurements_.resize(experiment->setup.nobs()[g]);
+//        (*experiment)[g].measurements_.resize(experiment->setup.nobs()[g]);
+        
+        arma::Row<double> data(experiment->setup.nobs()[g]);
         
         double theta {0};
         do {
-            experiment->groups_[g].measurements_.imbue(
+            
+            data.imbue(
                 [&](){
                     /// Improvement: It is probably a good idea to make a function out of this, and return arma::Row<>
                     if (params.abil_dists)
@@ -33,10 +36,13 @@ void GRMDataStrategy::genData(Experiment* experiment) {
                     
                     return generate_sum_of_scores(theta);
                 });
+            
+            
         
         // This makes sure that I don't have a totally unanswered test
-        } while (!arma::any(experiment->groups_[g].measurements_));
+        } while (!arma::any(data));
         
+        (*experiment)[g].set_measurements(data);
     }
     
 }

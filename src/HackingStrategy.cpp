@@ -136,9 +136,9 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     // Add new observations to first `ng` group. I don't iterate over everything in
     // the `measurements` because they might actually be the results of `pooling`.
     // Therefore, I only add new values to original groups.
-    std::for_each(experiment->groups_.begin(), experiment->groups_.end(),
+    std::for_each(experiment->begin(), experiment->end(),
                       [&new_observations, &i](auto &group) {
-                          group.measurements_.insert_cols(group.measurements_.size(), new_observations[i++]);
+                          group.measurements().insert_cols(group.measurements().size(), new_observations[i++]);
                       });
     
 }
@@ -201,7 +201,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
     /// outlier removal is still being done in all groups
     for (int i = 0; i < experiment->setup.ng(); ++i) {
         
-        auto &row = experiment->groups_[i].measurements_;
+        auto &row = (*experiment)[i].measurements();
         
         // At least one row has less than `min_observations`
         if (row.size() <= params.min_observations)
@@ -214,7 +214,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
             row = sort(row);
 
         
-        standaraized = arma::abs(row - experiment->groups_[i].mean_) / experiment->groups_[i].stddev_;
+        standaraized = arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
                 
         // Finding the outliers, returning only `n` of them
         arma::uvec inx = arma::find(standaraized > d, n, "first");
@@ -249,9 +249,9 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
         
         /// Removing the outliers from control groups as well.
         for (int i{0}; i < experiment->setup.ng(); ++i){
-            auto &row = experiment->groups_[i].measurements_;
+            auto &row = (*experiment)[i].measurements();
             
-            arma::rowvec standaraized = arma::abs(row - experiment->groups_[i].mean_) / experiment->groups_[i].stddev_;
+            arma::rowvec standaraized = arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
                     
             /// Finding the outliers
             arma::uvec inx = arma::find(standaraized > k);
@@ -260,6 +260,7 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
             if ((row.n_elem - inx.n_elem) <= params.min_observations)
                 inx = inx.head(row.n_elem - params.min_observations);
             
+            // FIX: This doesn't allow me to return `const` ref to row
             row.shed_cols(inx);
         }
         
@@ -301,7 +302,7 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     }
     
     // TODO: Improve me! This is very ugly and prune to error
-    int new_ng = experiment->groups_.size();
+    int new_ng = experiment->setup.ng();
     experiment->initResources(new_ng);
     
     experiment->calculateStatistics();

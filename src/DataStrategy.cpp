@@ -71,12 +71,9 @@ void LinearModelStrategy::genData(Experiment* experiment)  {
         }
     }
     
-//    std::generate(experiment->measurements.begin(), experiment->measurements.end(),
-//                  [sample, i = 0]() mutable {return sample.row(i++);});
-    
     // This is ugly but it should work
     for (int g {0}; g < experiment->setup.ng(); ++g) {
-        experiment->groups_[g].measurements_ = sample.row(g).head(experiment->setup.nobs()[g]);
+        (*experiment)[g].set_measurements(sample.row(g).head(experiment->setup.nobs()[g]));
     }
         
 }
