@@ -120,7 +120,7 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
             cols.push_back("means");
             cols.push_back("vars");
             cols.push_back("stddev");
-            cols.push_back("ses");
+            cols.push_back("sei");
             cols.push_back("statistics");
             cols.push_back("pvalues");
             cols.push_back("effects");
@@ -141,7 +141,7 @@ void PersistenceManager::Writer::write(Experiment *experiment, string_view mode,
             row["means"] = std::to_string((*experiment)[g].mean_);
             row["vars"] = std::to_string((*experiment)[g].var_);
             row["stddev"] = std::to_string((*experiment)[g].stddev_);
-            row["ses"] = std::to_string((*experiment)[g].ses_);
+            row["sei"] = std::to_string((*experiment)[g].sei_);
             row["statistics"] = std::to_string((*experiment)[g].stats_);
             row["pvalues"] = std::to_string((*experiment)[g].pvalue_);
             row["effects"] = std::to_string((*experiment)[g].effect_);

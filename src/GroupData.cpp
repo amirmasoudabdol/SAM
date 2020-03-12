@@ -15,7 +15,7 @@ namespace sam {
             mean_ = arma::mean(measurements_);
             var_ = arma::var(measurements_);
             stddev_ = arma::stddev(measurements_);
-            ses_ = sqrt( var_ / nobs_ );
+            sei_ = sqrt( var_ / nobs_ );
             
 //        }
         
@@ -31,7 +31,7 @@ namespace sam {
        record["mean"] = std::to_string(mean_);
        record["var"] = std::to_string(var_);
        record["stddev"] = std::to_string(stddev_);
-       record["ses"] = std::to_string(ses_);
+       record["sei"] = std::to_string(sei_);
        
        /// This can be replaced with an map.insert() and basically
        /// just insert TestStrategy's map() operator

@@ -43,7 +43,7 @@ public: // Public for now
     double mean_ {0};
     double var_ {0};
     double stddev_ {0};
-    double ses_ {0};
+    double sei_ {0};
     
     bool is_stats_updated_ {false};
     
@@ -92,7 +92,7 @@ public: // Public for now
                 " mean: " << data.mean_ <<
                 " var: " << data.var_ <<
                 " stddev: " << data.stddev_ <<
-                " ses: " << data.ses_ <<
+                " sei: " << data.sei_ <<
                 " stats: " << data.stats_ <<
                 " pvalue: " << data.pvalue_ <<
                 " effect: " << data.effect_ <<

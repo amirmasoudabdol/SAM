@@ -63,7 +63,7 @@ namespace sam {
             s.group_.nobs_ << ",\t" <<
             s.group_.mean_ << ",\t" <<
             s.group_.var_ << ",\t" <<
-            s.group_.ses_ << ",\t" <<
+            s.group_.sei_ << ",\t" <<
             s.group_.stats_ << ",\t" <<
             s.group_.pvalue_ << ",\t" <<
             s.group_.effect_ << ",\t";
