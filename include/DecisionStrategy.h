@@ -105,8 +105,6 @@ namespace sam {
                 {"!=", "not_equal"}
             };
 
-         
-            std::cout << s << std::endl;
             
             PolicyType policy_type;
             sol::function policy_func;
@@ -118,8 +116,6 @@ namespace sam {
                 
                 auto var_name = s.substr(open_par+1, close_par - open_par - 1);
                 
-                std::cout << var_name << std::endl;
-                
                 auto f_name = fmt::format("min_{}", var_name);
                 auto f_def = fmt::format(lua_temp_scripts["min_script"],
                                                      f_name, var_name, var_name);
@@ -129,16 +125,12 @@ namespace sam {
                 policy_type = PolicyType::Min;
                 policy_func = lua[f_name];
                 
-                std::cout << f_def << std::endl;
-                
             }else if (s.find("max") != std::string::npos) {
                 
                 auto open_par = s.find("(");
                 auto close_par = s.find(")");
                 
                 auto var_name = s.substr(open_par+1, close_par - open_par - 1);
-                
-                std::cout << var_name << std::endl;
                 
                 auto f_name = fmt::format("max_{}", var_name);
                 auto f_def = fmt::format(lua_temp_scripts["max_script"],
@@ -148,8 +140,6 @@ namespace sam {
                 
                 policy_type = PolicyType::Max;
                 policy_func = lua[f_name];
-                
-                std::cout << f_def << std::endl;
             }else if (s.find("sig") != std::string::npos) {
                 
                 auto f_name = "cond_sig";
@@ -161,15 +151,11 @@ namespace sam {
                 
                 policy_type = PolicyType::Comp;
                 policy_func = lua[f_name];
-                
-                std::cout << f_def << std::endl;
             
             } else if (s.find("random") != std::string::npos) {
             
                 policy_type = PolicyType::Random;
                 policy_func = sol::function();
-            
-                std::cout << "random" << std::endl;
             
             } else if (s.find("first") != std::string::npos) {
                 
@@ -183,8 +169,6 @@ namespace sam {
                 
                 policy_type = PolicyType::First;
                 policy_func = lua[f_name];
-            
-                std::cout << "first" << std::endl;
             
             } else if (std::any_of(cops.begin(), cops.end(),
                                   [&s](const auto &op){ return s.find(op.first) != std::string::npos; })) {
@@ -207,8 +191,6 @@ namespace sam {
                 
                 policy_type = PolicyType::Comp;
                 policy_func = lua[f_name];
-                
-                std::cout << f_def << std::endl;
                 
             }
             
