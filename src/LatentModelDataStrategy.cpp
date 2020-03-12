@@ -15,8 +15,6 @@ using namespace sam;
  the ExperimentSteup.
  Beside `experiment->measurements`, LatentDataStrategy populates the `experiment->items` as well.
  
- TODO: Link to the illustration that explain the model
-
  */
 void LatentDataStrategy::genData(Experiment *experiment)  {
 
@@ -27,29 +25,24 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //   int nrows = experiment->setup.nrows_;            // nc * nd * ni
 
 
-   // TODO: Check Me!
 //   int nobs = experiment->setup.getTrueValueOf("nobs.ma")();
 //
 //    // This is correct, you have one a for each item.
 //    gsl_vector* lambda = gsl_vector_alloc(ni);
-//    // FIXME: Commented during the migration
 ////    lambda->data = experiment->setup.factorLoadings.data();
 //
 //    // DV ---------------------------------------------
 //    // Mean of each dv
 //    gsl_vector* dvMeans = gsl_vector_calloc(ng);
-//    // FIXME: Commented during the migration
 ////    dvMeans->data = experiment->setup.getTrueValueOf("means.dat")();
 //
 //    gsl_matrix* dvSigma = gsl_matrix_alloc(ng, ng);
-//    // FIXME: Commented during the migration
 ////    dvSigma->data = flatten(experiment->setup.getTrueValueOf("sigm")).data();
 //    // ------------------------------------------------
 //
 //    gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
 //
 //    // Generating factor values
-//    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(dvMeans, dvSigma, factorScores);
 
 //   auto factorScores = this->main_rng_stream->mvnorm(experiment->setup.getTrueValueOf("mean"),
@@ -60,13 +53,11 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 //    gsl_vector* allErrorMeans = gsl_vector_calloc(nrows);
 //
 //    gsl_matrix* allErrorsSigma = gsl_matrix_calloc(nrows, nrows);
-//    // FIXME: Commented during the migration
 ////    allErrorsSigma->data = flatten(experiment->setup.errorCov).data();
 //
 //    gsl_matrix* allErrors = gsl_matrix_calloc(nrows, nobs);
 //
 //    // Generating errors
-//    // FIXME: Commented during the migration
 ////    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma, allErrors);
 
 //   auto allErrors = this->main_rng_stream->mvnorm(experiment->setup.errorMeans,
@@ -164,7 +155,6 @@ void LatentDataStrategy::genData(Experiment *experiment)  {
 
 std::vector<arma::Row<double> >
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) {
-    // FIXME: Commented during the migration
 //    return this->secRngStream->mvnorm(experiment->setup.getTrueValueOf("mean"), experiment->setup.getTrueValueOf("sigm"), n_new_obs);
     return std::vector<arma::Row<double>>();
 }
