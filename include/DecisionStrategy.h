@@ -429,8 +429,6 @@ namespace sam {
             submissions_pool.push_back(current_submission);
         };
         
-        void extracted(const std::__wrap_iter<sam::GroupData *> &begin, std::__wrap_iter<sam::GroupData *> &end, bool &found_something, sol::basic_function<sol::basic_reference<false>, false> &func, int &selectedOutcome, sam::PolicyType &type);
-        
         /**
          * @brief      Based on the DecisionPreference, it'll select the outcome
          * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece will
