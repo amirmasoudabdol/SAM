@@ -318,17 +318,17 @@ namespace sam {
          */
         ResearcherBuilder& chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool, int n_group, int m_strategies) {
             
-            for (auto &group : researcher.hacking_strategies) {
-                
-                for (int i = 0; i < m_strategies; i++) {
-                    // TEST ME!
-                    // TODO: I'm not sure if I want to have this builder
-//                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, hacking_strategies_pool.size() - 1));
-                    // I think this should use the index from the list! Test it!
-//                    group.push_back(HackingStrategy::build(h_method.value()));
-                }
-                
-            }
+//            for (auto &group : researcher.hacking_strategies) {
+//                
+//                for (int i = 0; i < m_strategies; i++) {
+//                    // TEST ME!
+//                    // TODO: I'm not sure if I want to have this builder
+////                    auto h_method = enum_cast<HackingMethod>(Random::get<int>(0, hacking_strategies_pool.size() - 1));
+//                    // I think this should use the index from the list! Test it!
+////                    group.push_back(HackingStrategy::build(h_method.value()));
+//                }
+//                
+//            }
             
             researcher.is_hacker = true;
             return *this;

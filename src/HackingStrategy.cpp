@@ -284,32 +284,32 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
  */
 void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStrategy) {
     
-    spdlog::debug("Group Pooling");
-    
-    if (experiment->setup.nc() < 2){
-        /// TODO: This should probably not be a throw and just a
-        /// message. It's not a big deal after all, and I don't want to stop the program from running
-        throw std::domain_error("There is not enough groups for pooling.");
-    }
-    
-    // Pooling groups together
-    for (auto &r : params.nums){
-        pool(experiment, r);
-    }
-    
-    // TODO: Improve me! This is very ugly and prune to error
-    int new_ng = experiment->setup.ng();
-    
-    std::logic_error("I'm broken! Don't use me yet!");
-    experiment->initResources();
-    
-    experiment->calculateStatistics();
-    experiment->calculateEffects();
-    experiment->runTest();
-    
-    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking()){
-        return ;
-    }
+//    spdlog::debug("Group Pooling");
+//    
+//    if (experiment->setup.nc() < 2){
+//        /// TODO: This should probably not be a throw and just a
+//        /// message. It's not a big deal after all, and I don't want to stop the program from running
+//        throw std::domain_error("There is not enough groups for pooling.");
+//    }
+//    
+//    // Pooling groups together
+//    for (auto &r : params.nums){
+//        pool(experiment, r);
+//    }
+//    
+//    // TODO: Improve me! This is very ugly and prune to error
+//    int new_ng = experiment->setup.ng();
+//    
+//    std::logic_error("I'm broken! Don't use me yet!");
+//    experiment->initResources();
+//    
+//    experiment->calculateStatistics();
+//    experiment->calculateEffects();
+//    experiment->runTest();
+//    
+//    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking()){
+//        return ;
+//    }
 
 }
 
