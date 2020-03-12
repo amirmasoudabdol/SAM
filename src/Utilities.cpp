@@ -4,7 +4,6 @@
 
 #include "Utilities.h"
 #include "baaraan.hpp"
-#include "utils/truncated_normal_distribution.h"
 
 using Generator = std::mt19937;
 
@@ -139,11 +138,12 @@ Distribution make_distribution(json const &j) {
     
     // Custom Distributions
     if (distributionName == "truncated_normal_distribution") {
-        return truncated_normal_distribution<>(
-                    truncated_normal_distribution<>::param_type(j.at("mean"),
-                                                                   j.at("stddev"),
-                                                                   j.at("min"),
-                                                                   j.at("max")));
+        return baaraan::truncated_normal_distribution<>(
+                    baaraan::truncated_normal_distribution<>::param_type(j.at("mean"),
+                                                                           j.at("stddev"),
+                                                                           j.at("min"),
+                                                                           j.at("max")));
+        
     }
 
 /**
