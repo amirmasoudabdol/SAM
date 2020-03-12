@@ -29,7 +29,7 @@ Experiment::Experiment(json &experiment_config) {
     this->effect_strategy = EffectStrategy::build(experiment_config["effect_strategy"]);
     
     // Initializing the memory
-    initResources(setup.ng());
+    initResources();
     
     
     
@@ -44,18 +44,23 @@ void Experiment::runTest(){
 }
 
 void Experiment::initExperiment() {
-    initResources(setup.ng());
+    initResources();
     generateData();
     calculateStatistics();
     calculateEffects();
 }
 
-// TODO: Still not happy with this!
-void Experiment::initResources(int len) {
+void Experiment::initResources() {
     
     // GroupData
-    groups_.resize(len);
-    for (int g {0}; g < len; ++g) {
+    groups_.resize(setup.ng());
+    for (int g {0}; g < setup.ng(); ++g) {
+        
+        if (g < setup.nd())
+            groups_[g].gtype = GroupType::Control;
+        else
+            groups_[g].gtype = GroupType::Treatment;
+        
         groups_[g].id_ = g;
     }
     

@@ -78,7 +78,7 @@ void Researcher::prepareResearch() {
     experiment->randomize();
     
     // Allocating memory
-    experiment->initResources(experiment->setup.ng());
+    experiment->initResources();
     
     spdlog::debug("Generating Data");
     

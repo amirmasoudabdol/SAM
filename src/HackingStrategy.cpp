@@ -303,7 +303,9 @@ void GroupPooling::perform(Experiment *experiment, DecisionStrategy *decisionStr
     
     // TODO: Improve me! This is very ugly and prune to error
     int new_ng = experiment->setup.ng();
-    experiment->initResources(new_ng);
+    
+    std::logic_error("I'm broken! Don't use me yet!");
+    experiment->initResources();
     
     experiment->calculateStatistics();
     experiment->calculateEffects();

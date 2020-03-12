@@ -10,14 +10,13 @@ namespace sam {
         
         /// TODO: Check if is_stats_updated, if so, don't recalculate
         
-//        if (not is_stats_updated_) {
+        if (not is_stats_updated_) {
             nobs_ = measurements_.size();
             mean_ = arma::mean(measurements_);
             var_ = arma::var(measurements_);
             stddev_ = arma::stddev(measurements_);
             sei_ = sqrt( var_ / nobs_ );
-            
-//        }
+        }
         
     }
 

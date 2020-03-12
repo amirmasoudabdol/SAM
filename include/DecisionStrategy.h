@@ -640,7 +640,8 @@ namespace sam {
      @ingroup DecisionStrategies
      @brief A placeholder for empty decision strategy.
      
-     @todo This should not be allowed actually. Some refactoring and cleanup is needed.
+     @note This is currently being used during the PreProcessing where I basically don't
+     want to intervene with the process, and let it run
      */
     class NoDecision : public DecisionStrategy {
         

@@ -70,7 +70,7 @@ namespace sam {
 
             effect_strategy = std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
             
-            initResources(setup.ng());
+            initResources();
         };
         
         
@@ -81,7 +81,7 @@ namespace sam {
                    std::shared_ptr<EffectStrategy> &efs) :
         setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs}
         {
-            initResources(setup.ng());
+            initResources();
         };
         
         
@@ -133,7 +133,7 @@ namespace sam {
         };
 
         // Initialize the Experiment
-        void initResources(int len);
+        void initResources();
         
         
         /**

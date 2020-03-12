@@ -12,6 +12,7 @@
 namespace sam {
 
 class TestStrategy;
+class EffectStrategy;
 enum class HackingMethod;
 
 enum class GroupType {
@@ -105,7 +106,10 @@ public: // Public for now
  
     void updateStats();
     
-    void testAgaist(GroupData &other_group, TestStrategy &test_strategy);
+    void testAgaist(const GroupData &other_group, TestStrategy &test_strategy);
+    
+    void effectComparedTo(const GroupData &other_group, EffectStrategy &effect_strategy);
+    
 };
 
 }
