@@ -70,10 +70,6 @@ public: // Public for now
     
     GroupData(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
     
-    GroupData(int n): nobs_{n} {
-        measurements_.resize(n);
-    };
-    
     GroupData(arma::Row<double> &data) : measurements_{data} {
         updateStats();
     };
