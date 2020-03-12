@@ -23,9 +23,9 @@ TestStrategy::~TestStrategy() {
 };
 
 
-std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
+std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config) {
     
-    if (test_strategy_config["_name"] == "TTest"){
+    if (test_strategy_config["_name"] == "TTest") {
         
         auto params = test_strategy_config.get<TTest::Parameters>();
         return std::make_unique<TTest>(params);
@@ -35,7 +35,7 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config){
         auto params = test_strategy_config.get<YuenTest::Parameters>();
         return std::make_unique<YuenTest>(params);
         
-    } else if (test_strategy_config["_name"] == "WilcoxonTest"){
+    } else if (test_strategy_config["_name"] == "WilcoxonTest") {
         auto params = test_strategy_config.get<WilcoxonTest::Parameters>();
         return std::make_unique<WilcoxonTest>(params);
     }
@@ -55,7 +55,7 @@ void TTest::run(Experiment* experiment) {
          ++i, d%=experiment->setup.nd()) {
         
         // This is not perfect, basically I need to check the population `vars`
-//        if ((isgreater(experiment->stddev[d], experiment->stddev[i]) or isless(experiment->stddev[d], experiment->stddev[i]))){
+//        if ((isgreater(experiment->stddev[d], experiment->stddev[i]) or isless(experiment->stddev[d], experiment->stddev[i]))) {
 //
 //            res = two_samples_t_test_unequal_sd(experiment->means[d],
 //                                               experiment->stddev[d],
@@ -95,7 +95,7 @@ void YuenTest::run(Experiment* experiment) {
          i < experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
-//        if (experiment->measurements[d].size() == experiment->measurements[i].size()){
+//        if (experiment->measurements[d].size() == experiment->measurements[i].size()) {
 //
 //            res = yuen_t_test_paired(experiment->measurements[d],
 //                                       experiment->measurements[i],
@@ -133,7 +133,7 @@ void WilcoxonTest::run(Experiment* experiment) {
          i < experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
-//        if (experiment->measurements[d].size() == experiment->measurements[i].size()){
+//        if (experiment->measurements[d].size() == experiment->measurements[i].size()) {
 //
 //            res = yuen_t_test_paired(experiment->measurements[d],
 //                                       experiment->measurements[i],
@@ -227,7 +227,7 @@ namespace sam {
 
     TestStrategy::TestResult t_test(const arma::Row<double> &dt1,
                                     const arma::Row<double> &dt2,
-                                    double alpha, TestStrategy::TestAlternative alternative){
+                                    double alpha, TestStrategy::TestAlternative alternative) {
         return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(),
                       arma::mean(dt2), arma::stddev(dt2), dt2.size(),
                       alpha, alternative, true);
@@ -237,11 +237,11 @@ namespace sam {
     TestStrategy::TestResult
     t_test(double Sm1, double Sd1, double Sn1,
            double Sm2, double Sd2, double Sn2,
-           double alpha, TestStrategy::TestAlternative alternative, bool equal_var = false){
+           double alpha, TestStrategy::TestAlternative alternative, bool equal_var = false) {
 
         using namespace sam;
 
-        if (Sm1 == 0.){
+        if (Sm1 == 0.) {
             return single_sample_t_test(Sm1,
                                         Sm2, Sd2, Sn2,
                                         alpha, alternative);
@@ -302,43 +302,31 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (alternative == TestStrategy::TestAlternative::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided) {
             // Mean != M
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha){
-                // Alternative "NOT REJECTED"
+            if(p < alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else  // Alternative "REJECTED"
                 sig = false;
-            }
         }
 
-        if (alternative == TestStrategy::TestAlternative::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater) {
             // Mean  > M
             p = cdf(dist, t_stat);
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
+            if(p > alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else  // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Less){
+        if (alternative == TestStrategy::TestAlternative::Less) {
             // Mean  < M
             p = cdf(complement(dist, t_stat));
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
+            if(p > alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else  // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
         int eff_side = std::copysign(1.0, M - Sm);
@@ -378,7 +366,7 @@ namespace sam {
         // NOTE: I had to do this, I don't want my simulations fail.
         // While this is not perfect, it allows me to handle an edge case
         // SAM should not throw and should continue working.
-        if (!(isgreater(sp, 0) or isless(sp, 0))){
+        if (!(isgreater(sp, 0) or isless(sp, 0))) {
             // Samples are almost equal and elements are constant
             sp += std::numeric_limits<double>::epsilon();
         }
@@ -396,41 +384,32 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (alternative == TestStrategy::TestAlternative::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided) {
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha){
-                // Alternative "NOT REJECTED"
+            if(p < alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater) {
             // Sample 1 Mean <  Sample 2 Mean
             p = cdf(dist, t_stat);
-            if(p< alpha){
-                // Alternative "NOT REJECTED"
+            if(p< alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Less){
+        if (alternative == TestStrategy::TestAlternative::Less) {
             
             // Sample 1 Mean >  Sample 2 Mean
             p = cdf(complement(dist, t_stat));
-            if(p< alpha){
-                // Alternative "NOT REJECTED"
+            if(p< alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                sig = false;
-                // Alternative "REJECTED"
-            }
+            else
+                sig = false; // Alternative "REJECTED"
         }
         
         int eff_side = std::copysign(1.0, Sm1 - Sm2);
@@ -487,40 +466,31 @@ namespace sam {
         // Finally print out results of alternative hypothesis:
         //
         
-        if (alternative == TestStrategy::TestAlternative::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided) {
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha){
-                // Alternative "NOT REJECTED"
+            if(p < alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater) {
             // Sample 1 Mean <  Sample 2 Mean
             p = cdf(dist, t_stat);
-            if(p< alpha){
-                // Alternative "NOT REJECTED"
+            if(p< alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Less){
+        if (alternative == TestStrategy::TestAlternative::Less) {
             // Sample 1 Mean >  Sample 2 Mean
             p = cdf(complement(dist, t_stat));
-            if(p< alpha){
-                // Alternative "NOT REJECTED"
+            if(p< alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                sig = false;
-                // Alternative "REJECTED"
-            }
+            else
+                sig = false; // Alternative "REJECTED"
         }
         
         int eff_side = std::copysign(1.0, Sm1 - Sm2);
@@ -558,25 +528,19 @@ namespace sam {
         //
         // Finally print out results of null and alternative hypothesis:
         //
-        if((ucv2 < f_stats) || (lcv2 > f_stats))
-            // Alternative "NOT REJECTED"
+        if((ucv2 < f_stats) || (lcv2 > f_stats)) // Alternative "NOT REJECTED"
             sig = true;
-        else
-            // Alternative "REJECTED"
+        else // Alternative "REJECTED"
             sig = false;
 
-        if(lcv > f_stats)
-            // Alternative "NOT REJECTED"
+        if(lcv > f_stats) // Alternative "NOT REJECTED"
             sig = true;
-        else
-            // Alternative "REJECTED"
+        else // Alternative "REJECTED"
             sig = false;
 
-        if(ucv < f_stats)
-            // Alternative "NOT REJECTED"
+        if(ucv < f_stats) // Alternative "NOT REJECTED"
             sig = true;
-        else
-            // Alternative "REJECTED"
+        else // Alternative "REJECTED"
             sig = false;
 
 //        int eff_side = std::copysign(1.0, Sm1 - Sm2);
@@ -590,7 +554,7 @@ namespace sam {
                                          double alpha,
                                          const TestStrategy::TestAlternative alternative,
                                          double trim = 0.2,
-                                         double mu = 0.0){
+                                         double mu = 0.0) {
 
         double M{0};
         
@@ -615,46 +579,31 @@ namespace sam {
         students_t dist(df);
         double p = 0;
         
-        if (alternative == TestStrategy::TestAlternative::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided) {
             // Mean != M
-//            p = 2 * (1 - cdf(dist, fabs(t_stat)));
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha){
-                // Alternative "NOT REJECTED"
+            if(p < alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else  // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater) {
             // Mean  > M
-//            p = 1 - cdf(dist, t_stat);
             p = cdf(complement(dist, t_stat));
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
+            if(p > alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else  // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
         if (alternative == TestStrategy::TestAlternative::Less){
             // Mean  < M
-//            p = cdf(dist, t_stat);
             p = cdf(dist, t_stat);
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
+            if(p > alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else  // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
         int eff_side = std::copysign(1.0, M - Sm1);
@@ -698,44 +647,29 @@ namespace sam {
         
         if (alternative == TestStrategy::TestAlternative::TwoSided){
             // Mean != M
-//            p = 2 * (1 - cdf(dist, fabs(t_stat)));
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha){
-                // Alternative "NOT REJECTED"
+            if(p < alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
         if (alternative == TestStrategy::TestAlternative::Greater){
             // Mean  > M
-//            p = 1 - cdf(dist, t_stat);
             p = cdf(complement(dist, t_stat));
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
+            if(p > alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
         if (alternative == TestStrategy::TestAlternative::Less){
             // Mean  < M
-//            p = cdf(dist, t_stat);
             p = cdf(dist, t_stat);
-            if(p > alpha){
-                // Alternative "NOT REJECTED"
+            if(p > alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }
-            else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
         int eff_side = std::copysign(1.0, Sm1 - Sm2);
@@ -784,40 +718,31 @@ namespace sam {
         students_t dist(df);
         double p;
         
-        if (alternative == TestStrategy::TestAlternative::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided) {
             // Sample 1 Mean != Sample 2 Mean
             p = 2 * cdf(complement(dist, fabs(t_stat)));
-            if(p < alpha){
-                // Alternative "NOT REJECTED"
+            if(p < alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Greater){
+        if (alternative == TestStrategy::TestAlternative::Greater) {
             // Sample 1 Mean <  Sample 2 Mean
             p = cdf(dist, t_stat);
-            if(p< alpha){
-                // Alternative "NOT REJECTED"
+            if(p< alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
-                // Alternative "REJECTED"
+            else // Alternative "REJECTED"
                 sig = false;
-            }
         }
         
-        if (alternative == TestStrategy::TestAlternative::Less){
+        if (alternative == TestStrategy::TestAlternative::Less) {
             // Sample 1 Mean >  Sample 2 Mean
             p = cdf(complement(dist, t_stat));
-            if(p< alpha){
-                // Alternative "NOT REJECTED"
+            if(p< alpha) // Alternative "NOT REJECTED"
                 sig = true;
-            }else{
+            else // Alternative "REJECTED"
                 sig = false;
-                // Alternative "REJECTED"
-            }
         }
 
         int eff_side = std::copysign(1.0, Sm1 - Sm2);
@@ -835,7 +760,7 @@ namespace sam {
     std::pair<double, double>
     win_cor_cov(const arma::Row<double> &x,
                    const arma::Row<double> &y,
-                   const double trim){
+                   const double trim) {
                 
         arma::rowvec xvec { win_val(x, trim) };
         arma::rowvec yvec { win_val(y, trim) };
@@ -851,7 +776,7 @@ namespace sam {
     }
 
     arma::Row<double> win_val(const arma::Row<double> &x,
-                              double trim){
+                              double trim) {
 
         arma::rowvec y { arma::sort(x) };
         
@@ -868,7 +793,7 @@ namespace sam {
     // TODO: this can be an extention to arma, something like I did for nlohmann::json
     // I should basically put it into arma's namespace
     double trim_mean(const arma::Row<double> &x,
-                     double trim){
+                     double trim) {
         arma::rowvec y { arma::sort(x) };
         
         int ibot = floor(trim * x.n_elem) + 1;
@@ -882,7 +807,7 @@ namespace sam {
                                                           const arma::Row<double> &y,
                                                           double alpha,
                                                           double use_continuity,
-                                                          const TestStrategy::TestAlternative alternative){
+                                                          const TestStrategy::TestAlternative alternative) {
         
         using boost::math::normal;
         
@@ -931,7 +856,7 @@ namespace sam {
         double p{0.};
         normal norm(0, 1);
 
-        if (alternative == TestStrategy::TestAlternative::TwoSided){
+        if (alternative == TestStrategy::TestAlternative::TwoSided) {
             p = 2 * cdf(complement(norm, fabs(z)));
             if (p < alpha)
                 sig = true;
@@ -953,7 +878,7 @@ namespace sam {
     
     }
 
-    double tie_correct(const arma::vec &rankvals){
+    double tie_correct(const arma::vec &rankvals) {
         
         
         arma::vec arr = arma::sort(rankvals);
@@ -968,7 +893,7 @@ namespace sam {
 
         int size = arr.n_elem;
         
-        if (size < 2){
+        if (size < 2) {
             return 1.0;
         }
 
