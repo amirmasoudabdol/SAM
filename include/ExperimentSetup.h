@@ -174,7 +174,6 @@ namespace sam {
         }
 
         ExperimentSetupBuilder& setNumItems(const int ni) {
-            // TODO: To be integerated!
 
             return *this;
         }

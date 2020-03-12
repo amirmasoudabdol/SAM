@@ -160,11 +160,6 @@ namespace sam {
 
     };
     
-    // TODO:
-    // I've included the inline for now, but these set of definitions should be moved
-    // to a seperate place, maybe a CPP file for each hacking method and all its
-    // implementations. This can include the parsing, enum map, ...
-    
     inline
     void to_json(json& j, const OptionalStopping::Parameters& p) {
         j = json{

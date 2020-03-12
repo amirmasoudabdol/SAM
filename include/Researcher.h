@@ -226,12 +226,12 @@ namespace sam {
         
         
         ResearcherBuilder& createNewHackingStrategyGroup(json &hacking_strategy_group_config) {
-            // TODO: To be implemented
+
             return *this;
         }
         
         ResearcherBuilder& createNewHackingStrategy(json &hacking_strategy_config) {
-            // TODO: To be implemented
+
             return *this;
         }
         
@@ -255,13 +255,13 @@ namespace sam {
             return *this;
         };
         
-        // TODO: I'm not sure if I should leave these here or not
+        // I'm not sure if I should leave these here or not
         ResearcherBuilder& setDataStrategy(std::shared_ptr<DataStrategy> ds) {
             researcher.experiment->data_strategy = ds;
             return *this;
         }
         
-        // TODO: I'm not sure if I should leave these here or not
+        // I'm not sure if I should leave these here or not
         ResearcherBuilder& setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
             researcher.experiment->test_strategy = ts;
             return *this;
@@ -274,7 +274,7 @@ namespace sam {
         
         
         ResearcherBuilder& setJournalSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
-            // TESTME
+
             researcher.journal->setSelectionStrategy(std::move(ss));
             return *this;
         };
