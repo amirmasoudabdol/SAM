@@ -111,10 +111,6 @@ void YuenTest::run(Experiment* experiment) {
                                             0.2,
                                             0);
 //        }
-                
-        // experiment->statistics[i] = res.statistic;
-        // experiment->pvalues[i] = res.pvalue;
-        // experiment->sigs[i] = res.sig;
 
         (*experiment)[i].stats_ = res.statistic;
         (*experiment)[i].pvalue_ = res.pvalue;
@@ -133,25 +129,11 @@ void WilcoxonTest::run(Experiment* experiment) {
          i < experiment->setup.ng();
          ++i, d%=experiment->setup.nd()) {
         
-//        if (experiment->measurements[d].size() == experiment->measurements[i].size()) {
-//
-//            res = yuen_t_test_paired(experiment->measurements[d],
-//                                       experiment->measurements[i],
-//                                       params.alpha,
-//                                       params.alternative,
-//                                       params.trim,
-//                                       0);
-//        }else{
-            res = wilcoxon_test((*experiment)[d].measurements(),
+        res = wilcoxon_test((*experiment)[d].measurements(),
                                     (*experiment)[i].measurements(),
                                     1,
                                     params.alpha,
                                     params.alternative);
-//        }
-                
-        // experiment->statistics[i] = res.statistic;
-        // experiment->pvalues[i] = res.pvalue;
-        // experiment->sigs[i] = res.sig;
 
         (*experiment)[i].stats_ = res.statistic;
         (*experiment)[i].pvalue_ = res.pvalue;

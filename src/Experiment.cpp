@@ -31,8 +31,6 @@ Experiment::Experiment(json &experiment_config) {
     // Initializing the memory
     initResources();
     
-    
-    
 }
 
 void Experiment::generateData() {
@@ -52,8 +50,8 @@ void Experiment::initExperiment() {
 
 void Experiment::initResources() {
     
-    // GroupData
     groups_.resize(setup.ng());
+    
     for (int g {0}; g < setup.ng(); ++g) {
         
         if (g < setup.nd())

@@ -6,6 +6,7 @@
 #define SAMPP_GROUPDATA_H
 
 #include <string>
+#include <optional>
 
 #include <armadillo>
 
@@ -36,9 +37,9 @@ public: // Public for now
     
     /// --- Distribution/Population Parameters
     /// These can be their own type, and determined by the DataStrategies
-    double true_mean_ {0};
-    double true_std_ {0};
-    double true_nobs_ {0};
+    std::optional<double> true_nobs_ {0};
+    std::optional<double> true_mean_ {0};
+    std::optional<double> true_std_ {0};
 //    Distribution dist;
 //    json dist_params;
     
