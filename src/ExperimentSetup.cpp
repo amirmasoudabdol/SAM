@@ -30,7 +30,7 @@ ExperimentSetup::ExperimentSetup(json& config) {
     
 }
 
-// TODO: Rethink this fuction!
+
 void ExperimentSetup::randomize_parameters() {
     
 //    if (params_dist["n_obs"]){

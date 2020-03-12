@@ -7,9 +7,7 @@
 namespace sam {
 
     void GroupData::updateStats() {
-        
-        /// TODO: Check if is_stats_updated, if so, don't recalculate
-        
+                
         if (not is_stats_updated_) {
             nobs_ = measurements_.size();
             mean_ = arma::mean(measurements_);
@@ -17,6 +15,8 @@ namespace sam {
             stddev_ = arma::stddev(measurements_);
             sei_ = sqrt( var_ / nobs_ );
         }
+        
+        is_stats_updated_ = true;
         
     }
 

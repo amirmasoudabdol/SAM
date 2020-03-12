@@ -53,21 +53,19 @@
         "hacking_strategies": [
             [
                 {
-                    "_name": "SubjectiveOutlierRemoval",
-                    "min_observations": 5,
-                    "range": [
-                        1,
-                        4
-                    ],
-                    "step_size": 0.1
+                    "_name": "OptionalStopping",
+                    "level": "dv",
+                    "max_attempts": 10,
+                    "n_attempts": 3,
+                    "num": 100
                 }
             ]
         ],
         "is_phacker": true,
-        "is_pre_processing": false,
+        "is_pre_processing": true,
         "pre_processing_methods": [
             {
-                "_name": "SDutlierRemoval",
+                "_name": "SDOutlierRemoval",
                 "level": "dv",
                 "max_attempts": 1000,
                 "min_observations": 10,

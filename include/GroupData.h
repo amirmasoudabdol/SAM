@@ -17,7 +17,10 @@ enum class HackingMethod;
 
 enum class GroupType {
     Control,
-    Treatment
+    Treatment,
+    
+    //! Indicating that the group contains pooled data from other groups
+    Pooled
 };
 
 class GroupData {
@@ -83,6 +86,16 @@ public: // Public for now
     void set_measurements(const arma::Row<double> meas) {
         measurements_ = meas;
         nobs_ = meas.size();
+        is_stats_updated_ = false;
+    }
+    
+    void add_measurements(const arma::Row<double> new_meas) {
+        measurements_.insert_cols(nobs_, new_meas);
+        is_stats_updated_ = false;
+    }
+    
+    void del_measurements(const arma::uvec &idxs) {
+        measurements_.shed_cols(idxs);
         is_stats_updated_ = false;
     }
     

@@ -44,8 +44,7 @@ void CohensD::computeEffects(Experiment *experiment){
 
 void HedgesG::computeEffects(Experiment *experiment){
     
-    // Skipping the first group as it's the control group
-    // TODO: This is an ugly loop. Fix it!
+    /// Skipping Treatment groups
     for (int i{experiment->setup.nd()}, d{0};
          i < experiment->setup.ng();
          i++, d%=experiment->setup.nd()) {

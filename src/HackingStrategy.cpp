@@ -133,12 +133,9 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
     
     int i = 0;
     
-    // Add new observations to first `ng` group. I don't iterate over everything in
-    // the `measurements` because they might actually be the results of `pooling`.
-    // Therefore, I only add new values to original groups.
     std::for_each(experiment->begin(), experiment->end(),
                       [&new_observations, &i](auto &group) {
-                          group.measurements().insert_cols(group.measurements().size(), new_observations[i++]);
+                            group.add_measurements(new_observations[i++]);
                       });
     
 }
@@ -222,7 +219,7 @@ int SDOutlierRemoval::removeOutliers(Experiment *experiment,
         if ((row.n_elem - inx.n_elem) <= params.min_observations)
             inx = inx.head(row.n_elem - params.min_observations);
         
-        row.shed_cols(inx);
+        (*experiment)[i].del_measurements(inx);
         
     }
     
@@ -260,8 +257,7 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment, DecisionStrategy 
             if ((row.n_elem - inx.n_elem) <= params.min_observations)
                 inx = inx.head(row.n_elem - params.min_observations);
             
-            // FIX: This doesn't allow me to return `const` ref to row
-            row.shed_cols(inx);
+            (*experiment)[i].del_measurements(inx);
         }
         
         experiment->calculateStatistics();
