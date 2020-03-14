@@ -46,9 +46,11 @@
                 ]
             ],
             "final_decision_policies": [
-                "effect > 0"
+                "none"
             ],
-            "submission_policies": []
+            "submission_policies": [
+                "none"
+            ]
         },
         "hacking_strategies": [
             [

@@ -86,7 +86,7 @@ namespace sam {
     protected:
         
         // This should not be here, but I don't feel fixing include collision now!
-        std::pair<PolicyType, sol::function> make_function(const std::string &s, sol::state &lua) {
+        std::optional<std::pair<PolicyType, sol::function>> make_function(const std::string &s, sol::state &lua) {
             
             std::map<std::string, std::string> lua_temp_scripts {
                 {"min_script", "function {} (l, r) return l.{} < r.{} end"},
@@ -192,6 +192,8 @@ namespace sam {
                 policy_type = PolicyType::Comp;
                 policy_func = lua[f_name];
                 
+            } else {
+                return {};
             }
             
             return std::make_pair(policy_type, policy_func);
@@ -482,7 +484,8 @@ namespace sam {
                                         
                     auto policy = make_function(s, lua);
                     
-                    decision_policies.back().push_back(policy);
+                    if (policy)
+                        decision_policies.back().push_back(policy.value());
                     
                 }
 
@@ -493,7 +496,8 @@ namespace sam {
                 
                 auto policy = make_function(s, lua);
 
-                submission_policies.push_back(policy);
+                if (policy)
+                    submission_policies.push_back(policy.value());
             }
         }
         
@@ -556,7 +560,8 @@ namespace sam {
 
                     auto policy = make_function(s, lua);
                     
-                    decision_policies.back().push_back(policy);
+                    if (policy)
+                        decision_policies.back().push_back(policy.value());
                     
                 }
 
@@ -567,7 +572,8 @@ namespace sam {
 
                 auto policy = make_function(s, lua);
 
-                submission_policies.push_back(policy);
+                if (policy)
+                    submission_policies.push_back(policy.value());
             }
 
 
