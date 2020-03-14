@@ -62,7 +62,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
         /// These needs to be reset since I'm starting a new set of policies
         /// New policies will scan the set again!
         auto found_something {false};
-        auto begin = experiment.groups_.begin() + 1;
+        auto begin = experiment.groups_.begin() + experiment.setup.nd();
         auto end = experiment.groups_.end();
         
         for (auto &p : policy_set) {
