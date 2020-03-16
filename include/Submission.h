@@ -55,24 +55,10 @@ namespace sam {
         
         template<typename OStream>
         friend OStream &operator<<(OStream &os, const Submission &s) {
-            os <<
-            s.simid << ",\t" <<
-            s.pubid << ",\t" <<
-            s.tnobs << ",\t" <<
-            s.group_.id_ << ",\t" <<
-            s.group_.nobs_ << ",\t" <<
-            s.group_.mean_ << ",\t" <<
-            s.group_.var_ << ",\t" <<
-            s.group_.sei_ << ",\t" <<
-            s.group_.stats_ << ",\t" <<
-            s.group_.pvalue_ << ",\t" <<
-            s.group_.effect_ << ",\t";
-//            os << s.eff_side << ",\t";
-//            for (auto &hid : s.hHistory) {
-//                os << hid << ";";
-//            }
-            os << ",\t";
-            os << s.group_.is_hacked_;
+            os << s.simid << ",\t" <<
+                    s.pubid << ",\t" <<
+                    s.tnobs << ",\t" <<
+                    s.group_;
             
             return os;
         }
