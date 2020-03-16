@@ -89,10 +89,6 @@ void Experiment::recalculateEverything() {
     
 }
 
-
-
-
-
 void Experiment::randomize() {
     setup.randomize_parameters();
     
