@@ -119,7 +119,7 @@ namespace sam {
      The fixed-effect data strategy will produce data from a fixed-effect
      model with the given \f$\mu\f$ and \f$\sigma\f$.
      */
-    class LinearModelStrategy : public DataStrategy {
+    class LinearModelStrategy final : public DataStrategy {
 
     public:
         
@@ -200,7 +200,7 @@ namespace sam {
      @note LatentDataStrategy will generate individual items, therefore it
      might be slower than other models.
      */
-    class LatentDataStrategy : public DataStrategy {
+    class LatentDataStrategy final : public DataStrategy {
 
     public:
 
@@ -233,7 +233,7 @@ namespace sam {
         distribution of `\theta ~ N(abilitis[i], 1)`.
         - \f$ \beta \f$
      */
-    class GRMDataStrategy : public DataStrategy {
+    class GRMDataStrategy final : public DataStrategy {
     public:
 
         struct Parameters {

@@ -89,7 +89,7 @@ namespace sam {
     };
         
         
-    class NoHack : public HackingStrategy {
+    class NoHack final : public HackingStrategy {
     public:
 
         NoHack() {
@@ -107,7 +107,7 @@ namespace sam {
      
      @ingroup HackingStrategies
      */
-    class OptionalStopping : public HackingStrategy {
+    class OptionalStopping final : public HackingStrategy {
         
     public:
         
@@ -188,7 +188,7 @@ namespace sam {
      
      @ingroup HackingStrategies
      */
-    class SDOutlierRemoval : public HackingStrategy {
+    class SDOutlierRemoval final : public HackingStrategy {
     public:
         
         /**
@@ -296,7 +296,7 @@ namespace sam {
      @sa DecisionStrategy
      @sa DecisionPreference
      */
-    class SubjectiveOutlierRemoval : public HackingStrategy {
+    class SubjectiveOutlierRemoval final : public HackingStrategy {
     public:
         
         
@@ -369,7 +369,7 @@ namespace sam {
         }
     
 
-    class GroupPooling : public HackingStrategy {
+    class GroupPooling final : public HackingStrategy {
         
     public:
         

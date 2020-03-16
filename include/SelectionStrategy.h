@@ -84,7 +84,7 @@ namespace sam {
      Moreover, the SignificantSelection can be tailored toward either positive or negative
      effect. In this case, the Journal will only accept Submissions with larger or smaller effects.
      */
-    class SignificantSelection : public SelectionStrategy {
+    class SignificantSelection final : public SelectionStrategy {
 
     public:
         
@@ -146,7 +146,7 @@ namespace sam {
      @note This is technically the SignificantSelection with pub_bias set to 0.
      
      */
-    class RandomSelection : public SelectionStrategy {
+    class RandomSelection final : public SelectionStrategy {
     
     public:
         
@@ -179,7 +179,7 @@ namespace sam {
      @brief FreeSelection doesn't pose any restriction on the submission and all submissions
      will be accepted.
      */
-    class FreeSelection : public SelectionStrategy {
+    class FreeSelection final : public SelectionStrategy {
         
     public:
         struct Parameters {};

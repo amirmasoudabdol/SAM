@@ -459,7 +459,7 @@ namespace sam {
      
      
      */
-    class ImpatientDecisionMaker : public DecisionStrategy {
+    class ImpatientDecisionMaker final : public DecisionStrategy {
         
     public:
         
@@ -536,7 +536,7 @@ namespace sam {
      @ingroup DecisionStrategies
      @brief
      */
-    class PatientDecisionMaker : public DecisionStrategy {
+    class PatientDecisionMaker final : public DecisionStrategy {
 
     public:
 
@@ -612,7 +612,7 @@ namespace sam {
      @ingroup DecisionStrategies
      @brief
      */
-    class HonestDecisionMaker : public DecisionStrategy {
+    class HonestDecisionMaker final : public DecisionStrategy {
 
     public:
 
@@ -649,7 +649,7 @@ namespace sam {
      @note This is currently being used during the PreProcessing where I basically don't
      want to intervene with the process, and let it run
      */
-    class NoDecision : public DecisionStrategy {
+    class NoDecision final : public DecisionStrategy {
         
     public:
         

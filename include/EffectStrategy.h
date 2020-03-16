@@ -51,7 +51,7 @@ namespace sam {
     };
 
 
-    class MeanDifference : public EffectStrategy {
+    class MeanDifference final : public EffectStrategy {
 
     public:
 
@@ -70,7 +70,7 @@ namespace sam {
     };
 
 
-    class CohensD : public EffectStrategy {
+    class CohensD final : public EffectStrategy {
 
     public:
 
@@ -89,7 +89,7 @@ namespace sam {
     };
 
 
-    class HedgesG : public EffectStrategy {
+    class HedgesG final : public EffectStrategy {
         
     public:
 
@@ -108,7 +108,7 @@ namespace sam {
     };
 
     //
-    //class OddRatio : public EffectStrategy {
+    //class OddRatio final : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -118,7 +118,7 @@ namespace sam {
     //};
     //
     //
-    //class PearsonR : public EffectStrategy {
+    //class PearsonR final : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -127,7 +127,7 @@ namespace sam {
     //    const std::string name = "PearsonR";
     //};
     //
-    //class GlassDelta : public EffectStrategy {
+    //class GlassDelta final : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);
@@ -136,7 +136,7 @@ namespace sam {
     //    const std::string name = "GlassDelta";
     //};
     //
-    //class EtaSquared : public EffectStrategy {
+    //class EtaSquared final : public EffectStrategy {
     //    
     //public:
     //    void computeEffects(Experiment *experiment);

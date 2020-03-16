@@ -106,7 +106,7 @@ namespace sam {
      implementation of [one sample t-test](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test).
      
      */
-    class TTest : public TestStrategy {
+    class TTest final : public TestStrategy {
         
     public:
         
@@ -154,7 +154,7 @@ namespace sam {
         }
 
 
-    class YuenTest : public TestStrategy {
+    class YuenTest final : public TestStrategy {
         
     public:
         
@@ -206,7 +206,7 @@ namespace sam {
         }
 
 
-    class WilcoxonTest : public TestStrategy {
+    class WilcoxonTest final : public TestStrategy {
             
         public:
             
