@@ -145,7 +145,7 @@ namespace sam {
                 auto f_name = "cond_sig";
                 
                 auto f_def = fmt::format(lua_temp_scripts["comp_script"],
-                                         f_name, "sig == 1");
+                                         f_name, "sig == true");
                 
                 lua.script(f_def);
                 
