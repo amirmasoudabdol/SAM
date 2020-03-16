@@ -221,16 +221,16 @@ void runSimulation(json& simConfig){
     if (FLAGS::PROGRESS) progressBar.finish();
 
 
-    if (is_saving_pubs)
-        std::cout << "\nSaved to: " << pubsfilename << "\n";
+    // if (is_saving_pubs)
+    //     std::cout << "\nSaved to: " << pubsfilename << "\n";
     
-    if (is_saving_rejected)
-        std::cout << "\nSaved to: " << rejectedfilename << "\n";
+    // if (is_saving_rejected)
+    //     std::cout << "\nSaved to: " << rejectedfilename << "\n";
     
-    if (is_saving_stats)
-        std::cout << "\nSaved to: " << statsfilename << "\n";
+    // if (is_saving_stats)
+    //     std::cout << "\nSaved to: " << statsfilename << "\n";
     
-    if (is_saving_sims)
-        std::cout << "\nSaved to: " << simsfilename << "\n";
+    // if (is_saving_sims)
+    //     std::cout << "\nSaved to: " << simsfilename << "\n";
     
 }
