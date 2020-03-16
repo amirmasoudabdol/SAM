@@ -131,10 +131,6 @@ namespace sam {
         void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> &es) {
             effect_strategy = es;
         };
-
-        // Initialize the Experiment
-        void initResources();
-        
         
         /**
          Helper function for the Researcher to fully initilize the experiment
@@ -176,6 +172,12 @@ namespace sam {
         void recalculateEverything();
         
         void randomize();
+        
+    private:
+        
+        
+        /// Initialize the necessary resources
+        void initResources();
         
     };
     

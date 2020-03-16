@@ -72,13 +72,9 @@ void Researcher::preProcessData() {
  */
 void Researcher::prepareResearch() {
     
-    // Randomize if necessary
-    // The check is being performed in the `randomize()` function based on whether
-    // a distribution is provided for any of the parameters.
-    experiment->randomize();
+    // TODO: Randomize if necessary
     
-    // Allocating memory
-    experiment->initResources();
+    // TODO: Maybe I need a `reset` or `clean` method for Experiment
     
     spdlog::debug("Generating Data");
     
