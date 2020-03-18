@@ -56,7 +56,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
     this->complying_with_preference = true;
     
 
-    
+    int pset_inx {0};
     for (auto &policy_set : decision_policies) {
         
         /// These needs to be reset since I'm starting a new set of policies
@@ -74,6 +74,7 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
                 /// we are done!
                 spdlog::debug("Found something!");
                 selectedOutcome = begin->id_;
+                spdlog::debug("Policy: {}", pset_inx);
                 return {experiment, selectedOutcome};
             } else {
                 /// The range is empty! This only happens when Comp case cannot find anything
@@ -88,6 +89,8 @@ Submission DecisionStrategy::selectOutcome(Experiment& experiment) {
             }
             
         }
+        
+        pset_inx++;
         
     }
     

@@ -7,24 +7,27 @@
                 "dist": "mvnorm_distribution",
                 "means": [
                     0,
+                    0,
+                    0,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
                     0.5,
                     0.5,
                     0.5
                 ],
-                "stddevs": 1
+                "stddevs": 2
             }
         },
         "effect_strategy": {
             "_name": "MeanDifference"
         },
-        "n_conditions": 4,
-        "n_dep_vars": 1,
-        "n_obs": [
-            20,
-            20,
-            20,
-            20
-        ],
+        "n_conditions": 3,
+        "n_dep_vars": 4,
+        "n_obs": 20,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -39,10 +42,20 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "PatientDecisionMaker",
+            "_name": "ImpatientDecisionMaker",
             "decision_policies": [
                 [
-                    "random"
+                    "sig",
+                    "effect > 0",
+                    "first"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
                 ]
             ],
             "final_decision_policies": [
