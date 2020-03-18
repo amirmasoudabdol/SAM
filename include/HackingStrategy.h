@@ -146,12 +146,6 @@ namespace sam {
     private:
         virtual void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) override;
         
-        
-        /**
-         Randmoize the parameters of the Optional Stopping
-         */
-        void randomize(int min_n, int max_n);
-        
     private:
         /**
          Add _n_ observations to all groups and return the updated experiment to
