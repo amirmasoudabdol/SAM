@@ -25,9 +25,9 @@ void Researcher::hack() {
         
         Experiment copiedExpr = *experiment;
         
-        for (auto &h : set){
+        for (auto &method : set){
             
-            h->perform(&copiedExpr, decision_strategy.get());
+            (*method)(&copiedExpr, decision_strategy.get());
             copiedExpr.is_hacked = true;
             
             decision_strategy->verdict(copiedExpr,
@@ -60,7 +60,7 @@ void Researcher::preProcessData() {
     
     for (auto &method : pre_processing_methods){
         
-        method->perform(experiment, &no_decision);
+        (*method)(experiment, &no_decision);
         
     }
 }

@@ -37,6 +37,8 @@ namespace sam {
 
     public:
         
+        virtual ~TestStrategy() = 0;
+        
         struct TestResult {
             double statistic {0};
             double pvalue {0};
@@ -88,8 +90,6 @@ namespace sam {
         
         static std::unique_ptr<TestStrategy> build(json &test_strategy_config);
         
-        virtual ~TestStrategy() = 0;
-        
         virtual void run(Experiment* experiment) = 0;
         
         virtual void run(GroupData &group_1, GroupData &group_2) = 0;
@@ -125,9 +125,9 @@ namespace sam {
 //            params = tsp;
         };
         
-        void run(Experiment* experiment) override;
+        virtual void run(Experiment* experiment) override;
         
-        void run(GroupData &group_1, GroupData &group_2) override {};
+        virtual void run(GroupData &group_1, GroupData &group_2) override {};
         
     };
     
@@ -174,9 +174,9 @@ namespace sam {
 //            params = tsp;
         };
         
-        void run(Experiment* experiment) override;
+        virtual void run(Experiment* experiment) override;
         
-        void run(GroupData &group_1, GroupData &group_2) override {};
+        virtual void run(GroupData &group_1, GroupData &group_2) override {};
         
     };
     
@@ -226,9 +226,9 @@ namespace sam {
     //            params = tsp;
             };
             
-            void run(Experiment* experiment) override;
+            virtual void run(Experiment* experiment) override;
         
-        void run(GroupData &group_1, GroupData &group_2) override {};
+            virtual void run(GroupData &group_1, GroupData &group_2) override {};
             
         };
         

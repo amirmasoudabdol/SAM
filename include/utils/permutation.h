@@ -23,8 +23,11 @@
 #ifndef SAMPP_PERMUTATION_H
 #define SAMPP_PERMUTATION_H
 
+#include <vector>
+#include <iostream>
 #include <iterator>
 #include <algorithm>
+
 
 template <class It>
 unsigned

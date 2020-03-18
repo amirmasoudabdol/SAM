@@ -141,14 +141,14 @@ namespace sam {
             
         };
         
-        void
-        genData(Experiment* experiment);
+        virtual void
+        genData(Experiment* experiment) override;
         
-        std::vector<arma::Row<double> >
-        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+        virtual std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) override;
         
-        arma::Row<double>
-        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+        virtual arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) override;
         
     private:
         
@@ -208,13 +208,14 @@ namespace sam {
 
         }
         
-        void genData(Experiment* experiment);
+        virtual void
+        genData(Experiment* experiment) override;
         
-        std::vector<arma::Row<double> >
-        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+        virtual std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) override;
         
-        arma::Row<double>
-        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+        virtual arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) override;
         
     private:
         //! A function for computing the latent variable
@@ -271,14 +272,14 @@ namespace sam {
         };
 
 
-        void
-        genData(Experiment* experiment);
+        virtual void
+        genData(Experiment* experiment) override;
         
-        std::vector<arma::Row<double> >
-        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs);
+        virtual std::vector<arma::Row<double> >
+        genNewObservationsForAllGroups(Experiment* experiment, int n_new_obs) override;
         
-        arma::Row<double>
-        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs);
+        virtual arma::Row<double>
+        genNewObservationsFor(Experiment* experiment, int g, int n_new_obs) override;
         
     private:
         

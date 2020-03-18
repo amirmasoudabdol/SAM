@@ -14,7 +14,7 @@ namespace sam {
      */
     enum class HackingMethod {
         OptionalStopping,
-        SDOutlierRemoval,
+        OutliersRemoval,
         GroupPooling,
         ConditionDropping,
         SubjectiveOutlierRemoval,
@@ -24,7 +24,7 @@ namespace sam {
 
     NLOHMANN_JSON_SERIALIZE_ENUM( HackingMethod, {
         {HackingMethod::OptionalStopping, "OptionalStopping"},
-        {HackingMethod::SDOutlierRemoval, "SDOutlierRemoval"},
+        {HackingMethod::OutliersRemoval, "OutliersRemoval"},
         {HackingMethod::GroupPooling, "GroupPooling"},
         {HackingMethod::ConditionDropping, "ConditionDropping"},
         {HackingMethod::SubjectiveOutlierRemoval, "ConditionDropping"},

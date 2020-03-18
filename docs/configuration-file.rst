@@ -83,7 +83,7 @@ initialization phase.
           "is_pre_processing": false,
           "pre_processing_methods": [
               {
-                  "_name": "SDOutlierRemoval",
+                  "_name": "OutliersRemoval",
                   "level": "dv",
                   "max_attempts": 1000,
                   "min_observations": 10,

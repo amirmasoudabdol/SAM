@@ -11,7 +11,7 @@
           },
           {
                "id": 2,
-               "_name": "SDOutlierRemoval",
+               "_name": "OutliersRemoval",
                "mode": "Recursive",
                "level": "dv",
                "num": 2,

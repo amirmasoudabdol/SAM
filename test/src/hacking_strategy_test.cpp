@@ -81,7 +81,7 @@ BOOST_FIXTURE_TEST_SUITE( outliers_removal, SampleResearch );
 //    BOOST_AUTO_TEST_CASE( constructors )
 //    {
 //        HackingStrategyParameters hsp;
-//        hsp.name = HackingMethod::SDOutlierRemoval;
+//        hsp.name = HackingMethod::OutliersRemoval;
 //
 //    }
 
@@ -92,7 +92,7 @@ BOOST_FIXTURE_TEST_SUITE( outliers_removal, SampleResearch );
         de_s_conf["preference"] = "PreRegisteredOutcome";
         auto patient_dec_maker = DecisionStrategy::build(de_s_conf);
 
-        auto outliers_removal = SDOutlierRemoval("dv", "max first", 3, 1, 1, 20, {1});
+        auto outliers_removal = OutliersRemoval("dv", "max first", 3, 1, 1, 20, {1});
 
         experiment->generateData();
         experiment->calculateStatistics();

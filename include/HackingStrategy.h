@@ -50,10 +50,11 @@ namespace sam {
         
     public:
         
-        //! Hacking Strategy name.
-        //! @note I don't necessarily need this, and I only use it to track which method
-        //! has been applied on the given experiment.
-        HackingMethod name;
+        /**
+         * @brief      Pure deconstuctor of the Base calss. This is important
+         * for proper deconstruction of Derived classes.
+         */
+        virtual ~HackingStrategy() = 0;
         
         /**
          * @brief      Factory method for building a HackingStrategy
@@ -69,12 +70,13 @@ namespace sam {
         static std::unique_ptr<HackingStrategy> build(HackingMethod method);
         
 
-        /**
-         * @brief      Pure deconstuctor of the Base calss. This is important
-         * for proper deconstruction of Derived classes.
-         */
-        virtual ~HackingStrategy() = 0;
 
+        
+        virtual void operator()(Experiment *experiment, DecisionStrategy* decisionStrategy) {
+            perform(experiment, decisionStrategy);
+        };
+
+    private:
         /**
          * @brief      Applies the hacking method on the Experiment.
          *
@@ -94,10 +96,11 @@ namespace sam {
 
         NoHack() {
 //            params.name = HackingMethod::NoHack;
-            name = HackingMethod::NoHack;
+            
         };
         
-        void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) { };
+    private:
+        virtual void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) override { };
         
     };
 
@@ -137,10 +140,11 @@ namespace sam {
         OptionalStopping() = default;
 
         OptionalStopping(const Parameters &p) : params{p} {
-            name = params.name;
+            
         } ;
 
-        void perform(Experiment *experiment, DecisionStrategy *decisionStrategy);
+    private:
+        virtual void perform(Experiment *experiment, DecisionStrategy *decisionStrategy) override;
         
         
         /**
@@ -188,7 +192,7 @@ namespace sam {
      
      @ingroup HackingStrategies
      */
-    class SDOutlierRemoval final : public HackingStrategy {
+    class OutliersRemoval final : public HackingStrategy {
     public:
         
         /**
@@ -197,7 +201,7 @@ namespace sam {
          
          ```json
          {
-             "_name": "SDOutlierRemoval",
+             "_name": "OutliersRemoval",
              "level": "dv",
              "max_attempts": 1000,
              "min_observations": 10,
@@ -214,7 +218,7 @@ namespace sam {
          
          */
         struct Parameters {
-            HackingMethod name = HackingMethod::SDOutlierRemoval;
+            HackingMethod name = HackingMethod::OutliersRemoval;
             
             //! TO BE IMPLEMENTED!
             std::string level = "dv";
@@ -242,14 +246,14 @@ namespace sam {
         
         Parameters params;
         
-        SDOutlierRemoval() = default;
+        OutliersRemoval() = default;
         
-        SDOutlierRemoval(const Parameters &p) : params{p} {
-            name = params.name;
+        OutliersRemoval(const Parameters &p) : params{p} {
+
         };
         
         // Submission hackedSubmission;
-        void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+        virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) override;
         
     private:
 
@@ -259,7 +263,7 @@ namespace sam {
     
     
     inline
-    void to_json(json& j, const SDOutlierRemoval::Parameters& p) {
+    void to_json(json& j, const OutliersRemoval::Parameters& p) {
         j = json{
             {"_name", p.name},
             {"level", p.level},
@@ -273,7 +277,7 @@ namespace sam {
     }
     
     inline
-    void from_json(const json& j, SDOutlierRemoval::Parameters& p) {
+    void from_json(const json& j, OutliersRemoval::Parameters& p) {
         
         // Using a helper template function to handle the optional and throw if necessary.
         j.at("_name").get_to(p.name);
@@ -341,10 +345,11 @@ namespace sam {
         SubjectiveOutlierRemoval() = default;
         
         SubjectiveOutlierRemoval(const Parameters &p) : params(p) {
-            name = params.name;
+
         };
         
-        void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+    private:
+        virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) override;
     };
 
 
@@ -383,11 +388,11 @@ namespace sam {
         GroupPooling() = default;
         
         GroupPooling(const Parameters &p) : params{p} {
-            name = params.name;
+
         };
         
         // Submission hackedSubmission;
-        void perform(Experiment* experiment, DecisionStrategy* decisionStrategy);
+        virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) override;
         
     private:
         
@@ -423,16 +428,15 @@ namespace sam {
         Parameters params;
         
         ConditionDropping(const Parameters &p) : params{p} {
-            name = params.name;
+
         };
         
         ConditionDropping() {
             params.name = HackingMethod::ConditionDropping;
-            
-            name = params.name;
         };
         
-        void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) { };
+    private:
+        virtual void perform(Experiment* experiment, DecisionStrategy* decisionStrategy) override { };
     };
     
     

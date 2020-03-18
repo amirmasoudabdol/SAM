@@ -40,6 +40,11 @@ namespace sam {
         Distribution dist;
 
     public:
+        
+        /**
+         * @brief      Pure deconstructor of the base class
+         */
+        virtual ~SelectionStrategy() = 0;
 
         SelectionMethod name;
         
@@ -53,11 +58,6 @@ namespace sam {
          * @return     A new SelectionStrategy
          */
         static std::unique_ptr<SelectionStrategy> build(json &selection_straregy_config);
-        
-        /**
-         * @brief      Pure deconstructor of the base class
-         */
-        virtual ~SelectionStrategy() = 0;
 
         /**
          * @brief      Review the Submission and decides if it's
@@ -72,7 +72,6 @@ namespace sam {
          */
         virtual bool review(const Submission& s) = 0;
         
-//        virtual bool review(Experiment &expr);
     };
 
     /**
@@ -112,7 +111,7 @@ namespace sam {
         
         SignificantSelection(const Parameters &p) : params{p} { };
         
-        bool review(const Submission &s) override;
+        virtual bool review(const Submission &s) override;
 
     };
     
@@ -158,7 +157,7 @@ namespace sam {
         
         RandomSelection(const Parameters &p) : params{p} {};
         
-        bool review(const Submission &s) override;
+        virtual bool review(const Submission &s) override;
     };
     
     inline
@@ -189,7 +188,7 @@ namespace sam {
         FreeSelection() {};
         
         /// Accepting anything!
-        bool review(const Submission &s) override { return true; };
+        virtual bool review(const Submission &s) override { return true; };
         
     };
 
