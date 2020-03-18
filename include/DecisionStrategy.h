@@ -2,12 +2,12 @@
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
 
-/**
- * \defgroup DecisionStrategies
- * @brief List of available Decision Strategies
- *
- * Description to come!
- */
+///
+/// \defgroup   DecisionStrategies Decision Strategies
+/// \brief      List of available Decision Strategies
+///
+/// Description to come!
+///
 
 #ifndef SAMPP_DECISIONSTRATEGY_H
 #define SAMPP_DECISIONSTRATEGY_H
@@ -47,11 +47,10 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {DecisionMethod::ImpatientDecisionMaker, "ImpatientDecisionMaker"},
      {DecisionMethod::NoDecision, "NoDecision"}})
 
-/**
- DecisionStage enum indicates on what stages of the _research_ the
- Researcher is making decision in.
-
- */
+///
+/// DecisionStage enum indicates on what stages of the _research_ the Researcher is
+/// making decision in.
+///
 enum class DecisionStage { Initial, WhileHacking, DoneHacking, Final };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
@@ -62,10 +61,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
 
 enum class PolicyType { Min, Max, Comp, Random, First };
 
-/**
- @brief Abstract class for different decision strategies.
-
- */
+///
+/// \brief      Abstract class for different decision strategies.
+///
 class DecisionStrategy {
 
 protected:
@@ -212,57 +210,47 @@ protected:
 
   bool complying_with_preference = true;
 
-  /**
-   A method implementing the Initial decision making logic.
-
-   @return A boolean indicating whether the researcher should proceed
-   with the hacking or not.
-   */
+  /// A method implementing the Initial decision making logic.
+  /// 
+  /// \return A boolean indicating whether the researcher should proceed
+  /// with the hacking or not.
   virtual void initDecision(Experiment &experiment) = 0;
 
-  /**
-   A method implementing the Intermediate decision making logic.
-
-   @note Decision Strategy at this stage can decide if it wants to add
-   an intermediate solution to the pool or not. This is often a solution
-   halfway through the hacking process for instance.
-
-   @return A boolean indicating whether the researcher should stop the
-   hacking procedude or not. E.g., in the case of Optional Stopping this
-   routine will decide whether researcher should stop after each attempt
-   or continue further.
-   */
+  /// A method implementing the Intermediate decision making logic.
+  /// 
+  /// @note Decision Strategy at this stage can decide if it wants to add
+  /// an intermediate solution to the pool or not. This is often a solution
+  /// halfway through the hacking process for instance.
+  /// 
+  /// \return A boolean indicating whether the researcher should stop the
+  /// hacking procedude or not. E.g., in the case of Optional Stopping this
+  /// routine will decide whether researcher should stop after each attempt
+  /// or continue further.
   virtual void intermediateDecision(Experiment &experiment) = 0;
 
-  /**
-   A method implementing the decision making routine after completely
-   applying a hacking strategy on an experiment.
-
-   @return A boolean indicating whether the researcher should proceed to
-   the _next_ hacking strategy.
-   */
+  /// A method implementing the decision making routine after completely
+  /// applying a hacking strategy on an experiment.
+  /// 
+  /// \return A boolean indicating whether the researcher should proceed to
+  /// the _next_ hacking strategy.
   virtual void afterhackDecision(Experiment &experiment) = 0;
 
-  /**
-   A method implementing the Final decision making logic.
-
-   @note In the case where the Decision Making should look back at the
-   history of hacking, this routine will also prepare the `final_submission`.
-
-   @return A boolean indicating whether the researcher should proceed
-   with submitting the final submission to the Journal or not.
-   */
+  /// A method implementing the Final decision making logic.
+  /// 
+  /// @note In the case where the Decision Making should look back at the
+  /// history of hacking, this routine will also prepare the `final_submission`.
+  /// 
+  /// \return A boolean indicating whether the researcher should proceed
+  /// with submitting the final submission to the Journal or not.
   virtual void finalDecision(Experiment &experiment) = 0;
 
 public:
   DecisionMethod name;
 
-  /**
-   DecisionStrategy factory method.
-
-   @param decision_strategy_config    A JSON object containing information
-   about each decision strategy.
-   */
+  /// DecisionStrategy factory method.
+  /// 
+  /// \param decision_strategy_config    A JSON object containing information
+  /// about each decision strategy.
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
 
@@ -351,17 +339,15 @@ public:
   /// ask this method to asses the state of its progress.
   virtual bool isStillHacking() { return is_still_hacking; }
 
-  /**
-   It indicates whether the researcher is going to commit to submitting the
-   _Submission_. This acts as an another level of decision making where the
-   researcher consider another criteria if it couldn't achieve what he was
-   "looking for".
-
-   For instance, if the researcher is determined to find "MinSigPvalue" during
-   his research, and — after all the hacking — he couldn't find anything
-   significant, then he decide whether he wants to submit the "unpreferable"
-   result or not.
-   */
+  /// It indicates whether the researcher is going to commit to submitting the
+  /// _Submission_. This acts as an another level of decision making where the
+  /// researcher consider another criteria if it couldn't achieve what he was
+  /// "looking for".
+  /// 
+  /// For instance, if the researcher is determined to find "MinSigPvalue" during
+  /// his research, and — after all the hacking — he couldn't find anything
+  /// significant, then he decide whether he wants to submit the "unpreferable"
+  /// result or not.
   virtual bool willBeSubmitting();
 
   DecisionStage current_stage;
@@ -372,25 +358,22 @@ public:
   //! is satisfied with.
   Submission final_submission;
 
-  /**
-   Clear the list of submissions and experiments
-   */
+
+  /// Clear the list of submissions and experiments
   void clearHistory() {
     submissions_pool.clear();
     experiments_pool.clear();
   }
 
-  /**
-   * @brief      Implementation of decision-making procedure.
-   *
-   * @param      experiment
-   * @param[in]  stage       The stage in which the researcher is asking
-   *                         for the verdict. The implementation of verdict
-   *                         sould provide different procedure for different
-   *                         stages of the development.
-   *
-   * @return     A boolean indicating whether result is satisfactory or not
-   */
+  /// \brief      Implementation of decision-making procedure.
+  /// 
+  /// \param      experiment
+  /// \param[in]  stage       The stage in which the researcher is asking
+  ///                         for the verdict. The implementation of verdict
+  ///                         sould provide different procedure for different
+  ///                         stages of the development.
+  /// 
+  /// \return     A boolean indicating whether result is satisfactory or not
   virtual DecisionStrategy &verdict(Experiment &experiment,
                                     DecisionStage stage) = 0;
 
@@ -401,23 +384,23 @@ public:
   };
 
   /**
-   * @brief      Based on the DecisionPreference, it'll select the outcome
+   * \brief      Based on the DecisionPreference, it'll select the outcome
    * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece
    * will
    *
-   * @param      experiment
+   * \param      experiment
    *
-   * @return     A copy of the selected outcome
+   * \return     A copy of the selected outcome
    */
   Submission selectOutcome(Experiment &experiment);
 
   /**
-   * @brief      Select the final submission by checking all logged Submissions.
+   * \brief      Select the final submission by checking all logged Submissions.
    * Each submission is from a hacked experiment by the researcher. This is
    * often being used by the `PatientDecisionMaker` at the end of the hacking
    * procedure.
    *
-   * @return     A copy of the selected outcome
+   * \return     A copy of the selected outcome
    */
   Submission selectBetweenSubmissions();
 
@@ -426,7 +409,7 @@ public:
 
 /**
  @ingroup DecisionStrategies
- @brief Implementation of an impatient researcher. In this case, the Researcher
+ \brief Implementation of an impatient researcher. In this case, the Researcher
  will stop as soon as find a significant result and will not continue exploring
  other hacking methods in his arsenal.
 
@@ -498,7 +481,7 @@ inline void from_json(const json &j, ImpatientDecisionMaker::Parameters &p) {
 
 /**
  @ingroup DecisionStrategies
- @brief
+ \brief
  */
 class PatientDecisionMaker final : public DecisionStrategy {
 
@@ -563,7 +546,7 @@ inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
 
 /**
  @ingroup DecisionStrategies
- @brief
+ \brief
  */
 class HonestDecisionMaker final : public DecisionStrategy {
 
@@ -593,7 +576,7 @@ public:
 
 /**
  @ingroup DecisionStrategies
- @brief A placeholder for empty decision strategy.
+ \brief A placeholder for empty decision strategy.
 
  @note This is currently being used during the PreProcessing where I basically
  don't want to intervene with the process, and let it run
