@@ -13,41 +13,37 @@
 #include "Submission.h"
 
 namespace sam {
-    
-    using namespace std;
 
-	class MetaAnalysis {
-    
-	public:
-//        MetaAnalysis() = default;
-        
-        virtual ~MetaAnalysis() = 0;
+using namespace std;
 
-        static std::unique_ptr<MetaAnalysis> build(std::string name);
+class MetaAnalysis {
 
-        virtual arma::vec estimate(vector<Submission> publications) = 0;
-	    
-	};
-    
-    
-    class FixedEffectEstimator : public MetaAnalysis {
-        
-    public:
-        FixedEffectEstimator() = default;
-        
-        arma::vec estimate(vector<Submission> publications);
-    
-    };
-    
-    class RandomEffectEstimator : public MetaAnalysis {
-        
-    public:
-        RandomEffectEstimator() = default;
-        
-        arma::vec estimate(vector<Submission> publications);
-    };
-    
+public:
+  //        MetaAnalysis() = default;
+
+  virtual ~MetaAnalysis() = 0;
+
+  static std::unique_ptr<MetaAnalysis> build(std::string name);
+
+  virtual arma::vec estimate(vector<Submission> publications) = 0;
+};
+
+class FixedEffectEstimator : public MetaAnalysis {
+
+public:
+  FixedEffectEstimator() = default;
+
+  arma::vec estimate(vector<Submission> publications);
+};
+
+class RandomEffectEstimator : public MetaAnalysis {
+
+public:
+  RandomEffectEstimator() = default;
+
+  arma::vec estimate(vector<Submission> publications);
+};
 
 } // namespace sam
 
-#endif //SAMPP_METAANALYSIS_H
+#endif // SAMPP_METAANALYSIS_H

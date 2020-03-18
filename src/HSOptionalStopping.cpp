@@ -16,35 +16,36 @@ using namespace sam;
  If the results is significant, it'll not make a new attempt to add more data,
  and will return to the hack() routine.
  */
-void OptionalStopping::perform(Experiment* experiment, DecisionStrategy* decisionStrategy) {
+void OptionalStopping::perform(Experiment *experiment,
+                               DecisionStrategy *decisionStrategy) {
 
-    spdlog::debug("Optional Stopping");
+  spdlog::debug("Optional Stopping");
 
-    for (int t = 0; t < params.n_attempts && t < params.max_attempts; t++) {
+  for (int t = 0; t < params.n_attempts && t < params.max_attempts; t++) {
 
-        addObservations(experiment, params.num);
+    addObservations(experiment, params.num);
 
-        // TODO: This can still be done nicer
-        experiment->calculateStatistics();
-        experiment->calculateEffects();
-        experiment->runTest();
+    // TODO: This can still be done nicer
+    experiment->calculateStatistics();
+    experiment->calculateEffects();
+    experiment->runTest();
 
-        if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking).isStillHacking())
-            return;
-    }
-
+    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
+             .isStillHacking())
+      return;
+  }
 }
 
 void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
 
-    // Get the new observations
-    auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
+  // Get the new observations
+  auto new_observations =
+      experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
 
-    int i = 0;
+  int i = 0;
 
-    std::for_each(experiment->begin(), experiment->end(),
-                      [&new_observations, &i](auto &group) {
-                            group.add_measurements(new_observations[i++]);
-                      });
-
+  std::for_each(experiment->begin(), experiment->end(),
+                [&new_observations, &i](auto &group) {
+                  group.add_measurements(new_observations[i++]);
+                });
 }

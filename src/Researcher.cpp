@@ -10,59 +10,56 @@
 
 using namespace sam;
 
-//class ResearcherBuilder;
+// class ResearcherBuilder;
 
 ResearcherBuilder Researcher::create(std::string name) {
-    return ResearcherBuilder(name);
+  return ResearcherBuilder(name);
 }
 
 void Researcher::hack() {
-        
-    for (auto &set : hacking_strategies){
-        
-        // For each set, we make a copy of the experiment and apply the given
-        // set of methods over each other.
-        
-        Experiment copiedExpr = *experiment;
-        
-        for (auto &method : set){
-            
-            (*method)(&copiedExpr, decision_strategy.get());
-            copiedExpr.is_hacked = true;
-            
-            decision_strategy->verdict(copiedExpr,
-                                            DecisionStage::DoneHacking);
-            
-            // If the researcher statisfied, hacking routine will be stopped
-            if (!decision_strategy->isStillHacking()){
-                break;
-            }
-            
-        }
-    }
-}
 
+  for (auto &set : hacking_strategies) {
+
+    // For each set, we make a copy of the experiment and apply the given
+    // set of methods over each other.
+
+    Experiment copiedExpr = *experiment;
+
+    for (auto &method : set) {
+
+      (*method)(&copiedExpr, decision_strategy.get());
+      copiedExpr.is_hacked = true;
+
+      decision_strategy->verdict(copiedExpr, DecisionStage::DoneHacking);
+
+      // If the researcher statisfied, hacking routine will be stopped
+      if (!decision_strategy->isStillHacking()) {
+        break;
+      }
+    }
+  }
+}
 
 /**
  Iterating over the registrated methods and run them on the current experiment.
- 
- @note This has a very similar implemention to the `hack()` but it doesn't perform any of
- the secondary checks.
- 
- @bug I think there is a possible bug here, since pre-processing methods can be much more aggresive,
- they can cause some issues when it comes to calculating statistics.
+
+ @note This has a very similar implemention to the `hack()` but it doesn't
+ perform any of the secondary checks.
+
+ @bug I think there is a possible bug here, since pre-processing methods can be
+ much more aggresive, they can cause some issues when it comes to calculating
+ statistics.
  */
 void Researcher::preProcessData() {
-    
-    static NoDecision no_decision = NoDecision();
-    
-    experiment->calculateStatistics();
-    
-    for (auto &method : pre_processing_methods){
-        
-        (*method)(experiment, &no_decision);
-        
-    }
+
+  static NoDecision no_decision = NoDecision();
+
+  experiment->calculateStatistics();
+
+  for (auto &method : pre_processing_methods) {
+
+    (*method)(experiment, &no_decision);
+  }
 }
 
 /**
@@ -71,23 +68,22 @@ void Researcher::preProcessData() {
  using the DataGenStrategy
  */
 void Researcher::prepareResearch() {
-    
-    // TODO: Randomize if necessary
-    
-    // TODO: Maybe I need a `reset` or `clean` method for Experiment
-    
-    spdlog::debug("Generating Data");
-    
-    // Generating data using the dataStrategy
-    experiment->generateData();
-    
-    // Performing the Pre-processing if any
-    if (is_pre_processing){
-        spdlog::debug("Pre-processing");
-        
-        preProcessData();
-    }
-        
+
+  // TODO: Randomize if necessary
+
+  // TODO: Maybe I need a `reset` or `clean` method for Experiment
+
+  spdlog::debug("Generating Data");
+
+  // Generating data using the dataStrategy
+  experiment->generateData();
+
+  // Performing the Pre-processing if any
+  if (is_pre_processing) {
+    spdlog::debug("Pre-processing");
+
+    preProcessData();
+  }
 }
 
 /**
@@ -95,19 +91,21 @@ void Researcher::prepareResearch() {
  and running the test. In the case where the researcher is a hacker, the
  researcher will apply the hacking methods on the `experiment`.
  */
-void Researcher::performResearch(){
-        
-    experiment->calculateStatistics();
-    
-    experiment->calculateEffects();
-    
-    spdlog::debug("Running Test");
-    
-    experiment->runTest();
+void Researcher::performResearch() {
 
-    if (decision_strategy->verdict(*experiment, DecisionStage::Initial).isStillHacking() && isHacker()){
-        hack();
-    }    
+  experiment->calculateStatistics();
+
+  experiment->calculateEffects();
+
+  spdlog::debug("Running Test");
+
+  experiment->runTest();
+
+  if (decision_strategy->verdict(*experiment, DecisionStage::Initial)
+          .isStillHacking() &&
+      isHacker()) {
+    hack();
+  }
 }
 
 /**
@@ -116,27 +114,24 @@ void Researcher::performResearch(){
  `submissionsList`. After than, it'll submit the submission record to the
  selected `journal`.
  */
-void Researcher::publishResearch(){
-    
-    // Ask for the final decision    
-    decision_strategy->verdict(*experiment, DecisionStage::Final);
-    
-    // Setting researcher's submission record
-    submission_record = decision_strategy->final_submission;
-    
-    // Submit the final submission to the Jouranl
-    if (decision_strategy->willBeSubmitting())
-        journal->review(decision_strategy->final_submission);
-    
-}
+void Researcher::publishResearch() {
 
+  // Ask for the final decision
+  decision_strategy->verdict(*experiment, DecisionStage::Final);
+
+  // Setting researcher's submission record
+  submission_record = decision_strategy->final_submission;
+
+  // Submit the final submission to the Jouranl
+  if (decision_strategy->willBeSubmitting())
+    journal->review(decision_strategy->final_submission);
+}
 
 void Researcher::research() {
 
-    prepareResearch();
+  prepareResearch();
 
-    performResearch();
+  performResearch();
 
-    publishResearch();
-    
+  publishResearch();
 }

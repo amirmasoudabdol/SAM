@@ -5,48 +5,43 @@
 #include <stdexcept>
 #include <tuple>
 
+#include "DataStrategy.h"
 #include "ExperimentSetup.h"
 #include "Utilities.h"
-#include "DataStrategy.h"
 
 using namespace sam;
 
 ExperimentSetupBuilder ExperimentSetup::create() {
-    return ExperimentSetupBuilder();
+  return ExperimentSetupBuilder();
 }
 
-ExperimentSetup::ExperimentSetup(json& config) {
-    
-    nc_ = config["n_conditions"];
-    nd_ = config["n_dep_vars"];
-    ng_ = nc_ * nd_;
+ExperimentSetup::ExperimentSetup(json &config) {
 
-    auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
-    nobs_ = nobs_t;
-    
-    tsp_conf = config["test_strategy"];
-    dsp_conf = config["data_strategy"];
-    esp_conf = config["effect_strategy"];
-    
+  nc_ = config["n_conditions"];
+  nd_ = config["n_dep_vars"];
+  ng_ = nc_ * nd_;
+
+  auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
+  nobs_ = nobs_t;
+
+  tsp_conf = config["test_strategy"];
+  dsp_conf = config["data_strategy"];
+  esp_conf = config["effect_strategy"];
 }
-
 
 void ExperimentSetup::randomize_parameters() {
-    
-//    if (params_dist["n_obs"]){
-//        fill_vector<int>(nobs_, nobs_.size(), Random::get(params_dist["n_obs"]));
-//    }
 
+  //    if (params_dist["n_obs"]){
+  //        fill_vector<int>(nobs_, nobs_.size(),
+  //        Random::get(params_dist["n_obs"]));
+  //    }
 }
 
+ExperimentSetupBuilder &ExperimentSetupBuilder::fromConfigFile(json &config) {
 
+  setup.nc_ = config["n_conditions"];
+  setup.nd_ = config["n_dep_vars"];
+  setup.ng_ = setup.nc_ * setup.nd_;
 
-ExperimentSetupBuilder& ExperimentSetupBuilder::fromConfigFile(json &config) {
-    
-    setup.nc_ = config["n_conditions"];
-    setup.nd_ = config["n_dep_vars"];
-    setup.ng_ = setup.nc_ * setup.nd_;
-
-    return *this;
-    
+  return *this;
 }

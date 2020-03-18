@@ -5,162 +5,136 @@
 #ifndef SAMPP_EFFECTSTRATEGY_H
 #define SAMPP_EFFECTSTRATEGY_H
 
-#include <vector>
 #include <string>
+#include <vector>
 // #include "Experiment.h"
 
 #include "nlohmann/json.hpp"
 
 namespace sam {
 
-    class Experiment;
-    class ExperimentSetup;
+class Experiment;
+class ExperimentSetup;
 
-    using json = nlohmann::json;
+using json = nlohmann::json;
 
-    /**
-     * \brief      Abstract class for Effect Size Strategy
-     * 
-     * 
-     */
-    class EffectStrategy {
-        
-    public:
+/**
+ * \brief      Abstract class for Effect Size Strategy
+ *
+ *
+ */
+class EffectStrategy {
 
-        enum class EffectEstimator {
-            CohensD,
-            HedgesG,
-            OddRatio,
-            MeanDifference
-        };
-        
-        struct EffectStrategyParameters {
-            EffectEstimator name;
-        };
+public:
+  enum class EffectEstimator { CohensD, HedgesG, OddRatio, MeanDifference };
 
-        EffectStrategyParameters params;
-        
-        static std::unique_ptr<EffectStrategy>build(json &effect_strategy_config);
-        
-        virtual ~EffectStrategy() = 0;
+  struct EffectStrategyParameters {
+    EffectEstimator name;
+  };
 
-        virtual void computeEffects(Experiment *experiment) = 0;
+  EffectStrategyParameters params;
 
-        // std::string name = "";
+  static std::unique_ptr<EffectStrategy> build(json &effect_strategy_config);
 
-    };
+  virtual ~EffectStrategy() = 0;
 
+  virtual void computeEffects(Experiment *experiment) = 0;
 
-    class MeanDifference final : public EffectStrategy {
+  // std::string name = "";
+};
 
-    public:
+class MeanDifference final : public EffectStrategy {
 
-//        std::string name = "MeanDifference";
+public:
+  //        std::string name = "MeanDifference";
 
-        explicit MeanDifference() {
-             // name = "MeanDifference";
-        };
+  explicit MeanDifference(){
+      // name = "MeanDifference";
+  };
 
-        explicit MeanDifference(EffectStrategyParameters esp) {
-            params = esp;
-        };
+  explicit MeanDifference(EffectStrategyParameters esp) { params = esp; };
 
-        void computeEffects(Experiment *experiment);
-        
-    };
+  void computeEffects(Experiment *experiment);
+};
 
+class CohensD final : public EffectStrategy {
 
-    class CohensD final : public EffectStrategy {
+public:
+  //        std::string name = "CohensD";
 
-    public:
+  explicit CohensD(){
+      // name = "CohensD";
+  };
 
-//        std::string name = "CohensD";
+  explicit CohensD(EffectStrategyParameters esp) { params = esp; };
 
-        explicit CohensD() {
-             // name = "CohensD";
-        };
+  void computeEffects(Experiment *experiment);
+};
 
-        explicit CohensD(EffectStrategyParameters esp) {
-            params = esp;
-        };
+class HedgesG final : public EffectStrategy {
 
-        void computeEffects(Experiment *experiment);
-        
-    };
+public:
+  //        std::string name = "HedgesG";
 
+  explicit HedgesG() {
+    // name = "HedgesG";
+  }
 
-    class HedgesG final : public EffectStrategy {
-        
-    public:
+  explicit HedgesG(EffectStrategyParameters esp) { params = esp; };
 
-//        std::string name = "HedgesG";
+  void computeEffects(Experiment *experiment);
+};
 
-        explicit HedgesG() {
-             // name = "HedgesG";
-        }
+//
+// class OddRatio final : public EffectStrategy {
+//
+// public:
+//    void computeEffects(Experiment *experiment);
+//
+// private:
+//    const std::string name = "OddRatio";
+//};
+//
+//
+// class PearsonR final : public EffectStrategy {
+//
+// public:
+//    void computeEffects(Experiment *experiment);
+//
+// private:
+//    const std::string name = "PearsonR";
+//};
+//
+// class GlassDelta final : public EffectStrategy {
+//
+// public:
+//    void computeEffects(Experiment *experiment);
+//
+// private:
+//    const std::string name = "GlassDelta";
+//};
+//
+// class EtaSquared final : public EffectStrategy {
+//
+// public:
+//    void computeEffects(Experiment *experiment);
+//
+// private:
+//    const std::string name = "EtaSquared";
+//};
 
-        explicit HedgesG(EffectStrategyParameters esp) {
-            params = esp;
-        };
+double mean_difference(double Sm1, double Sd1, double Sm2, double Sd2);
 
-        void computeEffects(Experiment *experiment);
-        
-    };
+void cohens_d(Experiment *expr);
 
-    //
-    //class OddRatio final : public EffectStrategy {
-    //    
-    //public:
-    //    void computeEffects(Experiment *experiment);
-    //    
-    //private:
-    //    const std::string name = "OddRatio";
-    //};
-    //
-    //
-    //class PearsonR final : public EffectStrategy {
-    //    
-    //public:
-    //    void computeEffects(Experiment *experiment);
-    //    
-    //private:
-    //    const std::string name = "PearsonR";
-    //};
-    //
-    //class GlassDelta final : public EffectStrategy {
-    //    
-    //public:
-    //    void computeEffects(Experiment *experiment);
-    //    
-    //private:
-    //    const std::string name = "GlassDelta";
-    //};
-    //
-    //class EtaSquared final : public EffectStrategy {
-    //    
-    //public:
-    //    void computeEffects(Experiment *experiment);
-    //    
-    //private:
-    //    const std::string name = "EtaSquared";
-    //};
+double cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
+                double Sn2);
+double hedges_g(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
+                double Sn2);
+double pearsons_r(double Cd);
+double glass_delta(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
+                   double Sn2);
 
+} // namespace sam
 
-    double mean_difference(double Sm1, double Sd1,
-                           double Sm2, double Sd2);
-
-    void cohens_d(Experiment *expr);
-
-
-    double cohens_d(double Sm1, double Sd1, double Sn1,
-                     double Sm2, double Sd2, double Sn2);
-    double hedges_g(double Sm1, double Sd1, double Sn1,
-                    double Sm2, double Sd2, double Sn2);
-    double pearsons_r(double Cd);
-    double glass_delta(double Sm1, double Sd1, double Sn1,
-                        double Sm2, double Sd2, double Sn2);
-
-
-}
-
-#endif //SAMPP_EFFECTSTRATEGY_H
+#endif // SAMPP_EFFECTSTRATEGY_H
