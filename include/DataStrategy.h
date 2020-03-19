@@ -154,7 +154,7 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 
   if (j.at("measurements").type() == nlohmann::detail::value_t::array) {
     std::vector<Distribution> dists;
-    for (auto &value : j["measurements"]) {
+    for (const auto &value : j["measurements"]) {
       dists.push_back(make_distribution(value));
     }
     p.meas_dists = dists;
@@ -298,7 +298,7 @@ inline void from_json(const json &j, GRMDataStrategy::Parameters &p) {
   else {
     if (j.at("difficulties").type() == nlohmann::detail::value_t::array) {
       std::vector<Distribution> dists;
-      for (auto &value : j["difficulties"])
+      for (const auto &value : j["difficulties"])
         dists.push_back(make_distribution(value));
       p.diff_dists = dists;
     }
@@ -310,7 +310,7 @@ inline void from_json(const json &j, GRMDataStrategy::Parameters &p) {
   else {
     if (j.at("abilities").type() == nlohmann::detail::value_t::array) {
       std::vector<Distribution> dists;
-      for (auto &value : j["abilities"])
+      for (const auto &value : j["abilities"])
         dists.push_back(make_distribution(value));
       p.abil_dists = dists;
     }

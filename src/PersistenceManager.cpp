@@ -40,7 +40,7 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
     writer->write_row(s);
   }
 
-  for (auto &s : subs) {
+  for (const auto &s : subs) {
     spdlog::debug("{}", s);
   }
 }

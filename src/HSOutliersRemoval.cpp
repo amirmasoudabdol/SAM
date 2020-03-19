@@ -19,7 +19,7 @@ void OutliersRemoval::perform(Experiment *experiment,
   /// result flag
   int res = 0;
 
-  for (auto d : params.multipliers) {
+  for (const auto d : params.multipliers) {
 
     for (int t = 0;
          t < params.n_attempts && t < params.max_attempts && res != 1; t++) {

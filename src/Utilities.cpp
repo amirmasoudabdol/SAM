@@ -45,7 +45,7 @@ std::map<std::string, std::string> flatten_json_to_map(const json &j) {
 
   auto flattened_j = j.flatten();
 
-  for (auto entry : flattened_j.items()) {
+  for (const auto &entry : flattened_j.items()) {
     switch (entry.value().type()) {
     // avoid escaping string value
     case nlohmann::detail::value_t::string:

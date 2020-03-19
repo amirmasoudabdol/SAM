@@ -151,7 +151,7 @@ protected:
       // Found a comparision
 
       std::string s_op{};
-      for (auto &op : cops)
+      for (const auto &op : cops)
         if (s.find(op.first) != std::string::npos) {
           s_op = op.first;
           break;
@@ -299,7 +299,7 @@ public:
     case PolicyType::Comp: {
       auto pit = std::partition(begin, end, func);
       spdlog::debug("Comp: ");
-      for (auto it{begin}; it != pit; ++it) {
+      for (auto it {begin}; it != pit; ++it) {
         spdlog::debug("\t {}", *it);
       }
 
@@ -315,7 +315,7 @@ public:
       /// the list.
       Random::shuffle(begin, end);
       spdlog::debug("Shuffled: ");
-      for (auto it{begin}; it != end; ++it) {
+      for (auto it {begin}; it != end; ++it) {
         spdlog::debug("\t {}", *it);
       }
       return {true, begin, end};
@@ -429,11 +429,11 @@ public:
 
     spdlog::debug("Registering decision policies...");
 
-    for (auto &policies : p.decision_policies) {
+    for (const auto &policies : p.decision_policies) {
 
       decision_policies.push_back(std::vector<Policy>());
 
-      for (auto &s : policies) {
+      for (const auto &s : policies) {
 
         auto policy = make_function(s, lua);
 
@@ -442,7 +442,7 @@ public:
       }
     }
 
-    for (auto &s : p.submission_policies) {
+    for (const auto &s : p.submission_policies) {
 
       auto policy = make_function(s, lua);
 

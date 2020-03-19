@@ -24,10 +24,10 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment,
 
   /// Going through K's in order and return as soon as the deicsion_strategy is
   /// satisfied.
-  for (auto &k : Ks) {
+  for (const auto &k : Ks) {
 
     /// Removing the outliers from control groups as well.
-    for (int i{0}; i < experiment->setup.ng(); ++i) {
+    for (int i {0}; i < experiment->setup.ng(); ++i) {
       auto &row = (*experiment)[i].measurements();
 
       arma::rowvec standaraized =

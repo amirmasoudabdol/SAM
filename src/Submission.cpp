@@ -22,7 +22,7 @@ Submission::Submission(Experiment &e, const int &index) {
 std::vector<std::string> Submission::cols() {
 
   if (!record.empty()) {
-    for (auto &item : record) {
+    for (const auto &item : record) {
       columns.push_back(item.first);
     }
   }

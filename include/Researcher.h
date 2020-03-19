@@ -152,11 +152,11 @@ public:
     // Parsing Hacking Strategies
     researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
     if (researcher.is_hacker) {
-      for (auto &set : config["researcher_parameters"]["hacking_strategies"]) {
+      for (const auto &set : config["researcher_parameters"]["hacking_strategies"]) {
 
         researcher.hacking_strategies.push_back({});
 
-        for (auto &item : set) {
+        for (const auto &item : set) {
 
           researcher.hacking_strategies.back().push_back(
               HackingStrategy::build(item));
@@ -343,15 +343,15 @@ public:
     researcher.isHacker();
     researcher.hacking_strategies.resize(n_group);
 
-    for (auto &group : researcher.hacking_strategies) {
-
-      for (int i = 0; i < m_method; i++) {
-        //                    auto h_method =
-        //                    enum_cast<HackingMethod>(Random::get<int>(0,
-        //                    enum_count<HackingMethod>() - 1));
-        //                    group.push_back(HackingStrategy::build(h_method.value()));
-      }
-    }
+//    for (auto &group : researcher.hacking_strategies) {
+//
+//      for (int i = 0; i < m_method; i++) {
+//                            auto h_method =
+//                            enum_cast<HackingMethod>(Random::get<int>(0,
+//                            enum_count<HackingMethod>() - 1));
+//                            group.push_back(HackingStrategy::build(h_method.value()));
+//      }
+//    }
 
     researcher.is_hacker = true;
     return *this;
