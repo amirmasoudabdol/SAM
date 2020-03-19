@@ -2,19 +2,19 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
-/**
- * \defgroup HackingStrategies
- * @brief List of available hacking strategies
- *
- * Description to come!
- */
+///
+/// \defgroup   HackingStrategies (group_title)
+/// \brief      List of available hacking strategies
+///
+/// Description to come!
+///
 
-/**
- * \defgroup HackingStrategiesParameters
- * @brief Description of hacking strategies parameters
- *
- * Description to come!
- */
+///
+/// \defgroup   HackingStrategiesParameters (group_title)
+/// \brief      Description of hacking strategies parameters
+///
+/// Description to come!
+///
 
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
@@ -34,34 +34,29 @@ namespace sam {
 
 using json = nlohmann::json;
 
-/**
- @brief Abstract class for hacking strategies.
-
- Each HackingStrategy should provide a `perform()` method. The `perform()`
- method will take over a pointer to an Experiment and apply the implemented
- hacking on it. Researcher decides if this is a pointer to a *fresh* copy of the
- Experiment or a pointer to a previously "hacked" Experiment.
-
- @ingroup HackingStrategies
- */
+/// \ingroup    HackingStrategies
+///
+/// \brief      Abstract class for hacking strategies.
+///
+/// Each HackingStrategy should provide a `perform()` method. The `perform()`
+/// method will take over a pointer to an Experiment and apply the implemented
+/// hacking on it. Researcher decides if this is a pointer to a *fresh* copy of
+/// the Experiment or a pointer to a previously "hacked" Experiment.
+///
 class HackingStrategy {
 
 public:
-  /**
-   * @brief      Pure deconstuctor of the Base calss. This is important
-   * for proper deconstruction of Derived classes.
-   */
+  /// \brief      Pure deconstuctor of the Base calss. This is important
+  /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
 
-  /**
-   * @brief      Factory method for building a HackingStrategy
-   *
-   * @param      config  A reference to an item of the
-   * `json['--hacking-strategy']`. Researcher::Builder is responsible for
-   * passing this object correctly.
-   *
-   * @return     A new HackingStrategy
-   */
+  /// \brief      Factory method for building a HackingStrategy
+  ///
+  /// \param      config  A reference to an item of the
+  /// `json['--hacking-strategy']`. Researcher::Builder is responsible for
+  /// passing this object correctly.
+  ///
+  /// \return     A new HackingStrategy
   static std::unique_ptr<HackingStrategy> build(json &hacking_strategy_config);
 
   static std::unique_ptr<HackingStrategy> build(HackingMethod method);
@@ -72,15 +67,15 @@ public:
   };
 
 private:
-  /**
-   * @brief      Applies the hacking method on the Experiment.
-   *
-   * @param      experiment        A pointer to an Experiment.
-   *
-   * @param      decisionStrategy  A pointer to Researcher's DecisionStrategy.
-   *                               The HackingStrategy decides with what flag it
-   *                               is going to use the DecisionStrategy.
-   */
+  /// \brief      Applies the hacking method on the Experiment.
+  ///
+  /// \param      experiment        A pointer to an Experiment.
+  ///
+  /// \param      decisionStrategy  A pointer to Researcher's
+  ///   DecisionStrategy.
+  ///                               The HackingStrategy decides with what
+  ///   flag it
+  ///                               is going to use the DecisionStrategy.
   virtual void perform(Experiment *experiment,
                        DecisionStrategy *decisionStrategy) = 0;
 };
@@ -97,17 +92,15 @@ private:
                        DecisionStrategy *decisionStrategy) override{};
 };
 
-/**
- @brief Declartion of OptionalStopping hacking strategy
-
- @ingroup HackingStrategies
- */
+///
+/// \brief      Declartion of OptionalStopping hacking strategy
+///
+/// \ingroup    HackingStrategies
+///
 class OptionalStopping final : public HackingStrategy {
 
 public:
-  /**
-   @ingroup HackingStrategiesParameters
-   */
+  ///   \ingroup HackingStrategiesParameters
   struct Parameters {
     //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::OptionalStopping;
@@ -140,13 +133,11 @@ private:
                        DecisionStrategy *decisionStrategy) override;
 
 private:
-  /**
-   Add _n_ observations to all groups and return the updated experiment to
-   the `perform()` method.
-
-   @param experiment A pointer to the experiment
-   @param n number of new observations to be added
-   */
+  ///   Add _n_ observations to all groups and return the updated experiment to
+  ///   the `perform()` method.
+  ///
+  ///   \param experiment A pointer to the experiment
+  ///   \param n number of new observations to be added
   void addObservations(Experiment *experiment, const int &n);
 };
 
@@ -169,36 +160,31 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("max_attempts").get_to(p.max_attempts);
 }
 
-/**
- @brief Declaration of Outlier Removal hacking method based on items' distance
- from their sample mean.
-
- @ingroup HackingStrategies
- */
+///
+/// \brief      Declaration of Outlier Removal hacking method based on items'
+///             distance from their sample mean.
+///
+/// \ingroup    HackingStrategies
+///
 class OutliersRemoval final : public HackingStrategy {
 public:
-  /**
-   Parameters of Outliers Removal Strategy
-
-
-   ```json
-   {
-       "_name": "OutliersRemoval",
-       "level": "dv",
-       "max_attempts": 1000,
-       "min_observations": 10,
-       "multipliers": [
-           0.5
-       ],
-       "n_attempts": 1000,
-       "num": 1000,
-       "order": "random"
-   }
-   ```
-
-   @ingroup HackingStrategiesParameters
-
-   */
+  /// Parameters of Outliers Removal Strategy
+  ///
+  ///  ```json
+  /// {
+  ///     "_name": "OutliersRemoval",
+  ///     "level": "dv",
+  ///     "max_attempts": 1000,
+  ///     "min_observations": 10,
+  ///     "multipliers": [
+  ///         0.5
+  ///     ],
+  ///     "n_attempts": 1000,
+  ///     "num": 1000,
+  ///     "order": "random"
+  /// }
+  /// ```
+  /// \ingroup HackingStrategiesParameters
   struct Parameters {
     HackingMethod name = HackingMethod::OutliersRemoval;
 
@@ -271,39 +257,39 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("multipliers").get_to(p.multipliers);
 }
 
-/**
- @brief The subjective outlier removal refers to a type of outliers removal
- where the researcher continiously lowers the threshold of identifying an
- outlier, `k`, until it finds a significant (or satisfactory) result.
-
- @sa DecisionStrategy
- @sa DecisionPreference
- */
+///
+/// \brief      The subjective outlier removal refers to a type of outliers
+/// removal
+///             where the researcher continiously lowers the threshold of
+///             identifying an outlier, `k`, until it finds a significant (or
+///             satisfactory) result.
+///
+/// \see        DecisionStrategy
+/// \see        DecisionPreference
+///
 class SubjectiveOutlierRemoval final : public HackingStrategy {
 public:
-  /**
-   @brief SubjectiveOutlierRemoval's parameters.
-
-   These are parameters specific to this hacking strategy. You can set them
-   either progmatically when you are constructing a new
-   SubjectiveOutlierRemoval, e.g., `SubjectiveOutlierRemoval sor{<name>, {min,
-   max}, ssize};`.
-
-   Or, when you are using `SAMrun` to run your simulation. In this case, your
-   JSON variable must comply with the name and type of paramters here. For
-   example, the following JSON defines the default subjective outliers removal.
-
-   ```json
-   {
-      "_name": "SubjectiveOutlierRemoval",
-      "range": [2, 4],
-      "step_size": 0.1,
-      "min_observations": 5
-   }
-   ```
-
-   @ingroup HackingStrategiesParameters
-   */
+  /// \brief SubjectiveOutlierRemoval's parameters.
+  ///
+  /// These are parameters specific to this hacking strategy. You can set them
+  /// either progmatically when you are constructing a new
+  /// SubjectiveOutlierRemoval, e.g., `SubjectiveOutlierRemoval sor{<name>,
+  /// {min, max}, ssize};`.
+  ///
+  /// Or, when you are using `SAMrun` to run your simulation. In this case,
+  /// your JSON variable must comply with the name and type of paramters here.
+  /// For example, the following JSON defines the default subjective outliers
+  /// removal.
+  ///
+  /// ```json
+  /// {
+  ///    "_name": "SubjectiveOutlierRemoval",
+  ///    "range": [2, 4],
+  ///    "step_size": 0.1,
+  ///    "min_observations": 5
+  /// }
+  /// ```
+  /// \ingroup HackingStrategiesParameters
   struct Parameters {
     //! A placeholder for the name
     HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
@@ -418,15 +404,6 @@ inline void from_json(const json &j, ConditionDropping::Parameters &p) {
   // necessary.
   j.at("_name").get_to(p.name);
 }
-
-// class QuestionableRounding : public HackingStrategy {
-//
-// public:
-//    QuestionableRounding(int threshold) : _threshold(threshold) {};
-//
-// private:
-//    int _threshold;
-//};
 
 } // namespace sam
 
