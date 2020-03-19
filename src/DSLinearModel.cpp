@@ -99,7 +99,7 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment *experiment,
   std::vector<arma::Row<double>> new_values(experiment->setup.ng());
 
   std::generate(new_values.begin(), new_values.end(),
-                [sample, i = 0]() mutable { return sample.row(i++); });
+                [&, i = 0]() mutable { return sample.row(i++); });
 
   return new_values;
 }
