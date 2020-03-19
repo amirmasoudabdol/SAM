@@ -4,7 +4,7 @@
 
 #include "GroupData.h"
 
-namespace sam {
+using namespace sam;
 
 void GroupData::updateStats() {
 
@@ -42,4 +42,11 @@ GroupData::operator std::map<std::string, std::string>() {
   return record;
 }
 
-} // namespace sam
+void GroupData::clear() {
+  
+  hacking_history_.clear();
+  is_hacked_ = false;
+  
+  measurements_.clear();
+  is_measurements_initd_ = false;
+}

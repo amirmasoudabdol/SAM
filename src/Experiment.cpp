@@ -31,6 +31,30 @@ Experiment::Experiment(json &experiment_config) {
   initResources();
 }
 
+Experiment::Experiment(ExperimentSetup &e) : setup{e} {
+
+  data_strategy =
+      std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
+
+  test_strategy =
+      std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
+
+  effect_strategy =
+      std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
+
+  initResources();
+};
+
+
+Experiment::Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
+           std::shared_ptr<TestStrategy> &ts,
+           std::shared_ptr<EffectStrategy> &efs)
+    : setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs} {
+  
+    initResources();
+      
+};
+
 void Experiment::generateData() { data_strategy->genData(this); }
 
 void Experiment::runTest() { test_strategy->run(this); }
@@ -74,9 +98,10 @@ void Experiment::recalculateEverything() {
   this->runTest();
 }
 
-void Experiment::randomize() {
-  setup.randomize_parameters();
-
-  // Increasing the experiment id
-  expr_uuid++;
+void Experiment::clear() {
+  
+  for (auto &group : groups_) {
+    group.clear();
+  }
+  
 }

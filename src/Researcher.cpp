@@ -2,15 +2,11 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
-#include <iostream>
-
 #include "spdlog/spdlog.h"
 
 #include "Researcher.h"
 
 using namespace sam;
-
-// class ResearcherBuilder;
 
 ResearcherBuilder Researcher::create(std::string name) {
   return ResearcherBuilder(name);
@@ -36,8 +32,10 @@ void Researcher::hack() {
       if (!decision_strategy->isStillHacking()) {
         break;
       }
+      
     }
   }
+  
 }
 
 ///
@@ -89,11 +87,9 @@ void Researcher::prepareResearch() {
   }
 }
 
-///
 /// Performs the research by calculating the statistics, calculating the
 /// effects, and running the test. In the case where the researcher is a hacker,
 /// the researcher will apply the hacking methods on the `experiment`.
-///
 void Researcher::performResearch() {
 
   experiment->calculateStatistics();

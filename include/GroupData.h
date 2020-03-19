@@ -58,7 +58,7 @@ public: // Public for now
   double effect_{0};
   int eff_side_{0};
   bool sig_{false};
-  bool is_test_stats_updated_{false};
+  bool is_test_updated_ {false};
 
   /// --- Hacking Meta
   bool is_hacked_{false};
@@ -81,6 +81,8 @@ public: // Public for now
     measurements_ = meas;
     nobs_ = meas.size();
     is_stats_updated_ = false;
+    
+    is_measurements_initd_ = true;
   }
 
   void add_measurements(const arma::Row<double> new_meas) {
@@ -112,6 +114,8 @@ public: // Public for now
 
   void effectComparedTo(const GroupData &other_group,
                         EffectStrategy &effect_strategy);
+  
+  void clear();
 };
 
 } // namespace sam

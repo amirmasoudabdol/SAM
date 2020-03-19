@@ -43,11 +43,6 @@ public:
 
   ExperimentSetup setup;
 
-  /// \note: While I'm still confused about these, but I'm starting to feel
-  /// that it actually makes sense for them to be a shared pointer. In fact, I
-  /// don't really want to copy them around when I copy the experiment, I
-  /// would like them to be shared. So, it seems the ownership is correct
-  /// here.
   std::shared_ptr<DataStrategy> data_strategy;
   std::shared_ptr<TestStrategy> test_strategy;
   std::shared_ptr<EffectStrategy> effect_strategy;
@@ -56,33 +51,13 @@ public:
 
   Experiment() = default;
 
-  explicit Experiment(json &experiment_config);
+  Experiment(json &experiment_config);
 
-  explicit Experiment(ExperimentSetup &e) : setup{e} {
+  Experiment(ExperimentSetup &e);
 
-    /// TODO: If I want to have the size of the experiment setup in the
-    /// dsp_conf, I have to inject it to the `dsp_conf` here and then pass
-    /// it to the builder. This way, from_json could use it as a reference
-    /// and construct a properly sized object.
-    data_strategy =
-        std::shared_ptr<DataStrategy>(DataStrategy::build(setup.dsp_conf));
-
-    test_strategy =
-        std::shared_ptr<TestStrategy>(TestStrategy::build(setup.tsp_conf));
-
-    effect_strategy =
-        std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
-
-    initResources();
-  };
-
-  // TODO: I think this can change, I don't need to accept shared_ptr here
   Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
              std::shared_ptr<TestStrategy> &ts,
-             std::shared_ptr<EffectStrategy> &efs)
-      : setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs} {
-    initResources();
-  };
+             std::shared_ptr<EffectStrategy> &efs);
 
   GroupData &operator[](std::size_t idx) { return groups_[idx]; };
   const GroupData &operator[](std::size_t idx) const { return groups_[idx]; };
@@ -100,7 +75,6 @@ public:
   ///
   /// \param t A reference to a Test Strategy instance
   ///
-  /// TODO: I think I need to re-evaluate passing a shared_ptr by reference.
   void setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
     test_strategy = ts;
   }
@@ -109,7 +83,6 @@ public:
   ///
   /// \param d A reference to a Data Strategy instance
   ///
-  /// TODO: I think I need to re-evalute passing a shared_ptr by reference.
   void setDataStrategy(std::shared_ptr<DataStrategy> &ds) {
     data_strategy = ds;
   }
@@ -118,7 +91,6 @@ public:
   ///
   /// \param es A reference to an Effect Strategy instance.
   ///
-  /// TODO: I think I need to re-evalute passing a shared_ptr by reference.
   void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> &es) {
     effect_strategy = es;
   };
@@ -149,8 +121,8 @@ public:
   void calculateEffects();
 
   void recalculateEverything();
-
-  void randomize();
+  
+  void clear();
 
 private:
   /// Initialize the necessary resources
