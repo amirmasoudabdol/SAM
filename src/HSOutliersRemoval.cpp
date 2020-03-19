@@ -6,11 +6,11 @@
 
 using namespace sam;
 
-/**
- @brief Implementation of Outliers Removal based on an item's distance from the
- \mu.
-
- */
+///
+/// \brief      Implementation of Outliers Removal based on an item's distance
+/// from
+///             the \mu.
+///
 void OutliersRemoval::perform(Experiment *experiment,
                               DecisionStrategy *decisionStrategy) {
 

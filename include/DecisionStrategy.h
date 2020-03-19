@@ -48,8 +48,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {DecisionMethod::NoDecision, "NoDecision"}})
 
 ///
-/// DecisionStage enum indicates on what stages of the _research_ the Researcher is
-/// making decision in.
+/// DecisionStage enum indicates on what stages of the _research_ the Researcher
+/// is making decision in.
 ///
 enum class DecisionStage { Initial, WhileHacking, DoneHacking, Final };
 
@@ -211,17 +211,17 @@ protected:
   bool complying_with_preference = true;
 
   /// A method implementing the Initial decision making logic.
-  /// 
+  ///
   /// \return A boolean indicating whether the researcher should proceed
   /// with the hacking or not.
   virtual void initDecision(Experiment &experiment) = 0;
 
   /// A method implementing the Intermediate decision making logic.
-  /// 
-  /// @note Decision Strategy at this stage can decide if it wants to add
+  ///
+  /// \note Decision Strategy at this stage can decide if it wants to add
   /// an intermediate solution to the pool or not. This is often a solution
   /// halfway through the hacking process for instance.
-  /// 
+  ///
   /// \return A boolean indicating whether the researcher should stop the
   /// hacking procedude or not. E.g., in the case of Optional Stopping this
   /// routine will decide whether researcher should stop after each attempt
@@ -230,16 +230,16 @@ protected:
 
   /// A method implementing the decision making routine after completely
   /// applying a hacking strategy on an experiment.
-  /// 
+  ///
   /// \return A boolean indicating whether the researcher should proceed to
   /// the _next_ hacking strategy.
   virtual void afterhackDecision(Experiment &experiment) = 0;
 
   /// A method implementing the Final decision making logic.
-  /// 
-  /// @note In the case where the Decision Making should look back at the
+  ///
+  /// \note In the case where the Decision Making should look back at the
   /// history of hacking, this routine will also prepare the `final_submission`.
-  /// 
+  ///
   /// \return A boolean indicating whether the researcher should proceed
   /// with submitting the final submission to the Journal or not.
   virtual void finalDecision(Experiment &experiment) = 0;
@@ -248,7 +248,7 @@ public:
   DecisionMethod name;
 
   /// DecisionStrategy factory method.
-  /// 
+  ///
   /// \param decision_strategy_config    A JSON object containing information
   /// about each decision strategy.
   static std::unique_ptr<DecisionStrategy>
@@ -299,7 +299,7 @@ public:
     case PolicyType::Comp: {
       auto pit = std::partition(begin, end, func);
       spdlog::debug("Comp: ");
-      for (auto it {begin}; it != pit; ++it) {
+      for (auto it{begin}; it != pit; ++it) {
         spdlog::debug("\t {}", *it);
       }
 
@@ -315,7 +315,7 @@ public:
       /// the list.
       Random::shuffle(begin, end);
       spdlog::debug("Shuffled: ");
-      for (auto it {begin}; it != end; ++it) {
+      for (auto it{begin}; it != end; ++it) {
         spdlog::debug("\t {}", *it);
       }
       return {true, begin, end};
@@ -343,11 +343,11 @@ public:
   /// _Submission_. This acts as an another level of decision making where the
   /// researcher consider another criteria if it couldn't achieve what he was
   /// "looking for".
-  /// 
-  /// For instance, if the researcher is determined to find "MinSigPvalue" during
-  /// his research, and — after all the hacking — he couldn't find anything
-  /// significant, then he decide whether he wants to submit the "unpreferable"
-  /// result or not.
+  ///
+  /// For instance, if the researcher is determined to find "MinSigPvalue"
+  /// during his research, and — after all the hacking — he couldn't find
+  /// anything significant, then he decide whether he wants to submit the
+  /// "unpreferable" result or not.
   virtual bool willBeSubmitting();
 
   DecisionStage current_stage;
@@ -358,7 +358,6 @@ public:
   //! is satisfied with.
   Submission final_submission;
 
-
   /// Clear the list of submissions and experiments
   void clearHistory() {
     submissions_pool.clear();
@@ -366,13 +365,13 @@ public:
   }
 
   /// \brief      Implementation of decision-making procedure.
-  /// 
+  ///
   /// \param      experiment
   /// \param[in]  stage       The stage in which the researcher is asking
   ///                         for the verdict. The implementation of verdict
   ///                         sould provide different procedure for different
   ///                         stages of the development.
-  /// 
+  ///
   /// \return     A boolean indicating whether result is satisfactory or not
   virtual DecisionStrategy &verdict(Experiment &experiment,
                                     DecisionStage stage) = 0;
@@ -383,35 +382,38 @@ public:
     submissions_pool.push_back(current_submission);
   };
 
-  /**
-   * \brief      Based on the DecisionPreference, it'll select the outcome
-   * between all groups, `ng`. For instance, the MinPvalue deicison prefenrece
-   * will
-   *
-   * \param      experiment
-   *
-   * \return     A copy of the selected outcome
-   */
+  ///
+  /// \brief      Based on the DecisionPreference, it'll select the outcome
+  /// between
+  ///             all groups, `ng`. For instance, the MinPvalue deicison
+  ///             prefenrece will
+  ///
+  /// \param      experiment  { parameter_description }
+  ///
+  /// \return     A copy of the selected outcome
+  ///
   Submission selectOutcome(Experiment &experiment);
 
-  /**
-   * \brief      Select the final submission by checking all logged Submissions.
-   * Each submission is from a hacked experiment by the researcher. This is
-   * often being used by the `PatientDecisionMaker` at the end of the hacking
-   * procedure.
-   *
-   * \return     A copy of the selected outcome
-   */
+  ///
+  /// \brief      Select the final submission by checking all logged
+  /// Submissions.
+  ///             Each submission is from a hacked experiment by the researcher.
+  ///             This is often being used by the `PatientDecisionMaker` at the
+  ///             end of the hacking procedure.
+  ///
+  /// \return     A copy of the selected outcome
+  ///
   Submission selectBetweenSubmissions();
 
   //        Experiment selectBetweenExperiments();
 };
 
 /// \ingroup    DecisionStrategies
-/// 
+///
 /// \brief      Implementation of an impatient researcher. In this case, the
-///             Researcher will stop as soon as find a significant result and will
-///             not continue exploring other hacking methods in his arsenal.
+///             Researcher will stop as soon as find a significant result and
+///             will not continue exploring other hacking methods in his
+///             arsenal.
 ///
 class ImpatientDecisionMaker final : public DecisionStrategy {
 
@@ -577,7 +579,8 @@ public:
 /// \brief      A placeholder for empty decision strategy.
 ///
 /// \note       This is currently being used during the PreProcessing where I
-///             basically don't want to intervene with the process, and let it run
+///             basically don't want to intervene with the process, and let it
+///             run
 ///
 class NoDecision final : public DecisionStrategy {
 

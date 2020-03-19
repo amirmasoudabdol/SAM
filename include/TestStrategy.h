@@ -23,14 +23,14 @@ using json = nlohmann::json;
 class Experiment;
 class ExperimentSetup;
 
-/**
- @brief Abstract class for defining test strategies.
-
- Statistical test strategies will investigate if there is a meaningful
- difference between means of two samples. Every test strategy should provide a
- `run()` method. The `run()` method will accept a pointer to the experiment and
- update necessary variables, e.g., _statistics_ & _p-value_.
- */
+///
+/// \brief      Abstract class for defining test strategies.
+///
+/// Statistical test strategies will investigate if there is a meaningful
+/// difference between means of two samples. Every test strategy should provide
+/// a `run()` method. The `run()` method will accept a pointer to the experiment
+/// and update necessary variables, e.g., _statistics_ & _p-value_.
+///
 class TestStrategy {
 
 public:
@@ -52,9 +52,9 @@ public:
     }
   };
 
-  /**
-   * Specifying the significant testing method
-   */
+  ///
+  /// Specifying the significant testing method
+  ///
   enum class TestMethod {
     TTest,       ///< TTest
     FTest,       ///< FTest
@@ -62,17 +62,17 @@ public:
     WilcoxonTest ///< WilcoxonTest
   };
 
-  /**
-   Specify the side of the test
-   */
+  ///
+  /// Specify the side of the test
+  ///
   enum class TestAlternative { Less, Greater, TwoSided };
 
-  /**
-   Contains Test Strategy parameters.
-
-   @note I'm still experimenting with this while I'm trying to simplify
-   the construction process.
-   */
+  ///
+  /// Contains Test Strategy parameters.
+  ///
+  /// \note       I'm still experimenting with this while I'm trying to simplify
+  ///             the construction process.
+  ///
   struct TestStrategyParameters {
     TestMethod name;
     TestAlternative alternative = TestAlternative::TwoSided;
@@ -88,17 +88,16 @@ public:
   virtual void run(GroupData &group_1, GroupData &group_2) = 0;
 };
 
-/**
- @brief Declration of t-test.
-
- The `run()` method will check the significance of the difference between two
- groups. In the current setup, every `experiment->means` is considered an effect
- size between a treatment group and a control group with the mean of zero.
- Therefore, computing the t-statistics and computing the p-value would be
- sufficient. This is technically an implementation of [one sample
- t-test](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test).
-
- */
+///
+/// \brief      Declration of t-test.
+///
+/// The `run()` method will check the significance of the difference between two
+/// groups. In the current setup, every `experiment->means` is considered an
+/// effect size between a treatment group and a control group with the mean of
+/// zero. Therefore, computing the t-statistics and computing the p-value would
+/// be sufficient. This is technically an implementation of [one sample
+/// t-test](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test).
+///
 class TTest final : public TestStrategy {
 
 public:

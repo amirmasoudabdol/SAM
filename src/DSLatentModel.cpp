@@ -10,13 +10,11 @@
 
 using namespace sam;
 
-/**
- Construct a structural equation model based on the given paramters specified in
- the ExperimentSteup.
- Beside `experiment->measurements`, LatentDataStrategy populates the
- `experiment->items` as well.
-
- */
+///
+/// Construct a structural equation model based on the given paramters specified
+/// in the ExperimentSteup. Beside `experiment->measurements`,
+/// LatentDataStrategy populates the `experiment->items` as well.
+///
 void LatentDataStrategy::genData(Experiment *experiment) {
 
   //   int ni = experiment->setup.ni_;
@@ -38,7 +36,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   //
   //    gsl_matrix* dvSigma = gsl_matrix_alloc(ng, ng);
   ////    dvSigma->data =
-  ///flatten(experiment->setup.getTrueValueOf("sigm")).data();
+  /// flatten(experiment->setup.getTrueValueOf("sigm")).data();
   //    // ------------------------------------------------
   //
   //    gsl_matrix* factorScores = gsl_matrix_calloc(ng, nobs);
@@ -61,7 +59,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   //
   //    // Generating errors
   ////    this->mainRngStream->mvnorm_n(allErrorMeans, allErrorsSigma,
-  ///allErrors);
+  /// allErrors);
 
   //   auto allErrors =
   //   this->main_rng_stream->mvnorm(experiment->setup.errorMeans,
@@ -117,7 +115,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   ////    for (int r = 0; r < nrows; r++) {
   ////        gsl_matrix_get_row(tmpRow, allScores, r);
   ////        gsl_vector_set(itemMeans, r, gsl_stats_mean(tmpRow->data, 1,
-  ///nobs));
+  /// nobs));
   //////        std::cout << gsl_vector_get(itemMeans, n) << std::endl;
   ////    }
   //

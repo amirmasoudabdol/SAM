@@ -137,16 +137,17 @@ Distribution make_distribution(json const &j) {
             j.at("mean"), j.at("stddev"), j.at("min"), j.at("max")));
   }
 
-/**
- A macro generating different functions calls based on the given distribution.
-
- @param name_ The distribution name
- @param type_ The distribution type
- @param ... Paramters of the distribution, according to their representation in
- the standard library
- @return A function call to the make_distribution_impl that returns a
- distribution class.
- */
+///
+/// A macro generating different functions calls based on the given
+/// distribution.
+///
+/// \param      name_  The distribution name
+/// \param      type_  The distribution type
+/// \param      ...    Paramters of the distribution, according to their
+///                    representation in the standard library
+/// \return     A function call to the make_distribution_impl that returns a
+///             distribution class.
+///
 #define generate_distribution_factory(name_, type_, ...)                       \
   if (distributionName == #name_)                                              \
     return make_distribution_impl<std::name_<type_>>(j, ##__VA_ARGS__);
@@ -190,18 +191,18 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
     return j.get<baaraan::truncated_mvnorm_distribution<double>>();
   }
 
-/**
- A macro generating different functions calls based on the given distribution.
- The main difference here is the fact that the `std::function` has the form of
- `std::function<arma::mat<double>(Generator &)>`.
-
- @param name_ The distribution name
- @param type_ The distribution type
- @param ... Paramters of the distribution, according to their representation in
- the standard library
- @return A function call to the make_distribution_impl that returns a
- distribution class.
- */
+///
+/// A macro generating different functions calls based on the given
+/// distribution. The main difference here is the fact that the `std::function`
+/// has the form of `std::function<arma::mat<double>(Generator &)>`.
+///
+/// \param      name_  The distribution name
+/// \param      type_  The distribution type
+/// \param      ...    Paramters of the distribution, according to their
+///                    representation in the standard library
+/// \return     A function call to the make_distribution_impl that returns a
+///             distribution class.
+///
 #define generate_multivariate_distribution_factory(name_, type_, ...)          \
   if (distributionName == #name_)                                              \
     return make_multivariate_distribution_impl<name_<type_>>(j, ##__VA_ARGS__);

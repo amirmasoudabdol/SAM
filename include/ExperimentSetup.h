@@ -32,8 +32,8 @@ class ExperimentSetupBuilder;
 ///
 /// \brief      Define a class for ExperimentSetup.
 ///
-/// ExperimentSetup contains the necessary parameters for initiating and generating
-/// the data needed for the Experiment.
+/// ExperimentSetup contains the necessary parameters for initiating and
+/// generating the data needed for the Experiment.
 ///
 class ExperimentSetup {
 
@@ -56,11 +56,11 @@ class ExperimentSetup {
 public:
   //        std::string ds_name {};
 
-  /**
-   Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
-
-   @return An instance of the builder.
-   */
+  ///
+  /// Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
+  ///
+  /// \return     An instance of the builder.
+  ///
   static ExperimentSetupBuilder create();
 
   /// Default constructor of the ExperimentSetup. This is necessary because of

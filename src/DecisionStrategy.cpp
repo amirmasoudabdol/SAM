@@ -11,11 +11,10 @@
 
 using namespace sam;
 
-/**
- * Pure deconstructor of DecisionStrategy.
- * This is necessary for proper deconstruction of derived
- * classes.
- */
+///
+/// Pure deconstructor of DecisionStrategy. This is necessary for proper
+/// deconstruction of derived classes.
+///
 DecisionStrategy::~DecisionStrategy(){
     // pure deconstructor
 };
@@ -148,7 +147,7 @@ bool DecisionStrategy::willBeSubmitting() {
 /// Impatient decision maker keeps the initial study and stop the hacking
 /// process if the results is already satistifactory.
 ///
-/// @param experiment A reference to the experiment.
+/// \param experiment A reference to the experiment.
 void ImpatientDecisionMaker::initDecision(Experiment &experiment) {
 
   // Preparing pools anyway
@@ -221,7 +220,7 @@ ImpatientDecisionMaker &ImpatientDecisionMaker::verdict(Experiment &experiment,
 /// not. The researcher can check this flag by calling `isStillHacking()`
 /// routine.
 ///
-/// @param experiment A reference to the experiment
+/// \param experiment A reference to the experiment
 void PatientDecisionMaker::initDecision(Experiment &experiment) {
 
   experiments_pool.push_back(experiment);
@@ -233,7 +232,7 @@ void PatientDecisionMaker::initDecision(Experiment &experiment) {
 /// A patient decision maker is still optimizing for the effort, he'd not
 /// continue hacking if an intermediate result is already publishable
 ///
-/// @param experiment A reference to the experiment
+/// \param experiment A reference to the experiment
 void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 
   is_still_hacking = !willBeSubmitting();
@@ -242,7 +241,7 @@ void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
 /// Patient decision maker keeps track of its intermediate results until it
 /// makes the final decision and choose between them.
 ///
-/// @param experiment A reference to the experiment
+/// \param experiment A reference to the experiment
 void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 
   if (willBeSubmitting()) {
@@ -257,7 +256,7 @@ void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
 /// Impatient decision maker — at the final stage — goes through all solutions
 /// and select the one based on its preference.
 ///
-/// @param experiment A reference to the experiment.
+/// \param experiment A reference to the experiment.
 void PatientDecisionMaker::finalDecision(Experiment &experiment) {
 
   final_submission = selectBetweenSubmissions();

@@ -58,13 +58,13 @@ bool SignificantSelection::review(const Submission &s) {
   }
 }
 
-/**
- Draw a random number between \f$ r \in [0, 1] \f$, reject the submission if
- \f$ r < 0.5 \f$.
-
- @param s corresponding submission
- @return a boolean indicating whether the Submission is accpeted or not.
- */
+///
+/// Draw a random number between \f$ r \in [0, 1] \f$, reject the submission if
+/// \f$ r < 0.5 \f$.
+///
+/// \param      s     corresponding submission
+/// \return     a boolean indicating whether the Submission is accpeted or not.
+///
 bool RandomSelection::review(const Submission &s) {
   if (Random::get<bool>(0.5)) {
     return true;

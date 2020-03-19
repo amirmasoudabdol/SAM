@@ -40,16 +40,19 @@ void Researcher::hack() {
   }
 }
 
-/**
- Iterating over the registrated methods and run them on the current experiment.
-
- @note This has a very similar implemention to the `hack()` but it doesn't
- perform any of the secondary checks.
-
- @bug I think there is a possible bug here, since pre-processing methods can be
- much more aggresive, they can cause some issues when it comes to calculating
- statistics.
- */
+///
+/// Iterating over the registrated methods and run them on the current
+/// experiment.
+///
+/// \note       This has a very similar implemention to the `hack()` but it
+/// doesn't
+///             perform any of the secondary checks.
+///
+/// \bug        I think there is a possible bug here, since pre-processing
+/// methods
+///             can be much more aggresive, they can cause some issues when it
+///             comes to calculating statistics.
+///
 void Researcher::preProcessData() {
 
   static NoDecision no_decision = NoDecision();
@@ -62,11 +65,11 @@ void Researcher::preProcessData() {
   }
 }
 
-/**
- Prepares the research by cleaning up the memeory, randomizing the
- ExperimentSetup parameters, allocating data and finally generating the data
- using the DataGenStrategy
- */
+///
+/// Prepares the research by cleaning up the memeory, randomizing the
+/// ExperimentSetup parameters, allocating data and finally generating the data
+/// using the DataGenStrategy
+///
 void Researcher::prepareResearch() {
 
   // TODO: Randomize if necessary
@@ -86,11 +89,11 @@ void Researcher::prepareResearch() {
   }
 }
 
-/**
- Performs the research by calculating the statistics, calculating the effects,
- and running the test. In the case where the researcher is a hacker, the
- researcher will apply the hacking methods on the `experiment`.
- */
+///
+/// Performs the research by calculating the statistics, calculating the
+/// effects, and running the test. In the case where the researcher is a hacker,
+/// the researcher will apply the hacking methods on the `experiment`.
+///
 void Researcher::performResearch() {
 
   experiment->calculateStatistics();
@@ -108,12 +111,12 @@ void Researcher::performResearch() {
   }
 }
 
-/**
- Prepares the submission record by asking the `decisionStrategy` to pick
- his prefered submission record from the list of available submission,
- `submissionsList`. After than, it'll submit the submission record to the
- selected `journal`.
- */
+///
+/// Prepares the submission record by asking the `decisionStrategy` to pick his
+/// prefered submission record from the list of available submission,
+/// `submissionsList`. After than, it'll submit the submission record to the
+/// selected `journal`.
+///
 void Researcher::publishResearch() {
 
   // Ask for the final decision

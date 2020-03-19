@@ -18,11 +18,9 @@ class ExperimentSetup;
 
 using json = nlohmann::json;
 
-/**
- * \brief      Abstract class for Effect Size Strategy
- *
- *
- */
+///
+/// \brief      Abstract class for Effect Size Strategy
+///
 class EffectStrategy {
 
 public:

@@ -53,8 +53,8 @@ public:
   /// \brief      Factory method for building a HackingStrategy
   ///
   /// \param      config  A reference to an item of the
-  /// `json['--hacking-strategy']`. Researcher::Builder is responsible for
-  /// passing this object correctly.
+  ///             `json['--hacking-strategy']`. Researcher::Builder is
+  ///             responsible for passing this object correctly.
   ///
   /// \return     A new HackingStrategy
   static std::unique_ptr<HackingStrategy> build(json &hacking_strategy_config);
@@ -72,10 +72,9 @@ private:
   /// \param      experiment        A pointer to an Experiment.
   ///
   /// \param      decisionStrategy  A pointer to Researcher's
-  ///   DecisionStrategy.
-  ///                               The HackingStrategy decides with what
-  ///   flag it
-  ///                               is going to use the DecisionStrategy.
+  ///                               DecisionStrategy. The HackingStrategy
+  ///                               decides with what flag it is going to use
+  ///                               the DecisionStrategy.
   virtual void perform(Experiment *experiment,
                        DecisionStrategy *decisionStrategy) = 0;
 };
@@ -83,7 +82,6 @@ private:
 class NoHack final : public HackingStrategy {
 public:
   NoHack(){
-      //            params.name = HackingMethod::NoHack;
 
   };
 
@@ -160,14 +158,16 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("max_attempts").get_to(p.max_attempts);
 }
 
+/// \ingroup    HackingStrategies
 ///
 /// \brief      Declaration of Outlier Removal hacking method based on items'
 ///             distance from their sample mean.
 ///
-/// \ingroup    HackingStrategies
 ///
 class OutliersRemoval final : public HackingStrategy {
 public:
+  /// \ingroup HackingStrategiesParameters
+  //
   /// Parameters of Outliers Removal Strategy
   ///
   ///  ```json
@@ -184,7 +184,7 @@ public:
   ///     "order": "random"
   /// }
   /// ```
-  /// \ingroup HackingStrategiesParameters
+  ///
   struct Parameters {
     HackingMethod name = HackingMethod::OutliersRemoval;
 

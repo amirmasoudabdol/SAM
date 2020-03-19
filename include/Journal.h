@@ -56,56 +56,56 @@ public:
   // Journal(JournalParameters &jp,
   // SelectionStrategy::SelectionStrategyParameters &ssp);
 
-  /**
-   Point Journal's selection strategy to the given strategy
-
-   @param s The pointer to the given selection strategy
-   */
+  ///
+  /// Point Journal's selection strategy to the given strategy
+  ///
+  /// \param      s     The pointer to the given selection strategy
+  ///
   void setSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
     selection_strategy = std::move(ss);
   }
 
-  /**
-   * @brief      Review the Submission by calling
-   * `SelectionStrategy::review()`.
-   *
-   * @param[in]  s     A reference to the Submission
-   *
-   * @return     A boolean indicating whether the Submission should
-   * be accpeted or not.
-   */
+  ///
+  /// \brief      Review the Submission by calling
+  /// `SelectionStrategy::review()`.
+  ///
+  /// \param[in]  s     A reference to the Submission
+  ///
+  /// \return     A boolean indicating whether the Submission should be accpeted
+  /// or
+  ///             not.
+  ///
   bool review(const Submission &s);
 
-  /**
-   * @brief      Accept the Submission by adding it to the
-   * `publicationList`.
-   *
-   * @param[in]  s     A copy of the Submission
-   */
+  ///
+  /// \brief      Accept the Submission by adding it to the `publicationList`.
+  ///
+  /// \param[in]  s     A copy of the Submission
+  ///
   void accept(const Submission &s);
 
-  /**
-   * @brief      Rejecting the Submission!
-   *
-   * @param[in]  s     A reference to the Submission
-   */
+  ///
+  /// \brief      Rejecting the Submission!
+  ///
+  /// \param[in]  s     A reference to the Submission
+  ///
   void reject(const Submission &s);
 
   bool isStillAccepting() const { return still_accepting; }
 
-  /**
-   Save enteries of publications_list to a CSV file.
-
-   @param simid The index to be used for the given set.
-   @param writer The output file.
-   */
+  ///
+  /// Save enteries of publications_list to a CSV file.
+  ///
+  /// \param      simid   The index to be used for the given set.
+  /// \param      writer  The output file.
+  ///
   void saveSubmissions(int simid, std::ofstream &writer);
 
   auto publications() const { return publications_list; }
 
-  /**
-   Clear the publications_list vector.
-   */
+  ///
+  /// Clear the publications_list vector.
+  ///
   void clear() {
     publications_list.clear();
     rejection_list.clear();

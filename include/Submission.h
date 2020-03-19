@@ -41,9 +41,9 @@ public:
 
   ~Submission() = default;
 
-  /**
-   @return `true` if the Submission is significant, `false` otherwise
-   */
+  ///
+  /// \return     `true` if the Submission is significant, `false` otherwise
+  ///
   bool isSig() const { return group_.sig_; }
 
   template <typename OStream>

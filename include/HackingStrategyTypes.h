@@ -9,9 +9,9 @@
 
 namespace sam {
 
-/**
- * Hacking Strategy methods.
- */
+///
+/// Hacking Strategy methods.
+///
 enum class HackingMethod {
   OptionalStopping,
   OutliersRemoval,
@@ -30,11 +30,11 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {HackingMethod::SubjectiveOutlierRemoval, "ConditionDropping"},
      {HackingMethod::NoHack, "NoHack"}})
 
-/*
- HackingStage indicates the stage where the hacking is being performed on
- the Experiment. Each method will be assigned a value, and Researcher can
- apply different hacking methods in different stages.
- */
+///
+/// HackingStage indicates the stage where the hacking is being performed on the
+/// Experiment. Each method will be assigned a value, and Researcher can apply
+/// different hacking methods in different stages.
+///
 enum class HackingStage { Setup, DataCollection, DataProcessing, Reporting };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(HackingStage,
@@ -46,7 +46,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(HackingStage,
 struct HackingStrategyParameters {
 
   //! Arbitrary ID to keep track of number of hacking methods
-  int hid = 0; /**/
+  int hid = 0;
 
   HackingMethod name;
 

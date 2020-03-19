@@ -36,22 +36,23 @@ class Researcher {
   std::string name;
 
 public:
-  /**
-   Default constructor of the Researcher.
-
-   @note This is defined `private` because I want force the user to use
-   the `create(name)` method and therefore delegate the construction to
-   the ResearcherBuilder.
-   */
+  ///
+  /// Default constructor of the Researcher.
+  ///
+  /// \note       This is defined `private` because I want force the user to use
+  /// the
+  ///             `create(name)` method and therefore delegate the construction
+  ///             to the ResearcherBuilder.
+  ///
   Researcher() = default;
 
-  /**
-   Starts the Researcher build process. Use this to build a new instance
-   of the Researcher.
-
-   @param name The researcher name
-   @return An instance of ResearcherBuilder.
-   */
+  ///
+  /// Starts the Researcher build process. Use this to build a new instance of
+  /// the Researcher.
+  ///
+  /// \param      name  The researcher name
+  /// \return     An instance of ResearcherBuilder.
+  ///
   static ResearcherBuilder create(std::string name);
 
   Experiment *experiment;
@@ -81,40 +82,42 @@ public:
   void prepareTheSubmission();
   void submitToJournal();
 
-  /**
-   Set the decisionStrategy of the researcher.
-
-   @param d The pointer to a Decision Strategy
-
-   @note Researcher owns its decision strategy that's why I move the pointer.
-
-   @todo I think I need to do the `std::move` when I'm calling the function not
-   inside it
-   */
+  ///
+  /// Set the decisionStrategy of the researcher.
+  ///
+  /// \param      d     The pointer to a Decision Strategy
+  ///
+  /// \note       Researcher owns its decision strategy that's why I move the
+  ///             pointer.
+  ///
+  /// \todo       I think I need to do the `std::move` when I'm calling the
+  /// function
+  ///             not inside it
+  ///
   void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
     decision_strategy = std::move(ds);
   }
 
-  /**
-   Set the experiment. This can be used to setup several researchers with one
-   experiment.
-
-   @param e The pointer to an Experiment
-   */
+  ///
+  /// Set the experiment. This can be used to setup several researchers with one
+  /// experiment.
+  ///
+  /// \param      e     The pointer to an Experiment
+  ///
   void setExperiment(Experiment *e) { experiment = e; };
 
-  /**
-   @brief      Set the Jouranl
-
-   @param      j     The pointer to a Journal instance
-   */
+  ///
+  /// \brief      Set the Jouranl
+  ///
+  /// \param      j     The pointer to a Journal instance
+  ///
   void setJournal(Journal *j) { journal = j; };
 };
 
-/**
- ResearcherBuilder class for Researcher. This takes care of eveyrthing and
- return a fully initialized Researcher after calling `.build()` method.
- */
+///
+/// ResearcherBuilder class for Researcher. This takes care of eveyrthing and
+/// return a fully initialized Researcher after calling `.build()` method.
+///
 class ResearcherBuilder {
 
   Researcher researcher;
@@ -127,14 +130,14 @@ public:
 
   ResearcherBuilder(std::string name) { researcher.name = name; };
 
-  /**
-   Build a researcher entirely based on the given config file. This is
-   not the best implementation still but I think it's more readable and
-   reasonable for some usecases.
-
-   @param config A JSON object
-   @return Return an instance of itself
-   */
+  ///
+  /// Build a researcher entirely based on the given config file. This is not
+  /// the best implementation still but I think it's more readable and
+  /// reasonable for some usecases.
+  ///
+  /// \param      config  A JSON object
+  /// \return     Return an instance of itself
+  ///
   ResearcherBuilder &fromConfigFile(json &config) {
 
     this->config = config;
@@ -152,7 +155,8 @@ public:
     // Parsing Hacking Strategies
     researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
     if (researcher.is_hacker) {
-      for (const auto &set : config["researcher_parameters"]["hacking_strategies"]) {
+      for (const auto &set :
+           config["researcher_parameters"]["hacking_strategies"]) {
 
         researcher.hacking_strategies.push_back({});
 
@@ -184,32 +188,34 @@ public:
   /// CREATEING NEW OBJECT ///
   ////////////////////////////
 
-  /**
-   @brief Create a new DecisionStrategy for the researcher based on the
-   given configuration.
-   */
+  ///
+  /// \brief      Create a new DecisionStrategy for the researcher based on the
+  /// given
+  ///             configuration.
+  ///
   ResearcherBuilder &createDecisionStrategy(json &ds) {
     researcher.decision_strategy = DecisionStrategy::build(ds);
     return *this;
   }
 
-  /**
-   @brief Create a new Journal for the researcher based on the given
-   configuration.
-
-   @note The configuration needs to include information about the
-   SelectionStrategy as well.
-   */
+  ///
+  /// \brief      Create a new Journal for the researcher based on the given
+  ///             configuration.
+  ///
+  /// \note       The configuration needs to include information about the
+  ///             SelectionStrategy as well.
+  ///
   ResearcherBuilder &createJournal(json &journal_config) {
     researcher.journal = new Journal(journal_config);
     return *this;
   }
 
-  /**
-   @brief Create a new Experiment based on the given ExperimentSetup.
-
-   @note: This assumes that the experiment setup is correctly initiated.
-   */
+  ///
+  /// \brief      Create a new Experiment based on the given ExperimentSetup.
+  ///
+  /// \note       : This assumes that the experiment setup is correctly
+  /// initiated.
+  ///
   ResearcherBuilder &createExperiment(ExperimentSetup es) {
     researcher.experiment = new Experiment(es);
     return *this;
@@ -298,11 +304,11 @@ public:
    Prepare a set of hacking strategies groups by populating each group from
    the given `hacking_strategies_pool`
 
-   @param hacking_strategies_pool A set of hacking strategy methods use to
+   \param hacking_strategies_pool A set of hacking strategy methods use to
    prepare researcher's hacking startegies
-   @param n_group The number of hacking strategies groups
-   @param m_strategies The number of hacking startegies in each group
-   @return Return an instance of itself where hacking_strategies has been
+   \param n_group The number of hacking strategies groups
+   \param m_strategies The number of hacking startegies in each group
+   \return Return an instance of itself where hacking_strategies has been
    initialized accordingly.
    */
   ResearcherBuilder &
@@ -315,8 +321,8 @@ public:
     //                    // TEST ME!
     //                    // TODO: I'm not sure if I want to have this builder
     ////                    auto h_method =
-    ///enum_cast<HackingMethod>(Random::get<int>(0,
-    ///hacking_strategies_pool.size() - 1));
+    /// enum_cast<HackingMethod>(Random::get<int>(0,
+    /// hacking_strategies_pool.size() - 1));
     //                    // I think this should use the index from the list!
     //                    Test it!
     //// group.push_back(HackingStrategy::build(h_method.value()));
@@ -328,43 +334,44 @@ public:
     return *this;
   };
 
-  /**
-   Constructs `n_group`'s of hacking strategies, each consisting of maximum
-   `m_strategies`'s or steps. Each startegy is being selected randomly
-   between all available strategies.
-
-   @param n_group Number of groups of hacking strategies
-   @param m_strategies Number of hacking strategies in each group
-   @return Return an instance of itself where hacking_strategies has been
-   initialized accordingly.
-   */
+  ///
+  /// Constructs `n_group`'s of hacking strategies, each consisting of maximum
+  /// `m_strategies`'s or steps. Each startegy is being selected randomly
+  /// between all available strategies.
+  ///
+  /// \param      n_group       Number of groups of hacking strategies
+  /// \param      m_strategies  Number of hacking strategies in each group
+  /// \return     Return an instance of itself where hacking_strategies has been
+  ///             initialized accordingly.
+  ///
   ResearcherBuilder &pickRandomHackingStrategies(int n_group, int m_method) {
 
     researcher.isHacker();
     researcher.hacking_strategies.resize(n_group);
 
-//    for (auto &group : researcher.hacking_strategies) {
-//
-//      for (int i = 0; i < m_method; ++i) {
-//                            auto h_method =
-//                            enum_cast<HackingMethod>(Random::get<int>(0,
-//                            enum_count<HackingMethod>() - 1));
-//                            group.push_back(HackingStrategy::build(h_method.value()));
-//      }
-//    }
+    //    for (auto &group : researcher.hacking_strategies) {
+    //
+    //      for (int i = 0; i < m_method; ++i) {
+    //                            auto h_method =
+    //                            enum_cast<HackingMethod>(Random::get<int>(0,
+    //                            enum_count<HackingMethod>() - 1));
+    //                            group.push_back(HackingStrategy::build(h_method.value()));
+    //      }
+    //    }
 
     researcher.is_hacker = true;
     return *this;
   };
 
-  /**
-   Build and return a new Researcher.
-
-   @note Be aware that this needs to be called after you set all aspects
-   of the Researcher
-
-   @return A new Researcher
-   */
+  ///
+  /// Build and return a new Researcher.
+  ///
+  /// \note       Be aware that this needs to be called after you set all
+  /// aspects of
+  ///             the Researcher
+  ///
+  /// \return     A new Researcher
+  ///
   Researcher build() {
 
     // TODO: Check if everything is setup carefully. I think I need several

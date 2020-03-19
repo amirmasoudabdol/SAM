@@ -6,12 +6,11 @@
 
 using namespace sam;
 
-/**
- Perform subjective outliers removal on an Experiment. There is not much
- difference between this routine and the OutliersRemoval, mainly, I generate the
- Ks beforehand, and the entire procedure is technically one hacking step.
-
- */
+///
+/// Perform subjective outliers removal on an Experiment. There is not much
+/// difference between this routine and the OutliersRemoval, mainly, I generate
+/// the Ks beforehand, and the entire procedure is technically one hacking step.
+///
 void SubjectiveOutlierRemoval::perform(Experiment *experiment,
                                        DecisionStrategy *decision_strategy) {
 
@@ -27,7 +26,7 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment,
   for (const auto &k : Ks) {
 
     /// Removing the outliers from control groups as well.
-    for (int i {0}; i < experiment->setup.ng(); ++i) {
+    for (int i{0}; i < experiment->setup.ng(); ++i) {
       auto &row = (*experiment)[i].measurements();
 
       arma::rowvec standaraized =
