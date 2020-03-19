@@ -311,7 +311,7 @@ public:
 
     //            for (auto &group : researcher.hacking_strategies) {
     //
-    //                for (int i = 0; i < m_strategies; i++) {
+    //                for (int i = 0; i < m_strategies; ++i) {
     //                    // TEST ME!
     //                    // TODO: I'm not sure if I want to have this builder
     ////                    auto h_method =
@@ -345,7 +345,7 @@ public:
 
 //    for (auto &group : researcher.hacking_strategies) {
 //
-//      for (int i = 0; i < m_method; i++) {
+//      for (int i = 0; i < m_method; ++i) {
 //                            auto h_method =
 //                            enum_cast<HackingMethod>(Random::get<int>(0,
 //                            enum_count<HackingMethod>() - 1));

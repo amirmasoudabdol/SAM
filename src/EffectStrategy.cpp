@@ -29,7 +29,7 @@ EffectStrategy::build(json &effect_strategy_config) {
 void CohensD::computeEffects(Experiment *experiment) {
 
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
-       i++, d %= experiment->setup.nd()) {
+       ++i, d %= experiment->setup.nd()) {
     (*experiment)[i].effect_ =
         cohens_d((*experiment)[d].mean_, (*experiment)[d].stddev_,
                  (*experiment)[d].nobs_, (*experiment)[i].mean_,
@@ -41,7 +41,7 @@ void HedgesG::computeEffects(Experiment *experiment) {
 
   /// Skipping Treatment groups
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
-       i++, d %= experiment->setup.nd()) {
+       ++i, d %= experiment->setup.nd()) {
     (*experiment)[i].effect_ =
         hedges_g((*experiment)[d].mean_, (*experiment)[d].stddev_,
                  (*experiment)[d].nobs_, (*experiment)[i].mean_,
@@ -51,7 +51,7 @@ void HedgesG::computeEffects(Experiment *experiment) {
 
 void MeanDifference::computeEffects(Experiment *experiment) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
-       i++, d %= experiment->setup.nd()) {
+       ++i, d %= experiment->setup.nd()) {
     (*experiment)[i].effect_ =
         mean_difference((*experiment)[i].mean_, (*experiment)[i].stddev_,
                         (*experiment)[d].mean_, (*experiment)[d].stddev_);

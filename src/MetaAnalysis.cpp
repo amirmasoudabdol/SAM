@@ -37,7 +37,7 @@ arma::vec FixedEffectEstimator::estimate(vector<Submission> publications) {
   arma::rowvec weights(publications.size());
   arma::rowvec predictions(publications.size());
 
-  for (int i = 0; i < publications.size(); i++) {
+  for (int i = 0; i < publications.size(); ++i) {
     predictors(0, i) = 0;
     responses(i) = publications[i].group_.mean_;
     weights(i) = 1. / publications[i].group_.var_;
@@ -57,7 +57,7 @@ arma::vec RandomEffectEstimator::estimate(vector<Submission> publications) {
   arma::rowvec weights(publications.size());
   arma::rowvec predictions(publications.size());
 
-  for (int i = 0; i < publications.size(); i++) {
+  for (int i = 0; i < publications.size(); ++i) {
     predictors(0, i) = 1;
     predictors(1, i) = publications[0].group_.mean_;
     responses(i) = publications[i].group_.mean_;

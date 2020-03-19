@@ -21,7 +21,7 @@ void OptionalStopping::perform(Experiment *experiment,
 
   spdlog::debug("Optional Stopping");
 
-  for (int t = 0; t < params.n_attempts && t < params.max_attempts; t++) {
+  for (int t = 0; t < params.n_attempts && t < params.max_attempts; ++t) {
 
     addObservations(experiment, params.num);
 
@@ -42,10 +42,8 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
   auto new_observations =
       experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
 
-  int i = 0;
-
   std::for_each(experiment->begin(), experiment->end(),
-                [&new_observations, &i](auto &group) {
+                [&, i = 0](auto &group) mutable {
                   group.add_measurements(new_observations[i++]);
                 });
 }

@@ -22,7 +22,7 @@ void OutliersRemoval::perform(Experiment *experiment,
   for (const auto d : params.multipliers) {
 
     for (int t = 0;
-         t < params.n_attempts && t < params.max_attempts && res != 1; t++) {
+         t < params.n_attempts && t < params.max_attempts && res != 1; ++t) {
 
       res = this->removeOutliers(experiment, params.num, d);
 

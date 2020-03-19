@@ -88,7 +88,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   //            row = c * nd + d;
   //            for (int n = 0; n < nobs; n++){
   //                col = n;
-  //                for (int i = 0; i < ni; i++) {
+  //                for (int i = 0; i < ni; ++i) {
   //                    gsl_matrix_set(allScores, row * ni + i, col,
   //                                       gsl_vector_get(dvMeans, d) +
   //                                       gsl_matrix_get(factorScores, d, col)
