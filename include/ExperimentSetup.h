@@ -29,12 +29,12 @@ using json = nlohmann::json;
 // Forward declration of the necessary classes.
 class ExperimentSetupBuilder;
 
-/**
- @brief Define a class for ExperimentSetup.
-
- ExperimentSetup contains the necessary parameters for initiating and
- generating the data needed for the Experiment.
- */
+///
+/// \brief      Define a class for ExperimentSetup.
+///
+/// ExperimentSetup contains the necessary parameters for initiating and generating
+/// the data needed for the Experiment.
+///
 class ExperimentSetup {
 
   friend class ExperimentSetupBuilder;
@@ -98,9 +98,7 @@ class ExperimentSetupBuilder {
 
   int seed{-1};
 
-  /**
-   Calculate the experiment setup sizes
-   */
+  /// Calculate the experiment setup sizes
   void calculate_experiment_size() {
     setup.ng_ = setup.nc_ * setup.nd_;
 
@@ -111,10 +109,8 @@ class ExperimentSetupBuilder {
     }
   }
 
-  /**
-   Check if variable sizes are set properly, if not, tries to calcualte
-   them, if fails, it'll throw and error.
-   */
+  /// Check if variable sizes are set properly, if not, tries to calcualte
+  /// them, if fails, it'll throw and error.
   void check_expr_size() {
     if (!is_expr_size_decided) {
       calculate_experiment_size();
@@ -130,19 +126,15 @@ class ExperimentSetupBuilder {
 public:
   ExperimentSetupBuilder() = default;
 
-  /**
-   @brief Create and configure a new experiment setup based on the given
-   configuration.
-   */
+  /// \brief Create and configure a new experiment setup based on the given
+  /// configuration.
   ExperimentSetupBuilder &fromConfigFile(json &config);
 
-  /**
-   * \brief      Sets the seed for randomizing setup parameters
-   *
-   * \param[in]  s     seed
-   *
-   * \return     A reference to the builder
-   */
+  /// \brief      Sets the seed for randomizing setup parameters
+  ///
+  /// \param[in]  s     seed
+  ///
+  /// \return     A reference to the builder
   ExperimentSetupBuilder &setSeed(const int s) {
     seed = s;
     return *this;

@@ -11,7 +11,7 @@
 
 using namespace sam;
 
-HackingStrategy::~HackingStrategy(){
+HackingStrategy::~HackingStrategy() {
     // Pure deconstructor
 };
 
@@ -24,61 +24,61 @@ HackingStrategy::~HackingStrategy(){
 std::unique_ptr<HackingStrategy>
 HackingStrategy::build(json &hacking_strategy_config) {
 
-  if (hacking_strategy_config["_name"] == "OptionalStopping") {
+    if (hacking_strategy_config["_name"] == "OptionalStopping") {
 
-    auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
-    return std::make_unique<OptionalStopping>(params);
+        auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
+        return std::make_unique<OptionalStopping>(params);
 
-  } else if (hacking_strategy_config["_name"] == "OutliersRemoval") {
+    } else if (hacking_strategy_config["_name"] == "OutliersRemoval") {
 
-    auto params = hacking_strategy_config.get<OutliersRemoval::Parameters>();
-    return std::make_unique<OutliersRemoval>(params);
+        auto params = hacking_strategy_config.get<OutliersRemoval::Parameters>();
+        return std::make_unique<OutliersRemoval>(params);
 
-  } else if (hacking_strategy_config["_name"] == "GroupPooling") {
+    } else if (hacking_strategy_config["_name"] == "GroupPooling") {
 
-    auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
-    return std::make_unique<GroupPooling>(params);
+        auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
+        return std::make_unique<GroupPooling>(params);
 
-  } else if (hacking_strategy_config["_name"] == "ConditionDropping") {
+    } else if (hacking_strategy_config["_name"] == "ConditionDropping") {
 
-    auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
-    return std::make_unique<ConditionDropping>(params);
+        auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
+        return std::make_unique<ConditionDropping>(params);
 
-  } else if (hacking_strategy_config["_name"] == "SubjectiveOutlierRemoval") {
+    } else if (hacking_strategy_config["_name"] == "SubjectiveOutlierRemoval") {
 
-    auto params =
-        hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
-    return std::make_unique<SubjectiveOutlierRemoval>(params);
+        auto params =
+                hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
+        return std::make_unique<SubjectiveOutlierRemoval>(params);
 
-  } else if (hacking_strategy_config["_name"] == "NoHack") {
+    } else if (hacking_strategy_config["_name"] == "NoHack") {
 
-    return std::make_unique<NoHack>();
+        return std::make_unique<NoHack>();
 
-  } else {
-    throw std::invalid_argument("Unknown Hacking Strategies.");
-  }
+    } else {
+        throw std::invalid_argument("Unknown Hacking Strategies.");
+    }
 }
 
 std::unique_ptr<HackingStrategy> HackingStrategy::build(HackingMethod method) {
-  switch (method) {
+    switch (method) {
 
-  case HackingMethod::NoHack:
-    return std::make_unique<NoHack>();
-    break;
-  case HackingMethod::OptionalStopping:
-    return std::make_unique<OptionalStopping>();
-    break;
-  case HackingMethod::OutliersRemoval:
-    return std::make_unique<OutliersRemoval>();
-    break;
-  case HackingMethod::GroupPooling:
-    return std::make_unique<GroupPooling>();
-    break;
-  case HackingMethod::ConditionDropping:
-    return std::make_unique<ConditionDropping>();
-    break;
-  default:
-    return std::make_unique<NoHack>();
-    break;
-  }
+        case HackingMethod::NoHack:
+            return std::make_unique<NoHack>();
+            break;
+        case HackingMethod::OptionalStopping:
+            return std::make_unique<OptionalStopping>();
+            break;
+        case HackingMethod::OutliersRemoval:
+            return std::make_unique<OutliersRemoval>();
+            break;
+        case HackingMethod::GroupPooling:
+            return std::make_unique<GroupPooling>();
+            break;
+        case HackingMethod::ConditionDropping:
+            return std::make_unique<ConditionDropping>();
+            break;
+        default:
+            return std::make_unique<NoHack>();
+            break;
+    }
 }

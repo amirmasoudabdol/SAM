@@ -129,25 +129,21 @@ void WilcoxonTest::run(Experiment *experiment) {
 
 namespace sam {
 
-/**
- Calculate confidence intervals for the mean.
- For example if we set the confidence limit to
- 0.95, we know that if we repeat the sampling
- 100 times, then we expect that the true mean
- will be between out limits on 95 occations.
- Note: this is not the same as saying a 95%
- confidence interval means that there is a 95%
- probability that the interval contains the true mean.
- The interval computed from a given sample either
- contains the true mean or it does not.
-
- @note Obtained from [Boost Library
- Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
-
- @param Sm Sample Mean.
- @param Sd Sample Standard Deviation.
- @param Sn Sample Size.
- */
+///
+/// Calculate confidence intervals for the mean. For example if we set the
+/// confidence limit to 0.95, we know that if we repeat the sampling 100 times,
+/// then we expect that the true mean will be between out limits on 95 occations.
+/// Note: this is not the same as saying a 95% confidence interval means that there
+/// is a 95% probability that the interval contains the true mean. The interval
+/// computed from a given sample either contains the true mean or it does not.
+///
+/// \note       Obtained from [Boost Library
+///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
+///
+/// \param      Sm    Sample Mean.
+/// \param      Sd    Sample Standard Deviation.
+/// \param      Sn    Sample Size.
+///
 std::pair<double, double>
 confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
                           TestStrategy::TestAlternative alternative) {
@@ -167,14 +163,14 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
   return std::make_pair(Sm - w, Sm + w);
 }
 
-/**
- Caculate the degress of freedom to achieve a significance result with the given
- alpha
-
- @param M True Mean.
- @param Sm Sample Mean.
- @param Sd Sample Standard Deviation.
- */
+///
+/// Caculate the degress of freedom to achieve a significance result with the given
+/// alpha
+///
+/// \param      M     True Mean.
+/// \param      Sm    Sample Mean.
+/// \param      Sd    Sample Standard Deviation.
+///
 double single_sample_find_df(double M, double Sm, double Sd, double alpha,
                              TestStrategy::TestAlternative alternative) {
   using namespace sam;
@@ -218,23 +214,22 @@ TestStrategy::TestResult t_test(double Sm1, double Sd1, double Sn1, double Sm2,
   }
 }
 
-/**
- A Students t test applied to a single set of data.
- We are testing the null hypothesis that the true
- mean of the sample is M, and that any variation is down
- to chance.  We can also test the alternative hypothesis
- that any difference is not down to chance
-
- @note Obtained from [Boost Library
- Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
-
- @param M True Mean.
- @param Sm Sample Mean.
- @param Sd Sample Standard Deviation.
- @param Sn Sample Size.
- @param alpha Significance Level.
- @return TestStrategy::TestResult
- */
+///
+/// A Students t test applied to a single set of data. We are testing the null
+/// hypothesis that the true mean of the sample is M, and that any variation is
+/// down to chance.  We can also test the alternative hypothesis that any
+/// difference is not down to chance
+///
+/// \note       Obtained from [Boost Library
+///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
+///
+/// \param      M      True Mean.
+/// \param      Sm     Sample Mean.
+/// \param      Sd     Sample Standard Deviation.
+/// \param      Sn     Sample Size.
+/// \param      alpha  Significance Level.
+/// \return     TestStrategy::TestResult
+///
 TestStrategy::TestResult
 single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha,
                      TestStrategy::TestAlternative alternative) {
@@ -292,24 +287,23 @@ single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha,
   return {t_stat, p, eff_side, sig};
 }
 
-/**
- A Students t test applied to two sets of data.
- We are testing the null hypothesis that the two
- samples have the same mean and that any difference
- if due to chance.
-
- @note Obtained from [Boost Library
- Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
-
- @param Sm1 Sample Mean 1.
- @param Sd1 Sample Standard Deviation 1.
- @param Sn1 Sample Size 1.
- @param Sm2 Sample Mean 2.
- @param Sd2 Sample Standard Deviation 2.
- @param Sn2 Sample Size 2.
- @param alpha Significance Level.
- @return TestStrategy::TestResult
- */
+///
+/// A Students t test applied to two sets of data. We are testing the null
+/// hypothesis that the two samples have the same mean and that any difference if
+/// due to chance.
+///
+/// \note       Obtained from [Boost Library
+///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
+///
+/// \param      Sm1    Sample Mean 1.
+/// \param      Sd1    Sample Standard Deviation 1.
+/// \param      Sn1    Sample Size 1.
+/// \param      Sm2    Sample Mean 2.
+/// \param      Sd2    Sample Standard Deviation 2.
+/// \param      Sn2    Sample Size 2.
+/// \param      alpha  Significance Level.
+/// \return     TestStrategy::TestResult
+///
 TestStrategy::TestResult
 two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
                             double Sd2, unsigned Sn2, double alpha,
@@ -377,24 +371,23 @@ two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
   return {t_stat, p, eff_side, sig};
 }
 
-/**
- A Students t test applied to two sets of data with _unequal_ variance.
- We are testing the null hypothesis that the two
- samples have the same mean and
- that any difference is due to chance.
-
- @note Obtained from [Boost Library
- Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
-
- @param Sm1 Sample Mean 1.
- @param Sd1 Sample Standard Deviation 1.
- @param Sn1 Sample Size 1.
- @param Sm2 Sample Mean 2.
- @param Sd2 Sample Standard Deviation 2.
- @param Sn2 Sample Size 2.
- @param alpha Significance Level.
- @return TestStrategy::TestResult
- */
+///
+/// A Students t test applied to two sets of data with _unequal_ variance. We are
+/// testing the null hypothesis that the two samples have the same mean and that
+/// any difference is due to chance.
+///
+/// \note       Obtained from [Boost Library
+///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
+///
+/// \param      Sm1    Sample Mean 1.
+/// \param      Sd1    Sample Standard Deviation 1.
+/// \param      Sn1    Sample Size 1.
+/// \param      Sm2    Sample Mean 2.
+/// \param      Sd2    Sample Standard Deviation 2.
+/// \param      Sn2    Sample Size 2.
+/// \param      alpha  Significance Level.
+/// \return     TestStrategy::TestResult
+///
 TestStrategy::TestResult
 two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
                               double Sd2, unsigned Sn2, double alpha,

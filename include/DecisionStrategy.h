@@ -407,14 +407,12 @@ public:
   //        Experiment selectBetweenExperiments();
 };
 
-/**
- @ingroup DecisionStrategies
- \brief Implementation of an impatient researcher. In this case, the Researcher
- will stop as soon as find a significant result and will not continue exploring
- other hacking methods in his arsenal.
-
-
- */
+/// \ingroup    DecisionStrategies
+/// 
+/// \brief      Implementation of an impatient researcher. In this case, the
+///             Researcher will stop as soon as find a significant result and will
+///             not continue exploring other hacking methods in his arsenal.
+///
 class ImpatientDecisionMaker final : public DecisionStrategy {
 
 public:
@@ -479,10 +477,10 @@ inline void from_json(const json &j, ImpatientDecisionMaker::Parameters &p) {
   j.at("submission_policies").get_to(p.submission_policies);
 }
 
-/**
- @ingroup DecisionStrategies
- \brief
- */
+///
+/// \ingroup    DecisionStrategies
+/// \brief      { item_description }
+///
 class PatientDecisionMaker final : public DecisionStrategy {
 
 public:
@@ -544,10 +542,10 @@ inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
   j.at("final_decision_policies").get_to(p.final_decision_policies);
 }
 
-/**
- @ingroup DecisionStrategies
- \brief
- */
+///
+/// \ingroup    DecisionStrategies
+/// \brief      { item_description }
+///
 class HonestDecisionMaker final : public DecisionStrategy {
 
 public:
@@ -574,13 +572,13 @@ public:
   virtual void finalDecision(Experiment &experiment) override{};
 };
 
-/**
- @ingroup DecisionStrategies
- \brief A placeholder for empty decision strategy.
-
- @note This is currently being used during the PreProcessing where I basically
- don't want to intervene with the process, and let it run
- */
+///
+/// \ingroup    DecisionStrategies
+/// \brief      A placeholder for empty decision strategy.
+///
+/// \note       This is currently being used during the PreProcessing where I
+///             basically don't want to intervene with the process, and let it run
+///
 class NoDecision final : public DecisionStrategy {
 
 public:
