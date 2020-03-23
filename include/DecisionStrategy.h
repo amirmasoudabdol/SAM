@@ -286,13 +286,13 @@ public:
 
     case PolicyType::Min: {
       auto it = std::min_element(begin, end, func);
-      spdlog::debug("Min: {}", *it);
+      spdlog::debug("Min:"); spdlog::debug("\t {}", *it);
       return {true, it, it};
     } break;
 
     case PolicyType::Max: {
       auto it = std::max_element(begin, end, func);
-      spdlog::debug("Max: ", *it);
+      spdlog::debug("Max:"); spdlog::debug("\t {}", *it);
       return {true, it, it};
     } break;
 
@@ -327,7 +327,7 @@ public:
       // Sorting the groups based on their index
       std::sort(begin, end, func);
 
-      spdlog::debug("First: {}", *begin);
+      spdlog::debug("First: "); spdlog::debug("\t {}", *begin);
 
       return {true, begin, end};
 

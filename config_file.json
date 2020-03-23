@@ -76,8 +76,8 @@
                 }
             ]
         ],
-        "is_phacker": true,
-        "is_pre_processing": true,
+        "is_phacker": false,
+        "is_pre_processing": false,
         "pre_processing_methods": [
             {
                 "_name": "OutliersRemoval",

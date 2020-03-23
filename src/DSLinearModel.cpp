@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+#include <spdlog/spdlog.h>
+
 #include "DataStrategy.h"
 #include "Experiment.h"
 
@@ -53,6 +55,8 @@ void LinearModelStrategy::genData(Experiment *experiment) {
   for (int g{0}; g < experiment->setup.ng(); ++g) {
     (*experiment)[g].set_measurements(
         sample.row(g).head(experiment->setup.nobs()[g]));
+    
+    spdlog::debug("{}: ", (*experiment)[g]);
   }
 }
 

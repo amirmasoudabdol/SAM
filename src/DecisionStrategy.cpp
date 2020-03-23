@@ -71,7 +71,7 @@ Submission DecisionStrategy::selectOutcome(Experiment &experiment) {
       if (found_something) {
         /// If we have a hit, mainly after going to Min, Max, First, Random;
         /// then, we are done!
-        spdlog::debug("Found something!");
+        spdlog::debug("> Found something!");
         selectedOutcome = begin->id_;
         spdlog::debug("Policy: {}", pset_inx);
         return {experiment, selectedOutcome};
@@ -80,7 +80,7 @@ Submission DecisionStrategy::selectOutcome(Experiment &experiment) {
         /// anything with the given comparison. Then, we break out the loop, and
         /// move into the new set of policies
         if (begin == end) {
-          spdlog::debug("Going to the next set of policies.");
+          spdlog::debug("> Going to the next set of policies.");
           break; // Out of the for-loop, going to the next chain
         }
         /// else:
@@ -111,7 +111,7 @@ Submission DecisionStrategy::selectBetweenSubmissions() {
     std::tie(found_something, begin, end) = checkThePolicy(begin, end, policy);
 
     if (found_something) {
-      spdlog::debug("Found something in the pile!");
+      spdlog::debug("> Found something in the pile!");
       return *begin;
     } else {
       if (begin == end) {
