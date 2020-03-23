@@ -1,0 +1,66 @@
+{
+	"researcher_parameters": {
+		"is_pre_processing": false,
+		"pre_processing_methods": [
+			{
+				"_name": "OutliersRemoval",
+				"level": "dv",
+				"max_attempts": 1000,
+				"min_observations": 10,
+				"multipliers": [
+					0.5
+				],
+				"n_attempts": 1000,
+				"num": 1000,
+				"order": "max first"
+			}
+		],
+		"decision_policies": [
+			[
+				"sig",
+				"effect > 0",
+				"first"
+			],
+			[
+				"effect > 0",
+				"min(pvalue)"
+			],
+			[
+				"effect < 0",
+				"max(pvalue)"
+			]
+		],
+		"is_phacker": false,
+		"hacking_strategies": [
+			[
+				{
+					"_name": "OptionalStopping",
+					"level": "dv",
+					"max_attempts": 10,
+					"n_attempts": 3,
+					"num": 100
+				},
+				{
+					"_name": "Method 2"
+				},
+				[
+					// set of decisions
+				]
+			],
+			[
+				{
+					// h1
+				},
+				[
+					// decisions
+				]
+			]
+		],
+		"final_decision_policies": [
+			"none"	// set of decisions
+		],
+		"submission_policies": [
+			"none"	// set of decisions
+		]
+	}
+}
