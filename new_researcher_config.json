@@ -1,5 +1,6 @@
 {
 	"researcher_parameters": {
+		"decision_strategy": "PatientDecisionMaker",
 		"is_pre_processing": false,
 		"pre_processing_methods": [
 			{
@@ -15,7 +16,7 @@
 				"order": "max first"
 			}
 		],
-		"decision_policies": [
+		"initial_decision_policies": [
 			[
 				"sig",
 				"effect > 0",
@@ -44,23 +45,25 @@
 					"_name": "Method 2"
 				},
 				[
-					// set of decisions
+					[], []
+					// Executing the policies and continuing to the new 
+					// set of hacking
 				]
 			],
 			[
 				{
-					// h1
+					
 				},
 				[
-					// decisions
+					
 				]
 			]
 		],
 		"final_decision_policies": [
-			"none"	// set of decisions
+			"none"	
 		],
 		"submission_policies": [
-			"none"	// set of decisions
+			"none"	
 		]
 	}
 }

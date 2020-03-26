@@ -173,19 +173,21 @@ void runSimulation(json &simConfig) {
 
   // This loop can be parallelized
   for (int i = 0; i < simConfig["simulation_parameters"]["n_sims"]; ++i) {
-    
+
     spdlog::debug("---> Sim {}", i);
 
-    int j {0};
+    int j{0};
     while (researcher.journal->isStillAccepting()) {
-      
+
       spdlog::debug("---> Experiment #{}", j++);
 
-      researcher.prepareResearch();
-
-      researcher.performResearch();
-
-      researcher.publishResearch();
+//      researcher.prepareResearch();
+//
+//      researcher.performResearch();
+//
+//      researcher.publishResearch();
+      
+      researcher.research();
 
       // If Experiment handles the Submission, it can handle the
       // stats output as well.
@@ -194,7 +196,7 @@ void runSimulation(json &simConfig) {
 
       if (FLAGS::PROGRESS)
         progressBar.progress(i, nSims);
-      
+
       spdlog::debug("=====================================");
     }
 

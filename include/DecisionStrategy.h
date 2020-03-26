@@ -61,120 +61,18 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
 
 enum class PolicyType { Min, Max, Comp, Random, First };
 
+
+using Policy = std::pair<PolicyType, sol::function>;
+using PolicySet = std::vector<Policy>;
+using PolicyChain = std::vector<PolicySet>;
+
 ///
 /// \brief      Abstract class for different decision strategies.
 ///
 class DecisionStrategy {
 
 protected:
-  // This should not be here, but I don't feel fixing include collision now!
-  std::optional<std::pair<PolicyType, sol::function>>
-  make_function(const std::string &s, sol::state &lua) {
 
-    std::map<std::string, std::string> lua_temp_scripts{
-        {"min_script", "function {} (l, r) return l.{} < r.{} end"},
-
-        {"max_script", "function {} (l, r) return l.{} > r.{} end"},
-
-        {"comp_script", "function {} (d) return d.{} end"}};
-
-    std::map<std::string, std::string> cops = {
-        {">=", "greater_eq"}, {"<=", "lesser_eq"}, {">", "greater"},
-        {"<", "lesser"},      {"==", "equal"},     {"!=", "not_equal"}};
-
-    PolicyType policy_type;
-    sol::function policy_func;
-
-    if (s.find("min") != std::string::npos) {
-
-      auto open_par = s.find("(");
-      auto close_par = s.find(")");
-
-      auto var_name = s.substr(open_par + 1, close_par - open_par - 1);
-
-      auto f_name = fmt::format("min_{}", var_name);
-      auto f_def = fmt::format(lua_temp_scripts["min_script"], f_name, var_name,
-                               var_name);
-
-      lua.script(f_def);
-
-      policy_type = PolicyType::Min;
-      policy_func = lua[f_name];
-
-    } else if (s.find("max") != std::string::npos) {
-
-      auto open_par = s.find("(");
-      auto close_par = s.find(")");
-
-      auto var_name = s.substr(open_par + 1, close_par - open_par - 1);
-
-      auto f_name = fmt::format("max_{}", var_name);
-      auto f_def = fmt::format(lua_temp_scripts["max_script"], f_name, var_name,
-                               var_name);
-
-      lua.script(f_def);
-
-      policy_type = PolicyType::Max;
-      policy_func = lua[f_name];
-    } else if (s.find("sig") != std::string::npos) {
-
-      auto f_name = "cond_sig";
-
-      auto f_def =
-          fmt::format(lua_temp_scripts["comp_script"], f_name, "sig == true");
-
-      lua.script(f_def);
-
-      policy_type = PolicyType::Comp;
-      policy_func = lua[f_name];
-
-    } else if (s.find("random") != std::string::npos) {
-
-      policy_type = PolicyType::Random;
-      policy_func = sol::function();
-
-    } else if (s.find("first") != std::string::npos) {
-
-      auto var_name = "id";
-      auto f_name = fmt::format("min_{}", var_name);
-      auto f_def = fmt::format(lua_temp_scripts["min_script"], f_name, var_name,
-                               var_name);
-
-      lua.script(f_def);
-
-      policy_type = PolicyType::First;
-      policy_func = lua[f_name];
-
-    } else if (std::any_of(cops.begin(), cops.end(), [&s](const auto &op) {
-                 return s.find(op.first) != std::string::npos;
-               })) {
-      // Found a comparision
-
-      std::string s_op{};
-      for (const auto &op : cops)
-        if (s.find(op.first) != std::string::npos) {
-          s_op = op.first;
-          break;
-        }
-
-      auto op_start = s.find(s_op);
-
-      auto var_name = s.substr(0, op_start - 1);
-      auto f_name = fmt::format("cond_{}", var_name + "_" + cops[s_op]);
-      auto f_def = fmt::format(lua_temp_scripts["comp_script"], f_name,
-                               s); // Full text goes here
-
-      lua.script(f_def);
-
-      policy_type = PolicyType::Comp;
-      policy_func = lua[f_name];
-
-    } else {
-      return {};
-    }
-
-    return std::make_pair(policy_type, policy_func);
-  }
 
   json config_;
 
@@ -190,14 +88,7 @@ protected:
 
   // Lua state
   sol::state lua;
-
-  using Policy = std::pair<PolicyType, sol::function>;
-
-  /// TODO: These guys should move to their own class, I don't have to keep
-  /// everything here!
-  std::vector<std::vector<Policy>> decision_policies;
-  std::vector<Policy> submission_policies;
-  std::vector<Policy> final_decision_policies;
+  
 
   //! If `true`, the Researcher will continue traversing through the
   //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -246,6 +137,23 @@ protected:
 
 public:
   DecisionMethod name;
+  
+  // This should not be here, but I don't feel fixing include collision now!
+  std::optional<std::pair<PolicyType, sol::function>>
+  registerPolicy(const std::string &s);
+
+  PolicySet
+  registerPolicySet(const std::vector<std::string> &policy_set_defs);
+  
+  PolicyChain
+  registerPolicyChain(const std::vector<std::vector<std::string>> &policy_chain_defs);
+  
+  /// TODO: These guys should move to their own class, I don't have to keep
+  /// everything here!
+  PolicyChain initial_decision_policies;
+  PolicySet submission_policies;
+  PolicySet final_decision_policies;
+  
 
   /// DecisionStrategy factory method.
   ///
@@ -257,6 +165,8 @@ public:
   virtual ~DecisionStrategy() = 0;
 
   DecisionStrategy() {
+    
+    // Preparing a Lua instance, and registering my types there
 
     lua.open_libraries();
 
@@ -277,63 +187,7 @@ public:
 
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
-  checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy) {
-
-    auto type = policy.first;
-    auto func = policy.second;
-
-    switch (type) {
-
-    case PolicyType::Min: {
-      auto it = std::min_element(begin, end, func);
-      spdlog::debug("Min:"); spdlog::debug("\t {}", *it);
-      return {true, it, it};
-    } break;
-
-    case PolicyType::Max: {
-      auto it = std::max_element(begin, end, func);
-      spdlog::debug("Max:"); spdlog::debug("\t {}", *it);
-      return {true, it, it};
-    } break;
-
-    case PolicyType::Comp: {
-      auto pit = std::partition(begin, end, func);
-      spdlog::debug("Comp: ");
-      for (auto it{begin}; it != pit; ++it) {
-        spdlog::debug("\t {}", *it);
-      }
-
-      return {false, begin, pit};
-
-    }
-
-    break;
-
-    case PolicyType::Random: {
-      /// Shuffling the array and setting the end pointer to the first time,
-      /// this basically mimic the process of selecting a random element from
-      /// the list.
-      Random::shuffle(begin, end);
-      spdlog::debug("Shuffled: ");
-      for (auto it{begin}; it != end; ++it) {
-        spdlog::debug("\t {}", *it);
-      }
-      return {true, begin, end};
-
-    } break;
-
-    case PolicyType::First: {
-
-      // Sorting the groups based on their index
-      std::sort(begin, end, func);
-
-      spdlog::debug("First: "); spdlog::debug("\t {}", *begin);
-
-      return {true, begin, end};
-
-    } break;
-    }
-  }
+  checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy);
 
   /// The logic of continoution should be implemented here. Researcher will
   /// ask this method to asses the state of its progress.
@@ -350,9 +204,10 @@ public:
   /// "unpreferable" result or not.
   virtual bool willBeSubmitting();
 
-  DecisionStage current_stage;
+//  DecisionStage current_stage;
 
   Submission current_submission;
+  bool already_found_something {false};
 
   //! This will set to the final submission record that the Researcher
   //! is satisfied with.
@@ -363,6 +218,35 @@ public:
     submissions_pool.clear();
     experiments_pool.clear();
   }
+  
+  
+  void operator()(Experiment *experiment, PolicyChain &policies) {
+    // return selectSubmissions(experiment, policies)
+    
+    selectOutcome(*experiment, policies);
+    
+    /// Decision will be blind to the stage with this implementation,
+    /// and only execute the routine. It can pass the selected Submission
+    /// to the Researccher or just keep it
+  }
+  
+  void operator()(Submission &subs, PolicySet &policies) { }
+  
+  void operator()(PolicySet &policies) {
+    return selectBetweenSubmissions(policies);
+    
+    /// This should do something!
+    
+    /// This is quite similar to the previous run, but only operators on subs
+  }
+  
+  
+  void operator()(std::vector<Submission> &subs, PolicyChain &policies) {
+    // return selectBetweenSubmissions(subs, policies)
+    
+    /// This is quite similar to the previous run, but only operators on subs
+  }
+  
 
   /// \brief      Implementation of decision-making procedure.
   ///
@@ -393,6 +277,8 @@ public:
   /// \return     A copy of the selected outcome
   ///
   Submission selectOutcome(Experiment &experiment);
+  
+  void selectOutcome(Experiment &experiment, PolicyChain &pchain);
 
   ///
   /// \brief      Select the final submission by checking all logged
@@ -404,6 +290,9 @@ public:
   /// \return     A copy of the selected outcome
   ///
   Submission selectBetweenSubmissions();
+  
+  
+  void selectBetweenSubmissions(PolicySet &pset);
 
   //        Experiment selectBetweenExperiments();
 };
@@ -431,26 +320,32 @@ public:
 
     spdlog::debug("Registering decision policies...");
 
-    for (const auto &policies : p.decision_policies) {
+//    for (const auto &policies : p.decision_policies) {
+//
+//      initial_decision_policies.push_back(std::vector<Policy>());
+//
+//      for (const auto &s : policies) {
+//
+//        auto policy = registerPolicy(s);
+//
+//        if (policy)
+//          initial_decision_policies.back().push_back(policy.value());
+//      }
+//    }
+    
+    initial_decision_policies = registerPolicyChain(p.decision_policies);
+    
 
-      decision_policies.push_back(std::vector<Policy>());
-
-      for (const auto &s : policies) {
-
-        auto policy = make_function(s, lua);
-
-        if (policy)
-          decision_policies.back().push_back(policy.value());
-      }
-    }
-
-    for (const auto &s : p.submission_policies) {
-
-      auto policy = make_function(s, lua);
-
-      if (policy)
-        submission_policies.push_back(policy.value());
-    }
+//    for (const auto &s : p.submission_policies) {
+//
+//      auto policy = registerPolicy(s);
+//
+//      if (policy)
+//        submission_policies.push_back(policy.value());
+//    }
+    
+    submission_policies = registerPolicySet(p.submission_policies);
+    
   }
 
   bool isStillHacking() override { return is_still_hacking; }
@@ -500,20 +395,20 @@ public:
 
     for (auto &policies : p.decision_policies) {
 
-      decision_policies.push_back(std::vector<Policy>());
+      initial_decision_policies.push_back(std::vector<Policy>());
 
       for (auto &s : policies) {
 
-        auto policy = make_function(s, lua);
+        auto policy = registerPolicy(s);
 
         if (policy)
-          decision_policies.back().push_back(policy.value());
+          initial_decision_policies.back().push_back(policy.value());
       }
     }
 
     for (auto &s : p.submission_policies) {
 
-      auto policy = make_function(s, lua);
+      auto policy = registerPolicy(s);
 
       if (policy)
         submission_policies.push_back(policy.value());
@@ -548,31 +443,31 @@ inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
 /// \ingroup    DecisionStrategies
 /// \brief      { item_description }
 ///
-class HonestDecisionMaker final : public DecisionStrategy {
-
-public:
-  struct Parameters {
-    DecisionMethod name = DecisionMethod::HonestDecisionMaker;
-  };
-
-  /// Parameters of the HonestDecisionMaker are fixed, he is basically the
-  /// baseline researcher that report everything he finds.
-  Parameters params;
-
-  HonestDecisionMaker(){};
-
-  HonestDecisionMaker(const Parameters p) : params(p){};
-
-  bool isStillHacking() override { return false; };
-
-  virtual HonestDecisionMaker &verdict(Experiment &experiment,
-                                       DecisionStage stage) override;
-
-  virtual void initDecision(Experiment &experiment) override{};
-  virtual void intermediateDecision(Experiment &experiment) override{};
-  virtual void afterhackDecision(Experiment &experiment) override{};
-  virtual void finalDecision(Experiment &experiment) override{};
-};
+//class HonestDecisionMaker final : public DecisionStrategy {
+//
+//public:
+//  struct Parameters {
+//    DecisionMethod name = DecisionMethod::HonestDecisionMaker;
+//  };
+//
+//  /// Parameters of the HonestDecisionMaker are fixed, he is basically the
+//  /// baseline researcher that report everything he finds.
+//  Parameters params;
+//
+//  HonestDecisionMaker(){};
+//
+//  HonestDecisionMaker(const Parameters p) : params(p){};
+//
+//  bool isStillHacking() override { return false; };
+//
+//  virtual HonestDecisionMaker &verdict(Experiment &experiment,
+//                                       DecisionStage stage) override;
+//
+//  virtual void initDecision(Experiment &experiment) override{};
+//  virtual void intermediateDecision(Experiment &experiment) override{};
+//  virtual void afterhackDecision(Experiment &experiment) override{};
+//  virtual void finalDecision(Experiment &experiment) override{};
+//};
 
 ///
 /// \ingroup    DecisionStrategies
@@ -582,29 +477,29 @@ public:
 ///             basically don't want to intervene with the process, and let it
 ///             run
 ///
-class NoDecision final : public DecisionStrategy {
-
-public:
-  struct Parameters {
-    DecisionMethod name = DecisionMethod::NoDecision;
-  };
-
-  Parameters params;
-
-  NoDecision(){};
-
-  bool isStillHacking() override { return true; };
-
-  virtual NoDecision &verdict(Experiment &experiment,
-                              DecisionStage stage) override {
-    return *this;
-  };
-
-  virtual void initDecision(Experiment &experiment) override{};
-  virtual void intermediateDecision(Experiment &experiment) override{};
-  virtual void afterhackDecision(Experiment &experiment) override{};
-  virtual void finalDecision(Experiment &experiment) override{};
-};
+//class NoDecision final : public DecisionStrategy {
+//
+//public:
+//  struct Parameters {
+//    DecisionMethod name = DecisionMethod::NoDecision;
+//  };
+//
+//  Parameters params;
+//
+//  NoDecision(){};
+//
+//  bool isStillHacking() override { return true; };
+//
+//  virtual NoDecision &verdict(Experiment &experiment,
+//                              DecisionStage stage) override {
+//    return *this;
+//  };
+//
+//  virtual void initDecision(Experiment &experiment) override{};
+//  virtual void intermediateDecision(Experiment &experiment) override{};
+//  virtual void afterhackDecision(Experiment &experiment) override{};
+//  virtual void finalDecision(Experiment &experiment) override{};
+//};
 
 } // namespace sam
 

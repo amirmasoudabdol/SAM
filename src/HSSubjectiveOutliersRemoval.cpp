@@ -11,8 +11,7 @@ using namespace sam;
 /// difference between this routine and the OutliersRemoval, mainly, I generate
 /// the Ks beforehand, and the entire procedure is technically one hacking step.
 ///
-void SubjectiveOutlierRemoval::perform(Experiment *experiment,
-                                       DecisionStrategy *decision_strategy) {
+void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
 
   spdlog::debug("Subjective Outliers Removal");
 
@@ -46,9 +45,9 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment,
     experiment->calculateEffects();
     experiment->runTest();
 
-    if (!decision_strategy->verdict(*experiment, DecisionStage::WhileHacking)
-             .isStillHacking()) {
-      return;
-    }
+//    if (!decision_strategy->verdict(*experiment, DecisionStage::WhileHacking)
+//             .isStillHacking()) {
+//      return;
+//    }
   }
 }

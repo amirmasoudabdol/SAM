@@ -42,27 +42,18 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "ImpatientDecisionMaker",
+            "_name": "PatientDecisionMaker",
             "decision_policies": [
                 [
-                    "sig",
-                    "effect > 0",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
                     "effect < 0",
-                    "max(pvalue)"
+                    "random"
                 ]
             ],
             "final_decision_policies": [
                 "none"
             ],
             "submission_policies": [
-                "none"
+                "sig"
             ]
         },
         "hacking_strategies": [
@@ -73,10 +64,28 @@
                     "max_attempts": 10,
                     "n_attempts": 3,
                     "num": 100
-                }
+                },
+                {
+                    "_name": "OutliersRemoval",
+                    "level": "dv",
+                    "max_attempts": 1000,
+                    "min_observations": 10,
+                    "multipliers": [
+                        0.5
+                    ],
+                    "n_attempts": 1000,
+                    "num": 1000,
+                    "order": "max first"
+                },
+                [
+                    [
+                        "effect > 0",
+                        "min(pvalue)"
+                    ]
+                ]
             ]
         ],
-        "is_phacker": false,
+        "is_phacker": true,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
@@ -96,7 +105,7 @@
     "simulation_parameters": {
         "debug": true,
         "master_seed": 42,
-        "n_sims": 5,
+        "n_sims": 1,
         "output_path": "../outputs/",
         "output_prefix": "debug",
         "progress": false,

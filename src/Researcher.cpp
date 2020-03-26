@@ -23,7 +23,7 @@ void Researcher::hack() {
 
     for (auto &method : set) {
 
-      (*method)(&copiedExpr, decision_strategy.get());
+      (*method)(&copiedExpr);
       copiedExpr.is_hacked = true;
 
       decision_strategy->verdict(copiedExpr, DecisionStage::DoneHacking);
@@ -34,6 +34,34 @@ void Researcher::hack() {
       }
       
     }
+  }
+  
+}
+
+
+void Researcher::letTheHackBegin() {
+  
+  for (auto &set : workflow) {
+    
+    Experiment copiedExpr = *experiment;
+    
+    std::visit(overload{
+        [&](HackingSet& hset) {
+          for (auto &method : hset) {
+
+            (*method)(&copiedExpr);
+            copiedExpr.is_hacked = true;
+            
+          }
+        },
+        [&](PolicyChain& policy) {
+          decision_strategy->operator()(&copiedExpr, policy);
+          if (decision_strategy->already_found_something){
+            return;
+          }
+        }
+    }, set);
+    
   }
   
 }
@@ -53,13 +81,13 @@ void Researcher::hack() {
 ///
 void Researcher::preProcessData() {
 
-  static NoDecision no_decision = NoDecision();
+//  static NoDecision no_decision = NoDecision();
 
   experiment->calculateStatistics();
 
   for (auto &method : pre_processing_methods) {
 
-    (*method)(experiment, &no_decision);
+    (*method)(experiment);
   }
 }
 
@@ -128,9 +156,58 @@ void Researcher::publishResearch() {
 
 void Researcher::research() {
 
-  prepareResearch();
+  // This needs to be reformulated to execute the _workflow_
+  
+  
+  spdlog::debug("Executing the Research Workflow!");
+  
+  experiment->generateData();
+  
+  if (is_pre_processing) {
+    spdlog::debug("Pre-processing");
 
-  performResearch();
+    preProcessData();
+  }
+  
+  computeStuff();
 
-  publishResearch();
+  if (decision_strategy->verdict(*experiment, DecisionStage::Initial)
+          .isStillHacking() &&
+      isHacker()) {
+    hack();
+  }
+  
+  decision_strategy->operator()(experiment, decision_strategy->initial_decision_policies);
+  
+  if (!decision_strategy->already_found_something) {
+    letTheHackBegin();
+  }
+  
+  // Ask for the final decision
+//  decision_strategy->verdict(*experiment, DecisionStage::Final);
+
+  // Setting researcher's submission record
+//  submission_record = decision_strategy->final_submission;
+  
+  
+  if (!decision_strategy->already_found_something){
+    // Run Final Decision
+    decision_strategy->operator()(decision_strategy->final_decision_policies);
+  }
+  
+  if (!decision_strategy->already_found_something) {
+    /// Run Submission Decision
+    decision_strategy->operator()(decision_strategy->current_submission, decision_strategy->submission_policies);
+  }
+  
+//
+//  // Submit the final submission to the Jouranl
+//  if (decision_strategy->willBeSubmitting())
+//    journal->review(decision_strategy->final_submission);
+  
+  if (!decision_strategy->already_found_something){
+      journal->review(decision_strategy->current_submission);
+  }
+  
+  
 }

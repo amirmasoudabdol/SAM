@@ -14,8 +14,7 @@ using namespace sam;
 /// \param      experiment        A pointer to researcher's experiment
 /// \param      decisionStrategy  A pointer to researcher's decision strategy
 ///
-void GroupPooling::perform(Experiment *experiment,
-                           DecisionStrategy *decisionStrategy) {
+void GroupPooling::perform(Experiment *experiment) {
 
   //    spdlog::debug("Group Pooling");
   //

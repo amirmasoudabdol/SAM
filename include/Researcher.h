@@ -22,9 +22,21 @@ using Random = effolkronium::random_static;
 
 namespace sam {
 
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>;
+
 using json = nlohmann::json;
 
+//using HackingSet = std::vector<std::unique_ptr<HackingStrategy>>;
+
 class ResearcherBuilder;
+
+using HackingSet = std::vector<std::shared_ptr<HackingStrategy>>;
+using Policy = std::pair<PolicyType, sol::function>;
+using PolicySet = std::vector<Policy>;
+using PolicyChain = std::vector<PolicySet>;
+
+using Workflow = std::vector<std::variant<HackingSet, PolicyChain>> ;
 
 class Researcher {
   // Making the ResearcherBuilder a friend class in order to give it access to
@@ -70,17 +82,28 @@ public:
   Submission submission_record;
 
   void hack();
+//  void hack(HackingSet &tricks);
 
   void prepareResearch();
   void preProcessData();
 
   void performResearch();
   void publishResearch();
+  
+  Workflow workflow;
+  
   void research();
+  void letTheHackBegin();
 
   // This could be renamed to something like, selectThePreferedSubmission()
   void prepareTheSubmission();
   void submitToJournal();
+  
+  void computeStuff() {
+    experiment->calculateStatistics();
+    experiment->calculateEffects();
+    experiment->runTest();
+  }
 
   ///
   /// Set the decisionStrategy of the researcher.
@@ -152,22 +175,6 @@ public:
     researcher.decision_strategy = DecisionStrategy::build(
         config["researcher_parameters"]["decision_strategy"]);
 
-    // Parsing Hacking Strategies
-    researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
-    if (researcher.is_hacker) {
-      for (const auto &set :
-           config["researcher_parameters"]["hacking_strategies"]) {
-
-        researcher.hacking_strategies.push_back({});
-
-        for (const auto &item : set) {
-
-          researcher.hacking_strategies.back().push_back(
-              HackingStrategy::build(item));
-        }
-      }
-    }
-
     researcher.is_pre_processing =
         config["researcher_parameters"]["is_pre_processing"];
     if (researcher.is_pre_processing) {
@@ -176,6 +183,41 @@ public:
 
         researcher.pre_processing_methods.push_back(
             HackingStrategy::build(item));
+      }
+    }
+    
+    // Parsing Hacking Strategies
+    researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
+    if (researcher.is_hacker) {
+      for (const auto &set :
+           config["researcher_parameters"]["hacking_strategies"]) {
+
+        researcher.hacking_strategies.push_back({});
+
+        // TODO: I think this doesn't work if there is more than one set of hacking strategies
+
+        auto i{0};
+        auto item = set.at(i);
+        researcher.workflow.push_back(HackingSet());
+        std::vector<shared_ptr<HackingStrategy>> temp_shared_set;
+        while (item.type() == nlohmann::detail::value_t::object) {
+          researcher.hacking_strategies.back().push_back(
+              HackingStrategy::build(item));
+
+          temp_shared_set.push_back(HackingStrategy::build(item));
+
+          item = set.at(++i);
+        }
+
+        researcher.workflow.push_back(temp_shared_set);
+
+
+
+        if (item.type() == nlohmann::detail::value_t::array) {
+          // It's a set of policies
+          researcher.workflow.push_back(researcher.decision_strategy->registerPolicyChain(item));
+        }
+
       }
     }
 
@@ -190,8 +232,7 @@ public:
 
   ///
   /// \brief      Create a new DecisionStrategy for the researcher based on the
-  /// given
-  ///             configuration.
+  /// given configuration.
   ///
   ResearcherBuilder &createDecisionStrategy(json &ds) {
     researcher.decision_strategy = DecisionStrategy::build(ds);

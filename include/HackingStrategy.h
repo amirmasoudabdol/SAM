@@ -61,9 +61,16 @@ public:
 
   static std::unique_ptr<HackingStrategy> build(HackingMethod method);
 
-  virtual void operator()(Experiment *experiment,
+  
+  // These will modify the experiment
+  
+  void operator()(Experiment *experiment,
                           DecisionStrategy *decisionStrategy) {
-    perform(experiment, decisionStrategy);
+//    perform(experiment, decisionStrategy);
+  };
+
+  void operator()(Experiment *experiment) {
+    perform(experiment);
   };
 
 private:
@@ -75,8 +82,7 @@ private:
   ///                               DecisionStrategy. The HackingStrategy
   ///                               decides with what flag it is going to use
   ///                               the DecisionStrategy.
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) = 0;
+  virtual void perform(Experiment *experiment) = 0;
 };
 
 class NoHack final : public HackingStrategy {
@@ -86,8 +92,7 @@ public:
   };
 
 private:
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) override{};
+  virtual void perform(Experiment *experiment) override{};
 };
 
 ///
@@ -98,7 +103,10 @@ private:
 class OptionalStopping final : public HackingStrategy {
 
 public:
-  ///   \ingroup HackingStrategiesParameters
+  /// \ingroup  HackingStrategiesParameters
+  ///
+  /// \brief    Parameter of optional stopping method.
+  ///
   struct Parameters {
     //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::OptionalStopping;
@@ -127,8 +135,7 @@ public:
         };
 
 private:
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) override;
+  virtual void perform(Experiment *experiment) override;
 
 private:
   ///   Add _n_ observations to all groups and return the updated experiment to
@@ -224,8 +231,7 @@ public:
         };
 
   // Submission hackedSubmission;
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) override;
+  virtual void perform(Experiment *experiment) override;
 
 private:
   int removeOutliers(Experiment *experiment, const int n, const double d);
@@ -314,8 +320,7 @@ public:
         };
 
 private:
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) override;
+  virtual void perform(Experiment *experiment) override;
 };
 
 inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
@@ -353,8 +358,7 @@ public:
         };
 
   // Submission hackedSubmission;
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) override;
+  virtual void perform(Experiment *experiment) override;
 
 private:
   void pool(Experiment *experiment, int r);
@@ -390,8 +394,7 @@ public:
   ConditionDropping() { params.name = HackingMethod::ConditionDropping; };
 
 private:
-  virtual void perform(Experiment *experiment,
-                       DecisionStrategy *decisionStrategy) override{};
+  virtual void perform(Experiment *experiment) override {};
 };
 
 inline void to_json(json &j, const ConditionDropping::Parameters &p) {
