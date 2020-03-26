@@ -27,7 +27,7 @@ void Researcher::letTheHackBegin() {
         },
         [&](PolicyChain& policy) {
           decision_strategy->operator()(&copiedExpr, policy);
-          if (decision_strategy->hasSubmissionCandidate()){
+          if (decision_strategy->hasSubmissionCandidate() && not decision_strategy->isStillHacking()){
             return;
           }
         }

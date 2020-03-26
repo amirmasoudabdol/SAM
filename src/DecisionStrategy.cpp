@@ -56,11 +56,6 @@ DecisionStrategy::build(json &decision_strategy_config) {
     return std::make_unique<PatientDecisionMaker>(params);
 
   }
-//  else if (decision_strategy_config["_name"] == "HonestDecisionMaker") {
-//
-//    return std::make_unique<HonestDecisionMaker>();
-//
-//  }
   else
   {
     throw std::invalid_argument("Unknown DecisionStrategy");
@@ -128,7 +123,7 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy 
   }
 }
 
-std::optional<std::pair<PolicyType, sol::function>>
+std::optional<Policy>
 DecisionStrategy::registerPolicy(const std::string &s) {
 
   std::map<std::string, std::string> lua_temp_scripts{
@@ -230,6 +225,7 @@ DecisionStrategy::registerPolicy(const std::string &s) {
     policy_func = lua[f_name];
 
   } else {
+    throw std::invalid_argument("Invalid Policy.");
     return {};
   }
 
@@ -275,59 +271,6 @@ DecisionStrategy::registerPolicyChain(const std::vector<std::vector<std::string>
   return policy_chain;
   
 }
-
-Submission DecisionStrategy::selectOutcome(Experiment &experiment) {
-
-  /// We always start with the pre_registered_group, and if we find others
-  /// results based on researchers' preference, then we replace it, and report
-  /// that one.
-  /// CHECK ME: I'm not sure if this is a good way of doing this...
-  int selectedOutcome{0};
-
-  pre_registered_group = experiment.setup.nd();
-
-  int pset_inx{0};
-  for (auto &policy_set : initial_decision_policies) {
-
-    /// These needs to be reset since I'm starting a new set of policies
-    /// New policies will scan the set again!
-    auto found_something{false};
-    auto begin = experiment.groups_.begin() + experiment.setup.nd();
-    auto end = experiment.groups_.end();
-
-    for (auto &p : policy_set) {
-
-      std::tie(found_something, begin, end) = checkThePolicy(begin, end, p);
-
-      if (found_something) {
-        /// If we have a hit, mainly after going to Min, Max, First, Random;
-        /// then, we are done!
-        spdlog::debug("> Found something!");
-        selectedOutcome = begin->id_;
-        spdlog::debug("Policy: {}", pset_inx);
-        return {experiment, selectedOutcome};
-      } else {
-        /// The range is empty! This only happens when Comp case cannot find
-        /// anything with the given comparison. Then, we break out the loop, and
-        /// move into the new set of policies
-        if (begin == end) {
-          spdlog::debug("> Going to the next set of policies.");
-          break; // Out of the for-loop, going to the next chain
-        }
-        /// else:
-        ///     We are still looking!
-      }
-    }
-
-    pset_inx++;
-  }
-
-  spdlog::debug("Found nothing!");
-  selectedOutcome = 0;
-
-  return {experiment, selectedOutcome};
-}
-
 
 void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain) {
 
@@ -377,37 +320,6 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
   }
   
   has_a_candidate = false;
-}
-
-/// This is often is being used by PatientDecisionMaker
-Submission DecisionStrategy::selectBetweenSubmissions() {
-
-  spdlog::debug("Selecting between collected submissions.");
-
-  auto begin = submissions_pool.begin();
-  auto end = submissions_pool.end();
-  auto found_something{false};
-
-  for (auto &policy : final_decision_policies) {
-
-    std::tie(found_something, begin, end) = checkThePolicy(begin, end, policy);
-
-    if (found_something) {
-      spdlog::debug("> Found something in the pile!");
-      return *begin;
-    } else {
-      if (begin == end) {
-        break;
-      }
-      /// else:
-      ///     We are still looking. This happens when I'm testing a comparison
-    }
-  }
-
-  spdlog::debug("Not happy!");
-
-  /// It returns the last hacked results in the case not finding anything!
-  return submissions_pool.back();
 }
 
 void DecisionStrategy::selectBetweenSubmissions(PolicySet &pset) {
@@ -462,7 +374,6 @@ ImpatientDecisionMaker &ImpatientDecisionMaker::verdict(Experiment &experiment,
 
   return *this;
 }
-
 
 
 PatientDecisionMaker &PatientDecisionMaker::verdict(Experiment &experiment,

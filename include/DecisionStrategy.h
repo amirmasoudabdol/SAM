@@ -60,7 +60,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
 
 enum class PolicyType { Min, Max, Comp, Random, First };
 
-
 using Policy = std::pair<PolicyType, sol::function>;
 using PolicySet = std::vector<Policy>;
 using PolicyChain = std::vector<PolicySet>;
@@ -71,8 +70,6 @@ using PolicyChain = std::vector<PolicySet>;
 class DecisionStrategy {
 
 protected:
-
-
   json config_;
 
   //! Indicates the pre-registered outcome in the case where the
@@ -89,28 +86,23 @@ protected:
   sol::state lua;
 
 public:
-  
   virtual ~DecisionStrategy() = 0;
-  
+
   DecisionStrategy();
 
-  
-  // This should not be here, but I don't feel fixing include collision now!
-  std::optional<std::pair<PolicyType, sol::function>>
-  registerPolicy(const std::string &s);
-
-  PolicySet
-  registerPolicySet(const std::vector<std::string> &policy_set_defs);
-  
-  PolicyChain
-  registerPolicyChain(const std::vector<std::vector<std::string>> &policy_chain_defs);
-  
   /// TODO: These guys should move to their own class, I don't have to keep
   /// everything here!
   PolicyChain initial_decision_policies;
   PolicySet submission_policies;
   PolicySet final_decision_policies;
-  
+
+  // This should not be here, but I don't feel fixing include collision now!
+  std::optional<Policy> registerPolicy(const std::string &s);
+
+  PolicySet registerPolicySet(const std::vector<std::string> &policy_set_defs);
+
+  PolicyChain registerPolicyChain(
+      const std::vector<std::vector<std::string>> &policy_chain_defs);
 
   /// DecisionStrategy factory method.
   ///
@@ -118,9 +110,6 @@ public:
   /// about each decision strategy.
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
-
-
-  
 
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
@@ -141,23 +130,19 @@ public:
   /// "unpreferable" result or not.
   virtual bool willBeSubmitting(PolicySet &pset);
 
-//  DecisionStage current_stage;
-
   Submission current_submission_candidate;
-  
-  
+
   //! If `true`, the Researcher will continue traversing through the
   //! hacknig methods, otherwise, he/she will stop the hacking and
   //! prepare the finalSubmission. It will be updated on each call of
   //! verdict(). Basically verdict() decides if the Researcher is
   //! happy with the submission record or not.
-  bool is_still_hacking {false};
+  bool is_still_hacking{false};
 
-  bool will_be_submitting {false};
-  
-  bool has_a_candidate {false};
-  
-  
+  bool will_be_submitting{false};
+
+  bool has_a_candidate{false};
+
   bool hasSubmissionCandidate() const { return has_a_candidate; };
 
   //! This will set to the final submission record that the Researcher
@@ -169,35 +154,34 @@ public:
     submissions_pool.clear();
     experiments_pool.clear();
   }
-  
-  
+
   void operator()(Experiment *experiment, PolicyChain &policies) {
     // return selectSubmissions(experiment, policies)
-    
+
     selectOutcome(*experiment, policies);
-    
+
     /// Decision will be blind to the stage with this implementation,
     /// and only execute the routine. It can pass the selected Submission
     /// to the Researccher or just keep it
   }
-  
-  void operator()(Submission &subs, PolicySet &policies) { }
-  
+
+  void operator()(Submission &subs, PolicySet &policies) {}
+
   void operator()(PolicySet &policies) {
     return selectBetweenSubmissions(policies);
-    
+
     /// This should do something!
-    
+
     /// This is quite similar to the previous run, but only operators on subs
   }
-  
-  
+
   void operator()(std::vector<Submission> &subs, PolicyChain &policies) {
     // return selectBetweenSubmissions(subs, policies)
-    
+
+    assert(true && "Not implemented yet!");
+
     /// This is quite similar to the previous run, but only operators on subs
   }
-  
 
   /// \brief      Implementation of decision-making procedure.
   ///
@@ -217,34 +201,9 @@ public:
     submissions_pool.push_back(current_submission_candidate);
   };
 
-  ///
-  /// \brief      Based on the DecisionPreference, it'll select the outcome
-  /// between
-  ///             all groups, `ng`. For instance, the MinPvalue deicison
-  ///             prefenrece will
-  ///
-  /// \param      experiment  { parameter_description }
-  ///
-  /// \return     A copy of the selected outcome
-  ///
-  Submission selectOutcome(Experiment &experiment);
-  
   void selectOutcome(Experiment &experiment, PolicyChain &pchain);
 
-  ///
-  /// \brief      Select the final submission by checking all logged
-  /// Submissions.
-  ///             Each submission is from a hacked experiment by the researcher.
-  ///             This is often being used by the `PatientDecisionMaker` at the
-  ///             end of the hacking procedure.
-  ///
-  /// \return     A copy of the selected outcome
-  ///
-  Submission selectBetweenSubmissions();
-  
-  
   void selectBetweenSubmissions(PolicySet &pset);
-
 };
 
 /// \ingroup    DecisionStrategies
@@ -259,8 +218,8 @@ public:
   struct Parameters {
     DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
 
-    std::vector<std::vector<std::string>> decision_policies;
-    std::vector<std::string> submission_policies;
+    std::vector<std::vector<std::string>> initial_decision_policies_defs;
+    std::vector<std::string> submission_policies_defs;
   };
 
   Parameters params;
@@ -269,32 +228,28 @@ public:
 
     spdlog::debug("Registering decision policies...");
 
-    initial_decision_policies = registerPolicyChain(p.decision_policies);
-        
-    submission_policies = registerPolicySet(p.submission_policies);
-    
+    initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
+
+    submission_policies = registerPolicySet(p.submission_policies_defs);
   }
 
   bool isStillHacking() override { return is_still_hacking; }
 
   virtual ImpatientDecisionMaker &verdict(Experiment &experiment,
                                           DecisionStage stage) override;
-
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
 inline void to_json(json &j, const ImpatientDecisionMaker::Parameters &p) {
-  j = json{
-      {"_name", p.name},
-      {"decision_policies", p.decision_policies},
-      {"submission_policies", p.submission_policies}
-  };
+  j = json{{"_name", p.name},
+           {"initial_decision_policies", p.initial_decision_policies_defs},
+           {"submission_policies", p.submission_policies_defs}};
 }
 
 inline void from_json(const json &j, ImpatientDecisionMaker::Parameters &p) {
   j.at("_name").get_to(p.name);
-  j.at("decision_policies").get_to(p.decision_policies);
-  j.at("submission_policies").get_to(p.submission_policies);
+  j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
+  j.at("submission_policies").get_to(p.submission_policies_defs);
 }
 
 ///
@@ -307,43 +262,43 @@ public:
   struct Parameters {
     DecisionMethod name = DecisionMethod::PatientDecisionMaker;
 
-    std::vector<std::vector<std::string>> decision_policies;
-    std::vector<std::string> submission_policies;
-    std::vector<std::string> final_decision_policies;
+    std::vector<std::vector<std::string>> initial_decision_policies_defs;
+    std::vector<std::string> submission_policies_defs;
+    std::vector<std::string> final_decision_policies_defs;
   };
 
   Parameters params;
 
   explicit PatientDecisionMaker(const Parameters &p) : params{p} {
 
-    initial_decision_policies = registerPolicyChain(p.decision_policies);
-    
-    final_decision_policies = registerPolicySet(p.final_decision_policies);
-        
-    submission_policies = registerPolicySet(p.submission_policies);
+    initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
 
+    final_decision_policies = registerPolicySet(p.final_decision_policies_defs);
+
+    submission_policies = registerPolicySet(p.submission_policies_defs);
   };
 
   virtual PatientDecisionMaker &verdict(Experiment &experiment,
                                         DecisionStage stage) override;
-  
+
+  // She is always hacking
+  virtual bool isStillHacking() override { return true; }
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters
 inline void to_json(json &j, const PatientDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
-           {"decision_policies", p.decision_policies},
-           {"submission_policies", p.submission_policies},
-           {"final_decision_policies", p.final_decision_policies}};
+           {"initial_decision_policies", p.initial_decision_policies_defs},
+           {"submission_policies", p.submission_policies_defs},
+           {"final_decision_policies", p.final_decision_policies_defs}};
 }
 
 inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
   j.at("_name").get_to(p.name);
-  j.at("decision_policies").get_to(p.decision_policies);
-  j.at("submission_policies").get_to(p.submission_policies);
-  j.at("final_decision_policies").get_to(p.final_decision_policies);
+  j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
+  j.at("submission_policies").get_to(p.submission_policies_defs);
+  j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
 }
-
 
 } // namespace sam
 
