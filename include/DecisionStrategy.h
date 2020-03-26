@@ -145,10 +145,6 @@ public:
 
   bool hasSubmissionCandidate() const { return has_a_candidate; };
 
-  //! This will set to the final submission record that the Researcher
-  //! is satisfied with.
-  Submission final_submission;
-
   /// Clear the list of submissions and experiments
   void clearHistory() {
     submissions_pool.clear();
