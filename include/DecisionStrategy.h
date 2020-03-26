@@ -64,39 +64,40 @@ using Policy = std::pair<PolicyType, sol::function>;
 using PolicySet = std::vector<Policy>;
 using PolicyChain = std::vector<PolicySet>;
 
+using SubmissionPool = std::vector<Submission>;
+
 ///
 /// \brief      Abstract class for different decision strategies.
 ///
 class DecisionStrategy {
 
-protected:
-  json config_;
-
-  //! Indicates the pre-registered outcome in the case where the
-  //! Researcher prefers the PreRegisteredOutcome
-  int pre_registered_group;
-
-  //! List of selected Submission by the researcher.
-  std::vector<Submission> submissions_pool;
-
-  //! List of selected Experiment by the researcher.
-  std::vector<Experiment> experiments_pool;
-
   // Lua state
   sol::state lua;
 
 public:
+  
   virtual ~DecisionStrategy() = 0;
-
   DecisionStrategy();
+    
+  json config_;
+  
+  /// DecisionStrategy factory method.
+  ///
+  /// \param decision_strategy_config    A JSON object containing information
+  /// about each decision strategy.
+  static std::unique_ptr<DecisionStrategy>
+  build(json &decision_strategy_config);
+  
+  Submission current_submission_candidate;
+  
+  //! List of selected Submission by the researcher.
+  SubmissionPool submissions_pool;
 
-  /// TODO: These guys should move to their own class, I don't have to keep
-  /// everything here!
+  /// TODO: These guys should move to their own class, I don't have to keep everything here!
   PolicyChain initial_decision_policies;
   PolicySet submission_policies;
   PolicySet final_decision_policies;
 
-  // This should not be here, but I don't feel fixing include collision now!
   std::optional<Policy> registerPolicy(const std::string &s);
 
   PolicySet registerPolicySet(const std::vector<std::string> &policy_set_defs);
@@ -104,33 +105,14 @@ public:
   PolicyChain registerPolicyChain(
       const std::vector<std::vector<std::string>> &policy_chain_defs);
 
-  /// DecisionStrategy factory method.
-  ///
-  /// \param decision_strategy_config    A JSON object containing information
-  /// about each decision strategy.
-  static std::unique_ptr<DecisionStrategy>
-  build(json &decision_strategy_config);
-
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
   checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy);
 
-  /// The logic of continoution should be implemented here. Researcher will
+  /// The logic of continuation should be implemented here. Researcher will
   /// ask this method to asses the state of its progress.
-  virtual bool isStillHacking() { return is_still_hacking; }
+  virtual bool willBeHacking() = 0;
 
-  /// It indicates whether the researcher is going to commit to submitting the
-  /// _Submission_. This acts as an another level of decision making where the
-  /// researcher consider another criteria if it couldn't achieve what he was
-  /// "looking for".
-  ///
-  /// For instance, if the researcher is determined to find "MinSigPvalue"
-  /// during his research, and — after all the hacking — he couldn't find
-  /// anything significant, then he decide whether he wants to submit the
-  /// "unpreferable" result or not.
-  virtual bool willBeSubmitting(PolicySet &pset);
-
-  Submission current_submission_candidate;
 
   //! If `true`, the Researcher will continue traversing through the
   //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -145,40 +127,39 @@ public:
 
   bool hasSubmissionCandidate() const { return has_a_candidate; };
 
+
+  /// Experiment
+  void operator()(Experiment *experiment, PolicyChain &policies) {
+    verdict(experiment, policies);
+  }
+
+  /// Submission Pool
+  void operator()(SubmissionPool &spool, PolicySet &policies) {
+    verdict(spool, policies);
+  }
+  
+  /// Submission
+  bool willBeSubmitting(PolicySet &pset);
+  
+protected:
+  
+  /// A helper method to save the current submission. This needs to be called
+  /// after verdict.
+  void saveCurrentSubmission() {
+    submissions_pool.push_back(current_submission_candidate);
+  };
+
   /// Clear the list of submissions and experiments
   void clearHistory() {
     submissions_pool.clear();
-    experiments_pool.clear();
   }
+  
+  void selectOutcome(Experiment &experiment, PolicyChain &pchain);
 
-  void operator()(Experiment *experiment, PolicyChain &policies) {
-    // return selectSubmissions(experiment, policies)
-
-    selectOutcome(*experiment, policies);
-
-    /// Decision will be blind to the stage with this implementation,
-    /// and only execute the routine. It can pass the selected Submission
-    /// to the Researccher or just keep it
-  }
-
-  void operator()(Submission &subs, PolicySet &policies) {}
-
-  void operator()(PolicySet &policies) {
-    return selectBetweenSubmissions(policies);
-
-    /// This should do something!
-
-    /// This is quite similar to the previous run, but only operators on subs
-  }
-
-  void operator()(std::vector<Submission> &subs, PolicyChain &policies) {
-    // return selectBetweenSubmissions(subs, policies)
-
-    assert(true && "Not implemented yet!");
-
-    /// This is quite similar to the previous run, but only operators on subs
-  }
-
+  void selectBetweenSubmissions(SubmissionPool &spool, PolicySet &pset);
+  
+private:
+  
   /// \brief      Implementation of decision-making procedure.
   ///
   /// \param      experiment
@@ -188,18 +169,12 @@ public:
   ///                         stages of the development.
   ///
   /// \return     A boolean indicating whether result is satisfactory or not
-  virtual DecisionStrategy &verdict(Experiment &experiment,
-                                    DecisionStage stage) = 0;
-
-  /// A helper method to save the current submission. This needs to be called
-  /// after verdict.
-  void saveCurrentSubmission() {
-    submissions_pool.push_back(current_submission_candidate);
-  };
-
-  void selectOutcome(Experiment &experiment, PolicyChain &pchain);
-
-  void selectBetweenSubmissions(PolicySet &pset);
+  virtual DecisionStrategy &verdict(Experiment *experiment,
+                                    PolicyChain &pchain) = 0;
+  
+  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+                                    PolicySet &pset) = 0;
+  
 };
 
 /// \ingroup    DecisionStrategies
@@ -229,10 +204,13 @@ public:
     submission_policies = registerPolicySet(p.submission_policies_defs);
   }
 
-  bool isStillHacking() override { return is_still_hacking; }
+  bool willBeHacking() override { return not has_a_candidate; };
 
-  virtual ImpatientDecisionMaker &verdict(Experiment &experiment,
-                                          DecisionStage stage) override;
+  virtual DecisionStrategy &verdict(Experiment *experiment,
+                                    PolicyChain &pchain) override;
+  
+  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+                                    PolicySet &pset) override;
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -274,11 +252,14 @@ public:
     submission_policies = registerPolicySet(p.submission_policies_defs);
   };
 
-  virtual PatientDecisionMaker &verdict(Experiment &experiment,
-                                        DecisionStage stage) override;
+  virtual DecisionStrategy &verdict(Experiment *experiment,
+                                    PolicyChain &pchain) override;
+  
+  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+                                    PolicySet &pset) override;
 
   // She is always hacking
-  virtual bool isStillHacking() override { return true; }
+  virtual bool willBeHacking() override { return true; }
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters

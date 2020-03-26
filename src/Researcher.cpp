@@ -19,6 +19,7 @@ void Researcher::letTheHackBegin() {
     Experiment copiedExpr = *experiment;
     
     std::visit(overload {
+      
         [&](HackingSet& hset) {
           for (auto &method : hset) {
             (*method)(&copiedExpr);
@@ -27,7 +28,7 @@ void Researcher::letTheHackBegin() {
         },
         [&](PolicyChain& policy) {
           decision_strategy->operator()(&copiedExpr, policy);
-          if (decision_strategy->hasSubmissionCandidate() && not decision_strategy->isStillHacking()){
+          if (decision_strategy->hasSubmissionCandidate() && not decision_strategy->willBeHacking()){
             return;
           }
         }
@@ -77,16 +78,18 @@ void Researcher::research() {
   computeStuff();
   
   /// Checking the Initial Policies
-  decision_strategy->operator()(experiment, decision_strategy->initial_decision_policies);
+  decision_strategy->operator()(experiment,
+                                decision_strategy->initial_decision_policies);
   
   /// Checking if hacknig is necessary
-  if (isHacker() && not decision_strategy->hasSubmissionCandidate()) {
+  if (isHacker() && decision_strategy->willBeHacking()) {
     letTheHackBegin();
   }
   
   /// Checking if we are Patient, if so, going to select among those
-  if (not decision_strategy->hasSubmissionCandidate()){
-    decision_strategy->operator()(decision_strategy->final_decision_policies);
+  if (not decision_strategy->submissions_pool.empty()){
+    decision_strategy->operator()(decision_strategy->submissions_pool,
+                                  decision_strategy->final_decision_policies);
   }
   
   /// Checking the Submission Policies

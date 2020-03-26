@@ -280,7 +280,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
   /// CHECK ME: I'm not sure if this is a good way of doing this...
   int selectedOutcome{0};
 
-  pre_registered_group = experiment.setup.nd();
+  int pre_registered_group = experiment.setup.nd();
 
   int pset_inx{0};
   for (auto &policy_set : pchain) {
@@ -322,12 +322,12 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
   has_a_candidate = false;
 }
 
-void DecisionStrategy::selectBetweenSubmissions(PolicySet &pset) {
+void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicySet &pset) {
 
   spdlog::debug("Selecting between collected submissions.");
 
-  auto begin = submissions_pool.begin();
-  auto end = submissions_pool.end();
+  auto begin = spool.begin();
+  auto end = spool.end();
   auto found_something{false};
 
   for (auto &policy : pset) {
@@ -348,18 +348,9 @@ void DecisionStrategy::selectBetweenSubmissions(PolicySet &pset) {
 
   spdlog::debug("Not happy!");
   has_a_candidate = false;
-
-  /// It returns the last hacked results in the case not finding anything!
-//  return submissions_pool.back();
 }
 
 bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
-
-  /// This is signal from selectSubmission and it means that we couldn't find
-  /// anything! So, we are not going to submit anything either
-  if (current_submission_candidate.group_.id_ == 0) {
-    return false;
-  }
 
   // Checking whether all policies are returning `true`
   auto is_it_submittable = std::all_of(
@@ -367,18 +358,31 @@ bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
       [this](auto &policy) { return policy.second(this->current_submission_candidate); });
 
   return is_it_submittable;
+  
 }
 
-ImpatientDecisionMaker &ImpatientDecisionMaker::verdict(Experiment &experiment,
-                                                        DecisionStage stage) {
+DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
+                                  PolicyChain &pchain) {
+  selectOutcome(*experiment, pchain);
+  return *this;
+}
 
+DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
+                                  PolicySet &pset) {
   return *this;
 }
 
 
-PatientDecisionMaker &PatientDecisionMaker::verdict(Experiment &experiment,
-                                                    DecisionStage stage) {
+DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
+                                  PolicyChain &pchain) {
+  selectOutcome(*experiment, pchain);
+  saveCurrentSubmission();
+  return *this;
+}
 
-
+DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
+                                  PolicySet &pset) {
+  selectBetweenSubmissions(spool, pset);
+  clearHistory();
   return *this;
 }

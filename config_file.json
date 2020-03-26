@@ -43,9 +43,7 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "ImpatientDecisionMaker",
-            "final_decision_policies": [
-                "none"
-            ],
+            "final_decision_policies": [],
             "initial_decision_policies": [
                 [
                     "effect < 0",
