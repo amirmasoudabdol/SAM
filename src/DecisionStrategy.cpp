@@ -19,6 +19,27 @@ DecisionStrategy::~DecisionStrategy(){
     // pure deconstructor
 };
 
+DecisionStrategy::DecisionStrategy() {
+  
+  // Preparing a Lua instance, and registering my types there
+
+  lua.open_libraries();
+
+  lua.new_usertype<GroupData>("GroupData", "id", &GroupData::id_, "nobs",
+                              &GroupData::nobs_, "pvalue",
+                              &GroupData::pvalue_, "effect",
+                              &GroupData::effect_, "sig", &GroupData::sig_);
+
+  lua.new_usertype<Submission>(
+      "Submission", "id",
+      sol::property([](Submission &s) { return s.group_.id_; }), "nobs",
+      sol::property([](Submission &s) { return s.group_.nobs_; }), "mean",
+      sol::property([](Submission &s) { return s.group_.mean_; }), "pvalue",
+      sol::property([](Submission &s) { return s.group_.pvalue_; }), "effect",
+      sol::property([](Submission &s) { return s.group_.effect_; }), "sig",
+      sol::property([](Submission &s) { return s.group_.sig_; }));
+};
+
 std::unique_ptr<DecisionStrategy>
 DecisionStrategy::build(json &decision_strategy_config) {
 
@@ -265,8 +286,6 @@ Submission DecisionStrategy::selectOutcome(Experiment &experiment) {
 
   pre_registered_group = experiment.setup.nd();
 
-  this->complying_with_preference = true;
-
   int pset_inx{0};
   for (auto &policy_set : initial_decision_policies) {
 
@@ -320,8 +339,6 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
 
   pre_registered_group = experiment.setup.nd();
 
-  this->complying_with_preference = true;
-
   int pset_inx{0};
   for (auto &policy_set : pchain) {
 
@@ -341,8 +358,8 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
         spdlog::debug("> Found something!");
         selectedOutcome = begin->id_;
         spdlog::debug("Policy: {}", pset_inx);
-        current_submission = Submission{experiment, selectedOutcome};;
-//        return Submission{experiment, selectedOutcome};
+        current_submission_candidate = Submission{experiment, selectedOutcome};;
+        has_a_candidate = true;
       } else {
         /// The range is empty! This only happens when Comp case cannot find
         /// anything with the given comparison. Then, we break out the loop, and
@@ -351,15 +368,15 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
           spdlog::debug("> Going to the next set of policies.");
           break; // Out of the for-loop, going to the next chain
         }
-        /// else:
-        ///     We are still looking!
+        
+        /// else:    We are still looking!
       }
     }
 
     pset_inx++;
   }
-
-//  return {};
+  
+  has_a_candidate = false;
 }
 
 /// This is often is being used by PatientDecisionMaker
@@ -407,8 +424,7 @@ void DecisionStrategy::selectBetweenSubmissions(PolicySet &pset) {
 
     if (found_something) {
       spdlog::debug("> Found something in the pile!");
-//      return *begin;
-      current_submission = *begin;
+      current_submission_candidate = *begin;
     } else {
       if (begin == end) {
         break;
@@ -419,183 +435,39 @@ void DecisionStrategy::selectBetweenSubmissions(PolicySet &pset) {
   }
 
   spdlog::debug("Not happy!");
-  already_found_something = false;
+  has_a_candidate = false;
 
   /// It returns the last hacked results in the case not finding anything!
 //  return submissions_pool.back();
 }
 
-bool DecisionStrategy::willBeSubmitting() {
+bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
 
   /// This is signal from selectSubmission and it means that we couldn't find
   /// anything! So, we are not going to submit anything either
-  if (current_submission.group_.id_ == 0) {
+  if (current_submission_candidate.group_.id_ == 0) {
     return false;
   }
 
   // Checking whether all policies are returning `true`
   auto is_it_submittable = std::all_of(
-      submission_policies.begin(), submission_policies.end(),
-      [this](auto &policy) { return policy.second(this->current_submission); });
+      pset.begin(), pset.end(),
+      [this](auto &policy) { return policy.second(this->current_submission_candidate); });
 
   return is_it_submittable;
-}
-
-/// Impatient decision maker keeps the initial study and stop the hacking
-/// process if the results is already satistifactory.
-///
-/// \param experiment A reference to the experiment.
-void ImpatientDecisionMaker::initDecision(Experiment &experiment) {
-
-  // Preparing pools anyway
-  experiments_pool.push_back(experiment);
-  submissions_pool.push_back(current_submission);
-
-  is_still_hacking = !willBeSubmitting();
-}
-
-/// Impatient decision maker check if the check current submission is
-/// publishable or not, if not, it'll continue hacking... and will stop as soon
-/// as it finds a publishable solution. This is different in the case of patient
-/// decision maker for instance.
-void ImpatientDecisionMaker::intermediateDecision(Experiment &experiment) {
-
-  is_still_hacking = !willBeSubmitting();
-}
-
-void ImpatientDecisionMaker::afterhackDecision(Experiment &experiment) {
-
-  /// TODO: I think this can be optimized, there are a few unnecessary calls
-  /// here
-  if (willBeSubmitting()) {
-    experiments_pool.push_back(experiment);
-    submissions_pool.push_back(current_submission);
-  }
-
-  is_still_hacking = !willBeSubmitting();
-}
-
-void ImpatientDecisionMaker::finalDecision(Experiment &experiment) {
-
-  // I'm not sure if this is valid anymore considering the fact that there
-  // is a willBeSubmitting() and policies in place now
-  final_submission = submissions_pool.back();
-
-  clearHistory();
-
-  // Done Hacking...
-  is_still_hacking = false;
 }
 
 ImpatientDecisionMaker &ImpatientDecisionMaker::verdict(Experiment &experiment,
                                                         DecisionStage stage) {
 
-  current_submission = selectOutcome(experiment);
-
-  switch (stage) {
-  case DecisionStage::Initial:
-    initDecision(experiment);
-    break;
-  case DecisionStage::WhileHacking:
-    intermediateDecision(experiment);
-    break;
-  case DecisionStage::DoneHacking:
-    afterhackDecision(experiment);
-    break;
-  case DecisionStage::Final:
-    finalDecision(experiment);
-    break;
-  }
-
   return *this;
 }
 
-/// It'll add the experiment and submission to the pool, regardless of the
-/// significance.
-///
-/// It'll update the verdict on whether the researcher will continue hacking or
-/// not. The researcher can check this flag by calling `isStillHacking()`
-/// routine.
-///
-/// \param experiment A reference to the experiment
-void PatientDecisionMaker::initDecision(Experiment &experiment) {
 
-  experiments_pool.push_back(experiment);
-  submissions_pool.push_back(current_submission);
-
-  is_still_hacking = true;
-}
-
-/// A patient decision maker is still optimizing for the effort, he'd not
-/// continue hacking if an intermediate result is already publishable
-///
-/// \param experiment A reference to the experiment
-void PatientDecisionMaker::intermediateDecision(Experiment &experiment) {
-
-  is_still_hacking = !willBeSubmitting();
-}
-
-/// Patient decision maker keeps track of its intermediate results until it
-/// makes the final decision and choose between them.
-///
-/// \param experiment A reference to the experiment
-void PatientDecisionMaker::afterhackDecision(Experiment &experiment) {
-
-  if (willBeSubmitting()) {
-    experiments_pool.push_back(experiment);
-    submissions_pool.push_back(current_submission);
-  }
-
-  // Patient Decision maker always continue hacking...
-  is_still_hacking = true;
-}
-
-/// Impatient decision maker — at the final stage — goes through all solutions
-/// and select the one based on its preference.
-///
-/// \param experiment A reference to the experiment.
-void PatientDecisionMaker::finalDecision(Experiment &experiment) {
-
-  final_submission = selectBetweenSubmissions();
-
-  clearHistory();
-
-  is_still_hacking = false;
-}
 
 PatientDecisionMaker &PatientDecisionMaker::verdict(Experiment &experiment,
                                                     DecisionStage stage) {
 
-  current_submission = selectOutcome(experiment);
-
-  switch (stage) {
-
-  case DecisionStage::Initial:
-    initDecision(experiment);
-    break;
-  case DecisionStage::WhileHacking:
-    intermediateDecision(experiment);
-    break;
-  case DecisionStage::DoneHacking:
-    afterhackDecision(experiment);
-    break;
-  case DecisionStage::Final:
-    finalDecision(experiment);
-    break;
-  }
 
   return *this;
 }
-
-//HonestDecisionMaker &HonestDecisionMaker::verdict(Experiment &experiment,
-//                                                  DecisionStage stage) {
-//
-//  current_submission = selectOutcome(experiment);
-//
-//  submissions_pool.push_back(current_submission);
-//  experiments_pool.push_back(experiment);
-//
-//  final_submission = current_submission;
-//
-//  return *this;
-//}

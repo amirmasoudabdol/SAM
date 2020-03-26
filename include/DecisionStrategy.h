@@ -27,7 +27,6 @@
 #include "GroupData.h"
 #include "Submission.h"
 #include "Utilities.h"
-//#include "LuaUtils.h"
 
 using json = nlohmann::json;
 
@@ -88,55 +87,13 @@ protected:
 
   // Lua state
   sol::state lua;
-  
-
-  //! If `true`, the Researcher will continue traversing through the
-  //! hacknig methods, otherwise, he/she will stop the hacking and
-  //! prepare the finalSubmission. It will be updated on each call of
-  //! verdict(). Basically verdict() decides if the Researcher is
-  //! happy with the submission record or not.
-  bool is_still_hacking = true;
-
-  bool will_be_submitting = false;
-
-  bool complying_with_preference = true;
-
-  /// A method implementing the Initial decision making logic.
-  ///
-  /// \return A boolean indicating whether the researcher should proceed
-  /// with the hacking or not.
-  virtual void initDecision(Experiment &experiment) = 0;
-
-  /// A method implementing the Intermediate decision making logic.
-  ///
-  /// \note Decision Strategy at this stage can decide if it wants to add
-  /// an intermediate solution to the pool or not. This is often a solution
-  /// halfway through the hacking process for instance.
-  ///
-  /// \return A boolean indicating whether the researcher should stop the
-  /// hacking procedude or not. E.g., in the case of Optional Stopping this
-  /// routine will decide whether researcher should stop after each attempt
-  /// or continue further.
-  virtual void intermediateDecision(Experiment &experiment) = 0;
-
-  /// A method implementing the decision making routine after completely
-  /// applying a hacking strategy on an experiment.
-  ///
-  /// \return A boolean indicating whether the researcher should proceed to
-  /// the _next_ hacking strategy.
-  virtual void afterhackDecision(Experiment &experiment) = 0;
-
-  /// A method implementing the Final decision making logic.
-  ///
-  /// \note In the case where the Decision Making should look back at the
-  /// history of hacking, this routine will also prepare the `final_submission`.
-  ///
-  /// \return A boolean indicating whether the researcher should proceed
-  /// with submitting the final submission to the Journal or not.
-  virtual void finalDecision(Experiment &experiment) = 0;
 
 public:
-  DecisionMethod name;
+  
+  virtual ~DecisionStrategy() = 0;
+  
+  DecisionStrategy();
+
   
   // This should not be here, but I don't feel fixing include collision now!
   std::optional<std::pair<PolicyType, sol::function>>
@@ -162,28 +119,8 @@ public:
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
 
-  virtual ~DecisionStrategy() = 0;
 
-  DecisionStrategy() {
-    
-    // Preparing a Lua instance, and registering my types there
-
-    lua.open_libraries();
-
-    lua.new_usertype<GroupData>("GroupData", "id", &GroupData::id_, "nobs",
-                                &GroupData::nobs_, "pvalue",
-                                &GroupData::pvalue_, "effect",
-                                &GroupData::effect_, "sig", &GroupData::sig_);
-
-    lua.new_usertype<Submission>(
-        "Submission", "id",
-        sol::property([](Submission &s) { return s.group_.id_; }), "nobs",
-        sol::property([](Submission &s) { return s.group_.nobs_; }), "mean",
-        sol::property([](Submission &s) { return s.group_.mean_; }), "pvalue",
-        sol::property([](Submission &s) { return s.group_.pvalue_; }), "effect",
-        sol::property([](Submission &s) { return s.group_.effect_; }), "sig",
-        sol::property([](Submission &s) { return s.group_.sig_; }));
-  };
+  
 
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
@@ -202,12 +139,26 @@ public:
   /// during his research, and — after all the hacking — he couldn't find
   /// anything significant, then he decide whether he wants to submit the
   /// "unpreferable" result or not.
-  virtual bool willBeSubmitting();
+  virtual bool willBeSubmitting(PolicySet &pset);
 
 //  DecisionStage current_stage;
 
-  Submission current_submission;
-  bool already_found_something {false};
+  Submission current_submission_candidate;
+  
+  
+  //! If `true`, the Researcher will continue traversing through the
+  //! hacknig methods, otherwise, he/she will stop the hacking and
+  //! prepare the finalSubmission. It will be updated on each call of
+  //! verdict(). Basically verdict() decides if the Researcher is
+  //! happy with the submission record or not.
+  bool is_still_hacking {false};
+
+  bool will_be_submitting {false};
+  
+  bool has_a_candidate {false};
+  
+  
+  bool hasSubmissionCandidate() const { return has_a_candidate; };
 
   //! This will set to the final submission record that the Researcher
   //! is satisfied with.
@@ -263,7 +214,7 @@ public:
   /// A helper method to save the current submission. This needs to be called
   /// after verdict.
   void saveCurrentSubmission() {
-    submissions_pool.push_back(current_submission);
+    submissions_pool.push_back(current_submission_candidate);
   };
 
   ///
@@ -294,7 +245,6 @@ public:
   
   void selectBetweenSubmissions(PolicySet &pset);
 
-  //        Experiment selectBetweenExperiments();
 };
 
 /// \ingroup    DecisionStrategies
@@ -303,7 +253,6 @@ public:
 ///             Researcher will stop as soon as find a significant result and
 ///             will not continue exploring other hacking methods in his
 ///             arsenal.
-///
 class ImpatientDecisionMaker final : public DecisionStrategy {
 
 public:
@@ -320,30 +269,8 @@ public:
 
     spdlog::debug("Registering decision policies...");
 
-//    for (const auto &policies : p.decision_policies) {
-//
-//      initial_decision_policies.push_back(std::vector<Policy>());
-//
-//      for (const auto &s : policies) {
-//
-//        auto policy = registerPolicy(s);
-//
-//        if (policy)
-//          initial_decision_policies.back().push_back(policy.value());
-//      }
-//    }
-    
     initial_decision_policies = registerPolicyChain(p.decision_policies);
-    
-
-//    for (const auto &s : p.submission_policies) {
-//
-//      auto policy = registerPolicy(s);
-//
-//      if (policy)
-//        submission_policies.push_back(policy.value());
-//    }
-    
+        
     submission_policies = registerPolicySet(p.submission_policies);
     
   }
@@ -353,10 +280,6 @@ public:
   virtual ImpatientDecisionMaker &verdict(Experiment &experiment,
                                           DecisionStage stage) override;
 
-  virtual void initDecision(Experiment &experiment) override;
-  virtual void intermediateDecision(Experiment &experiment) override;
-  virtual void afterhackDecision(Experiment &experiment) override;
-  virtual void finalDecision(Experiment &experiment) override;
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -364,7 +287,7 @@ inline void to_json(json &j, const ImpatientDecisionMaker::Parameters &p) {
   j = json{
       {"_name", p.name},
       {"decision_policies", p.decision_policies},
-      {"submission_policies", p.submission_policies},
+      {"submission_policies", p.submission_policies}
   };
 }
 
@@ -393,35 +316,17 @@ public:
 
   explicit PatientDecisionMaker(const Parameters &p) : params{p} {
 
-    for (auto &policies : p.decision_policies) {
+    initial_decision_policies = registerPolicyChain(p.decision_policies);
+    
+    final_decision_policies = registerPolicySet(p.final_decision_policies);
+        
+    submission_policies = registerPolicySet(p.submission_policies);
 
-      initial_decision_policies.push_back(std::vector<Policy>());
-
-      for (auto &s : policies) {
-
-        auto policy = registerPolicy(s);
-
-        if (policy)
-          initial_decision_policies.back().push_back(policy.value());
-      }
-    }
-
-    for (auto &s : p.submission_policies) {
-
-      auto policy = registerPolicy(s);
-
-      if (policy)
-        submission_policies.push_back(policy.value());
-    }
   };
 
   virtual PatientDecisionMaker &verdict(Experiment &experiment,
                                         DecisionStage stage) override;
-
-  virtual void initDecision(Experiment &experiment) override;
-  virtual void intermediateDecision(Experiment &experiment) override;
-  virtual void afterhackDecision(Experiment &experiment) override;
-  virtual void finalDecision(Experiment &experiment) override;
+  
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters
@@ -439,67 +344,6 @@ inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
   j.at("final_decision_policies").get_to(p.final_decision_policies);
 }
 
-///
-/// \ingroup    DecisionStrategies
-/// \brief      { item_description }
-///
-//class HonestDecisionMaker final : public DecisionStrategy {
-//
-//public:
-//  struct Parameters {
-//    DecisionMethod name = DecisionMethod::HonestDecisionMaker;
-//  };
-//
-//  /// Parameters of the HonestDecisionMaker are fixed, he is basically the
-//  /// baseline researcher that report everything he finds.
-//  Parameters params;
-//
-//  HonestDecisionMaker(){};
-//
-//  HonestDecisionMaker(const Parameters p) : params(p){};
-//
-//  bool isStillHacking() override { return false; };
-//
-//  virtual HonestDecisionMaker &verdict(Experiment &experiment,
-//                                       DecisionStage stage) override;
-//
-//  virtual void initDecision(Experiment &experiment) override{};
-//  virtual void intermediateDecision(Experiment &experiment) override{};
-//  virtual void afterhackDecision(Experiment &experiment) override{};
-//  virtual void finalDecision(Experiment &experiment) override{};
-//};
-
-///
-/// \ingroup    DecisionStrategies
-/// \brief      A placeholder for empty decision strategy.
-///
-/// \note       This is currently being used during the PreProcessing where I
-///             basically don't want to intervene with the process, and let it
-///             run
-///
-//class NoDecision final : public DecisionStrategy {
-//
-//public:
-//  struct Parameters {
-//    DecisionMethod name = DecisionMethod::NoDecision;
-//  };
-//
-//  Parameters params;
-//
-//  NoDecision(){};
-//
-//  bool isStillHacking() override { return true; };
-//
-//  virtual NoDecision &verdict(Experiment &experiment,
-//                              DecisionStage stage) override {
-//    return *this;
-//  };
-//
-//  virtual void initDecision(Experiment &experiment) override{};
-//  virtual void intermediateDecision(Experiment &experiment) override{};
-//  virtual void afterhackDecision(Experiment &experiment) override{};
-//  virtual void finalDecision(Experiment &experiment) override{};
-//};
 
 } // namespace sam
 

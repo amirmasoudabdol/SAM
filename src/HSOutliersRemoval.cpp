@@ -11,8 +11,7 @@ using namespace sam;
 /// from
 ///             the \mu.
 ///
-void OutliersRemoval::perform(Experiment *experiment,
-                              DecisionStrategy *decisionStrategy) {
+void OutliersRemoval::perform(Experiment *experiment) {
 
   spdlog::debug("Outliers Removal");
 
@@ -30,9 +29,9 @@ void OutliersRemoval::perform(Experiment *experiment,
       experiment->calculateEffects();
       experiment->runTest();
 
-      if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
-               .isStillHacking())
-        return;
+//      if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
+//               .isStillHacking())
+//        return;
     }
   }
 }

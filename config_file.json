@@ -42,7 +42,7 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "PatientDecisionMaker",
+            "_name": "ImpatientDecisionMaker",
             "decision_policies": [
                 [
                     "effect < 0",

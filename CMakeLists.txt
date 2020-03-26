@@ -30,7 +30,7 @@ find_package(LAPACK)
 find_package(BLAS)
 find_package(spdlog REQUIRED)
 find_package(sol2 REQUIRED)
-find_package(lua REQUIRED)
+find_package(Lua REQUIRED)
 find_package(fmt REQUIRED)
 
 

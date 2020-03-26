@@ -81,14 +81,7 @@ public:
   //! A Submission record that Researcher is going to submit to the Journal
   Submission submission_record;
 
-  void hack();
-//  void hack(HackingSet &tricks);
-
-  void prepareResearch();
   void preProcessData();
-
-  void performResearch();
-  void publishResearch();
   
   Workflow workflow;
   

@@ -16,8 +16,7 @@ using namespace sam;
 /// significance. If the results is significant, it'll not make a new attempt to
 /// add more data, and will return to the hack() routine.
 ///
-void OptionalStopping::perform(Experiment *experiment,
-                               DecisionStrategy *decisionStrategy) {
+void OptionalStopping::perform(Experiment *experiment) {
 
   spdlog::debug("Optional Stopping");
 
@@ -30,9 +29,9 @@ void OptionalStopping::perform(Experiment *experiment,
     experiment->calculateEffects();
     experiment->runTest();
 
-    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
-             .isStillHacking())
-      return;
+//    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
+//             .isStillHacking())
+//      return;
   }
 }
 
