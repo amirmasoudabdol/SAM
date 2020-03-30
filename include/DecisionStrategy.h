@@ -58,7 +58,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
                               {DecisionStage::DoneHacking, "DoneHacking"},
                               {DecisionStage::Final, "Final"}})
 
-enum class PolicyType { Min, Max, Comp, Random, First };
+enum class PolicyType { Min, Max, Comp, Random, First, All };
 
 using Policy = std::pair<PolicyType, sol::function>;
 using PolicySet = std::vector<Policy>;
@@ -90,13 +90,15 @@ public:
   
   Submission current_submission_candidate;
   
+  Submission final_submission_candidate;
+  
   //! List of selected Submission by the researcher.
   SubmissionPool submissions_pool;
 
   /// TODO: These guys should move to their own class, I don't have to keep everything here!
   PolicyChain initial_decision_policies;
   PolicySet submission_policies;
-  PolicySet final_decision_policies;
+  PolicyChain final_decision_policies;
 
   std::optional<Policy> registerPolicy(const std::string &s);
 
@@ -124,18 +126,20 @@ public:
   bool will_be_submitting{false};
 
   bool has_a_candidate{false};
+  
+  bool has_a_final_candidate{false};
 
   bool hasSubmissionCandidate() const { return has_a_candidate; };
 
 
   /// Experiment
-  void operator()(Experiment *experiment, PolicyChain &policies) {
-    verdict(experiment, policies);
+  void operator()(Experiment *experiment, PolicyChain &pchain) {
+    verdict(experiment, pchain);
   }
 
   /// Submission Pool
-  void operator()(SubmissionPool &spool, PolicySet &policies) {
-    verdict(spool, policies);
+  void operator()(SubmissionPool &spool, PolicyChain &pchain) {
+    verdict(spool, pchain);
   }
   
   /// Submission
@@ -156,7 +160,7 @@ protected:
   
   void selectOutcome(Experiment &experiment, PolicyChain &pchain);
 
-  void selectBetweenSubmissions(SubmissionPool &spool, PolicySet &pset);
+  void selectBetweenSubmissions(SubmissionPool &spool, PolicyChain &pchain);
   
 private:
   
@@ -173,7 +177,7 @@ private:
                                     PolicyChain &pchain) = 0;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicySet &pset) = 0;
+                                    PolicyChain &pchain) = 0;
   
 };
 
@@ -210,7 +214,7 @@ public:
                                     PolicyChain &pchain) override;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicySet &pset) override;
+                                    PolicyChain &pchain) override;
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -238,7 +242,7 @@ public:
 
     std::vector<std::vector<std::string>> initial_decision_policies_defs;
     std::vector<std::string> submission_policies_defs;
-    std::vector<std::string> final_decision_policies_defs;
+    std::vector<std::vector<std::string>> final_decision_policies_defs;
   };
 
   Parameters params;
@@ -247,7 +251,7 @@ public:
 
     initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
 
-    final_decision_policies = registerPolicySet(p.final_decision_policies_defs);
+    final_decision_policies = registerPolicyChain(p.final_decision_policies_defs);
 
     submission_policies = registerPolicySet(p.submission_policies_defs);
   };
@@ -256,7 +260,7 @@ public:
                                     PolicyChain &pchain) override;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicySet &pset) override;
+                                    PolicyChain &pchain) override;
 
   // She is always hacking
   virtual bool willBeHacking() override { return true; }

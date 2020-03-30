@@ -94,7 +94,7 @@ void Researcher::research() {
   
   /// Checking the Submission Policies
   if (decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
-    journal->review(decision_strategy->current_submission_candidate);
+    journal->review(decision_strategy->final_submission_candidate);
   }
   /// else: She didn't find anything, and nothing will be submitted to the Journal.
   ///       Current experiment will be discarded...

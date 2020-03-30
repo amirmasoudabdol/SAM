@@ -93,9 +93,7 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy 
 
     return {false, begin, pit};
 
-  }
-
-  break;
+  } break;
 
   case PolicyType::Random: {
     /// Shuffling the array and setting the end pointer to the first time,
@@ -120,6 +118,12 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy 
     return {true, begin, end};
 
   } break;
+      
+  case PolicyType::All: {
+    return {true, begin, end};
+    
+  } break;
+      
   }
 }
 
@@ -199,7 +203,18 @@ DecisionStrategy::registerPolicy(const std::string &s) {
 
     policy_type = PolicyType::First;
     policy_func = lua[f_name];
+    
+  }else if (s.find("all") != std::string::npos)  {
+    
+    auto var_name = "id";
+    auto f_name = fmt::format("all_{}", var_name);
+    auto f_def = fmt::format("function all_id () return true end");
 
+    lua.script(f_def);
+
+    policy_type = PolicyType::All;
+    policy_func = lua[f_name];
+   
   } else if (std::any_of(cops.begin(), cops.end(), [&s](const auto &op) {
                return s.find(op.first) != std::string::npos;
              })) {
@@ -225,7 +240,7 @@ DecisionStrategy::registerPolicy(const std::string &s) {
     policy_func = lua[f_name];
 
   } else {
-    throw std::invalid_argument("Invalid Policy.");
+    // TODO: I need a throw here
     return {};
   }
 
@@ -278,12 +293,12 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
   /// results based on researchers' preference, then we replace it, and report
   /// that one.
   /// CHECK ME: I'm not sure if this is a good way of doing this...
-  int selectedOutcome{0};
+//  int selectedOutcome{0};
 
   int pre_registered_group = experiment.setup.nd();
 
   int pset_inx{0};
-  for (auto &policy_set : pchain) {
+  for (auto &pset : pchain) {
 
     /// These needs to be reset since I'm starting a new set of policies
     /// New policies will scan the set again!
@@ -291,30 +306,48 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
     auto begin = experiment.groups_.begin() + experiment.setup.nd();
     auto end = experiment.groups_.end();
 
-    for (auto &p : policy_set) {
+    for (auto &p : pset) {
 
       std::tie(found_something, begin, end) = checkThePolicy(begin, end, p);
 
-      if (found_something) {
-        /// If we have a hit, mainly after going to Min, Max, First, Random;
-        /// then, we are done!
-        spdlog::debug("> Found something!");
-        selectedOutcome = begin->id_;
-        spdlog::debug("Policy: {}", pset_inx);
-        current_submission_candidate = Submission{experiment, selectedOutcome};;
-        has_a_candidate = true;
-      } else {
-        /// The range is empty! This only happens when Comp case cannot find
-        /// anything with the given comparison. Then, we break out the loop, and
-        /// move into the new set of policies
-        if (begin == end) {
-          spdlog::debug("> Going to the next set of policies.");
-          break; // Out of the for-loop, going to the next chain
-        }
-        
-        /// else:    We are still looking!
-      }
+//      if (found_something) {
+//        /// If we have a hit, mainly after going to Min, Max, First, Random;
+//        /// then, we are done!
+//        spdlog::debug("> Found something!");
+//        selectedOutcome = begin->id_;
+//        spdlog::debug("Policy: {}", pset_inx);
+//        current_submission_candidate = Submission{experiment, selectedOutcome};
+//        has_a_candidate = true;
+//
+//
+//
+//      } else {
+//        /// The range is empty! This only happens when Comp case cannot find
+//        /// anything with the given comparison. Then, we break out the loop, and
+//        /// move into the new set of policies
+//        if (begin == end) {
+//          spdlog::debug("> Going to the next set of policies.");
+//          break; // Out of the for-loop, going to the next chain
+//        }
+//
+//        /// else:    We are still looking!
+//      }
     }
+    
+    if (begin !=  end) {
+      /// We found something
+      spdlog::debug("Selected: ");
+      for (auto it{begin}; it != end; ++it) {
+        submissions_pool.emplace_back(experiment, it->id_);
+        spdlog::debug("\t {}", *it);
+      }
+      // TODO: Remove me, I'm temporary
+      current_submission_candidate = submissions_pool.back();
+      has_a_candidate = true;
+    }else{
+      spdlog::debug("> Going to the next set of policies.");
+    }
+    
 
     pset_inx++;
   }
@@ -322,32 +355,34 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
   has_a_candidate = false;
 }
 
-void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicySet &pset) {
+void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyChain &pchain) {
 
   spdlog::debug("Selecting between collected submissions.");
+  
+  for (auto &pset : pchain) {
 
-  auto begin = spool.begin();
-  auto end = spool.end();
-  auto found_something{false};
+    auto found_something{false};
+    auto begin = spool.begin();
+    auto end = spool.end();
 
-  for (auto &policy : pset) {
+    for (auto &policy : pset) {
 
-    std::tie(found_something, begin, end) = checkThePolicy(begin, end, policy);
+      std::tie(found_something, begin, end) = checkThePolicy(begin, end, policy);
 
-    if (found_something) {
-      spdlog::debug("> Found something in the pile!");
-      current_submission_candidate = *begin;
-    } else {
-      if (begin == end) {
-        break;
+      if (found_something) {
+        spdlog::debug("> Found something in the pile!");
+        final_submission_candidate = *begin;
+        return;
+      } else {
+        if (begin == end) break;
+        /// else:
+        ///     We are still looking. This happens when I'm testing a comparison
       }
-      /// else:
-      ///     We are still looking. This happens when I'm testing a comparison
     }
   }
 
   spdlog::debug("Not happy!");
-  has_a_candidate = false;
+  has_a_candidate = false;    // FIXME: What am I doing here?
 }
 
 bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
@@ -355,7 +390,7 @@ bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
   // Checking whether all policies are returning `true`
   auto is_it_submittable = std::all_of(
       pset.begin(), pset.end(),
-      [this](auto &policy) { return policy.second(this->current_submission_candidate); });
+      [this](auto &policy) { return policy.second(this->final_submission_candidate); });
 
   return is_it_submittable;
   
