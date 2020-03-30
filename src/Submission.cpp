@@ -10,11 +10,14 @@ Submission::Submission(Experiment &e, const int &index) {
 
   // This is an ugly hack to solve the GroupPooling problem, I need to move
   // this to the Experiment
-  if (index < e.setup.ng()) {
-    tnobs = e.setup.nobs()[index];
-  } else {
-    tnobs = 0;
-  }
+//  if (index < e.setup.ng()) {
+//    tnobs = e.setup.nobs()[index];
+//  } else {
+//    tnobs = 0;
+//  }
+  
+  // TODO: This can be simplified further
+  tnobs = e[index].true_nobs_.value();
 
   group_ = e[index];
 };

@@ -82,6 +82,8 @@ public: // Public for now
     nobs_ = meas.size();
     is_stats_updated_ = false;
     
+    true_nobs_ = nobs_;
+    
     is_measurements_initd_ = true;
   }
 
