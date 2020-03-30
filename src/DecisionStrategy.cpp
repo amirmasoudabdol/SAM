@@ -403,7 +403,7 @@ DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
 }
 
 DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
-                                  PolicySet &pset) {
+                                  PolicyChain &pchain) {
   return *this;
 }
 
@@ -416,8 +416,8 @@ DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
 }
 
 DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
-                                  PolicySet &pset) {
-  selectBetweenSubmissions(spool, pset);
+                                  PolicyChain &pchain) {
+  selectBetweenSubmissions(spool, pchain);
   clearHistory();
   return *this;
 }
