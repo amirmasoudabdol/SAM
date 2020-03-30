@@ -96,6 +96,9 @@ public:
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
+    
+    for (int g{0}; g < experiment->setup.ng(); ++g)
+      spdlog::debug("{}: ", (*experiment)[g]);
   }
 
   ///

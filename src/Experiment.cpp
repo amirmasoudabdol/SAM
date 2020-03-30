@@ -45,14 +45,12 @@ Experiment::Experiment(ExperimentSetup &e) : setup{e} {
   initResources();
 };
 
-
 Experiment::Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
-           std::shared_ptr<TestStrategy> &ts,
-           std::shared_ptr<EffectStrategy> &efs)
+                       std::shared_ptr<TestStrategy> &ts,
+                       std::shared_ptr<EffectStrategy> &efs)
     : setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs} {
-  
-    initResources();
-      
+
+  initResources();
 };
 
 void Experiment::generateData() { data_strategy->genData(this); }
@@ -99,9 +97,11 @@ void Experiment::recalculateEverything() {
 }
 
 void Experiment::clear() {
-  
+
   for (auto &group : groups_) {
     group.clear();
   }
-  
+
+  std::sort(groups_.begin(), groups_.end(),
+            [](const auto &l, const auto &r) { return l.id_ < r.id_; });
 }

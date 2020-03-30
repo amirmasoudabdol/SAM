@@ -78,6 +78,7 @@ void Researcher::research() {
   computeStuff();
   
   /// Checking the Initial Policies
+  spdlog::debug("Checking the INITIAL policies");
   decision_strategy->operator()(experiment,
                                 decision_strategy->initial_decision_policies);
   
@@ -87,16 +88,27 @@ void Researcher::research() {
   }
   
   /// Checking if we are Patient, if so, going to select among those
-  if (not decision_strategy->submissions_pool.empty()){
+  if (not decision_strategy->submissions_pool.empty()
+      and not decision_strategy->has_a_final_candidate){
+    spdlog::debug("Checking the FINAL policies");
     decision_strategy->operator()(decision_strategy->submissions_pool,
                                   decision_strategy->final_decision_policies);
   }
   
   /// Checking the Submission Policies
-  if (decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
+  if (decision_strategy->has_a_final_candidate
+      and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
+    
+    spdlog::debug("Final Submission Candidate: ");
+    spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
+    
+    spdlog::debug("Checking the SUBMISSION policies");
     journal->review(decision_strategy->final_submission_candidate);
   }
   /// else: She didn't find anything, and nothing will be submitted to the Journal.
   ///       Current experiment will be discarded...
+  
+  decision_strategy->reset();
+  experiment->clear();
   
 }

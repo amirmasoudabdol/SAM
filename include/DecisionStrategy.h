@@ -125,11 +125,11 @@ public:
 
   bool will_be_submitting{false};
 
-  bool has_a_candidate{false};
+  bool has_any_candidates{false};
   
   bool has_a_final_candidate{false};
 
-  bool hasSubmissionCandidate() const { return has_a_candidate; };
+  bool hasSubmissionCandidate() const { return has_any_candidates; };
 
 
   /// Experiment
@@ -145,6 +145,22 @@ public:
   /// Submission
   bool willBeSubmitting(PolicySet &pset);
   
+  
+  /// Clear the list of submissions and experiments
+  void clearHistory() {
+    submissions_pool.clear();
+  }
+  
+  // TODO: This needs to be private but currently, I don't have a good place to put it.
+  // The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
+  // and I cannot just call it in any other methods because then it's hidden
+  void reset() {
+    is_still_hacking = false;
+    will_be_submitting = false;
+    has_any_candidates = false;
+    has_a_final_candidate = false;
+  }
+  
 protected:
   
   /// A helper method to save the current submission. This needs to be called
@@ -152,11 +168,13 @@ protected:
   void saveCurrentSubmission() {
     submissions_pool.push_back(current_submission_candidate);
   };
-
-  /// Clear the list of submissions and experiments
-  void clearHistory() {
-    submissions_pool.clear();
-  }
+  
+  void saveEverySubmission(Experiment &experiment) {
+    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
+         ++i, d %= experiment.setup.nd()) {
+      submissions_pool.emplace_back(experiment, i);
+    }
+  };
   
   void selectOutcome(Experiment &experiment, PolicyChain &pchain);
 
@@ -208,7 +226,7 @@ public:
     submission_policies = registerPolicySet(p.submission_policies_defs);
   }
 
-  bool willBeHacking() override { return not has_a_candidate; };
+  bool willBeHacking() override { return not has_any_candidates; };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
                                     PolicyChain &pchain) override;

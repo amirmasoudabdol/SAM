@@ -120,7 +120,7 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy 
   } break;
       
   case PolicyType::All: {
-    return {true, begin, end};
+    return {false, begin, end};
     
   } break;
       
@@ -289,70 +289,44 @@ DecisionStrategy::registerPolicyChain(const std::vector<std::vector<std::string>
 
 void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain) {
 
-  /// We always start with the pre_registered_group, and if we find others
-  /// results based on researchers' preference, then we replace it, and report
-  /// that one.
-  /// CHECK ME: I'm not sure if this is a good way of doing this...
-//  int selectedOutcome{0};
-
-  int pre_registered_group = experiment.setup.nd();
-
   int pset_inx{0};
   for (auto &pset : pchain) {
 
     /// These needs to be reset since I'm starting a new set of policies
     /// New policies will scan the set again!
-    auto found_something{false};
+    auto found_sth_unique{false};
     auto begin = experiment.groups_.begin() + experiment.setup.nd();
     auto end = experiment.groups_.end();
 
     for (auto &p : pset) {
-
-      std::tie(found_something, begin, end) = checkThePolicy(begin, end, p);
-
-//      if (found_something) {
-//        /// If we have a hit, mainly after going to Min, Max, First, Random;
-//        /// then, we are done!
-//        spdlog::debug("> Found something!");
-//        selectedOutcome = begin->id_;
-//        spdlog::debug("Policy: {}", pset_inx);
-//        current_submission_candidate = Submission{experiment, selectedOutcome};
-//        has_a_candidate = true;
-//
-//
-//
-//      } else {
-//        /// The range is empty! This only happens when Comp case cannot find
-//        /// anything with the given comparison. Then, we break out the loop, and
-//        /// move into the new set of policies
-//        if (begin == end) {
-//          spdlog::debug("> Going to the next set of policies.");
-//          break; // Out of the for-loop, going to the next chain
-//        }
-//
-//        /// else:    We are still looking!
-//      }
+      std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
+      
+      if (found_sth_unique) {
+        current_submission_candidate = Submission{experiment, begin->id_};
+        final_submission_candidate = current_submission_candidate;
+        has_any_candidates = true;
+        has_a_final_candidate = true;
+        return;
+      }
     }
     
-    if (begin !=  end) {
-      /// We found something
-      spdlog::debug("Selected: ");
+    if (begin != end and not found_sth_unique) { /// We found a bunch
+      
+      spdlog::debug("Selected Bunch: ");
       for (auto it{begin}; it != end; ++it) {
         submissions_pool.emplace_back(experiment, it->id_);
         spdlog::debug("\t {}", *it);
       }
-      // TODO: Remove me, I'm temporary
-      current_submission_candidate = submissions_pool.back();
-      has_a_candidate = true;
+      has_any_candidates = true;
+      return;
     }else{
       spdlog::debug("> Going to the next set of policies.");
     }
-    
 
     pset_inx++;
   }
   
-  has_a_candidate = false;
+  has_any_candidates = false;
 }
 
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyChain &pchain) {
@@ -372,6 +346,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyCha
       if (found_something) {
         spdlog::debug("> Found something in the pile!");
         final_submission_candidate = *begin;
+        has_a_final_candidate = true;
         return;
       } else {
         if (begin == end) break;
@@ -382,7 +357,6 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyCha
   }
 
   spdlog::debug("Not happy!");
-  has_a_candidate = false;    // FIXME: What am I doing here?
 }
 
 bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
@@ -404,6 +378,8 @@ DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
 
 DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
                                   PolicyChain &pchain) {
+  clearHistory();
+//  reset();
   return *this;
 }
 
@@ -411,7 +387,7 @@ DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
 DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
                                   PolicyChain &pchain) {
   selectOutcome(*experiment, pchain);
-  saveCurrentSubmission();
+//  saveCurrentSubmission();
   return *this;
 }
 
@@ -419,5 +395,6 @@ DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
                                   PolicyChain &pchain) {
   selectBetweenSubmissions(spool, pchain);
   clearHistory();
+//  reset();
   return *this;
 }

@@ -42,48 +42,78 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "ImpatientDecisionMaker",
-            "final_decision_policies": [],
-            "initial_decision_policies": [
+            "_name": "PatientDecisionMaker",
+            "final_decision_policies": [
+                [
+                    "sig",
+                    "effect > 0",
+                    "first"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
                 [
                     "effect < 0",
-                    "random"
+                    "max(pvalue)"
                 ]
             ],
-            "submission_policies": [
-                "sig"
-            ]
+            "initial_decision_policies": [
+                [
+                    "sig",
+                    "effect > 0"
+                ]
+            ],
+            "submission_policies": []
         },
         "hacking_strategies": [
             [
                 {
                     "_name": "OptionalStopping",
                     "level": "dv",
-                    "max_attempts": 10,
-                    "n_attempts": 3,
-                    "num": 100
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 10
+                },
+                [
+                    [
+                        "sig",
+                        "effect > 0",
+                        "first"
+                    ]
+                ]
+            ],
+            [
+                {
+                    "_name": "OptionalStopping",
+                    "level": "dv",
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 10
                 },
                 {
                     "_name": "OutliersRemoval",
                     "level": "dv",
-                    "max_attempts": 1000,
-                    "min_observations": 10,
+                    "max_attempts": 1,
+                    "min_observations": 1,
+                    "mode": "Recursive",
                     "multipliers": [
-                        0.5
+                        2
                     ],
-                    "n_attempts": 1000,
-                    "num": 1000,
-                    "order": "max first"
+                    "n_attempts": 1,
+                    "num": 200,
+                    "order": "random"
                 },
                 [
                     [
+                        "sig",
                         "effect > 0",
-                        "min(pvalue)"
+                        "first"
                     ]
                 ]
             ]
         ],
-        "is_phacker": true,
+        "is_phacker": false,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
