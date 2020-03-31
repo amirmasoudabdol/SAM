@@ -113,12 +113,6 @@ public:
   std::tuple<bool, ForwardIt, ForwardIt>
   checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy);
 
-  /// The logic of continuation should be implemented here. Researcher will
-  /// ask this method to asses the state of its progress.
-  /// TODO: Consider making this just virtual and not pure abstract,
-  /// maybe this implementation bool willBeHacking() override { return not has_any_candidates; };
-  virtual bool willBeHacking() = 0;
-
 
   //! If `true`, the Researcher will continue traversing through the
   //! hacknig methods, otherwise, he/she will stop the hacking and
@@ -134,7 +128,6 @@ public:
   bool has_a_final_candidate{false};
 
   bool hasSubmissionCandidate() const { return has_any_candidates; };
-
 
   /// Experiment
   void operator()(Experiment *experiment, PolicyChain &pchain) {

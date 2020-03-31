@@ -13,7 +13,7 @@ using namespace sam;
 ///
 void OutliersRemoval::perform(Experiment *experiment) {
 
-  spdlog::debug("Outliers Removal");
+  spdlog::debug("Outliers Removal: ");
 
   /// result flag
   int res = 0;
@@ -34,6 +34,9 @@ void OutliersRemoval::perform(Experiment *experiment) {
 //        return;
     }
   }
+  
+  for (auto &g : experiment->groups_)
+    spdlog::debug("\t{}", g);
 }
 
 int OutliersRemoval::removeOutliers(Experiment *experiment, const int n,

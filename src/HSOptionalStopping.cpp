@@ -18,7 +18,7 @@ using namespace sam;
 ///
 void OptionalStopping::perform(Experiment *experiment) {
 
-  spdlog::debug("Optional Stopping");
+  spdlog::debug("Optional Stopping: ");
 
   for (int t = 0; t < params.n_attempts && t < params.max_attempts; ++t) {
 
@@ -33,6 +33,9 @@ void OptionalStopping::perform(Experiment *experiment) {
 //             .isStillHacking())
 //      return;
   }
+  
+  for (auto &g : experiment->groups_)
+    spdlog::debug("\t{}", g);
 }
 
 void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
