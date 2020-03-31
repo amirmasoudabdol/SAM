@@ -300,6 +300,12 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
 
     for (auto &p : pset) {
       std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
+
+      /// Basically we will not find anything anymore.
+      /// This is not for performance reason, in some cases, e.g., "first",
+      /// will behave incorrectly if we continue looking.
+      if (begin == end)
+        break;
       
       if (found_sth_unique) {
         current_submission_candidate = Submission{experiment, begin->id_};
@@ -308,6 +314,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
         has_a_final_candidate = true;
         return;
       }
+
     }
     
     if (begin != end and not found_sth_unique) { /// We found a bunch
