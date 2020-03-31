@@ -36,6 +36,7 @@ enum class DecisionMethod {
   HonestDecisionMaker,
   PatientDecisionMaker,
   ImpatientDecisionMaker,
+  MarjansDecisionMaker,
   NoDecision
 };
 
@@ -44,6 +45,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {{DecisionMethod::HonestDecisionMaker, "HonestDecisionMaker"},
      {DecisionMethod::PatientDecisionMaker, "PatientDecisionMaker"},
      {DecisionMethod::ImpatientDecisionMaker, "ImpatientDecisionMaker"},
+     {DecisionMethod::MarjansDecisionMaker, "MarjansDecisionMaker"},
      {DecisionMethod::NoDecision, "NoDecision"}})
 
 ///
@@ -113,6 +115,8 @@ public:
 
   /// The logic of continuation should be implemented here. Researcher will
   /// ask this method to asses the state of its progress.
+  /// TODO: Consider making this just virtual and not pure abstract,
+  /// maybe this implementation bool willBeHacking() override { return not has_any_candidates; };
   virtual bool willBeHacking() = 0;
 
 
@@ -161,6 +165,22 @@ public:
     has_a_final_candidate = false;
   }
   
+  
+  /// \brief      Implementation of decision-making procedure.
+  ///
+  /// \param      experiment
+  /// \param[in]  stage       The stage in which the researcher is asking
+  ///                         for the verdict. The implementation of verdict
+  ///                         sould provide different procedure for different
+  ///                         stages of the development.
+  ///
+  /// \return     A boolean indicating whether result is satisfactory or not
+  virtual DecisionStrategy &verdict(Experiment *experiment,
+                                    PolicyChain &pchain) = 0;
+  
+  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+                                    PolicyChain &pchain) = 0;
+  
 protected:
   
   /// A helper method to save the current submission. This needs to be called
@@ -179,23 +199,7 @@ protected:
   void selectOutcome(Experiment &experiment, PolicyChain &pchain);
 
   void selectBetweenSubmissions(SubmissionPool &spool, PolicyChain &pchain);
-  
-private:
-  
-  /// \brief      Implementation of decision-making procedure.
-  ///
-  /// \param      experiment
-  /// \param[in]  stage       The stage in which the researcher is asking
-  ///                         for the verdict. The implementation of verdict
-  ///                         sould provide different procedure for different
-  ///                         stages of the development.
-  ///
-  /// \return     A boolean indicating whether result is satisfactory or not
-  virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChain &pchain) = 0;
-  
-  virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChain &pchain) = 0;
+
   
 };
 
@@ -298,6 +302,59 @@ inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
   j.at("submission_policies").get_to(p.submission_policies_defs);
   j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
 }
+
+
+
+///
+/// \ingroup    DecisionStrategies
+/// \brief      { item_description }
+///
+class MarjansDecisionMaker final : public DecisionStrategy {
+
+public:
+  struct Parameters {
+    DecisionMethod name = DecisionMethod::MarjansDecisionMaker;
+
+    std::vector<std::vector<std::string>> initial_decision_policies_defs;
+    std::vector<std::string> submission_policies_defs;
+    std::vector<std::vector<std::string>> final_decision_policies_defs;
+  };
+
+  Parameters params;
+
+  explicit MarjansDecisionMaker(const Parameters &p) : params{p} {
+
+    initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
+
+    final_decision_policies = registerPolicyChain(p.final_decision_policies_defs);
+
+    submission_policies = registerPolicySet(p.submission_policies_defs);
+  };
+
+  virtual DecisionStrategy &verdict(Experiment *experiment,
+                                    PolicyChain &pchain) override;
+  
+  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+                                    PolicyChain &pchain) override;
+
+  bool willBeHacking() override { return not has_any_candidates; };
+};
+
+// JSON Parser for PatientDecisionStrategy::Parameters
+inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
+  j = json{{"_name", p.name},
+           {"initial_decision_policies", p.initial_decision_policies_defs},
+           {"submission_policies", p.submission_policies_defs},
+           {"final_decision_policies", p.final_decision_policies_defs}};
+}
+
+inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
+  j.at("_name").get_to(p.name);
+  j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
+  j.at("submission_policies").get_to(p.submission_policies_defs);
+  j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
+}
+
 
 } // namespace sam
 

@@ -90,7 +90,13 @@ void Researcher::research() {
   /// Checking if we are Patient, if so, going to select among those
   if (not decision_strategy->submissions_pool.empty()
       and not decision_strategy->has_a_final_candidate){
+    
     spdlog::debug("Checking the FINAL policies");
+    for (auto &sub : decision_strategy->submissions_pool)
+      spdlog::debug("\t{}", sub);
+    spdlog::debug("-----^");
+    
+    
     decision_strategy->operator()(decision_strategy->submissions_pool,
                                   decision_strategy->final_decision_policies);
   }

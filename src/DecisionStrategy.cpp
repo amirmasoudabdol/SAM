@@ -20,15 +20,15 @@ DecisionStrategy::~DecisionStrategy(){
 };
 
 DecisionStrategy::DecisionStrategy() {
-  
+
   // Preparing a Lua instance, and registering my types there
 
   lua.open_libraries();
 
   lua.new_usertype<GroupData>("GroupData", "id", &GroupData::id_, "nobs",
-                              &GroupData::nobs_, "pvalue",
-                              &GroupData::pvalue_, "effect",
-                              &GroupData::effect_, "sig", &GroupData::sig_);
+                              &GroupData::nobs_, "pvalue", &GroupData::pvalue_,
+                              "effect", &GroupData::effect_, "sig",
+                              &GroupData::sig_);
 
   lua.new_usertype<Submission>(
       "Submission", "id",
@@ -55,17 +55,21 @@ DecisionStrategy::build(json &decision_strategy_config) {
         decision_strategy_config.get<PatientDecisionMaker::Parameters>();
     return std::make_unique<PatientDecisionMaker>(params);
 
-  }
-  else
-  {
+  } else if (decision_strategy_config["_name"] == "MarjansDecisionMaker") {
+
+    auto params =
+        decision_strategy_config.get<MarjansDecisionMaker::Parameters>();
+    return std::make_unique<MarjansDecisionMaker>(params);
+
+  } else {
     throw std::invalid_argument("Unknown DecisionStrategy");
   }
 }
 
-
 template <typename ForwardIt>
 std::tuple<bool, ForwardIt, ForwardIt>
-DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy) {
+DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end,
+                                 Policy &policy) {
 
   auto type = policy.first;
   auto func = policy.second;
@@ -74,13 +78,15 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy 
 
   case PolicyType::Min: {
     auto it = std::min_element(begin, end, func);
-    spdlog::debug("Min:"); spdlog::debug("\t {}", *it);
+    spdlog::debug("Min:");
+    spdlog::debug("\t {}", *it);
     return {true, it, it};
   } break;
 
   case PolicyType::Max: {
     auto it = std::max_element(begin, end, func);
-    spdlog::debug("Max:"); spdlog::debug("\t {}", *it);
+    spdlog::debug("Max:");
+    spdlog::debug("\t {}", *it);
     return {true, it, it};
   } break;
 
@@ -113,22 +119,21 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy 
     // Sorting the groups based on their index
     std::sort(begin, end, func);
 
-    spdlog::debug("First: "); spdlog::debug("\t {}", *begin);
+    spdlog::debug("First: ");
+    spdlog::debug("\t {}", *begin);
 
     return {true, begin, end};
 
   } break;
-      
+
   case PolicyType::All: {
     return {false, begin, end};
-    
+
   } break;
-      
   }
 }
 
-std::optional<Policy>
-DecisionStrategy::registerPolicy(const std::string &s) {
+std::optional<Policy> DecisionStrategy::registerPolicy(const std::string &s) {
 
   std::map<std::string, std::string> lua_temp_scripts{
       {"min_script", "function {} (l, r) return l.{} < r.{} end"},
@@ -152,8 +157,8 @@ DecisionStrategy::registerPolicy(const std::string &s) {
     auto var_name = s.substr(open_par + 1, close_par - open_par - 1);
 
     auto f_name = fmt::format("min_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["min_script"], f_name, var_name,
-                             var_name);
+    auto f_def =
+        fmt::format(lua_temp_scripts["min_script"], f_name, var_name, var_name);
 
     lua.script(f_def);
 
@@ -168,8 +173,8 @@ DecisionStrategy::registerPolicy(const std::string &s) {
     auto var_name = s.substr(open_par + 1, close_par - open_par - 1);
 
     auto f_name = fmt::format("max_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["max_script"], f_name, var_name,
-                             var_name);
+    auto f_def =
+        fmt::format(lua_temp_scripts["max_script"], f_name, var_name, var_name);
 
     lua.script(f_def);
 
@@ -196,16 +201,16 @@ DecisionStrategy::registerPolicy(const std::string &s) {
 
     auto var_name = "id";
     auto f_name = fmt::format("min_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["min_script"], f_name, var_name,
-                             var_name);
+    auto f_def =
+        fmt::format(lua_temp_scripts["min_script"], f_name, var_name, var_name);
 
     lua.script(f_def);
 
     policy_type = PolicyType::First;
     policy_func = lua[f_name];
-    
-  }else if (s.find("all") != std::string::npos)  {
-    
+
+  } else if (s.find("all") != std::string::npos) {
+
     auto var_name = "id";
     auto f_name = fmt::format("all_{}", var_name);
     auto f_def = fmt::format("function all_id () return true end");
@@ -214,7 +219,7 @@ DecisionStrategy::registerPolicy(const std::string &s) {
 
     policy_type = PolicyType::All;
     policy_func = lua[f_name];
-   
+
   } else if (std::any_of(cops.begin(), cops.end(), [&s](const auto &op) {
                return s.find(op.first) != std::string::npos;
              })) {
@@ -247,25 +252,24 @@ DecisionStrategy::registerPolicy(const std::string &s) {
   return std::make_pair(policy_type, policy_func);
 }
 
-PolicySet
-DecisionStrategy::registerPolicySet(const std::vector<std::string> &policy_set_defs) {
-  
+PolicySet DecisionStrategy::registerPolicySet(
+    const std::vector<std::string> &policy_set_defs) {
+
   PolicySet policy_set;
-  
+
   for (auto &s : policy_set_defs) {
-    
+
     auto policy = registerPolicy(s);
 
     if (policy)
       policy_set.push_back(policy.value());
-    
   }
-  
+
   return policy_set;
 }
 
-PolicyChain
-DecisionStrategy::registerPolicyChain(const std::vector<std::vector<std::string>> &policy_chain_def) {
+PolicyChain DecisionStrategy::registerPolicyChain(
+    const std::vector<std::vector<std::string>> &policy_chain_def) {
 
   PolicyChain policy_chain;
 
@@ -280,14 +284,13 @@ DecisionStrategy::registerPolicyChain(const std::vector<std::vector<std::string>
       if (policy)
         policy_chain.back().push_back(policy.value());
     }
-    
   }
 
   return policy_chain;
-  
 }
 
-void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain) {
+void DecisionStrategy::selectOutcome(Experiment &experiment,
+                                     PolicyChain &pchain) {
 
   int pset_inx{0};
   for (auto &pset : pchain) {
@@ -306,7 +309,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
       /// will behave incorrectly if we continue looking.
       if (begin == end)
         break;
-      
+
       if (found_sth_unique) {
         current_submission_candidate = Submission{experiment, begin->id_};
         final_submission_candidate = current_submission_candidate;
@@ -314,11 +317,10 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
         has_a_final_candidate = true;
         return;
       }
-
     }
-    
+
     if (begin != end and not found_sth_unique) { /// We found a bunch
-      
+
       spdlog::debug("Selected Bunch: ");
       for (auto it{begin}; it != end; ++it) {
         submissions_pool.emplace_back(experiment, it->id_);
@@ -326,20 +328,21 @@ void DecisionStrategy::selectOutcome(Experiment &experiment, PolicyChain &pchain
       }
       has_any_candidates = true;
       return;
-    }else{
+    } else {
       spdlog::debug("> Going to the next set of policies.");
     }
 
     pset_inx++;
   }
-  
+
   has_any_candidates = false;
 }
 
-void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyChain &pchain) {
+void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
+                                                PolicyChain &pchain) {
 
   spdlog::debug("Selecting between collected submissions.");
-  
+
   for (auto &pset : pchain) {
 
     auto found_something{false};
@@ -348,7 +351,8 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyCha
 
     for (auto &policy : pset) {
 
-      std::tie(found_something, begin, end) = checkThePolicy(begin, end, policy);
+      std::tie(found_something, begin, end) =
+          checkThePolicy(begin, end, policy);
 
       if (found_something) {
         spdlog::debug("> Found something in the pile!");
@@ -356,7 +360,8 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyCha
         has_a_final_candidate = true;
         return;
       } else {
-        if (begin == end) break;
+        if (begin == end)
+          break;
         /// else:
         ///     We are still looking. This happens when I'm testing a comparison
       }
@@ -369,39 +374,49 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool, PolicyCha
 bool DecisionStrategy::willBeSubmitting(PolicySet &pset) {
 
   // Checking whether all policies are returning `true`
-  auto is_it_submittable = std::all_of(
-      pset.begin(), pset.end(),
-      [this](auto &policy) { return policy.second(this->final_submission_candidate); });
+  auto is_it_submittable =
+      std::all_of(pset.begin(), pset.end(), [this](auto &policy) {
+        return policy.second(this->final_submission_candidate);
+      });
 
   return is_it_submittable;
-  
 }
 
 DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
-                                  PolicyChain &pchain) {
+                                                  PolicyChain &pchain) {
   selectOutcome(*experiment, pchain);
   return *this;
 }
 
 DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
-                                  PolicyChain &pchain) {
+                                                  PolicyChain &pchain) {
   clearHistory();
-//  reset();
   return *this;
 }
 
-
 DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
-                                  PolicyChain &pchain) {
+                                                PolicyChain &pchain) {
   selectOutcome(*experiment, pchain);
-//  saveCurrentSubmission();
   return *this;
 }
 
 DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
-                                  PolicyChain &pchain) {
+                                                PolicyChain &pchain) {
   selectBetweenSubmissions(spool, pchain);
   clearHistory();
-//  reset();
+  return *this;
+}
+
+DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,
+                                                PolicyChain &pchain) {
+  selectOutcome(*experiment, pchain);
+  saveEverySubmission(*experiment);
+  return *this;
+}
+
+DecisionStrategy &MarjansDecisionMaker::verdict(SubmissionPool &spool,
+                                                PolicyChain &pchain) {
+  selectBetweenSubmissions(spool, pchain);
+  clearHistory();
   return *this;
 }
