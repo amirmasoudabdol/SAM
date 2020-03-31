@@ -19,7 +19,7 @@
                     0.25,
                     0.25
                 ],
-                "stddevs": 2.5
+                "stddevs": 1
             }
         },
         "effect_strategy": {

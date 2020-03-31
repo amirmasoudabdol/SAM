@@ -6,6 +6,8 @@
 
 #include "Researcher.h"
 
+#include <variant>
+
 using namespace sam;
 
 ResearcherBuilder Researcher::create(std::string name) {
@@ -14,25 +16,28 @@ ResearcherBuilder Researcher::create(std::string name) {
 
 void Researcher::letTheHackBegin() {
   
+  Experiment copy_of_experiment;
   for (auto &set : workflow) {
     
-    Experiment copiedExpr = *experiment;
-    
+    if (std::holds_alternative<HackingSet>(set))
+      copy_of_experiment = *experiment;
+        
     std::visit(overload {
-      
+
         [&](HackingSet& hset) {
           for (auto &method : hset) {
-            (*method)(&copiedExpr);
-            copiedExpr.is_hacked = true;
+            (*method)(&copy_of_experiment);
+            copy_of_experiment.is_hacked = true;
           }
         },
         [&](PolicyChain& policy) {
-          decision_strategy->operator()(&copiedExpr, policy);
-          if (decision_strategy->hasSubmissionCandidate() && not decision_strategy->willBeHacking()){
-            return;
-          }
+          decision_strategy->operator()(&copy_of_experiment, policy);
         }
     }, set);
+    
+    if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking())){
+      return;
+    }
     
   }
   
@@ -83,7 +88,7 @@ void Researcher::research() {
                                 decision_strategy->initial_decision_policies);
   
   /// Checking if hacknig is necessary
-  if (isHacker() && decision_strategy->willBeHacking()) {
+  if (isHacker() and decision_strategy->willBeHacking()) {
     letTheHackBegin();
   }
   

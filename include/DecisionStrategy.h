@@ -166,6 +166,13 @@ public:
   }
   
   
+  /// The logic of continuation should be implemented here. Researcher will
+  /// ask this method to asses the state of its progress.
+  /// TODO: Consider making this just virtual and not pure abstract,
+  /// maybe this implementation bool willBeHacking() override { return not has_any_candidates; };
+  virtual bool willBeHacking() {return not has_any_candidates; };
+  
+  
   /// \brief      Implementation of decision-making procedure.
   ///
   /// \param      experiment
@@ -337,7 +344,9 @@ public:
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
                                     PolicyChain &pchain) override;
 
-  bool willBeHacking() override { return not has_any_candidates; };
+  bool willBeHacking() override {
+    return not has_a_final_candidate;
+  };
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters
