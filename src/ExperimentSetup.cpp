@@ -20,6 +20,8 @@ ExperimentSetup::ExperimentSetup(json &config) {
   nc_ = config["n_conditions"];
   nd_ = config["n_dep_vars"];
   ng_ = nc_ * nd_;
+  
+  n_reps_ = config["n_reps"];
 
   auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
   nobs_ = nobs_t;

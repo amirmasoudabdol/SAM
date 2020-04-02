@@ -49,6 +49,8 @@ class ExperimentSetup {
   //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
   //! variables, \f$n_g = n_c \times n_d \times n_i\f$
   int ng_{0};
+  
+  int n_reps_{1};
 
   ///! Indicates the number of observations in each group
   arma::Row<int> nobs_;
@@ -81,6 +83,7 @@ public:
   const int nc() const { return nc_; };
   const int nd() const { return nd_; };
   const int ng() const { return ng_; };
+  const int nreps() const { return n_reps_; };
 
   const arma::Row<int> &nobs() const { return nobs_; };
   void set_nobs(arma::Row<int> &val) { nobs_ = val; };

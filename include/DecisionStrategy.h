@@ -101,6 +101,7 @@ public:
   PolicyChain initial_decision_policies;
   PolicySet submission_policies;
   PolicyChain final_decision_policies;
+  PolicyChain between_reps_policies;
 
   std::optional<Policy> registerPolicy(const std::string &s);
 
@@ -318,6 +319,7 @@ public:
     std::vector<std::vector<std::string>> initial_decision_policies_defs;
     std::vector<std::string> submission_policies_defs;
     std::vector<std::vector<std::string>> final_decision_policies_defs;
+    std::vector<std::vector<std::string>> between_replications_decision_policies_defs;
   };
 
   Parameters params;
@@ -329,6 +331,8 @@ public:
     final_decision_policies = registerPolicyChain(p.final_decision_policies_defs);
 
     submission_policies = registerPolicySet(p.submission_policies_defs);
+    
+    between_reps_policies = registerPolicyChain(p.between_replications_decision_policies_defs);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -347,7 +351,9 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
            {"initial_decision_policies", p.initial_decision_policies_defs},
            {"submission_policies", p.submission_policies_defs},
-           {"final_decision_policies", p.final_decision_policies_defs}};
+           {"final_decision_policies", p.final_decision_policies_defs},
+           {"between_replications_decision_policies", p.between_replications_decision_policies_defs}
+  };
 }
 
 inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
@@ -355,6 +361,7 @@ inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
   j.at("submission_policies").get_to(p.submission_policies_defs);
   j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
+  j.at("between_replications_decision_policies").get_to(p.between_replications_decision_policies_defs);
 }
 
 

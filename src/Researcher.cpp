@@ -71,55 +71,82 @@ void Researcher::preProcessData() {
 void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
-  
-  experiment->generateData();
-  
-  if (is_pre_processing) {
-    spdlog::debug("Pre-processing");
 
-    preProcessData();
+  
+  for (int rep{0}; rep < experiment->setup.nreps(); ++rep){
+    
+    spdlog::debug("Replication #{}", rep);
+  
+    experiment->generateData();
+    
+    if (is_pre_processing) {
+      spdlog::debug("Pre-processing");
+
+      preProcessData();
+    }
+    
+    computeStuff();
+    
+    /// Checking the Initial Policies
+    spdlog::debug("Checking the INITIAL policies");
+    decision_strategy->operator()(experiment,
+                                  decision_strategy->initial_decision_policies);
+    
+    /// Checking if hacknig is necessary
+    if (isHacker() and decision_strategy->willBeHacking()) {
+      letTheHackBegin();
+    }
+    
+    /// Checking if we are Patient, if so, going to select among those
+    if (not decision_strategy->submissions_pool.empty()
+        and not decision_strategy->has_a_final_candidate){
+      
+      spdlog::debug("Checking the FINAL policies");
+      for (auto &sub : decision_strategy->submissions_pool)
+        spdlog::debug("\t{}", sub);
+      spdlog::debug("-----^");
+      
+      
+      decision_strategy->operator()(decision_strategy->submissions_pool,
+                                    decision_strategy->final_decision_policies);
+    }
+    
+    /// Checking the Submission Policies
+    if (decision_strategy->has_a_final_candidate
+        and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
+      
+      spdlog::debug("Final Submission Candidate: ");
+      spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
+      
+      last_submission_candidate = decision_strategy->final_submission_candidate;
+      
+      submissions_from_reps.push_back(last_submission_candidate);
+      
+    }
+    /// else: She didn't find anything, and nothing will be submitted to the Journal.
+    ///       Current experiment will be discarded...
+    
+    decision_strategy->reset();
+    experiment->clear();
+    
   }
   
-  computeStuff();
-  
-  /// Checking the Initial Policies
-  spdlog::debug("Checking the INITIAL policies");
-  decision_strategy->operator()(experiment,
-                                decision_strategy->initial_decision_policies);
-  
-  /// Checking if hacknig is necessary
-  if (isHacker() and decision_strategy->willBeHacking()) {
-    letTheHackBegin();
+  if (submissions_from_reps.size() > 1) {
+    spdlog::debug("Choosing Between Replications");
+    decision_strategy->operator()(submissions_from_reps, decision_strategy->between_reps_policies);
+  }else{
+    decision_strategy->final_submission_candidate = submissions_from_reps.front();
+    decision_strategy->has_a_final_candidate = true;
   }
   
-  /// Checking if we are Patient, if so, going to select among those
-  if (not decision_strategy->submissions_pool.empty()
-      and not decision_strategy->has_a_final_candidate){
-    
-    spdlog::debug("Checking the FINAL policies");
-    for (auto &sub : decision_strategy->submissions_pool)
-      spdlog::debug("\t{}", sub);
-    spdlog::debug("-----^");
-    
-    
-    decision_strategy->operator()(decision_strategy->submissions_pool,
-                                  decision_strategy->final_decision_policies);
-  }
-  
-  /// Checking the Submission Policies
   if (decision_strategy->has_a_final_candidate
       and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
-    
-    spdlog::debug("Final Submission Candidate: ");
-    spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
-    
-    spdlog::debug("Checking the SUBMISSION policies");
     journal->review(decision_strategy->final_submission_candidate);
   }
-  /// else: She didn't find anything, and nothing will be submitted to the Journal.
-  ///       Current experiment will be discarded...
   
   decision_strategy->reset();
   experiment->clear();
+  
+  this->submissions_from_reps.clear();
   
 }

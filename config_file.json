@@ -9,15 +9,15 @@
                     0,
                     0,
                     0,
-                    0.25,
-                    0.25,
-                    0.25,
-                    0.25,
-                    0.25,
-                    0.25,
-                    0.25,
-                    0.25,
-                    0.25
+                    0.475,
+                    0.475,
+                    0.475,
+                    0.475,
+                    0.475,
+                    0.475,
+                    0.475,
+                    0.475,
+                    0.475
                 ],
                 "stddevs": 1
             }
@@ -28,6 +28,7 @@
         "n_conditions": 3,
         "n_dep_vars": 4,
         "n_obs": 20,
+        "n_reps": 3,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -43,6 +44,21 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "MarjansDecisionMaker",
+            "between_replications_decision_policies": [
+                [
+                    "sig",
+                    "effect > 0",
+                    "first"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
+                ]
+            ],
             "final_decision_policies": [
                 [
                     "sig",
@@ -60,9 +76,12 @@
             ],
             "initial_decision_policies": [
                 [
-                    "sig",
-                    "effect > 0",
-                    "first"
+                    "id == 4",
+                    "sig"
+                ],
+                [
+                    "id == 5",
+                    "sig"
                 ]
             ],
             "submission_policies": []
