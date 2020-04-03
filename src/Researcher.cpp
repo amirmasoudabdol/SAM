@@ -30,7 +30,7 @@ void Researcher::letTheHackBegin() {
             copy_of_experiment.is_hacked = true;
           }
         },
-        [&](PolicyChain& policy) {
+        [&](PolicyChainSet& policy) {
           decision_strategy->operator()(&copy_of_experiment, policy);
         }
     }, set);

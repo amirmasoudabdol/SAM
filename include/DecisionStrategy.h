@@ -16,6 +16,7 @@
 #include <fmt/format.h>
 #include <memory>
 #include <nlohmann/json.hpp>
+#include <ostream>
 #include <sol/sol.hpp>
 #include <spdlog/spdlog.h>
 #include <utility>
@@ -27,6 +28,7 @@
 #include "GroupData.h"
 #include "Submission.h"
 #include "Utilities.h"
+#include "Policy.h"
 
 using json = nlohmann::json;
 
@@ -60,11 +62,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
                               {DecisionStage::DoneHacking, "DoneHacking"},
                               {DecisionStage::Final, "Final"}})
 
-enum class PolicyType { Min, Max, Comp, Random, First, All };
-
-using Policy = std::pair<PolicyType, sol::function>;
-using PolicySet = std::vector<Policy>;
-using PolicyChain = std::vector<PolicySet>;
 
 using SubmissionPool = std::vector<Submission>;
 
@@ -73,6 +70,7 @@ using SubmissionPool = std::vector<Submission>;
 ///
 class DecisionStrategy {
 
+public:
   // Lua state
   sol::state lua;
 
@@ -98,21 +96,21 @@ public:
   SubmissionPool submissions_pool;
 
   /// TODO: These guys should move to their own class, I don't have to keep everything here!
-  PolicyChain initial_decision_policies;
-  PolicySet submission_policies;
-  PolicyChain final_decision_policies;
-  PolicyChain between_reps_policies;
+  PolicyChainSet initial_decision_policies;
+  PolicyChain submission_policies;
+  PolicyChainSet final_decision_policies;
+  PolicyChainSet between_reps_policies;
 
-  std::optional<Policy> registerPolicy(const std::string &s);
-
-  PolicySet registerPolicySet(const std::vector<std::string> &policy_set_defs);
-
-  PolicyChain registerPolicyChain(
-      const std::vector<std::vector<std::string>> &policy_chain_defs);
+//  std::optional<Policy> registerPolicy(const std::string &s);
+//
+//  policy_chain registerpolicy_chain(const std::vector<std::string> &policy_set_defs);
+//
+//  PolicyChain registerPolicyChain(
+//      const std::vector<std::vector<std::string>> &policy_chain_defs);
 
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
-  checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &policy);
+  checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &p);
 
 
   //! If `true`, the Researcher will continue traversing through the
@@ -131,17 +129,17 @@ public:
   bool hasSubmissionCandidate() const { return has_any_candidates; };
 
   /// Experiment
-  void operator()(Experiment *experiment, PolicyChain &pchain) {
-    verdict(experiment, pchain);
+  void operator()(Experiment *experiment, PolicyChainSet &pchain_set) {
+    verdict(experiment, pchain_set);
   }
 
   /// Submission Pool
-  void operator()(SubmissionPool &spool, PolicyChain &pchain) {
-    verdict(spool, pchain);
+  void operator()(SubmissionPool &spool, PolicyChainSet &pchain_set) {
+    verdict(spool, pchain_set);
   }
   
   /// Submission
-  bool willBeSubmitting(PolicySet &pset);
+  bool willBeSubmitting(PolicyChain &pset);
   
   
   /// Clear the list of submissions and experiments
@@ -177,10 +175,10 @@ public:
   ///
   /// \return     A boolean indicating whether result is satisfactory or not
   virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChain &pchain) = 0;
+                                    PolicyChainSet &pchain_set) = 0;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChain &pchain) = 0;
+                                    PolicyChainSet &pchain_set) = 0;
   
 protected:
   
@@ -197,9 +195,9 @@ protected:
     }
   };
   
-  void selectOutcome(Experiment &experiment, PolicyChain &pchain);
+  void selectOutcome(Experiment &experiment, PolicyChainSet &pchain_set);
 
-  void selectBetweenSubmissions(SubmissionPool &spool, PolicyChain &pchain);
+  void selectBetweenSubmissions(SubmissionPool &spool, PolicyChainSet &pchain_set);
 
   
 };
@@ -226,18 +224,18 @@ public:
 
     spdlog::debug("Registering decision policies...");
 
-    initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
+    initial_decision_policies = PolicyChainSet(p.initial_decision_policies_defs, lua);
 
-    submission_policies = registerPolicySet(p.submission_policies_defs);
+    submission_policies = PolicyChain(p.submission_policies_defs, lua);
   }
 
   bool willBeHacking() override { return not has_any_candidates; };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChain &pchain) override;
+                                    PolicyChainSet &pchain_set) override;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChain &pchain) override;
+                                    PolicyChainSet &pchain_set) override;
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -272,18 +270,18 @@ public:
 
   explicit PatientDecisionMaker(const Parameters &p) : params{p} {
 
-    initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
+    initial_decision_policies = PolicyChainSet(p.initial_decision_policies_defs, lua);
 
-    final_decision_policies = registerPolicyChain(p.final_decision_policies_defs);
+    final_decision_policies = PolicyChainSet(p.final_decision_policies_defs, lua);
 
-    submission_policies = registerPolicySet(p.submission_policies_defs);
+    submission_policies = PolicyChain(p.submission_policies_defs, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChain &pchain) override;
+                                    PolicyChainSet &pchain_set) override;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChain &pchain) override;
+                                    PolicyChainSet &pchain_set) override;
 
   // She is always hacking
   virtual bool willBeHacking() override { return true; }
@@ -326,20 +324,20 @@ public:
 
   explicit MarjansDecisionMaker(const Parameters &p) : params{p} {
 
-    initial_decision_policies = registerPolicyChain(p.initial_decision_policies_defs);
+    initial_decision_policies = PolicyChainSet(p.initial_decision_policies_defs, lua);
 
-    final_decision_policies = registerPolicyChain(p.final_decision_policies_defs);
+    final_decision_policies = PolicyChainSet(p.final_decision_policies_defs, lua);
 
-    submission_policies = registerPolicySet(p.submission_policies_defs);
+    submission_policies = PolicyChain(p.submission_policies_defs, lua);
     
-    between_reps_policies = registerPolicyChain(p.between_replications_decision_policies_defs);
+    between_reps_policies = PolicyChainSet(p.between_replications_decision_policies_defs, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChain &pchain) override;
+                                    PolicyChainSet &pchain_set) override;
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChain &pchain) override;
+                                    PolicyChainSet &pchain_set) override;
 
   bool willBeHacking() override {
     return not has_a_final_candidate;

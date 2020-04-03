@@ -27,16 +27,11 @@ template<class... Ts> overload(Ts...) -> overload<Ts...>;
 
 using json = nlohmann::json;
 
-//using HackingSet = std::vector<std::unique_ptr<HackingStrategy>>;
-
 class ResearcherBuilder;
 
 using HackingSet = std::vector<std::shared_ptr<HackingStrategy>>;
-using Policy = std::pair<PolicyType, sol::function>;
-using PolicySet = std::vector<Policy>;
-using PolicyChain = std::vector<PolicySet>;
 
-using Workflow = std::vector<std::variant<HackingSet, PolicyChain>> ;
+using Workflow = std::vector<std::variant<HackingSet, PolicyChainSet>> ;
 
 class Researcher {
   // Making the ResearcherBuilder a friend class in order to give it access to
@@ -212,7 +207,8 @@ public:
 
         if (item.type() == nlohmann::detail::value_t::array) {
           // It's a set of policies
-          researcher.workflow.push_back(researcher.decision_strategy->registerPolicyChain(item));
+          auto p_chain_set = PolicyChainSet(item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua);
+          researcher.workflow.push_back(p_chain_set);
         }
 
       }
