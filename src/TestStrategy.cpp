@@ -366,7 +366,7 @@ two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
       sig = false; // Alternative "REJECTED"
   }
 
-  int eff_side = std::copysign(1.0, Sm1 - Sm2);
+  int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
   return {t_stat, p, eff_side, sig};
 }
@@ -446,7 +446,7 @@ two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
       sig = false; // Alternative "REJECTED"
   }
 
-  int eff_side = std::copysign(1.0, Sm1 - Sm2);
+  int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
   return {t_stat, p, eff_side, sig};
 }
@@ -494,7 +494,7 @@ TestStrategy::TestResult f_test(double sd1,   // Sample 1 std deviation
   else // Alternative "REJECTED"
     sig = false;
 
-  //        int eff_side = std::copysign(1.0, Sm1 - Sm2);
+  //        int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
   return {f_stats, p, 1, sig};
 }
@@ -553,7 +553,7 @@ yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, M - Sm1);
+  int eff_side = std::copysign(1.0, Sm1 - M);
 
   return {t_stat, p, eff_side, sig};
 }
@@ -616,7 +616,7 @@ yuen_t_test_paired(const arma::Row<double> &x, const arma::Row<double> &y,
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, Sm1 - Sm2);
+  int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
   return {t_stat, p, eff_side, sig};
 }
@@ -685,7 +685,7 @@ TestStrategy::TestResult yuen_t_test_two_samples(
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, Sm1 - Sm2);
+  int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
   return {t_stat, p, eff_side, sig};
 }
@@ -802,7 +802,7 @@ wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> &y,
 
   double u = u2;
 
-  int eff_side = std::copysign(1.0, Sm1 - Sm2);
+  int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
   return {u, p, eff_side, sig};
 }
