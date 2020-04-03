@@ -36,6 +36,7 @@ GroupData::operator std::map<std::string, std::string>() {
   record["pvalue"] = std::to_string(pvalue_);
   record["effect"] = std::to_string(effect_);
   record["sig"] = std::to_string(sig_);
+  record["side"] = std::to_string(eff_side_);
 
   record["is_hacked"] = std::to_string(is_hacked_);
 

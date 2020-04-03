@@ -103,7 +103,8 @@ public: // Public for now
        << " mean: " << data.mean_ << " var: " << data.var_
        << " stddev: " << data.stddev_ << " sei: " << data.sei_
        << " stats: " << data.stats_ << " pvalue: " << data.pvalue_
-       << " effect: " << data.effect_ << " sig: " << data.sig_;
+       << " effect: " << data.effect_ << " sig: " << data.sig_
+       << " side: " << data.eff_side_;
 
     return os;
   }

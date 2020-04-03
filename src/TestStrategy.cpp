@@ -75,6 +75,7 @@ void TTest::run(Experiment *experiment) {
     (*experiment)[i].stats_ = res.statistic;
     (*experiment)[i].pvalue_ = res.pvalue;
     (*experiment)[i].sig_ = res.sig;
+    (*experiment)[i].eff_side_ = res.side;
   }
 }
 
@@ -105,6 +106,7 @@ void YuenTest::run(Experiment *experiment) {
     (*experiment)[i].stats_ = res.statistic;
     (*experiment)[i].pvalue_ = res.pvalue;
     (*experiment)[i].sig_ = res.sig;
+    (*experiment)[i].eff_side_ = res.side;
   }
 }
 
@@ -124,6 +126,7 @@ void WilcoxonTest::run(Experiment *experiment) {
     (*experiment)[i].stats_ = res.statistic;
     (*experiment)[i].pvalue_ = res.pvalue;
     (*experiment)[i].sig_ = res.sig;
+    (*experiment)[i].eff_side_ = res.side;
   }
 }
 
