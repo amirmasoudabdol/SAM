@@ -15,6 +15,9 @@
 #include "spdlog/spdlog.h"
 #include "utils/tqdm.h"
 
+#include <indicators/block_progress_bar.hpp>
+#include <indicators/progress_bar.hpp>
+
 #include "MetaAnalysis.h"
 #include "PersistenceManager.h"
 #include "Researcher.h"
@@ -29,8 +32,6 @@ using Random = effolkronium::random_static;
 using namespace std;
 
 void runSimulation(json &simConfig);
-
-tqdm progressBar;
 
 bool FLAGS::PROGRESS = false;
 bool FLAGS::DEBUG = false;
@@ -150,7 +151,7 @@ void runSimulation(json &simConfig) {
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_sims.csv";
 
-  int nSims = simConfig["simulation_parameters"]["n_sims"];
+  int n_sims = simConfig["simulation_parameters"]["n_sims"];
 
   std::unique_ptr<PersistenceManager::Writer> pubswriter;
   std::unique_ptr<PersistenceManager::Writer> rejectedwriter;
@@ -171,22 +172,31 @@ void runSimulation(json &simConfig) {
   if (is_saving_sims)
     simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
 
+  // Hide cursor
+  std::cout << "\e[?25l";
+  indicators::BlockProgressBar sim_progress_bar{
+      indicators::option::BarWidth{50},
+      indicators::option::Start{"["},
+      indicators::option::End{"]"},
+      indicators::option::ForegroundColor{indicators::Color::yellow},
+      indicators::option::ShowElapsedTime{true},
+      indicators::option::ShowRemainingTime{true}};
+
+  int n_pubs = simConfig["journal_parameters"]["max_pubs"];
+  int n_total_pubs = n_sims * n_pubs;
+
+  auto progress = 0.0f;
   // This loop can be parallelized
-  for (int i = 0; i < simConfig["simulation_parameters"]["n_sims"]; ++i) {
+  for (int i = 0; i < n_sims; ++i) {
 
     spdlog::debug("---> Sim {}", i);
 
-    int j{0};
+    //    float j = i * n_pubs;
+    float j{0};
     while (researcher.journal->isStillAccepting()) {
 
       spdlog::debug("---> Experiment #{}", j++);
 
-//      researcher.prepareResearch();
-//
-//      researcher.performResearch();
-//
-//      researcher.publishResearch();
-      
       researcher.research();
 
       // If Experiment handles the Submission, it can handle the
@@ -194,8 +204,10 @@ void runSimulation(json &simConfig) {
       if (is_saving_stats)
         statswriter->write(researcher.experiment, "stats", i);
 
-      if (FLAGS::PROGRESS)
-        progressBar.progress(i, nSims);
+      if (FLAGS::PROGRESS) {
+        progress += 1. / n_total_pubs;
+        sim_progress_bar.set_progress(progress * 100);
+      }
 
       spdlog::debug("=====================================");
     }
@@ -211,8 +223,11 @@ void runSimulation(json &simConfig) {
     researcher.journal->clear();
   }
 
-  if (FLAGS::PROGRESS)
-    progressBar.finish();
+  // Show cursor
+  std::cout << "\e[?25h";
+
+  //  if (FLAGS::PROGRESS)
+  //    progress_bar.finish();
 
   // if (is_saving_pubs)
   //     std::cout << "\nSaved to: " << pubsfilename << "\n";
