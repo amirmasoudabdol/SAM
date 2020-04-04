@@ -61,7 +61,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  json jSimConfig;
+  json configs;
 
   string configfilename;
   if (vm.count("config")) {
@@ -71,37 +71,37 @@ int main(int argc, const char **argv) {
   }
 
   std::ifstream configFile(configfilename);
-  configFile >> jSimConfig;
+  configFile >> configs;
 
   if (vm.count("output-path")) {
-    jSimConfig["simulation_parameters"]["output_path"] =
+    configs["simulation_parameters"]["output_path"] =
         vm["output-path"].as<string>();
   } else {
-    jSimConfig["simulation_parameters"]["output_path"] = "../outputs/";
+    configs["simulation_parameters"]["output_path"] = "../outputs/";
   }
 
   if (vm.count("output-prefix")) {
     const string output_prefix = vm["output-prefix"].as<string>();
-    jSimConfig["simulation_parameters"]["output_prefix"] = output_prefix;
+    configs["simulation_parameters"]["output_prefix"] = output_prefix;
   }
 
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
   spdlog::set_level(spdlog::level::off);
 
-  if (jSimConfig["simulation_parameters"]["verbose"].get<bool>())
+  if (configs["simulation_parameters"]["verbose"].get<bool>())
     spdlog::set_level(spdlog::level::info);
 
-  if (jSimConfig["simulation_parameters"]["debug"].get<bool>())
+  if (configs["simulation_parameters"]["debug"].get<bool>())
     spdlog::set_level(spdlog::level::debug);
 
-  runSimulation(jSimConfig);
+  runSimulation(configs);
 
   if (vm.count("update-config")) {
     const bool update_config = vm["update-config"].as<bool>();
     if (update_config) {
       std::ofstream o(configfilename);
-      o << std::setw(4) << jSimConfig << std::endl;
+      o << std::setw(4) << configs << std::endl;
     }
   }
 
@@ -191,7 +191,6 @@ void runSimulation(json &simConfig) {
 
     spdlog::debug("---> Sim {}", i);
 
-    //    float j = i * n_pubs;
     float j{0};
     while (researcher.journal->isStillAccepting()) {
 

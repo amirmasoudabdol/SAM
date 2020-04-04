@@ -108,6 +108,9 @@ public: // Public for now
 
     return os;
   }
+  
+  auto begin() { return measurements_.begin(); };
+  auto end() { return measurements_.end(); };
 
   operator std::map<std::string, std::string>();
 
