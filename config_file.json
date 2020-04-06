@@ -1,34 +1,53 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "LinearModel",
-            "measurements": {
-                "covs": 0.5,
+            "_name": "GradedResponseModel",
+            "abilities": {
+                "covs": 0.0,
                 "dist": "mvnorm_distribution",
                 "means": [
                     0,
-                    0,
-                    0,
-                    0.475,
-                    0.475,
-                    0.475,
-                    0.475,
-                    0.475,
-                    0.475,
-                    0.475,
-                    0.475,
-                    0.475
+                    0.2
                 ],
-                "stddevs": 1
-            }
+                "stddevs": 1.0
+            },
+            "difficulties": [
+                {
+                    "dist": "normal_distribution",
+                    "mean": 1.5,
+                    "stddev": 1.0
+                },
+                {
+                    "dist": "normal_distribution",
+                    "mean": 1.5,
+                    "stddev": 1.0
+                },
+                {
+                    "dist": "normal_distribution",
+                    "mean": 1.5,
+                    "stddev": 1.0
+                },
+                {
+                    "dist": "normal_distribution",
+                    "mean": 1.5,
+                    "stddev": 1.0
+                },
+                {
+                    "dist": "normal_distribution",
+                    "mean": 1.5,
+                    "stddev": 1.0
+                }
+            ],
+            "n_categories": 5,
+            "n_items": 20
         },
         "effect_strategy": {
-            "_name": "MeanDifference"
+            "_name": "CohensD"
         },
-        "n_conditions": 3,
-        "n_dep_vars": 4,
+        "n_conditions": 2,
+        "n_dep_vars": 1,
         "n_obs": 20,
-        "n_reps": 3,
+        "n_reps": 1,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -36,51 +55,23 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 20,
+        "max_pubs": 10,
         "selection_strategy": {
             "_name": "FreeSelection"
         }
     },
+    "output_prefix": "0030c0bd-f747-4709-a4dd-2ff100507880",
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "MarjansDecisionMaker",
+            "_name": "ImpatientDecisionMaker",
             "between_replications_decision_policies": [
-                [
-                    "sig",
-                    "effect > 0",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
-                ]
+                "_"
             ],
             "final_decision_policies": [
-                [
-                    "sig",
-                    "effect > 0",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
-                ]
+                "_"
             ],
             "initial_decision_policies": [
                 [
-                    "id == 4",
-                    "sig"
-                ],
-                [
-                    "id == 5",
                     "sig"
                 ]
             ],
@@ -91,78 +82,48 @@
         "hacking_strategies": [
             [
                 {
-                    "_name": "OptionalStopping",
-                    "level": "dv",
-                    "max_attempts": 1,
-                    "n_attempts": 1,
-                    "num": 10
-                },
-                [
-                    [
-                        "sig",
-                        "effect > 0",
-                        "first"
-                    ]
-                ]
-            ],
-            [
-                {
-                    "_name": "OptionalStopping",
-                    "level": "dv",
-                    "max_attempts": 1,
-                    "n_attempts": 1,
-                    "num": 10
-                },
-                {
                     "_name": "OutliersRemoval",
                     "level": "dv",
-                    "max_attempts": 1,
-                    "min_observations": 1,
+                    "max_attempts": 10,
+                    "min_observations": 20,
                     "mode": "Recursive",
                     "multipliers": [
-                        2
+                        1
                     ],
-                    "n_attempts": 1,
-                    "num": 200,
-                    "order": "random"
-                },
-                [
-                    [
-                        "sig",
-                        "effect > 0",
-                        "first"
-                    ]
-                ]
+                    "n_attempts": 4,
+                    "num": 2,
+                    "order": "max first"
+                }
             ]
         ],
-        "is_phacker": true,
-        "is_pre_processing": false,
+        "is_phacker": false,
+        "is_pre_processing": true,
         "pre_processing_methods": [
             {
                 "_name": "OutliersRemoval",
                 "level": "dv",
-                "max_attempts": 1000,
-                "min_observations": 10,
+                "max_attempts": 1,
+                "min_observations": 5,
                 "multipliers": [
-                    0.5
+                    3.7000000000000015
                 ],
-                "n_attempts": 1000,
-                "num": 1000,
+                "n_attempts": 1,
+                "num": 20,
                 "order": "max first"
             }
         ]
     },
     "simulation_parameters": {
-        "debug": true,
-        "master_seed": 42,
+        "debug": false,
+        "master_seed": 1586167499,
         "n_sims": 1,
         "output_path": "../outputs/",
-        "output_prefix": "debug",
-        "progress": false,
+        "output_prefix": "",
+        "progress": true,
         "save_pubs": true,
         "save_rejected": false,
         "save_sims": false,
-        "save_stats": true,
+        "save_stats": false,
         "verbose": false
     }
 }
