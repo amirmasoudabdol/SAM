@@ -158,6 +158,8 @@ struct PolicyChain {
   PolicyChain(const std::vector<std::string> &pchain_defs, sol::state &lua) {
 
     for (auto &p_def : pchain_defs) {
+      if (p_def.find("_") != std::string::npos)
+        continue;
       pchain.emplace_back(p_def, lua);
     }
   }

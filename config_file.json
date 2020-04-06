@@ -84,7 +84,9 @@
                     "sig"
                 ]
             ],
-            "submission_policies": []
+            "submission_policies": [
+                "_"
+            ]
         },
         "hacking_strategies": [
             [
