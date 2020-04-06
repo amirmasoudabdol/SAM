@@ -14,32 +14,32 @@
             "difficulties": [
                 {
                     "dist": "normal_distribution",
-                    "mean": 1.5,
+                    "mean": 3.0,
                     "stddev": 1.0
                 },
                 {
                     "dist": "normal_distribution",
-                    "mean": 1.5,
+                    "mean": 3.0,
                     "stddev": 1.0
                 },
                 {
                     "dist": "normal_distribution",
-                    "mean": 1.5,
+                    "mean": 3.0,
                     "stddev": 1.0
                 },
                 {
                     "dist": "normal_distribution",
-                    "mean": 1.5,
+                    "mean": 3.0,
                     "stddev": 1.0
                 },
                 {
                     "dist": "normal_distribution",
-                    "mean": 1.5,
+                    "mean": 3.0,
                     "stddev": 1.0
                 }
             ],
             "n_categories": 5,
-            "n_items": 20
+            "n_items": 10
         },
         "effect_strategy": {
             "_name": "CohensD"
@@ -60,19 +60,21 @@
             "_name": "FreeSelection"
         }
     },
-    "output_prefix": "0030c0bd-f747-4709-a4dd-2ff100507880",
+    "output_prefix": "4cc56668-2b0a-4bfb-a20c-0bd46ca333c8",
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "ImpatientDecisionMaker",
+            "_name": "PatientDecisionMaker",
             "between_replications_decision_policies": [
                 "_"
             ],
             "final_decision_policies": [
-                "_"
+                [
+                    "_"
+                ]
             ],
             "initial_decision_policies": [
                 [
-                    "sig"
+                    "_"
                 ]
             ],
             "submission_policies": [
@@ -82,44 +84,36 @@
         "hacking_strategies": [
             [
                 {
-                    "_name": "OutliersRemoval",
-                    "level": "dv",
-                    "max_attempts": 10,
-                    "min_observations": 20,
-                    "mode": "Recursive",
-                    "multipliers": [
-                        1
+                    "_name": "SubjectiveOutlierRemoval",
+                    "min_observations": 5,
+                    "range": [
+                        2.0,
+                        4.0
                     ],
-                    "n_attempts": 4,
-                    "num": 2,
-                    "order": "max first"
-                }
+                    "step_size": 0.1
+                },
+                [
+                    [
+                        "first"
+                    ]
+                ]
             ]
         ],
-        "is_phacker": false,
-        "is_pre_processing": true,
+        "is_phacker": true,
+        "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "_name": "OutliersRemoval",
-                "level": "dv",
-                "max_attempts": 1,
-                "min_observations": 5,
-                "multipliers": [
-                    3.7000000000000015
-                ],
-                "n_attempts": 1,
-                "num": 20,
-                "order": "max first"
+                "_name": "none"
             }
         ]
     },
     "simulation_parameters": {
-        "debug": false,
-        "master_seed": 1586167499,
+        "debug": true,
+        "master_seed": 1586175005,
         "n_sims": 1,
         "output_path": "../outputs/",
         "output_prefix": "",
-        "progress": true,
+        "progress": false,
         "save_pubs": true,
         "save_rejected": false,
         "save_sims": false,

@@ -9,7 +9,7 @@
 
 namespace sam {
 
-enum class PolicyType { Min, Max, Comp, Random, First, All };
+enum class PolicyType { Min, Max, Comp, Random, First, Last, All };
 
 struct Policy {
   PolicyType type;
@@ -70,6 +70,7 @@ struct Policy {
 
       type = PolicyType::Random;
       func = sol::function();
+      def = "random";
 
     } else if (p_def.find("first") != std::string::npos) {
 

@@ -186,8 +186,8 @@ public:
 
         researcher.hacking_strategies.push_back({});
 
-        // TODO: I think this doesn't work if there is more than one set of hacking strategies
-
+        /// TODO: This is not a robust way of reading this in. For instance,
+        /// this will fail if I don't have any policy at the end of a hacking set
         auto i{0};
         auto item = set.at(i);
         researcher.workflow.push_back(HackingSet());
@@ -202,8 +202,6 @@ public:
         }
 
         researcher.workflow.push_back(temp_shared_set);
-
-
 
         if (item.type() == nlohmann::detail::value_t::array) {
           // It's a set of policies
