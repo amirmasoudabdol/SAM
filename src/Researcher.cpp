@@ -134,10 +134,11 @@ void Researcher::research() {
   if (submissions_from_reps.size() > 1) {
     spdlog::debug("Choosing Between Replications");
     decision_strategy->operator()(submissions_from_reps, decision_strategy->between_reps_policies);
-  }else{
-    decision_strategy->final_submission_candidate = submissions_from_reps.front();
-    decision_strategy->has_a_final_candidate = true;
   }
+//  else{
+//    decision_strategy->final_submission_candidate = submissions_from_reps.front();
+//    decision_strategy->has_a_final_candidate = true;
+//  }
   
   if (decision_strategy->has_a_final_candidate
       and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
