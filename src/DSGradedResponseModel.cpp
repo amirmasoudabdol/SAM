@@ -22,8 +22,11 @@ GRMDataStrategy::GRMDataStrategy(const Parameters &p) : params(p) {
 void GRMDataStrategy::genData(Experiment *experiment) {
   
   betas = fillMatrix(params.diff_dists, params.m_diff_dist,
-                     params.n_items,
-                     params.n_categories);
+                     params.n_categories,
+                     params.n_items);
+  
+  // This is a strange hack, I should redo the GRM totally
+  arma::inplace_trans(betas);
 
   for (int g{0}; g < experiment->setup.ng(); ++g) {
 

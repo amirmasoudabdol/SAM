@@ -39,7 +39,6 @@ static arma::mat fillMatrix(std::optional<std::vector<Distribution>> &dists,
     // Filling by columns because MultiDist returns a column of results
     data.each_col([&](arma::vec &v) {
       v = Random::get(mdist.value());
-      std::cout << v << std::endl;
     });
   } else {
     if (dists) {
