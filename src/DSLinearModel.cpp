@@ -13,42 +13,20 @@
 using namespace sam;
 
 void LinearModelStrategy::genData(Experiment *experiment) {
+  
+  arma::mat sample = fillMatrix(params.meas_dists,
+                                params.m_meas_dist,
+                                experiment->setup.ng(),
+                                experiment->setup.nobs().max());
+  
+  std::cout << sample;
 
-  arma::mat sample(experiment->setup.ng(), experiment->setup.nobs().max());
-
-  // Refactor Me!
-  if (params.m_meas_dist) { // Multivariate Distributions
-    sample.each_col([this](arma::vec &v) {
-      v = Random::get(this->params.m_meas_dist.value());
-    });
-  } else {
-    if (params.meas_dists) {
-
-      sample.each_row([this, i = 0](arma::rowvec &v) mutable {
-        v.imbue(
-            [&]() { return Random::get(this->params.meas_dists.value()[i]); });
-        i++;
-      });
-    }
-  }
-
-  // Adding some noise if specified
-  if (params.erro_dist) { // Multivariate Distributions
-    arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
-    errors.each_col(
-        [this](arma::vec &v) { v = Random::get(params.erro_dist.value()); });
+  if (params.m_erro_dist or params.erro_dists) {
+    arma::mat errors = fillMatrix(params.erro_dists,
+                                  params.m_erro_dist,
+                                  experiment->setup.ng(),
+                                  experiment->setup.nobs().max());
     sample += errors;
-  } else {
-    if (params.erro_dists) {
-      arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
-
-      errors.each_row([this, i = 0](arma::rowvec &v) mutable {
-        v.imbue(
-            [&]() { return Random::get(this->params.erro_dists.value()[i]); });
-        i++;
-      });
-      sample += errors;
-    }
   }
 
   // This is ugly but it should work
@@ -62,40 +40,17 @@ std::vector<arma::Row<double>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                                                     int n_new_obs) {
 
-  arma::mat sample(experiment->setup.ng(), n_new_obs);
+  arma::mat sample = fillMatrix(params.meas_dists,
+                                params.m_meas_dist,
+                                experiment->setup.ng(),
+                                n_new_obs);
 
-  if (params.m_meas_dist) { // Multivariate Distributions
-    sample.each_col([this](arma::vec &v) {
-      v = Random::get(this->params.m_meas_dist.value());
-    });
-  } else {
-    if (params.meas_dists) {
-
-      sample.each_row([this, i = 0](arma::rowvec &v) mutable {
-        v.imbue(
-            [&]() { return Random::get(this->params.meas_dists.value()[i]); });
-        i++;
-      });
-    }
-  }
-
-  // Adding some noise if specified
-  if (params.erro_dist) { // Multivariate Distributions
-    arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
-    errors.each_col(
-        [this](arma::vec &v) { v = Random::get(params.erro_dist.value()); });
+  if (params.m_erro_dist or params.erro_dists) {
+    arma::mat errors = fillMatrix(params.erro_dists,
+                                  params.m_erro_dist,
+                                  experiment->setup.ng(),
+                                  n_new_obs);
     sample += errors;
-  } else {
-    if (params.erro_dists) {
-      arma::mat errors(experiment->setup.ng(), experiment->setup.nobs().max());
-
-      errors.each_row([this, i = 0](arma::rowvec &v) mutable {
-        v.imbue(
-            [&]() { return Random::get(this->params.erro_dists.value()[i]); });
-        i++;
-      });
-      sample += errors;
-    }
   }
 
   std::vector<arma::Row<double>> new_values(experiment->setup.ng());

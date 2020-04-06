@@ -28,6 +28,34 @@ MultivariateDistribution make_multivariate_distribution(json const &j);
 
 std::map<std::string, std::string> flatten_json_to_map(const json &j);
 
+static arma::mat fillMatrix(std::optional<std::vector<Distribution>> &dists,
+                            std::optional<MultivariateDistribution> &mdist,
+                            int n_rows, int n_cols) {
+  
+  arma::mat data(n_rows, n_cols);
+
+  if (mdist) {
+    // Multivariate Distributions
+    // Filling by columns because MultiDist returns a column of results
+    data.each_col([&](arma::vec &v) {
+      v = Random::get(mdist.value());
+      std::cout << v << std::endl;
+    });
+  } else {
+    if (dists) {
+      // Set of Univariate Distributions
+      // Filling by rows because each row has its own distribution now
+      data.each_row([&, i = 0](arma::rowvec &v) mutable {
+        v.imbue(
+            [&]() { return Random::get(dists.value()[i]); });
+        i++;
+      });
+    }
+  }
+  
+  return data;
+}
+
 template <typename T = double>
 std::vector<T> get_expr_setup_params(json const &j, int const size) {
 

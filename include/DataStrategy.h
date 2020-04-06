@@ -105,7 +105,7 @@ public:
     std::optional<std::vector<Distribution>> erro_dists;
 
     std::optional<MultivariateDistribution> m_meas_dist;
-    std::optional<MultivariateDistribution> erro_dist;
+    std::optional<MultivariateDistribution> m_erro_dist;
 
     Parameters() = default;
   };
@@ -224,18 +224,7 @@ public:
 
   GRMDataStrategy(){};
 
-  GRMDataStrategy(const Parameters &p) : params(p) {
-
-    /// Note: I'm a bit confused about the difficulties, and I think I'm making
-    /// a mess with the `Parameters`. This works but I need some serious cleanup
-    /// on the parameters.
-
-    /// Some initialization
-    betas.resize(params.n_items, params.n_categories);
-    poa.resize(params.n_items, params.n_categories);
-    responses.resize(params.n_items, params.n_categories);
-    urand.resize(params.n_items, params.n_categories);
-  };
+  GRMDataStrategy(const Parameters &p);
 
   virtual void genData(Experiment *experiment) override;
 

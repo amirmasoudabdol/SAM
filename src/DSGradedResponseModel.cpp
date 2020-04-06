@@ -11,29 +11,35 @@
 
 using namespace sam;
 
-void GRMDataStrategy::genData(Experiment *experiment) {
+GRMDataStrategy::GRMDataStrategy(const Parameters &p) : params(p) {
+  /// Some initialization
+  betas.resize(params.n_items, params.n_categories);
+  poa.resize(params.n_items, params.n_categories);
+  responses.resize(params.n_items, params.n_categories);
+  urand.resize(params.n_items, params.n_categories);
+}
 
-  /// I'm hardcoding this to only draw difficulties from one
-  /// distribution. If there'll be an adaptation of the model,
-  /// I probably need to make some changes here.
-  if (params.diff_dists)
-    betas.imbue([&]() { return Random::get(params.diff_dists.value()[0]); });
+void GRMDataStrategy::genData(Experiment *experiment) {
+  
+  betas = fillMatrix(params.diff_dists, params.m_diff_dist,
+                     params.n_items,
+                     params.n_categories);
 
   for (int g{0}; g < experiment->setup.ng(); ++g) {
-    //        (*experiment)[g].measurements_.resize(experiment->setup.nobs()[g]);
 
     arma::Row<double> data(experiment->setup.nobs()[g]);
 
-    double theta{0};
+    static double theta{0};
     do {
+      
+      /// This is somewhat better, but it's still not perfect
+      /// TODO: I should find a way to move this out of the for-loop
+      auto thetas = fillMatrix(params.abil_dists, params.m_abil_dist,
+                               experiment->setup.ng(),
+                               experiment->setup.nobs().max());
 
-      data.imbue([&]() {
-        /// Improvement: It is probably a good idea to make a function out of
-        /// this, and return arma::Row<>
-        if (params.abil_dists)
-          theta = Random::get(params.abil_dists.value()[g]);
-
-        return generate_sum_of_scores(theta);
+      data.imbue([&, i = 0]() mutable {
+        return generate_sum_of_scores(thetas.at(i++, g));
       });
 
       // This makes sure that I don't have a totally unanswered test
@@ -64,12 +70,12 @@ GRMDataStrategy::genNewObservationsForAllGroups(Experiment *experiment,
   for (int g{0}; g < experiment->setup.ng(); ++g) {
     new_values[g].resize(n_new_obs);
 
-    thetas.resize(params.n_items, params.n_categories);
-    thetas.imbue([&]() { return Random::get(params.abil_dists.value()[g]); });
-
-    new_values[g].imbue([&]() {
-      auto theta = Random::get(params.abil_dists.value()[g]);
-      return generate_sum_of_scores(theta);
+    auto thetas = fillMatrix(params.abil_dists, params.m_abil_dist,
+                       experiment->setup.ng(),
+                       n_new_obs);
+    
+    new_values[g].imbue([&, i = 0]() mutable {
+      return generate_sum_of_scores(thetas.at(i++, g));
     });
   }
 
