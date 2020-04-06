@@ -101,13 +101,6 @@ public:
   PolicyChainSet final_decision_policies;
   PolicyChainSet between_reps_policies;
 
-//  std::optional<Policy> registerPolicy(const std::string &s);
-//
-//  policy_chain registerpolicy_chain(const std::vector<std::string> &policy_set_defs);
-//
-//  PolicyChain registerPolicyChain(
-//      const std::vector<std::vector<std::string>> &policy_chain_defs);
-
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
   checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &p);

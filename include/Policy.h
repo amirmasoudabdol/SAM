@@ -9,7 +9,7 @@
 
 namespace sam {
 
-enum class PolicyType { Min, Max, Comp, Random, First, Last, All };
+enum class PolicyType { Min, Max, Comp, Random, First, All };
 
 struct Policy {
   PolicyType type;
@@ -159,7 +159,7 @@ struct PolicyChain {
   PolicyChain(const std::vector<std::string> &pchain_defs, sol::state &lua) {
 
     for (auto &p_def : pchain_defs) {
-      if (p_def.find("_") != std::string::npos)
+      if (p_def.empty())
         continue;
       pchain.emplace_back(p_def, lua);
     }
