@@ -147,22 +147,29 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     for (auto &p : pchain) {
       std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
 
-      /// Basically we will not find anything anymore.
-      /// This is not for performance reason, in some cases, e.g., "first",
-      /// will behave incorrectly if we continue looking.
-      if (begin == end)
-        break;
-
-      if (found_sth_unique) {
+      if (found_sth_unique ) {
         current_submission_candidate = Submission{experiment, begin->id_};
         final_submission_candidate = current_submission_candidate;
         has_any_candidates = true;
         has_a_final_candidate = true;
+        spdlog::debug("Found One!");
         return;
       }
+      
+      if (begin == end)
+        break;
+      
     }
-
-    if (begin != end and not found_sth_unique) { /// We found a bunch
+    
+    // This has to be here
+    if (begin+1 == end) {
+      current_submission_candidate = Submission{experiment, begin->id_};
+      final_submission_candidate = current_submission_candidate;
+      has_any_candidates = true;
+      has_a_final_candidate = true;
+      spdlog::debug("There is only one!");
+      return;
+    }else if (begin != end) { /// We found a bunch
 
       spdlog::debug("Selected Bunch: ");
       for (auto it{begin}; it != end; ++it) {
@@ -172,7 +179,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
       has_any_candidates = true;
       return;
     } else {
-      spdlog::debug("> Going to the next set of policies.");
+      spdlog::debug("> Found nothing! To the next one!");
     }
 
     pset_inx++;
@@ -185,6 +192,11 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
 
   spdlog::debug("Selecting between collected submissions.");
+  
+  spdlog::debug("→ Current Submission Pool...");
+  for (auto &s : spool) {
+    spdlog::debug("\t\t{}", s);
+  }
   
   assert(!pchain_set.empty() && "PolicySet is empty!");
 
@@ -242,6 +254,9 @@ DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
 DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
+  if (has_a_final_candidate) {
+    saveCurrentSubmission();
+  }
   return *this;
 }
 
