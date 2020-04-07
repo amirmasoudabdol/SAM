@@ -6,6 +6,8 @@
 #define SAMPP_POLICY_H
 
 #include <ostream>
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 namespace sam {
 
@@ -174,10 +176,13 @@ struct PolicyChain {
   auto cend() const { return pchain.cend(); };
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
-    for (auto &p : chain.pchain)
-      os << p << " ";
+    os << "[";
+    fmt::print(os, "{}", fmt::join(chain.cbegin(), chain.cend(), ", "));
+    os << "]";
     return os;
   }
+  
+  bool empty() const { return pchain.empty(); };
 };
 
 struct PolicyChainSet {
@@ -188,7 +193,10 @@ struct PolicyChainSet {
   PolicyChainSet(const std::vector<std::vector<std::string>> &psets_defs,
                  sol::state &lua) {
     for (auto &pchain_def : psets_defs) {
-      pchains.emplace_back(pchain_def, lua);
+      PolicyChain pchain{pchain_def, lua};
+      if (pchain.empty())
+        continue;
+      pchains.emplace_back(pchain);
     }
   }
 
@@ -198,16 +206,47 @@ struct PolicyChainSet {
   auto cend() const { return pchains.cend(); };
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChainSet &set) {
-    os << "[ ";
-    for (auto &pchain : set.pchains)
-      os << pchain << " ";
-    os << "]";
+    fmt::print(os, "[{}]", fmt::join(set.cbegin(), set.cend(), ", "));
     return os;
   }
 
   PolicyChain &operator[](std::size_t idx) { return pchains[idx]; }
   const PolicyChain &operator[](std::size_t idx) const { return pchains[idx]; }
+  
+  size_t size() const { return pchains.size(); };
+  bool empty() const { return pchains.empty(); };
 };
 
 } // namespace sam
+
+
+namespace fmt {
+  template<>
+  struct formatter<sam::Policy>
+  {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    };
+
+    template<typename FormatContext>
+    auto format(sam::Policy const& policy, FormatContext& ctx) {
+      return format_to(ctx.out(), "{}", policy.def);
+    };
+  };
+
+  template<>
+  struct formatter<sam::PolicyChain>
+  {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    };
+
+    template<typename FormatContext>
+    auto format(sam::PolicyChain const& pchain, FormatContext& ctx) {
+      return format_to(ctx.out(), "[{}]", join(pchain.cbegin(), pchain.cend(), ", "));
+    };
+  };
+} // namespace fmt
 #endif // SAMPP_POLICY_H

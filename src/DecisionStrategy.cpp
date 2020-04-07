@@ -133,6 +133,8 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end,
 void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
 
+  assert(!pchain_set.empty() && "PolicySet is empty!");
+  
   int pset_inx{0};
   for (auto &pchain : pchain_set) {
 
@@ -183,6 +185,8 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
 
   spdlog::debug("Selecting between collected submissions.");
+  
+  assert(!pchain_set.empty() && "PolicySet is empty!");
 
   for (auto &pchain : pchain_set) {
 
