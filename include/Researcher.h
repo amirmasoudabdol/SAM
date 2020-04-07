@@ -181,33 +181,26 @@ public:
     // Parsing Hacking Strategies
     researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
     if (researcher.is_hacker) {
-      for (const auto &set :
+      for (auto &set :
            config["researcher_parameters"]["hacking_strategies"]) {
 
-        researcher.hacking_strategies.push_back({});
-
-        /// TODO: This is not a robust way of reading this in. For instance,
-        /// this will fail if I don't have any policy at the end of a hacking set
-        auto i{0};
-        auto item = set.at(i);
-        researcher.workflow.push_back(HackingSet());
-        std::vector<shared_ptr<HackingStrategy>> temp_shared_set;
-        while (item.type() == nlohmann::detail::value_t::object) {
-          researcher.hacking_strategies.back().push_back(
-              HackingStrategy::build(item));
-
-          temp_shared_set.push_back(HackingStrategy::build(item));
-
-          item = set.at(++i);
+        /// FIXME: This is only slightly better
+        
+        HackingSet temp_shared_set;
+        std::optional<PolicyChainSet> temp_pchain_set;
+        for (auto &item : set) {
+          if (item.type() == nlohmann::detail::value_t::object) {
+            std::cout << item << std::endl;
+            temp_shared_set.push_back(HackingStrategy::build(item));
+          }else if (item.type() == nlohmann::detail::value_t::array) {
+            temp_pchain_set = PolicyChainSet{item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua};
+          }
         }
-
+        
         researcher.workflow.push_back(temp_shared_set);
-
-        if (item.type() == nlohmann::detail::value_t::array) {
-          // It's a set of policies
-          auto p_chain_set = PolicyChainSet(item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua);
-          researcher.workflow.push_back(p_chain_set);
-        }
+        
+        if (temp_pchain_set)
+          researcher.workflow.push_back(temp_pchain_set.value());
 
       }
     }

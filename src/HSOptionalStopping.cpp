@@ -32,6 +32,7 @@ void OptionalStopping::perform(Experiment *experiment) {
 //    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
 //             .isStillHacking())
 //      return;
+    
   }
   
   for (auto &g : experiment->groups_)

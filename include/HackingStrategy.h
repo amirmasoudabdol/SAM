@@ -46,6 +46,9 @@ using json = nlohmann::json;
 class HackingStrategy {
 
 public:
+  
+  sol::state lua;
+  
   /// \brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
@@ -123,15 +126,19 @@ public:
     //! Maximum number of times that Researcher tries to add new observations to
     //! each group
     int max_attempts = 10;
+    
+    std::vector<std::vector<std::string>> stopping_cond_defs;
+    
   };
 
   Parameters params;
+  PolicyChainSet stopping_pchain_set;
 
   OptionalStopping() = default;
 
   OptionalStopping(const Parameters &p)
       : params{p} {
-
+        stopping_pchain_set = PolicyChainSet{p.stopping_cond_defs, lua};
         };
 
 private:
@@ -151,7 +158,9 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
            {"level", p.level},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
-           {"max_attempts", p.max_attempts}};
+           {"max_attempts", p.max_attempts},
+           {"stopping_condition", p.stopping_cond_defs}
+  };
 }
 
 inline void from_json(const json &j, OptionalStopping::Parameters &p) {
@@ -163,6 +172,10 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("max_attempts").get_to(p.max_attempts);
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  
 }
 
 /// \ingroup    HackingStrategies
@@ -174,7 +187,7 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
 class OutliersRemoval final : public HackingStrategy {
 public:
   /// \ingroup HackingStrategiesParameters
-  //
+  ///
   /// Parameters of Outliers Removal Strategy
   ///
   ///  ```json

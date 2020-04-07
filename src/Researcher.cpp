@@ -106,6 +106,7 @@ void Researcher::research() {
         spdlog::debug("\t{}", sub);
       spdlog::debug("-----^");
       
+      assert(!decision_strategy->final_decision_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
       
       decision_strategy->operator()(decision_strategy->submissions_pool,
                                     decision_strategy->final_decision_policies);
@@ -133,6 +134,7 @@ void Researcher::research() {
   
   if (submissions_from_reps.size() > 1) {
     spdlog::debug("Choosing Between Replications");
+    assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
     decision_strategy->operator()(submissions_from_reps, decision_strategy->between_reps_policies);
   }else{
     if (submissions_from_reps.size() == 1) {
