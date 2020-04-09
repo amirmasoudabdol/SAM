@@ -20,7 +20,7 @@
         "n_conditions": 2,
         "n_dep_vars": 2,
         "n_obs": 50,
-        "n_reps": 5,
+        "n_reps": 3,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -80,6 +80,10 @@
             ],
             "submission_policies": [
                 ""
+            ],
+            "will_be_hacking_policies": [
+                "effect > 0",
+                "sig"
             ]
         },
         "hacking_strategies": [
@@ -127,7 +131,7 @@
                 ]
             ]
         ],
-        "is_phacker": true,
+        "is_phacker": false,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
