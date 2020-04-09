@@ -163,7 +163,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     
     // This has to be here
     if (begin+1 == end) {
-      current_submission_candidate = Submission{experiment, begin->id_};
+      current_submission_candidate = Submission{experiment, end->id_};
       final_submission_candidate = current_submission_candidate;
       has_any_candidates = true;
       has_a_final_candidate = true;
