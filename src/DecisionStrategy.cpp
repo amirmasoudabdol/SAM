@@ -267,13 +267,62 @@ DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
   return *this;
 }
 
+bool MarjansDecisionMaker::willBeHacking(Experiment &experiment) {
+  return not willContinueHacking(experiment, will_be_hacking_policies);
+};
+
+bool MarjansDecisionMaker::willContinueHacking(Experiment &experiment,
+                                       PolicyChain &pchain) {
+
+  
+  saveEverySubmission(experiment);
+  
+  
+  assert(!pchain.empty() && "PolicySet is empty!");
+  spdlog::debug("Deciding whether we are going to continue hacking!");
+  
+  auto found_sth_unique{false};
+  auto begin = experiment.groups_.begin() + experiment.setup.nd();
+  auto end = experiment.groups_.end();
+
+  for (auto &p : pchain) {
+    std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
+
+    if (found_sth_unique ) {
+      return true;
+    }
+    
+    if (begin == end){
+      return false;
+    }
+    
+  }
+  
+  // This has to be here
+  if (begin+1 == end) {
+    spdlog::debug("There is only one!");
+    return true;
+  }else if (begin != end) { /// We found a bunch
+
+    return true;
+  } else {
+    return false;
+  }
+
+
+  return false;
+};
+
 DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
-  saveEverySubmission(*experiment);
+  spdlog::debug("Collected pile of every submission: ");
+  for (auto &s : submissions_pool) {
+    spdlog::debug("\t{}", s);
+  }
   return *this;
 }
-
+  
 DecisionStrategy &MarjansDecisionMaker::verdict(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
