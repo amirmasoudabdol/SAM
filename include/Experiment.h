@@ -59,8 +59,14 @@ public:
              std::shared_ptr<TestStrategy> &ts,
              std::shared_ptr<EffectStrategy> &efs);
 
-  GroupData &operator[](std::size_t idx) { return groups_[idx]; };
-  const GroupData &operator[](std::size_t idx) const { return groups_[idx]; };
+  GroupData &operator[](std::size_t idx) {
+    auto g = std::find_if(groups_.begin(), groups_.end(), [&](auto &g) -> bool {return g.id_ == idx; });
+    return *g;
+  };
+  const GroupData &operator[](std::size_t idx) const {
+    auto g = std::find_if(groups_.cbegin(), groups_.cend(), [&](auto &g) -> bool {return g.id_ == idx; });
+    return *g;
+  };
 
   GroupData &get_group(std::size_t idx) { return groups_[idx]; };
   const GroupData &get_group(std::size_t idx) const { return groups_[idx]; };
