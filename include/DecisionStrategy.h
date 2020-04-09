@@ -100,6 +100,8 @@ public:
   PolicyChain submission_policies;
   PolicyChainSet final_decision_policies;
   PolicyChainSet between_reps_policies;
+  
+  PolicyChain will_be_hacking_policies;
 
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
@@ -155,7 +157,9 @@ public:
   /// ask this method to asses the state of its progress.
   /// TODO: Consider making this just virtual and not pure abstract,
   /// maybe this implementation bool willBeHacking() override { return not has_any_candidates; };
-  virtual bool willBeHacking() {return not has_any_candidates; };
+//  virtual bool willBeHacking() {return not has_any_candidates; };
+  
+  virtual bool willBeHacking(Experiment &experiment) { return not has_any_candidates; };
   
   
   /// \brief      Implementation of decision-making procedure.
@@ -222,7 +226,7 @@ public:
     submission_policies = PolicyChain(p.submission_policies_defs, lua);
   }
 
-  bool willBeHacking() override { return not has_any_candidates; };
+  bool willBeHacking(Experiment &experiment) override { return not has_any_candidates; };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
                                     PolicyChainSet &pchain_set) override;
@@ -257,6 +261,7 @@ public:
     std::vector<std::vector<std::string>> initial_decision_policies_defs;
     std::vector<std::string> submission_policies_defs;
     std::vector<std::vector<std::string>> final_decision_policies_defs;
+    std::vector<std::vector<std::string>> between_replications_decision_policies_defs;
   };
 
   Parameters params;
@@ -268,6 +273,8 @@ public:
     final_decision_policies = PolicyChainSet(p.final_decision_policies_defs, lua);
 
     submission_policies = PolicyChain(p.submission_policies_defs, lua);
+    
+    between_reps_policies = PolicyChainSet(p.between_replications_decision_policies_defs, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -277,7 +284,7 @@ public:
                                     PolicyChainSet &pchain_set) override;
 
   // She is always hacking
-  virtual bool willBeHacking() override { return true; }
+  virtual bool willBeHacking(Experiment &experiment) override { return true; }
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters
@@ -285,7 +292,9 @@ inline void to_json(json &j, const PatientDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
            {"initial_decision_policies", p.initial_decision_policies_defs},
            {"submission_policies", p.submission_policies_defs},
-           {"final_decision_policies", p.final_decision_policies_defs}};
+           {"final_decision_policies", p.final_decision_policies_defs},
+           {"between_replications_decision_policies", p.between_replications_decision_policies_defs}
+  };
 }
 
 inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
@@ -293,6 +302,7 @@ inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
   j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
   j.at("submission_policies").get_to(p.submission_policies_defs);
   j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
+  j.at("between_replications_decision_policies").get_to(p.between_replications_decision_policies_defs);
 }
 
 
@@ -311,6 +321,8 @@ public:
     std::vector<std::string> submission_policies_defs;
     std::vector<std::vector<std::string>> final_decision_policies_defs;
     std::vector<std::vector<std::string>> between_replications_decision_policies_defs;
+    
+    std::vector<std::string> will_be_hacking_policies_def;
   };
 
   Parameters params;
@@ -324,6 +336,8 @@ public:
     submission_policies = PolicyChain(p.submission_policies_defs, lua);
     
     between_reps_policies = PolicyChainSet(p.between_replications_decision_policies_defs, lua);
+    
+    will_be_hacking_policies = PolicyChain(p.will_be_hacking_policies_def, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -332,9 +346,9 @@ public:
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) override;
 
-  bool willBeHacking() override {
-    return not has_a_final_candidate;
-  };
+  virtual bool willBeHacking(Experiment &experiment) override;
+  
+  bool willContinueHacking(Experiment &expriment, PolicyChain &pchain);
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters
@@ -343,7 +357,8 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
            {"initial_decision_policies", p.initial_decision_policies_defs},
            {"submission_policies", p.submission_policies_defs},
            {"final_decision_policies", p.final_decision_policies_defs},
-           {"between_replications_decision_policies", p.between_replications_decision_policies_defs}
+           {"between_replications_decision_policies", p.between_replications_decision_policies_defs},
+          {"will_be_hacking_policies", p.will_be_hacking_policies_def}
   };
 }
 
@@ -353,6 +368,7 @@ inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("submission_policies").get_to(p.submission_policies_defs);
   j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
   j.at("between_replications_decision_policies").get_to(p.between_replications_decision_policies_defs);
+  j.at("will_be_hacking_policies").get_to(p.will_be_hacking_policies_def);
 }
 
 

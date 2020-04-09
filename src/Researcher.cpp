@@ -25,17 +25,26 @@ void Researcher::letTheHackBegin() {
     std::visit(overload {
 
         [&](HackingSet& hset) {
+          spdlog::debug("++++++++++++++++");
+          spdlog::debug("→ Starting a new HackingSet");
           for (auto &method : hset) {
             (*method)(&copy_of_experiment);
             copy_of_experiment.is_hacked = true;
           }
         },
         [&](PolicyChainSet& policy) {
-          decision_strategy->operator()(&copy_of_experiment, policy);
+          /// FIXME: There is a problem here, where this operation overwrite the `final_submissino_candidate` even if
+          /// I'm not going to hack anymore. I should be able to check the willBeHacking() before this.
+          /// This is not a good solution, but let's do it for now
+          
+          /// NOW, the problem is, if I'm not going to continue hacking, I'm not also
+          /// going to save stuff,
+          if (not decision_strategy->willBeHacking(copy_of_experiment))
+              decision_strategy->operator()(&copy_of_experiment, policy);
         }
     }, set);
     
-    if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking())){
+    if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking(copy_of_experiment))){
       return;
     }
     
@@ -68,6 +77,15 @@ void Researcher::preProcessData() {
   }
 }
 
+void Researcher::checkAndsubmitTheResearch() {
+  if (decision_strategy->has_a_final_candidate
+      and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
+    spdlog::debug("To be submitted submission: ");
+    spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
+    journal->review(decision_strategy->final_submission_candidate);
+  }
+}
+
 void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
@@ -75,7 +93,8 @@ void Researcher::research() {
   
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep){
     
-    spdlog::debug("Replication #{}", rep);
+    spdlog::debug("–––––––––––––––––––");
+    spdlog::debug("Replication #{} ↓", rep);
   
     experiment->generateData();
     
@@ -88,20 +107,32 @@ void Researcher::research() {
     computeStuff();
     
     /// Checking the Initial Policies
-    spdlog::debug("Checking the INITIAL policies");
+    spdlog::debug("→ Checking the INITIAL policies");
     decision_strategy->operator()(experiment,
                                   decision_strategy->initial_decision_policies);
     
     /// Checking if hacknig is necessary
-    if (isHacker() and decision_strategy->willBeHacking()) {
+    if (isHacker() and
+        (not decision_strategy->has_a_final_candidate) and
+        decision_strategy->willBeHacking(*experiment)) {
       letTheHackBegin();
+    }else if (experiment->setup.nreps() <= 1) {
+      checkAndsubmitTheResearch();
+      
+      decision_strategy->reset();
+      experiment->clear();
+      decision_strategy->clearHistory();
+      
+      this->submissions_from_reps.clear();
+      
+      return;
     }
     
     /// Checking if we are Patient, if so, going to select among those
     if (not decision_strategy->submissions_pool.empty()
         and not decision_strategy->has_a_final_candidate){
       
-      spdlog::debug("Checking the FINAL policies");
+      spdlog::debug("→ Checking the FINAL policies");
       for (auto &sub : decision_strategy->submissions_pool)
         spdlog::debug("\t{}", sub);
       spdlog::debug("-----^");
@@ -111,8 +142,11 @@ void Researcher::research() {
       decision_strategy->operator()(decision_strategy->submissions_pool,
                                     decision_strategy->final_decision_policies);
     }
+     /// else
+     ///  then we don't need to look into the pile
     
     /// Checking the Submission Policies
+    /// If we have a final candidate, and it's submitable, we are saving it to the submissions_from_reps
     if (decision_strategy->has_a_final_candidate
         and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
       
@@ -127,13 +161,15 @@ void Researcher::research() {
     /// else: She didn't find anything, and nothing will be submitted to the Journal.
     ///       Current experiment will be discarded...
     
+    decision_strategy->clearHistory();
     decision_strategy->reset();
     experiment->clear();
     
   }
   
   if (submissions_from_reps.size() > 1) {
-    spdlog::debug("Choosing Between Replications");
+    spdlog::debug("__________");
+    spdlog::debug("→ Choosing Between Replications");
     assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
     decision_strategy->operator()(submissions_from_reps, decision_strategy->between_reps_policies);
   }else{
@@ -143,10 +179,7 @@ void Researcher::research() {
     }
   }
   
-  if (decision_strategy->has_a_final_candidate
-      and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
-    journal->review(decision_strategy->final_submission_candidate);
-  }
+  checkAndsubmitTheResearch();
   
   decision_strategy->reset();
   experiment->clear();

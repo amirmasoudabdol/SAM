@@ -133,6 +133,7 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end,
 void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
 
+//  spdlog::debug("---");
   assert(!pchain_set.empty() && "PolicySet is empty!");
   
   int pset_inx{0};
@@ -147,31 +148,33 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     for (auto &p : pchain) {
       std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
 
-      if (found_sth_unique ) {
+      if (found_sth_unique) {
         current_submission_candidate = Submission{experiment, begin->id_};
         final_submission_candidate = current_submission_candidate;
         has_any_candidates = true;
         has_a_final_candidate = true;
-        spdlog::debug("Found One!");
+        spdlog::debug("✓ Found One!");
         return;
       }
       
-      if (begin == end)
+      if (begin == end) {
+        spdlog::debug("✗ Found nothing!");
         break;
+      }
       
     }
     
     // This has to be here
     if (begin+1 == end) {
-      current_submission_candidate = Submission{experiment, end->id_};
+      current_submission_candidate = Submission{experiment, begin->id_};
       final_submission_candidate = current_submission_candidate;
       has_any_candidates = true;
       has_a_final_candidate = true;
-      spdlog::debug("There is only one!");
+      spdlog::debug("✓ Found the only one!");
       return;
     }else if (begin != end) { /// We found a bunch
 
-      spdlog::debug("Selected Bunch: ");
+      spdlog::debug("✓ Found a bunch: ");
       for (auto it{begin}; it != end; ++it) {
         submissions_pool.emplace_back(experiment, it->id_);
         spdlog::debug("\t {}", *it);
@@ -179,7 +182,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
       has_any_candidates = true;
       return;
     } else {
-      spdlog::debug("> Found nothing! To the next one!");
+      spdlog::debug("✗ Found nothing! To the next one!");
     }
 
     pset_inx++;
@@ -191,7 +194,8 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
 
-  spdlog::debug("Selecting between collected submissions.");
+//  spdlog::debug("---");
+//  spdlog::debug("Selecting between collected submissions.");
   
   spdlog::debug("→ Current Submission Pool...");
   for (auto &s : spool) {
@@ -212,7 +216,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
           checkThePolicy(begin, end, policy);
 
       if (found_something) {
-        spdlog::debug("> Found something in the pile!");
+        spdlog::debug("✓ Found something in the pile!");
         final_submission_candidate = *begin;
         has_a_final_candidate = true;
         return;
@@ -225,7 +229,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     }
   }
 
-  spdlog::debug("Not happy!");
+  spdlog::debug("✗ Found none in the pile!");
 }
 
 bool DecisionStrategy::willBeSubmitting(PolicyChain &pset) {

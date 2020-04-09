@@ -83,10 +83,12 @@ public:
   
   void research();
   void letTheHackBegin();
+  
+  void checkAndsubmitTheResearch();
 
   // This could be renamed to something like, selectThePreferedSubmission()
-  void prepareTheSubmission();
-  void submitToJournal();
+//  void prepareTheSubmission();
+//  void submitToJournal();
   
   void computeStuff() {
     experiment->calculateStatistics();
@@ -190,7 +192,6 @@ public:
         std::optional<PolicyChainSet> temp_pchain_set;
         for (auto &item : set) {
           if (item.type() == nlohmann::detail::value_t::object) {
-            std::cout << item << std::endl;
             temp_shared_set.push_back(HackingStrategy::build(item));
           }else if (item.type() == nlohmann::detail::value_t::array) {
             temp_pchain_set = PolicyChainSet{item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua};

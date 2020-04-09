@@ -208,7 +208,7 @@ void runSimulation(json &simConfig) {
         sim_progress_bar.set_progress(progress * 100);
       }
 
-      spdlog::debug("=====================================");
+      spdlog::debug("\n\n==========================================================================\n");
     }
 
     if (is_saving_pubs) {
