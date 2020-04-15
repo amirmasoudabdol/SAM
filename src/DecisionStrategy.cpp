@@ -114,12 +114,24 @@ DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end,
   case PolicyType::First: {
 
     // Sorting the groups based on their index
-    std::sort(begin, end, p.func);
+//    std::sort(begin, end, p.func);
 
     spdlog::debug("First: {}", p.def);
     spdlog::debug("\t {}", *begin);
 
     return {true, begin, end};
+
+  } break;
+      
+  case PolicyType::Last: {
+
+      // Sorting the groups based on their index
+  //    std::sort(begin, end, p.func);
+
+      spdlog::debug("Last: {}", p.def);
+      spdlog::debug("\t {}", *begin);
+
+      return {true, end, end};
 
   } break;
 

@@ -11,7 +11,7 @@
 
 namespace sam {
 
-enum class PolicyType { Min, Max, Comp, Random, First, All };
+enum class PolicyType { Min, Max, Comp, Random, First, Last, All };
 
 struct Policy {
   PolicyType type;
@@ -84,6 +84,19 @@ struct Policy {
       lua.script(f_def);
 
       type = PolicyType::First;
+      func = lua[f_name];
+      def = p_def;
+
+    } else if (p_def.find("last") != std::string::npos) {
+
+      auto var_name = "id";
+      auto f_name = fmt::format("max_{}", var_name);
+      auto f_def = fmt::format(lua_temp_scripts["min_script"], f_name, var_name,
+                               var_name);
+
+      lua.script(f_def);
+
+      type = PolicyType::Last;
       func = lua[f_name];
       def = p_def;
 
