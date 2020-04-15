@@ -187,7 +187,7 @@ protected:
   
   void saveEverySubmission(Experiment &experiment) {
     for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
-         ++i, d %= experiment.setup.nd()) {
+         ++i, ++d %= experiment.setup.nd()) {
       submissions_pool.emplace_back(experiment, i);
     }
   };

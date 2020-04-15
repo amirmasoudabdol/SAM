@@ -48,8 +48,8 @@ void TTest::run(Experiment *experiment) {
 
   // The first group is always the control group
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
-       ++i, d %= experiment->setup.nd()) {
-
+       ++i, ++d %= experiment->setup.nd()) {
+    
     // This is not perfect, basically I need to check the population `vars`
     //        if ((isgreater(experiment->stddev[d], experiment->stddev[i]) or
     //        isless(experiment->stddev[d], experiment->stddev[i]))) {
@@ -86,7 +86,7 @@ void YuenTest::run(Experiment *experiment) {
   static TestStrategy::TestResult res;
 
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
-       ++i, d %= experiment->setup.nd()) {
+       ++i, ++d %= experiment->setup.nd()) {
 
     //        if (experiment->measurements[d].size() ==
     //        experiment->measurements[i].size()) {
@@ -117,7 +117,7 @@ void WilcoxonTest::run(Experiment *experiment) {
   static TestStrategy::TestResult res;
 
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
-       ++i, d %= experiment->setup.nd()) {
+       ++i, ++d %= experiment->setup.nd()) {
 
     res = wilcoxon_test((*experiment)[d].measurements(),
                         (*experiment)[i].measurements(), 1, params.alpha,
