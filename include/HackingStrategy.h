@@ -52,6 +52,8 @@ public:
   /// \brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
+  
+  HackingStrategy();
 
   /// \brief      Factory method for building a HackingStrategy
   ///
@@ -321,15 +323,20 @@ public:
 
     //! Indicates minimum number of observatons
     int min_observations{5};
+    
+    std::vector<std::string> stopping_cond_defs {{"sig"}};
+    
+    
   };
 
   Parameters params;
+  PolicyChain stopping_pchain;
 
   SubjectiveOutlierRemoval() = default;
 
   SubjectiveOutlierRemoval(const Parameters &p)
-      : params(p){
-
+      : params(p) {
+          stopping_pchain = PolicyChain(params.stopping_cond_defs, lua);
         };
 
 private:
@@ -340,7 +347,8 @@ inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
   j = json{{"_name", p.name},
            {"range", p.range},
            {"step_size", p.step_size},
-           {"min_observations", p.min_observations}};
+           {"min_observations", p.min_observations},
+           {"stopping_condition", p.stopping_cond_defs}};
 }
 
 inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
@@ -351,6 +359,9 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
   j.at("range").get_to(p.range);
   j.at("step_size").get_to(p.step_size);
   j.at("min_observations").get_to(p.min_observations);
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
 }
 
 class GroupPooling final : public HackingStrategy {
@@ -367,7 +378,7 @@ public:
 
   GroupPooling(const Parameters &p)
       : params{p} {
-
+        
         };
 
   // Submission hackedSubmission;

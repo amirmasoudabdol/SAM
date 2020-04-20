@@ -65,6 +65,88 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
 
 using SubmissionPool = std::vector<Submission>;
 
+
+
+
+template <typename ForwardIt>
+std::tuple<bool, ForwardIt, ForwardIt>
+checkThePolicy(const ForwardIt &begin, ForwardIt &end,
+                                 Policy &p) {
+
+  switch (p.type) {
+
+  case PolicyType::Min: {
+    auto it = std::min_element(begin, end, p.func);
+    spdlog::debug("Min: {}", p.def);
+    spdlog::debug("\t {}", *it);
+    return {true, it, it};
+  } break;
+
+  case PolicyType::Max: {
+    auto it = std::max_element(begin, end, p.func);
+    spdlog::debug("Max: {}", p.def);
+    spdlog::debug("\t {}", *it);
+    return {true, it, it};
+  } break;
+
+  case PolicyType::Comp: {
+    auto pit = std::partition(begin, end, p.func);
+    spdlog::debug("Comp: {}", p.def);
+    for (auto it{begin}; it != pit; ++it) {
+      spdlog::debug("\t {}", *it);
+    }
+
+    return {false, begin, pit};
+
+  } break;
+
+  case PolicyType::Random: {
+    /// Shuffling the array and setting the end pointer to the first time,
+    /// this basically mimic the process of selecting a random element from
+    /// the list.
+    Random::shuffle(begin, end);
+    spdlog::debug("Shuffled: {}", p.def);
+    for (auto it{begin}; it != end; ++it) {
+      spdlog::debug("\t {}", *it);
+    }
+    return {true, begin, end};
+
+  } break;
+
+  case PolicyType::First: {
+
+    // Sorting the groups based on their index
+//    std::sort(begin, end, p.func);
+
+    spdlog::debug("First: {}", p.def);
+    spdlog::debug("\t {}", *begin);
+
+    return {true, begin, end};
+
+  } break;
+      
+  case PolicyType::Last: {
+
+      // Sorting the groups based on their index
+  //    std::sort(begin, end, p.func);
+
+      spdlog::debug("Last: {}", p.def);
+      spdlog::debug("\t {}", *begin);
+
+      return {true, end, end};
+
+  } break;
+
+  case PolicyType::All: {
+    return {false, begin, end};
+
+  } break;
+  }
+}
+
+bool isItSatisfactory(Experiment &experiment,
+                      PolicyChain &pchain);
+
 ///
 /// \brief      Abstract class for different decision strategies.
 ///
@@ -103,9 +185,7 @@ public:
   
   PolicyChain will_be_hacking_policies;
 
-  template <typename ForwardIt>
-  std::tuple<bool, ForwardIt, ForwardIt>
-  checkThePolicy(const ForwardIt &begin, ForwardIt &end, Policy &p);
+
 
 
   //! If `true`, the Researcher will continue traversing through the
@@ -134,7 +214,9 @@ public:
   }
   
   /// Submission
-  bool willBeSubmitting(PolicyChain &pset);
+  bool willBeSubmitting(PolicyChain &pchain);
+  
+  
   
   
   /// Clear the list of submissions and experiments

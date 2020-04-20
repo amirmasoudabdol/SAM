@@ -9,6 +9,48 @@
 
 #include "DecisionStrategy.h"
 
+
+namespace sam {
+  bool isItSatisfactory(Experiment &experiment,
+                              PolicyChain &pchain) {
+
+    assert(!pchain.empty() && "PolicySet is empty!");
+    spdlog::debug("Deciding whether we are going to continue hacking!");
+    
+    auto found_sth_unique{false};
+    auto begin = experiment.groups_.begin() + experiment.setup.nd();
+    auto end = experiment.groups_.end();
+
+    for (auto &p : pchain) {
+      std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
+
+      if (found_sth_unique ) {
+        return true;
+      }
+      
+      if (begin == end){
+        return false;
+      }
+      
+    }
+    
+    // This has to be here
+    if (begin+1 == end) {
+      spdlog::debug("There is only one!");
+      return true;
+    }else if (begin != end) { /// We found a bunch
+
+      return true;
+    } else {
+      return false;
+    }
+
+
+    return false;
+  };
+}
+
+
 using namespace sam;
 
 ///
@@ -66,81 +108,7 @@ DecisionStrategy::build(json &decision_strategy_config) {
   }
 }
 
-template <typename ForwardIt>
-std::tuple<bool, ForwardIt, ForwardIt>
-DecisionStrategy::checkThePolicy(const ForwardIt &begin, ForwardIt &end,
-                                 Policy &p) {
 
-  switch (p.type) {
-
-  case PolicyType::Min: {
-    auto it = std::min_element(begin, end, p.func);
-    spdlog::debug("Min: {}", p.def);
-    spdlog::debug("\t {}", *it);
-    return {true, it, it};
-  } break;
-
-  case PolicyType::Max: {
-    auto it = std::max_element(begin, end, p.func);
-    spdlog::debug("Max: {}", p.def);
-    spdlog::debug("\t {}", *it);
-    return {true, it, it};
-  } break;
-
-  case PolicyType::Comp: {
-    auto pit = std::partition(begin, end, p.func);
-    spdlog::debug("Comp: {}", p.def);
-    for (auto it{begin}; it != pit; ++it) {
-      spdlog::debug("\t {}", *it);
-    }
-
-    return {false, begin, pit};
-
-  } break;
-
-  case PolicyType::Random: {
-    /// Shuffling the array and setting the end pointer to the first time,
-    /// this basically mimic the process of selecting a random element from
-    /// the list.
-    Random::shuffle(begin, end);
-    spdlog::debug("Shuffled: {}", p.def);
-    for (auto it{begin}; it != end; ++it) {
-      spdlog::debug("\t {}", *it);
-    }
-    return {true, begin, end};
-
-  } break;
-
-  case PolicyType::First: {
-
-    // Sorting the groups based on their index
-//    std::sort(begin, end, p.func);
-
-    spdlog::debug("First: {}", p.def);
-    spdlog::debug("\t {}", *begin);
-
-    return {true, begin, end};
-
-  } break;
-      
-  case PolicyType::Last: {
-
-      // Sorting the groups based on their index
-  //    std::sort(begin, end, p.func);
-
-      spdlog::debug("Last: {}", p.def);
-      spdlog::debug("\t {}", *begin);
-
-      return {true, end, end};
-
-  } break;
-
-  case PolicyType::All: {
-    return {false, begin, end};
-
-  } break;
-  }
-}
 
 void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
@@ -254,6 +222,12 @@ bool DecisionStrategy::willBeSubmitting(PolicyChain &pset) {
 
   return is_it_submittable;
 }
+
+
+
+
+
+// -----------------
 
 DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
                                                   PolicyChainSet &pchain_set) {

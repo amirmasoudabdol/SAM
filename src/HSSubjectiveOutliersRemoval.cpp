@@ -44,6 +44,14 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
+    
+//    spdlog::debug("k: {}", k);
+    if (isItSatisfactory(*experiment, stopping_pchain)) {
+      spdlog::debug("✓ Found something after removing outliers!, k = {}", k);
+      return;
+    }
+    
+//    if (!decision_strategy->)
 
 //    if (!decision_strategy->verdict(*experiment, DecisionStage::WhileHacking)
 //             .isStillHacking()) {

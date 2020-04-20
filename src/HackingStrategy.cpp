@@ -15,6 +15,24 @@ HackingStrategy::~HackingStrategy(){
     // Pure deconstructor
 };
 
+HackingStrategy::HackingStrategy() {
+  lua.open_libraries();
+
+  lua.new_usertype<GroupData>("GroupData", "id", &GroupData::id_, "nobs",
+                              &GroupData::nobs_, "pvalue", &GroupData::pvalue_,
+                              "effect", &GroupData::effect_, "sig",
+                              &GroupData::sig_);
+
+  lua.new_usertype<Submission>(
+      "Submission", "id",
+      sol::property([](Submission &s) { return s.group_.id_; }), "nobs",
+      sol::property([](Submission &s) { return s.group_.nobs_; }), "mean",
+      sol::property([](Submission &s) { return s.group_.mean_; }), "pvalue",
+      sol::property([](Submission &s) { return s.group_.pvalue_; }), "effect",
+      sol::property([](Submission &s) { return s.group_.effect_; }), "sig",
+      sol::property([](Submission &s) { return s.group_.sig_; }));
+}
+
 ///
 /// A Factory method for building hacking strategies
 ///
