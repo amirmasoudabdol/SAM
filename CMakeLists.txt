@@ -41,7 +41,7 @@ set(SPDLOG_LIBRARIES "spdlog::spdlog")
 
 include_directories(include)
 include_directories(${BAARAAN_INCLUDE_DIRS})
-include_directories(${MLPACK_SRCS})
+# include_directories(${MLPACK_SRCS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${SOL2_INCLUDE_DIRS})
@@ -54,7 +54,7 @@ add_library(sam STATIC ${INCLUDES} ${SOURCES})
 target_link_libraries(sam baaraan
                             ${ARMADILLO_LIBRARIES}
                             ${BOOST_LIBRARIES}
-                            ${MLPACK}
+                            # ${MLPACK}
                             ${NLOHMANN_JSON_LIBRARIES}
                             ${SPDLOG_LIBRARIES}
                             ${LUA_LIBRARIES}
@@ -67,7 +67,7 @@ if (${BUILD_SAM_EXEC})
     add_executable(SAMrun main.cpp)
     target_link_libraries(SAMrun sam ${ARMADILLO_LIBRARIES}
                                       ${Boost_LIBRARIES}
-                                      ${MLPACK}
+                                      # ${MLPACK}
                                       ${NLOHMANN_JSON_LIBRARIES}
                                       Threads::Threads)
 endif()
@@ -99,7 +99,7 @@ if (${ENABLE_TESTS})
         target_link_libraries(${testName} ${ARMADILLO_LIBRARIES}
                                             ${Boost_LIBRARIES}
                                             ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                                            ${MLPACK}
+                                            # ${MLPACK}
                                             nlohmann_json::nlohmann_json)
 
         #I like to move testing binaries into a build/tests directory
