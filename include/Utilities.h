@@ -5,17 +5,10 @@
 #ifndef SAMPP_UTILITIES_H
 #define SAMPP_UTILITIES_H
 
-#include <algorithm>
-#include <iostream>
-#include <memory>
-#include <random>
-#include <tuple>
-#include <vector>
-
+#include "sam.h"
 #include "baaraan.hpp"
 #include "effolkronium/random.hpp"
 #include "nlohmann/json.hpp"
-#include "sam.h"
 
 using json = nlohmann::json;
 using Generator = std::mt19937;
@@ -186,7 +179,7 @@ template <typename T> struct adl_serializer<baaraan::mvnorm_distribution<T>> {
 
     if (j.find("sigma") != j.end()) {
       sigma = j.at("sigma").get<arma::Mat<double>>();
-
+      // TODO: Check for sigma dimension
     } else {
       if (j.find("stddevs") == j.end() || j.find("covs") == j.end()) {
         std::invalid_argument(

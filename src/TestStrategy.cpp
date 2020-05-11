@@ -2,11 +2,7 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <spdlog/spdlog.h>
-#include <stdexcept>
 
 #include <boost/math/distributions/fisher_f.hpp>
 #include <boost/math/distributions/normal.hpp>

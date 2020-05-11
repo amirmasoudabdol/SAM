@@ -2,13 +2,7 @@
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
 
-#include <fmt/core.h>
-#include <fmt/format.h>
-#include <sol/sol.hpp>
-#include <spdlog/spdlog.h>
-
 #include "DecisionStrategy.h"
-
 
 namespace sam {
   bool isItSatisfactory(Experiment &experiment,

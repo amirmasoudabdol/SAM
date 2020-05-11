@@ -5,9 +5,7 @@
 #include <stdexcept>
 #include <tuple>
 
-#include "DataStrategy.h"
 #include "ExperimentSetup.h"
-#include "Utilities.h"
 
 using namespace sam;
 

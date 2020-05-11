@@ -5,20 +5,11 @@
 #ifndef SAMPP_JOURNAL_H
 #define SAMPP_JOURNAL_H
 
-#include <fstream>
-#include <map>
-#include <memory>
-#include <vector>
-
-#include "csv/writer.hpp"
-
 #include "MetaAnalysis.h"
 #include "SelectionStrategy.h"
 #include "Submission.h"
 
 namespace sam {
-
-//    class SelectionStrategy;
 
 class Journal {
 

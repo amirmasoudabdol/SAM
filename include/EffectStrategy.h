@@ -5,10 +5,6 @@
 #ifndef SAMPP_EFFECTSTRATEGY_H
 #define SAMPP_EFFECTSTRATEGY_H
 
-#include <string>
-#include <vector>
-// #include "Experiment.h"
-
 #include "nlohmann/json.hpp"
 
 namespace sam {

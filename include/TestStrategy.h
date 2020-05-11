@@ -5,23 +5,15 @@
 #ifndef SAMPP_TESTSTRATEGIES_H
 #define SAMPP_TESTSTRATEGIES_H
 
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-
-#include "nlohmann/json.hpp"
-
-#include "GroupData.h"
 #include "Utilities.h"
-#include "sam.h"
 
 namespace sam {
 
 using json = nlohmann::json;
 
-class Experiment;
+class GroupData;
 class ExperimentSetup;
+class Experiment;
 
 ///
 /// \brief      Abstract class for defining test strategies.
@@ -106,6 +98,20 @@ public:
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha;
   };
+  
+  struct ResultType {
+    double tstat;
+    double pvalue;
+    double df;
+    
+    operator std::map<std::string, std::string>() {
+      return {
+        {"tstat", std::to_string(tstat)},
+        {"pvalue", std::to_string(pvalue)},
+        {"df", std::to_string(df)}
+      };
+    }
+  };
 
   Parameters params;
 
@@ -146,6 +152,20 @@ public:
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha = 0.95;
     double trim = 0.20;
+  };
+  
+  struct ResultType {
+    double tstat;
+    double pvalue;
+    double df;
+    
+    operator std::map<std::string, std::string>() {
+      return {
+        {"tstat", std::to_string(tstat)},
+        {"pvalue", std::to_string(pvalue)},
+        {"df", std::to_string(df)}
+      };
+    }
   };
 
   Parameters params;

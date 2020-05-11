@@ -2,12 +2,7 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
-#include <DecisionStrategy.h>
-#include <Experiment.h>
-#include <HackingStrategy.h>
-
-#include <numeric>
-#include <stdexcept>
+#include "HackingStrategy.h"
 
 using namespace sam;
 

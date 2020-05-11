@@ -8,9 +8,6 @@
 #include "Submission.h"
 #include "Utilities.h"
 
-#include "effolkronium/random.hpp"
-#include "nlohmann/json.hpp"
-
 namespace sam {
 
 class Journal;

@@ -2,16 +2,14 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
-#ifndef SAMPP_SUBMISSIONRECORD_H
-#define SAMPP_SUBMISSIONRECORD_H
+#ifndef SAMPP_SUBMISSION_H
+#define SAMPP_SUBMISSION_H
 
-#include <Experiment.h>
-#include <cmath>
-#include <iostream>
 #include <map>
-#include <string>
 
 #include "spdlog/fmt/ostr.h" // must be included
+
+#include "Experiment.h"
 
 namespace sam {
 
@@ -58,4 +56,4 @@ public:
 
 } // namespace sam
 
-#endif // SAMPP_SUBMISSIONRECORD_H
+#endif // SAMPP_SUBMISSION_H

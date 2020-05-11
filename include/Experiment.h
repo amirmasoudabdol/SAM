@@ -5,22 +5,15 @@
 #ifndef SAMPP_EXPERIMENT_H
 #define SAMPP_EXPERIMENT_H
 
-#include <functional>
-#include <vector>
-
 #include "sam.h"
 
 #include "DataStrategy.h"
 #include "EffectStrategy.h"
-#include "ExperimentSetup.h"
 #include "GroupData.h"
 #include "Submission.h"
 #include "TestStrategy.h"
 
 namespace sam {
-
-class Submission;
-class EffectStrategy;
 
 ///
 /// \brief      Experiment class declaration

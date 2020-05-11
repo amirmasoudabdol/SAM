@@ -22,13 +22,10 @@
 #include <map>
 #include <string>
 
-#include <nlohmann/json.hpp>
-
+#include "Utilities.h"
 #include "DecisionStrategy.h"
 #include "Experiment.h"
 #include "HackingStrategyTypes.h"
-#include "Submission.h"
-#include "Utilities.h"
 
 namespace sam {
 

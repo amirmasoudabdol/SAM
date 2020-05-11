@@ -5,17 +5,10 @@
 #ifndef SAMPP_PERSISTENCEMANAGER_H
 #define SAMPP_PERSISTENCEMANAGER_H
 
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-
 #include <csv/reader.hpp>
 #include <csv/writer.hpp>
 
 #include "Experiment.h"
-#include "Submission.h"
 #include "sam.h"
 
 namespace sam {

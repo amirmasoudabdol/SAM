@@ -6,8 +6,6 @@
 
 #include "Researcher.h"
 
-#include <variant>
-
 using namespace sam;
 
 ResearcherBuilder Researcher::create(std::string name) {
@@ -164,6 +162,10 @@ void Researcher::research() {
     decision_strategy->clearHistory();
     decision_strategy->reset();
     experiment->clear();
+
+    // TODO: Here I can check if I want to stop the replication process or not, based on some set of policies
+    // .....
+    // .......... break;
     
   }
   

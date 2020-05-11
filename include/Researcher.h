@@ -5,18 +5,11 @@
 #ifndef SAMPP_RESEARCHER_H
 #define SAMPP_RESEARCHER_H
 
-#include <random>
-#include <vector>
-
 #include "DecisionStrategy.h"
 #include "Experiment.h"
 #include "HackingStrategy.h"
 #include "Journal.h"
 #include "Submission.h"
-#include "TestStrategy.h"
-
-#include "effolkronium/random.hpp"
-#include "nlohmann/json.hpp"
 
 using Random = effolkronium::random_static;
 

@@ -14,19 +14,10 @@
 
 #include <fmt/core.h>
 #include <fmt/format.h>
-#include <memory>
-#include <nlohmann/json.hpp>
-#include <ostream>
 #include <sol/sol.hpp>
 #include <spdlog/spdlog.h>
-#include <utility>
-#include <vector>
-
-#include "sam.h"
 
 #include "Experiment.h"
-#include "GroupData.h"
-#include "Submission.h"
 #include "Utilities.h"
 #include "Policy.h"
 

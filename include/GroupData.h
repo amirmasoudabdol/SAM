@@ -5,9 +5,6 @@
 #ifndef SAMPP_GROUPDATA_H
 #define SAMPP_GROUPDATA_H
 
-#include <optional>
-#include <string>
-
 #include <armadillo>
 
 namespace sam {
@@ -59,6 +56,8 @@ public: // Public for now
   int eff_side_{0};
   bool sig_{false};
   bool is_test_updated_ {false};
+  
+  
 
   /// --- Hacking Meta
   bool is_hacked_{false};
