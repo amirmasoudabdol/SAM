@@ -5,7 +5,9 @@
 #ifndef SAMPP_TESTSTRATEGIES_H
 #define SAMPP_TESTSTRATEGIES_H
 
+#include "Experiment.h"
 #include "Utilities.h"
+#include <ostream>
 
 namespace sam {
 
@@ -28,21 +30,6 @@ class TestStrategy {
 public:
   virtual ~TestStrategy() = 0;
 
-  struct TestResult {
-    double statistic{0};
-    double pvalue{0};
-    int side{0};
-    bool sig{0};
-
-    TestResult() = default;
-
-    friend std::ostream &operator<<(std::ostream &os,
-                                    const TestResult &result) {
-      os << "statistic: " << result.statistic << " pvalue: " << result.pvalue
-         << " side: " << result.side << " sig: " << result.sig;
-      return os;
-    }
-  };
 
   ///
   /// Specifying the significant testing method
@@ -101,15 +88,26 @@ public:
   
   struct ResultType {
     double tstat;
-    double pvalue;
     double df;
+    double pvalue;
+    int side;
+    bool sig;
     
     operator std::map<std::string, std::string>() {
       return {
         {"tstat", std::to_string(tstat)},
+        {"df", std::to_string(df)},
         {"pvalue", std::to_string(pvalue)},
-        {"df", std::to_string(df)}
+        {"side", std::to_string(side)},
+        {"sig", std::to_string(sig)}
       };
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
+      os << "tstat: " << type.tstat << " df: " << type.df
+         << " pvalue: " << type.pvalue << " side: " << type.side
+         << " sig: " << type.sig;
+      return os;
     }
   };
 
@@ -125,6 +123,31 @@ public:
   virtual void run(Experiment *experiment) override;
 
   virtual void run(GroupData &group_1, GroupData &group_2) override{};
+  
+  static ResultType
+  t_test(const arma::Row<double> &d1,
+                                  const arma::Row<double> &d2, double alpha,
+                                  TestStrategy::TestAlternative alternative);
+
+  static ResultType
+  t_test(double Sm1, double Sd1, double Sn1, double Sm2,
+                                  double Sd2, double Sn2, double alpha,
+                                  TestStrategy::TestAlternative alternative,
+                                  bool equal_var);
+  
+  static ResultType
+  single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha,
+                       TestStrategy::TestAlternative alternative);
+
+  static ResultType
+  two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
+                              double Sd2, unsigned Sn2, double alpha,
+                              TestStrategy::TestAlternative alternative);
+
+  static ResultType
+  two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
+                                double Sd2, unsigned Sn2, double alpha,
+                                TestStrategy::TestAlternative alternative);
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -144,6 +167,74 @@ inline void from_json(const json &j, TTest::Parameters &p) {
   j.at("alpha").get_to(p.alpha);
 }
 
+
+
+class FTest final : public TestStrategy {
+
+public:
+  struct Parameters {
+    TestMethod name = TestMethod::FTest;
+    double alpha;
+  };
+  
+  struct ResultType {
+    double fstat;
+    unsigned df1;
+    unsigned df2;
+    double pvalue;
+    bool sig;
+    
+    operator std::map<std::string, std::string>() {
+      return {
+        {"fstat", std::to_string(fstat)},
+        {"df1", std::to_string(df1)},
+        {"df2", std::to_string(df2)},
+        {"pvalue", std::to_string(pvalue)},
+        {"sig", std::to_string(sig)}
+      };
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
+      os << "fstat: " << type.fstat << " df1: " << type.df1
+         << " df2: " << type.df2 << " pvalue: " << type.pvalue
+         << " sig: " << type.sig;
+      return os;
+    }
+  };
+
+  Parameters params;
+
+  FTest(const Parameters &p) : params{p} {};
+
+  // Cleanup
+  FTest(TestStrategyParameters tsp){
+      //            params = tsp;
+  };
+
+  virtual void run(Experiment *experiment) override;
+
+  virtual void run(GroupData &group_1, GroupData &group_2) override{};
+  
+  ResultType f_test(double Sd1, unsigned Sn1, double Sd2, unsigned Sn2, double alpha);
+  
+};
+
+// JSON Parser for ImpatientDecisionStrategy::Parameters
+inline void to_json(json &j, const FTest::Parameters &p) {
+  j = json{
+      {"_name", p.name}, {"alpha", p.alpha}};
+}
+
+inline void from_json(const json &j, FTest::Parameters &p) {
+
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("_name").get_to(p.name);
+
+  j.at("alpha").get_to(p.alpha);
+}
+
+
 class YuenTest final : public TestStrategy {
 
 public:
@@ -156,15 +247,26 @@ public:
   
   struct ResultType {
     double tstat;
-    double pvalue;
     double df;
+    double pvalue;
+    int side;
+    bool sig;
     
     operator std::map<std::string, std::string>() {
       return {
         {"tstat", std::to_string(tstat)},
+        {"df", std::to_string(df)},
         {"pvalue", std::to_string(pvalue)},
-        {"df", std::to_string(df)}
+        {"side", std::to_string(side)},
+        {"sig", std::to_string(sig)}
       };
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
+      os << "tstat: " << type.tstat << " df: " << type.df
+         << " pvalue: " << type.pvalue << " side: " << type.side
+         << " sig: " << type.sig;
+      return os;
     }
   };
 
@@ -180,6 +282,21 @@ public:
   virtual void run(Experiment *experiment) override;
 
   virtual void run(GroupData &group_1, GroupData &group_2) override{};
+  
+  static ResultType
+  yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
+                         const TestStrategy::TestAlternative alternative,
+                         double trim, double mu);
+
+  static ResultType
+  yuen_t_test_paired(
+      const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
+      const TestStrategy::TestAlternative alternative, double trim, double mu);
+
+  static ResultType
+  yuen_t_test_two_samples(
+      const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
+      const TestStrategy::TestAlternative alternative, double trim, double mu);
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -212,6 +329,31 @@ public:
     double alpha = 0.95;
     bool use_continuity{true};
   };
+  
+  struct ResultType {
+    double zstat;
+    double wstat;
+    double pvalue;
+    int side;
+    bool sig;
+
+    operator std::map<std::string, std::string>() {
+      return {
+          {"zstat", std::to_string(zstat)},
+          {"Wstat", std::to_string(wstat)},
+          {"pvalue", std::to_string(pvalue)},
+          {"side", std::to_string(side)},
+          {"sig", std::to_string(sig)}
+      };
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
+      os << "zstat: " << type.zstat << " wstat: " << type.wstat
+         << " pvalue: " << type.pvalue << " side: " << type.side
+         << " sig: " << type.sig;
+      return os;
+    }
+  };
 
   Parameters params;
 
@@ -225,6 +367,11 @@ public:
   virtual void run(Experiment *experiment) override;
 
   virtual void run(GroupData &group_1, GroupData &group_2) override{};
+  
+  static ResultType
+  wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> &y,
+                double alpha, double use_continuity,
+                const TestStrategy::TestAlternative alternative);
 };
 
 // JSON Parser for ImpatientDecisionStrategy::Parameters
@@ -270,44 +417,8 @@ std::pair<double, double>
 confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
                           TestStrategy::TestAlternative alternative);
 
-TestStrategy::TestResult t_test(const arma::Row<double> &d1,
-                                const arma::Row<double> &d2, double alpha,
-                                TestStrategy::TestAlternative alternative);
 
-TestStrategy::TestResult t_test(double Sm1, double Sd1, double Sn1, double Sm2,
-                                double Sd2, double Sn2, double alpha,
-                                TestStrategy::TestAlternative alternative,
-                                bool equal_var);
 
-TestStrategy::TestResult
-single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha,
-                     TestStrategy::TestAlternative alternative);
-
-TestStrategy::TestResult
-two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
-                            double Sd2, unsigned Sn2, double alpha,
-                            TestStrategy::TestAlternative alternative);
-
-TestStrategy::TestResult
-two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
-                              double Sd2, unsigned Sn2, double alpha,
-                              TestStrategy::TestAlternative alternative);
-
-TestStrategy::TestResult f_test(double sd1, double sd2, double N1, double N2,
-                                double alpha);
-
-TestStrategy::TestResult
-yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
-                       const TestStrategy::TestAlternative alternative,
-                       double trim, double mu);
-
-TestStrategy::TestResult yuen_t_test_paired(
-    const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
-    const TestStrategy::TestAlternative alternative, double trim, double mu);
-
-TestStrategy::TestResult yuen_t_test_two_samples(
-    const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
-    const TestStrategy::TestAlternative alternative, double trim, double mu);
 
 double win_var(const arma::Row<double> &x, const double trim);
 
@@ -328,10 +439,7 @@ template <typename T> arma::uvec nonzeros_index(const T &x) {
   return arma::find(x != 0);
 }
 
-TestStrategy::TestResult
-wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> &y,
-              double alpha, double use_continuity,
-              const TestStrategy::TestAlternative alternative);
+
 
 } // namespace sam
 
