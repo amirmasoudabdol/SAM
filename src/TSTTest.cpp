@@ -2,7 +2,6 @@
 // Created by Amir Masoud Abdol on 2020-04-11
 //
 
-
 #include "TestStrategy.h"
 
 #include <boost/math/distributions/students_t.hpp>
@@ -19,7 +18,7 @@ void TTest::run(Experiment *experiment) {
   // The first group is always the control group
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
-    
+
     // This is not perfect, basically I need to check the population `vars`
     //        if ((isgreater(experiment->stddev[d], experiment->stddev[i]) or
     //        isless(experiment->stddev[d], experiment->stddev[i]))) {
@@ -49,16 +48,14 @@ void TTest::run(Experiment *experiment) {
   }
 }
 
-TTest::ResultType
-TTest::t_test(const arma::Row<double> &dt1,
+TTest::ResultType TTest::t_test(const arma::Row<double> &dt1,
                                 const arma::Row<double> &dt2, double alpha,
                                 TestStrategy::TestAlternative alternative) {
   return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(), arma::mean(dt2),
                 arma::stddev(dt2), dt2.size(), alpha, alternative, true);
 }
 
-TTest::ResultType
-TTest::t_test(double Sm1, double Sd1, double Sn1, double Sm2,
+TTest::ResultType TTest::t_test(double Sm1, double Sd1, double Sn1, double Sm2,
                                 double Sd2, double Sn2, double alpha,
                                 TestStrategy::TestAlternative alternative,
                                 bool equal_var = false) {
@@ -93,8 +90,9 @@ TTest::t_test(double Sm1, double Sd1, double Sn1, double Sm2,
 /// \return     TTest::ResultType
 ///
 TTest::ResultType
-TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double alpha,
-                     TestStrategy::TestAlternative alternative) {
+TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
+                            double alpha,
+                            TestStrategy::TestAlternative alternative) {
 
   bool sig = false;
 
@@ -146,13 +144,13 @@ TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double 
 
   int eff_side = std::copysign(1.0, M - Sm);
 
-  return {t_stat, df, p, eff_side, sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }
 
 ///
 /// A Students t test applied to two sets of data. We are testing the null
-/// hypothesis that the two samples have the same mean and that any difference if
-/// due to chance.
+/// hypothesis that the two samples have the same mean and that any difference
+/// if due to chance.
 ///
 /// \note       Obtained from [Boost Library
 ///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
@@ -166,10 +164,9 @@ TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn, double 
 /// \param      alpha  Significance Level.
 /// \return     TTest::ResultType
 ///
-TTest::ResultType
-TTest::two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
-                            double Sd2, unsigned Sn2, double alpha,
-                            TestStrategy::TestAlternative alternative) {
+TTest::ResultType TTest::two_samples_t_test_equal_sd(
+    double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2,
+    double alpha, TestStrategy::TestAlternative alternative) {
 
   bool sig = false;
 
@@ -230,13 +227,13 @@ TTest::two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double 
 
   int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
-  return {t_stat, df, p, eff_side, sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }
 
 ///
-/// A Students t test applied to two sets of data with _unequal_ variance. We are
-/// testing the null hypothesis that the two samples have the same mean and that
-/// any difference is due to chance.
+/// A Students t test applied to two sets of data with _unequal_ variance. We
+/// are testing the null hypothesis that the two samples have the same mean and
+/// that any difference is due to chance.
 ///
 /// \note       Obtained from [Boost Library
 ///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
@@ -250,10 +247,9 @@ TTest::two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double 
 /// \param      alpha  Significance Level.
 /// \return     TTest::ResultType
 ///
-TTest::ResultType
-TTest::two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
-                              double Sd2, unsigned Sn2, double alpha,
-                              TestStrategy::TestAlternative alternative) {
+TTest::ResultType TTest::two_samples_t_test_unequal_sd(
+    double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2,
+    double alpha, TestStrategy::TestAlternative alternative) {
 
   bool sig = false;
 
@@ -310,5 +306,5 @@ TTest::two_samples_t_test_unequal_sd(double Sm1, double Sd1, unsigned Sn1, doubl
 
   int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
-  return {t_stat, df, p, eff_side, sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }

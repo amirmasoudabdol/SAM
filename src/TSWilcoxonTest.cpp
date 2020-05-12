@@ -2,7 +2,6 @@
 // Created by Amir Masoud Abdol on 2020-04-11
 //
 
-
 #include "TestStrategy.h"
 
 using namespace sam;
@@ -27,11 +26,9 @@ void WilcoxonTest::run(Experiment *experiment) {
   }
 }
 
-
-WilcoxonTest::ResultType
-WilcoxonTest::wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> &y,
-              double alpha, double use_continuity,
-              const TestStrategy::TestAlternative alternative) {
+WilcoxonTest::ResultType WilcoxonTest::wilcoxon_test(
+    const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
+    double use_continuity, const TestStrategy::TestAlternative alternative) {
 
   using boost::math::normal;
 
@@ -98,5 +95,5 @@ WilcoxonTest::wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> 
 
   int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
-  return {z, u, p, eff_side, sig};
+  return {.zstat = z, .wstat = u, .pvalue = p, .side = eff_side, .sig = sig};
 }

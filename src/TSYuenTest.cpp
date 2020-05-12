@@ -2,7 +2,6 @@
 // Created by Amir Masoud Abdol on 2020-04-11
 //
 
-
 #include "TestStrategy.h"
 
 #include <boost/math/distributions/students_t.hpp>
@@ -41,10 +40,10 @@ void YuenTest::run(Experiment *experiment) {
   }
 }
 
-YuenTest::ResultType
-YuenTest::yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
-                       const TestStrategy::TestAlternative alternative,
-                       double trim = 0.2, double mu = 0.0) {
+YuenTest::ResultType YuenTest::yuen_t_test_one_sample(
+    const arma::Row<double> &x, double alpha,
+    const TestStrategy::TestAlternative alternative, double trim = 0.2,
+    double mu = 0.0) {
 
   double M{0};
 
@@ -97,14 +96,14 @@ YuenTest::yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
 
   int eff_side = std::copysign(1.0, Sm1 - M);
 
-  return {t_stat, df, p, eff_side, sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }
 
 [[maybe_unused]] YuenTest::ResultType
-YuenTest::yuen_t_test_paired(const arma::Row<double> &x, const arma::Row<double> &y,
-                   double alpha,
-                   const TestStrategy::TestAlternative alternative,
-                   double trim = 0.2, double mu = 0) {
+YuenTest::yuen_t_test_paired(const arma::Row<double> &x,
+                             const arma::Row<double> &y, double alpha,
+                             const TestStrategy::TestAlternative alternative,
+                             double trim = 0.2, double mu = 0) {
   // Do some check whether it's possible to run the test
 
   double Sm1 = arma::mean(x);
@@ -160,7 +159,7 @@ YuenTest::yuen_t_test_paired(const arma::Row<double> &x, const arma::Row<double>
 
   int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
-  return {t_stat, df, p, eff_side, sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }
 
 YuenTest::ResultType YuenTest::yuen_t_test_two_samples(
@@ -229,5 +228,5 @@ YuenTest::ResultType YuenTest::yuen_t_test_two_samples(
 
   int eff_side = std::copysign(1.0, Sm2 - Sm1);
 
-  return {t_stat, df, p, eff_side, sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }
