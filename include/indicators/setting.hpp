@@ -1,3 +1,4 @@
+
 /*
 Activity Indicators for Modern C++
 https://github.com/p-ranav/indicators
@@ -28,9 +29,13 @@ SOFTWARE.
 
 #include <cstddef>
 #include <indicators/color.hpp>
+#include <indicators/font_style.hpp>
+#include <indicators/progress_type.hpp>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace indicators {
 
@@ -86,7 +91,12 @@ enum class ProgressBarOption {
   foreground_color,
   spinner_show,
   spinner_states,
-  hide_bar_when_complete
+  font_styles,
+  hide_bar_when_complete,
+  min_progress,
+  max_progress,
+  progress_type,
+  stream
 };
 
 template <typename T, ProgressBarOption Id> struct Setting {
@@ -130,14 +140,14 @@ template <ProgressBarOption Id, typename Default> Default &&get_impl(Default &&d
 }
 
 template <ProgressBarOption Id, typename Default, typename T, typename... Args>
-auto get_impl(Default &&def, T &&first, Args &&... tail) ->
+auto get_impl(Default && /*def*/, T &&first, Args &&... /*tail*/) ->
     typename std::enable_if<(std::decay<T>::type::id == Id),
                             decltype(std::forward<T>(first))>::type {
   return std::forward<T>(first);
 }
 
 template <ProgressBarOption Id, typename Default, typename T, typename... Args>
-auto get_impl(Default &&def, T &&first, Args &&... tail) ->
+auto get_impl(Default &&def, T && /*first*/, Args &&... tail) ->
     typename std::enable_if<(std::decay<T>::type::id != Id),
                             decltype(get_impl<Id>(std::forward<Default>(def),
                                                   std::forward<Args>(tail)...))>::type {
@@ -199,5 +209,11 @@ using SpinnerStates =
     details::Setting<std::vector<std::string>, details::ProgressBarOption::spinner_states>;
 using HideBarWhenComplete =
     details::BooleanSetting<details::ProgressBarOption::hide_bar_when_complete>;
+using FontStyles =
+    details::Setting<std::vector<FontStyle>, details::ProgressBarOption::font_styles>;
+using MinProgress = details::IntegerSetting<details::ProgressBarOption::min_progress>;
+using MaxProgress = details::IntegerSetting<details::ProgressBarOption::max_progress>;
+using ProgressType = details::Setting<ProgressType, details::ProgressBarOption::progress_type>;
+using Stream = details::Setting<std::ostream &, details::ProgressBarOption::stream>;
 } // namespace option
 } // namespace indicators

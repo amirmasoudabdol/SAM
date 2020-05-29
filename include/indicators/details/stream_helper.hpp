@@ -1,6 +1,8 @@
+
 #pragma once
 
-#include <indicators/color.hpp>
+#include <indicators/display_width.hpp>
+#include <indicators/setting.hpp>
 #include <indicators/termcolor.hpp>
 
 #include <algorithm>
@@ -44,6 +46,37 @@ inline void set_stream_color(std::ostream &os, Color color) {
     break;
   default:
     assert(false);
+  }
+}
+
+inline void set_font_style(std::ostream &os, FontStyle style) {
+  switch (style) {
+  case FontStyle::bold:
+    os << termcolor::bold;
+    break;
+  case FontStyle::dark:
+    os << termcolor::dark;
+    break;
+  case FontStyle::italic:
+    os << termcolor::italic;
+    break;
+  case FontStyle::underline:
+    os << termcolor::underline;
+    break;
+  case FontStyle::blink:
+    os << termcolor::blink;
+    break;
+  case FontStyle::reverse:
+    os << termcolor::reverse;
+    break;
+  case FontStyle::concealed:
+    os << termcolor::concealed;
+    break;
+  case FontStyle::crossed:
+    os << termcolor::crossed;
+    break;
+  default:
+    break;
   }
 }
 
@@ -103,14 +136,31 @@ public:
       : os(os), bar_width(bar_width), fill(fill), lead(lead), remainder(remainder) {}
 
   std::ostream &write(float progress) {
-    auto pos = static_cast<size_t>(progress * static_cast<float>(bar_width) / 100.0);
-    for (size_t i = 0; i < bar_width; ++i) {
-      if (i < pos)
-        os << fill;
-      else if (i == pos)
-        os << lead;
-      else
-        os << remainder;
+    auto pos = static_cast<size_t>(progress * bar_width / 100.0);
+    for (size_t i = 0, current_display_width = 0; i < bar_width;) {
+      std::string next;
+
+      if (i < pos) {
+        next = fill;
+        current_display_width = unicode::display_width(fill);
+      } else if (i == pos) {
+        next = lead;
+        current_display_width = unicode::display_width(lead);
+      } else {
+        next = remainder;
+        current_display_width = unicode::display_width(remainder);
+      }
+
+      i += current_display_width;
+
+      if (i > bar_width) {
+        // `next` is larger than the allowed bar width
+        // fill with empty space instead
+        os << std::string((bar_width - (i - current_display_width)), ' ');
+        break;
+      }
+
+      os << next;
     }
     return os;
   }
@@ -121,6 +171,49 @@ private:
   std::string fill;
   std::string lead;
   std::string remainder;
+};
+
+class IndeterminateProgressScaleWriter {
+public:
+  IndeterminateProgressScaleWriter(std::ostream &os, size_t bar_width, const std::string &fill,
+                                   const std::string &lead)
+      : os(os), bar_width(bar_width), fill(fill), lead(lead) {}
+
+  std::ostream &write(size_t progress) {
+    for (size_t i = 0; i < bar_width;) {
+      std::string next;
+      size_t current_display_width = 0;
+
+      if (i < progress) {
+        next = fill;
+        current_display_width = unicode::display_width(fill);
+      } else if (i == progress) {
+        next = lead;
+        current_display_width = unicode::display_width(lead);
+      } else {
+        next = fill;
+        current_display_width = unicode::display_width(fill);
+      }
+
+      i += current_display_width;
+
+      if (i > bar_width) {
+        // `next` is larger than the allowed bar width
+        // fill with empty space instead
+        os << std::string((bar_width - (i - current_display_width)), ' ');
+        break;
+      }
+
+      os << next;
+    }
+    return os;
+  }
+
+private:
+  std::ostream &os;
+  size_t bar_width = 0;
+  std::string fill;
+  std::string lead;
 };
 
 } // namespace details
