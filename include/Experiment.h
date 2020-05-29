@@ -52,11 +52,29 @@ public:
              std::shared_ptr<TestStrategy> &ts,
              std::shared_ptr<EffectStrategy> &efs);
 
+  /// These operators are returning the correct group, even if the group list is
+  /// not sorted
+  ///
+  /// \todo: I think these guys are a bit strange, they work and I'm not sure
+  /// why I have them like this but I think I can do better, for now I put some
+  /// guard
+  /// \note I think these are bad ideas, I think they should just return the index
+  /// that are being asked to, and then some other method, actually returns the group
+  /// like `get_group`, and `set_group` or even a `Group operator()` why not.
+  /// \note This means I need to change the DataStrategy too, and make sure that
+  /// in each iteration, I start with a fresh Experiment rather than a half cleanup one.
   GroupData &operator[](std::size_t idx) {
+    if (idx > groups_.size())
+      throw std::invalid_argument("Index out of bound.");
+    
     auto g = std::find_if(groups_.begin(), groups_.end(), [&](auto &g) -> bool {return g.id_ == idx; });
     return *g;
   };
+  
   const GroupData &operator[](std::size_t idx) const {
+    if (idx > groups_.size())
+      throw std::invalid_argument("Index out of bound.");
+    
     auto g = std::find_if(groups_.cbegin(), groups_.cend(), [&](auto &g) -> bool {return g.id_ == idx; });
     return *g;
   };
@@ -121,6 +139,7 @@ public:
 
   void recalculateEverything();
   
+  /// Clear contents of the experiment
   void clear();
 
 private:

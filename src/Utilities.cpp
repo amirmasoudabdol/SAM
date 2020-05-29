@@ -142,7 +142,7 @@ Distribution make_distribution(json const &j) {
 ///
 /// \param      name_  The distribution name
 /// \param      type_  The distribution type
-/// \param      ...    Paramters of the distribution, according to their
+/// \param      ...    Parameters of the distribution, according to their
 ///                    representation in the standard library
 /// \return     A function call to the make_distribution_impl that returns a
 ///             distribution class.
@@ -151,7 +151,7 @@ Distribution make_distribution(json const &j) {
   if (distributionName == #name_)                                              \
     return make_distribution_impl<std::name_<type_>>(j, ##__VA_ARGS__);
 
-  // Continious Distributions
+  // Continuous Distributions
   generate_distribution_factory(uniform_int_distribution, int, "a", "b");
   generate_distribution_factory(uniform_real_distribution, double, "a", "b");
   generate_distribution_factory(binomial_distribution, int, "p", "t");

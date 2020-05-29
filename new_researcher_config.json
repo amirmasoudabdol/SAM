@@ -16,7 +16,7 @@
 				"order": "max first"
 			}
 		],
-		"initial_decision_policies": [
+		"initial_selection_policies": [
 			[
 				"sig",
 				"effect > 0",
@@ -59,10 +59,10 @@
 				]
 			]
 		],
-		"final_decision_policies": [
+		"between_hacks_selection_policies": [
 			"none"	
 		],
-		"submission_policies": [
+		"submission_decision_policies": [
 			"none"	
 		]
 	}

@@ -231,7 +231,7 @@ DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
 
 DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
                                                   PolicyChainSet &pchain_set) {
-  clearHistory();
+  clear();
   return *this;
 }
 
@@ -247,14 +247,15 @@ DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
 DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
-  clearHistory();
+  clear();
   return *this;
 }
 
 bool MarjansDecisionMaker::willBeHacking(Experiment &experiment) {
-  return not willContinueHacking(experiment, will_be_hacking_policies);
+  return not willContinueHacking(experiment, will_be_hacking_decision_policies);
 };
 
+// this is private
 bool MarjansDecisionMaker::willContinueHacking(Experiment &experiment,
                                        PolicyChain &pchain) {
 
@@ -310,6 +311,6 @@ DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,
 DecisionStrategy &MarjansDecisionMaker::verdict(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
-  clearHistory();
+  clear();
   return *this;
 }

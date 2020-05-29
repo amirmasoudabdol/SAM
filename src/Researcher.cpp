@@ -18,6 +18,8 @@ void Researcher::letTheHackBegin() {
   
   for (auto &step : workflow) {
         
+    
+    /// In each step, we either run a hack or a policy
     std::visit(overload {
 
         [&](std::shared_ptr<HackingStrategy>& hset) {
@@ -76,7 +78,7 @@ void Researcher::preProcessData() {
 void Researcher::checkAndsubmitTheResearch() {
   
   if (decision_strategy->has_a_final_candidate
-      and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
+      and decision_strategy->willBeSubmitting(decision_strategy->submission_decision_policies)) {
     spdlog::debug("To be submitted submission: ");
     spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
     journal->review(decision_strategy->final_submission_candidate);
@@ -111,7 +113,7 @@ void Researcher::research() {
     /// Checking the Initial Policies
     spdlog::debug("→ Checking the INITIAL policies");
     decision_strategy->operator()(experiment,
-                                  decision_strategy->initial_decision_policies);
+                                  decision_strategy->initial_selection_policies);
     
     /// Checking if hacknig is necessary
     if (isHacker() and
@@ -139,10 +141,10 @@ void Researcher::research() {
         spdlog::debug("\t{}", sub);
       spdlog::debug("-----^");
       
-      assert(!decision_strategy->final_decision_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
+      assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
       
       decision_strategy->operator()(decision_strategy->submissions_pool,
-                                    decision_strategy->final_decision_policies);
+                                    decision_strategy->between_hacks_selection_policies);
     }
      /// else
      ///  then we don't need to look into the pile
@@ -150,7 +152,7 @@ void Researcher::research() {
     /// Checking the Submission Policies
     /// If we have a final candidate, and it's submitable, we are saving it to the submissions_from_reps
     if (decision_strategy->has_a_final_candidate
-        and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
+        and decision_strategy->willBeSubmitting(decision_strategy->submission_decision_policies)) {
       
       spdlog::debug("Final Submission Candidate: ");
       spdlog::debug("\t{}", decision_strategy->final_submission_candidate);

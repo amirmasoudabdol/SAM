@@ -169,12 +169,12 @@ public:
   SubmissionPool submissions_pool;
 
   /// TODO: These guys should move to their own class, I don't have to keep everything here!
-  PolicyChainSet initial_decision_policies;
-  PolicyChain submission_policies;
-  PolicyChainSet final_decision_policies;
+  PolicyChainSet initial_selection_policies;
+  PolicyChain submission_decision_policies;
+  PolicyChainSet between_hacks_selection_policies;
   PolicyChainSet between_reps_policies;
   
-  PolicyChain will_be_hacking_policies;
+  PolicyChain will_be_hacking_decision_policies;
 
 
 
@@ -207,22 +207,23 @@ public:
   /// Submission
   bool willBeSubmitting(PolicyChain &pchain);
   
-  
-  
-  
-  /// Clear the list of submissions and experiments
-  void clearHistory() {
+  /// Clear the contents of the decision strategy, this include the
+  /// submission pools or other collected information by the decision
+  /// strategy.
+  void clear() {
     submissions_pool.clear();
   }
   
   // TODO: This needs to be private but currently, I don't have a good place to put it.
   // The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
   // and I cannot just call it in any other methods because then it's hidden
+  /// Reset the internal state of the decision strategy
   void reset() {
     is_still_hacking = false;
     will_be_submitting = false;
     has_any_candidates = false;
     has_a_final_candidate = false;
+    clear();
   }
   
   
@@ -284,8 +285,8 @@ public:
   struct Parameters {
     DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
 
-    std::vector<std::vector<std::string>> initial_decision_policies_defs;
-    std::vector<std::string> submission_policies_defs;
+    std::vector<std::vector<std::string>> initial_selection_policies_defs;
+    std::vector<std::string> submission_decision_policies_defs;
   };
 
   Parameters params;
@@ -294,9 +295,9 @@ public:
 
     spdlog::debug("Registering decision policies...");
 
-    initial_decision_policies = PolicyChainSet(p.initial_decision_policies_defs, lua);
+    initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
 
-    submission_policies = PolicyChain(p.submission_policies_defs, lua);
+    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
   }
 
   bool willBeHacking(Experiment &experiment) override { return not has_any_candidates; };
@@ -311,14 +312,14 @@ public:
 // JSON Parser for ImpatientDecisionStrategy::Parameters
 inline void to_json(json &j, const ImpatientDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
-           {"initial_decision_policies", p.initial_decision_policies_defs},
-           {"submission_policies", p.submission_policies_defs}};
+           {"initial_selection_policies", p.initial_selection_policies_defs},
+           {"submission_decision_policies", p.submission_decision_policies_defs}};
 }
 
 inline void from_json(const json &j, ImpatientDecisionMaker::Parameters &p) {
   j.at("_name").get_to(p.name);
-  j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
-  j.at("submission_policies").get_to(p.submission_policies_defs);
+  j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
+  j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
 }
 
 ///
@@ -331,23 +332,23 @@ public:
   struct Parameters {
     DecisionMethod name = DecisionMethod::PatientDecisionMaker;
 
-    std::vector<std::vector<std::string>> initial_decision_policies_defs;
-    std::vector<std::string> submission_policies_defs;
-    std::vector<std::vector<std::string>> final_decision_policies_defs;
-    std::vector<std::vector<std::string>> between_replications_decision_policies_defs;
+    std::vector<std::vector<std::string>> initial_selection_policies_defs;
+    std::vector<std::string> submission_decision_policies_defs;
+    std::vector<std::vector<std::string>> between_hacks_selection_policies_defs;
+    std::vector<std::vector<std::string>> between_replications_selection_policies_defs;
   };
 
   Parameters params;
 
   explicit PatientDecisionMaker(const Parameters &p) : params{p} {
 
-    initial_decision_policies = PolicyChainSet(p.initial_decision_policies_defs, lua);
+    initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
 
-    final_decision_policies = PolicyChainSet(p.final_decision_policies_defs, lua);
+    between_hacks_selection_policies = PolicyChainSet(p.between_hacks_selection_policies_defs, lua);
 
-    submission_policies = PolicyChain(p.submission_policies_defs, lua);
+    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
     
-    between_reps_policies = PolicyChainSet(p.between_replications_decision_policies_defs, lua);
+    between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -363,19 +364,19 @@ public:
 // JSON Parser for PatientDecisionStrategy::Parameters
 inline void to_json(json &j, const PatientDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
-           {"initial_decision_policies", p.initial_decision_policies_defs},
-           {"submission_policies", p.submission_policies_defs},
-           {"final_decision_policies", p.final_decision_policies_defs},
-           {"between_replications_decision_policies", p.between_replications_decision_policies_defs}
+           {"initial_selection_policies", p.initial_selection_policies_defs},
+           {"submission_decision_policies", p.submission_decision_policies_defs},
+           {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
+           {"between_replications_selection_policies", p.between_replications_selection_policies_defs}
   };
 }
 
 inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
   j.at("_name").get_to(p.name);
-  j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
-  j.at("submission_policies").get_to(p.submission_policies_defs);
-  j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
-  j.at("between_replications_decision_policies").get_to(p.between_replications_decision_policies_defs);
+  j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
+  j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
+  j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
+  j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
 }
 
 
@@ -390,27 +391,27 @@ public:
   struct Parameters {
     DecisionMethod name = DecisionMethod::MarjansDecisionMaker;
 
-    std::vector<std::vector<std::string>> initial_decision_policies_defs;
-    std::vector<std::string> submission_policies_defs;
-    std::vector<std::vector<std::string>> final_decision_policies_defs;
-    std::vector<std::vector<std::string>> between_replications_decision_policies_defs;
+    std::vector<std::vector<std::string>> initial_selection_policies_defs;
+    std::vector<std::string> submission_decision_policies_defs;
+    std::vector<std::vector<std::string>> between_hacks_selection_policies_defs;
+    std::vector<std::vector<std::string>> between_replications_selection_policies_defs;
     
-    std::vector<std::string> will_be_hacking_policies_def;
+    std::vector<std::string> will_be_hacking_decision_policies_def;
   };
 
   Parameters params;
 
   explicit MarjansDecisionMaker(const Parameters &p) : params{p} {
 
-    initial_decision_policies = PolicyChainSet(p.initial_decision_policies_defs, lua);
+    initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
 
-    final_decision_policies = PolicyChainSet(p.final_decision_policies_defs, lua);
+    between_hacks_selection_policies = PolicyChainSet(p.between_hacks_selection_policies_defs, lua);
 
-    submission_policies = PolicyChain(p.submission_policies_defs, lua);
+    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
     
-    between_reps_policies = PolicyChainSet(p.between_replications_decision_policies_defs, lua);
+    between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
     
-    will_be_hacking_policies = PolicyChain(p.will_be_hacking_policies_def, lua);
+    will_be_hacking_decision_policies = PolicyChain(p.will_be_hacking_decision_policies_def, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -427,21 +428,21 @@ public:
 // JSON Parser for PatientDecisionStrategy::Parameters
 inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
-           {"initial_decision_policies", p.initial_decision_policies_defs},
-           {"submission_policies", p.submission_policies_defs},
-           {"final_decision_policies", p.final_decision_policies_defs},
-           {"between_replications_decision_policies", p.between_replications_decision_policies_defs},
-          {"will_be_hacking_policies", p.will_be_hacking_policies_def}
+           {"initial_selection_policies", p.initial_selection_policies_defs},
+           {"submission_decision_policies", p.submission_decision_policies_defs},
+           {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
+           {"between_replications_selection_policies", p.between_replications_selection_policies_defs},
+          {"will_be_hacking_decision_policies", p.will_be_hacking_decision_policies_def}
   };
 }
 
 inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("_name").get_to(p.name);
-  j.at("initial_decision_policies").get_to(p.initial_decision_policies_defs);
-  j.at("submission_policies").get_to(p.submission_policies_defs);
-  j.at("final_decision_policies").get_to(p.final_decision_policies_defs);
-  j.at("between_replications_decision_policies").get_to(p.between_replications_decision_policies_defs);
-  j.at("will_be_hacking_policies").get_to(p.will_be_hacking_policies_def);
+  j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
+  j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
+  j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
+  j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
+  j.at("will_be_hacking_decision_policies").get_to(p.will_be_hacking_decision_policies_def);
 }
 
 

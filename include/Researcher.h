@@ -22,8 +22,6 @@ using json = nlohmann::json;
 
 class ResearcherBuilder;
 
-//using HackingSet = std::vector<std::shared_ptr<HackingStrategy>>;
-
 using Workflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChainSet>>;
 
 class Researcher {
@@ -179,25 +177,15 @@ public:
     if (researcher.is_hacker) {
       for (auto &set :
            config["researcher_parameters"]["hacking_strategies"]) {
-
-        /// FIXME: This is only slightly better
         
-//        HackingSet temp_shared_set;
         std::optional<PolicyChainSet> temp_pchain_set;
         for (auto &item : set) {
           if (item.type() == nlohmann::detail::value_t::object) {
-//            temp_shared_set.push_back(HackingStrategy::build(item));
             researcher.workflow.push_back(HackingStrategy::build(item));
           }else if (item.type() == nlohmann::detail::value_t::array) {
-//            temp_pchain_set = PolicyChainSet{item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua};
             researcher.workflow.push_back(PolicyChainSet{item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
           }
         }
-        
-//        researcher.workflow.push_back(temp_shared_set);
-//
-//        if (temp_pchain_set)
-//          researcher.workflow.push_back(temp_pchain_set.value());
 
       }
     }

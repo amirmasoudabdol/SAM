@@ -3,22 +3,50 @@
         "data_strategy": {
             "_name": "LinearModel",
             "measurements": {
-                "covs": 0.0,
+                "covs": 0.5,
                 "dist": "mvnorm_distribution",
                 "means": [
-                    0,
-                    0.25
+                    0.0,
+                    0.0,
+                    0.2,
+                    0.2
                 ],
-                "stddevs": 5.0
+                "sigma": [
+                    [
+                        1.0,
+                        0.5,
+                        0.0,
+                        0.0
+                    ],
+                    [
+                        0.5,
+                        1.0,
+                        0.0,
+                        0.0
+                    ],
+                    [
+                        0.0,
+                        0.0,
+                        1.0,
+                        0.5
+                    ],
+                    [
+                        0.0,
+                        0.0,
+                        0.5,
+                        1.0
+                    ]
+                ],
+                "stddevs": 1.0
             }
         },
         "effect_strategy": {
-            "_name": "CohensD"
+            "_name": "MeanDifference"
         },
         "n_conditions": 2,
-        "n_dep_vars": 1,
-        "n_obs": 100,
-        "n_reps": 1,
+        "n_dep_vars": 2,
+        "n_obs": 10,
+        "n_reps": 5,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -26,82 +54,125 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 20,
+        "max_pubs": 10,
         "selection_strategy": {
             "_name": "FreeSelection"
         }
     },
-    "output_prefix": "069fe29c-591a-43a2-b384-f1b36a9ba499",
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "PatientDecisionMaker",
-            "between_replications_decision_policies": [
+            "_name": "MarjansDecisionMaker",
+            "between_hacks_selection_policies": [
                 [
-                    ""
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
                 ]
             ],
-            "final_decision_policies": [
+            "between_replications_selection_policies": [
                 [
-                    ""
+                    "effect > 0",
+                    "sig",
+                    "first"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
                 ]
             ],
-            "initial_decision_policies": [
+            "initial_selection_policies": [
                 [
-                    "id == 1"
+                    "id == 2",
+                    "sig",
+                    "effect > 0"
+                ],
+                [
+                    "id == 3",
+                    "sig",
+                    "effect > 0"
                 ]
             ],
-            "submission_policies": [
+            "submission_decision_policies": [
                 ""
+            ],
+            "will_be_hacking_decision_policies": [
+                "effect > 0",
+                "sig"
             ]
         },
         "hacking_strategies": [
             [
                 {
-                    "_name": "OutliersRemoval",
+                    "_name": "OptionalStopping",
                     "level": "dv",
-                    "max_attempts": 10,
-                    "min_observations": 20,
-                    "mode": "Recursive",
-                    "multipliers": [
-                        1
-                    ],
-                    "n_attempts": 4,
-                    "num": 2,
-                    "order": "max first"
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 25
                 },
                 [
                     [
-                        ""
+                        "effect > 0",
+                        "min(pvalue)"
+                    ]
+                ],
+                {
+                    "_name": "OutliersRemoval",
+                    "level": "dv",
+                    "max_attempts": 1,
+                    "min_observations": 1,
+                    "multipliers": [
+                        2
+                    ],
+                    "n_attempts": 1,
+                    "num": 200,
+                    "order": "random"
+                },
+                [
+                    [
+                        "effect > 0",
+                        "min(pvalue)"
                     ]
                 ]
             ]
         ],
-        "is_phacker": false,
-        "is_pre_processing": true,
-        "post_analysis_methods": [
-            "fixed_effect_estimate"
-        ],
+        "is_phacker": true,
+        "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "_name": "SubjectiveOutlierRemoval",
-                "min_observations": 5,
-                "range": [
-                    2,
-                    4
+                "_name": "OptionalStopping",
+                "level": "dv",
+                "max_attempts": 1,
+                "n_attempts": 1,
+                "num": 10
+            },
+            {
+                "_name": "OutliersRemoval",
+                "level": "dv",
+                "max_attempts": 1,
+                "min_observations": 1,
+                "mode": "Recursive",
+                "multipliers": [
+                    2
                 ],
-                "step_size": 0.1,
-                "stopping_condition": [
-                    "sig"
-                ]
+                "n_attempts": 1,
+                "num": 10,
+                "order": "random"
             }
         ]
     },
     "simulation_parameters": {
         "debug": true,
-        "master_seed": 1587368932,
+        "master_seed": 1587064145,
         "n_sims": 1,
         "output_path": "../outputs/",
-        "output_prefix": "",
+        "output_prefix": "59b271d8-0196-4402-ba5f-83f1ddb83db4",
         "progress": false,
         "save_pubs": true,
         "save_rejected": false,

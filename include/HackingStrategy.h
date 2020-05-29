@@ -115,6 +115,9 @@ public:
 
     //! Indicates where the optional stopping should be applied!
     std::string level = "dv";
+    
+    //! Indicate which group is going to accept the new observations
+    std::string target = "control-and-treatment";
 
     //! Number of new observations to be added to each group
     int num = 3;
