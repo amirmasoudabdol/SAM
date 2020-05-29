@@ -16,9 +16,9 @@ void Researcher::letTheHackBegin() {
   
   Experiment copy_of_experiment = *experiment;
   
+  bool found_something {false};
+  
   for (auto &step : workflow) {
-        
-    
     /// In each step, we either run a hack or a policy
     std::visit(overload {
 
@@ -35,15 +35,27 @@ void Researcher::letTheHackBegin() {
           
           /// NOW, the problem is, if I'm not going to continue hacking, I'm not also
           /// going to save stuff,
-          if (not decision_strategy->willBeHacking(copy_of_experiment))
-              decision_strategy->operator()(&copy_of_experiment, policy);
+//          if (not decision_strategy->willBeHacking(copy_of_experiment))
+          decision_strategy->operator()(&copy_of_experiment, policy);
           
+        },
+        [&](PolicyChain &pchain) {
+          // TODO: willBeSubmitting should be replaced by willContinueHacking, I just used it because willCotinueHacking has
+          // a different signiture now
+          if (decision_strategy->hasSubmissionCandidate() and !decision_strategy->willContinueHacking(pchain)) {
+            found_something = true;
+          }
         }
+      
     }, step);
     
-    if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking(copy_of_experiment))){
+    if (found_something) {
       return;
     }
+    
+//    if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking(copy_of_experiment))){
+//      return;
+//    }
     
   }
   

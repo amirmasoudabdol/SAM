@@ -241,7 +241,7 @@ public:
   /// whether the next hacking strategy is going to be executed or not!
   ///
   /// @param  experiment A reference to the experiment
-  virtual bool willContinueHacking(Experiment &experiment, PolicyChain &pchain) {return false;};
+  virtual bool willContinueHacking(PolicyChain &pchain) {return false;};
   
   
   /// \brief      Implementation of decision-making procedure.
@@ -258,6 +258,13 @@ public:
   
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) = 0;
+
+  void saveEveryOutcome(Experiment &experiment) {
+    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
+         ++i, ++d %= experiment.setup.nd()) {
+      submissions_pool.emplace_back(experiment, i);
+    }
+  };
   
 protected:
   
@@ -267,12 +274,7 @@ protected:
     submissions_pool.push_back(current_submission_candidate);
   };
   
-  void saveEveryOutcome(Experiment &experiment) {
-    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
-         ++i, ++d %= experiment.setup.nd()) {
-      submissions_pool.emplace_back(experiment, i);
-    }
-  };
+
   
   void selectOutcome(Experiment &experiment, PolicyChainSet &pchain_set);
 
@@ -430,7 +432,7 @@ public:
 
   virtual bool willBeHacking(Experiment &experiment) override;
   
-  bool willContinueHacking(Experiment &expriment, PolicyChain &pchain);
+  virtual bool willContinueHacking(PolicyChain &pchain) override;
 };
 
 // JSON Parser for PatientDecisionStrategy::Parameters

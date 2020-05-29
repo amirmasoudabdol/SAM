@@ -22,7 +22,7 @@ using json = nlohmann::json;
 
 class ResearcherBuilder;
 
-using Workflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChainSet>>;
+using Workflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>;
 
 class Researcher {
   // Making the ResearcherBuilder a friend class in order to give it access to
@@ -182,7 +182,17 @@ public:
           if (item.type() == nlohmann::detail::value_t::object) {
             researcher.workflow.push_back(HackingStrategy::build(item));
           }else if (item.type() == nlohmann::detail::value_t::array) {
-            researcher.workflow.push_back(PolicyChainSet{item.get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+            for (auto &p : item) {
+              if (p.contains("selection")) {
+                if (!p["selection"].empty())
+                  researcher.workflow.push_back(PolicyChainSet{p["selection"].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+              } else {
+                // It's a decision
+                if (!p["will_continue_hacking"].empty())
+                  researcher.workflow.push_back(PolicyChain{p["will_continue_hacking"].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
+              }
+            }
+            
           }
         }
 

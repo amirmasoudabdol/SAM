@@ -206,11 +206,11 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
   spdlog::debug("✗ Found none in the pile!");
 }
 
-bool DecisionStrategy::willBeSubmitting(PolicyChain &pset) {
+bool DecisionStrategy::willBeSubmitting(PolicyChain &pchain) {
 
   // Checking whether all policies are returning `true`
   auto is_it_submittable =
-      std::all_of(pset.begin(), pset.end(), [this](auto &policy) {
+      std::all_of(pchain.begin(), pchain.end(), [this](auto &policy) {
         return policy.func(this->final_submission_candidate);
       });
 
@@ -252,55 +252,29 @@ DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
 }
 
 bool MarjansDecisionMaker::willBeHacking(Experiment &experiment) {
-  return not willContinueHacking(experiment, will_be_hacking_decision_policies);
+//  return not willContinueHacking(experiment, will_be_hacking_decision_policies);
+  
+  // TODO: Watch out, this might cause issues, I'm calling it in other places with different signicutes
+  return not willContinueHacking(will_be_hacking_decision_policies);
 };
 
 // this is private
-bool MarjansDecisionMaker::willContinueHacking(Experiment &experiment,
-                                       PolicyChain &pchain) {
+bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
 
   
-  saveEveryOutcome(experiment);
+//  saveEveryOutcome(experiment);
   
-  
-  assert(!pchain.empty() && "PolicySet is empty!");
-  spdlog::debug("Deciding whether we are going to continue hacking!");
-  
-  auto found_sth_unique{false};
-  auto begin = experiment.groups_.begin() + experiment.setup.nd();
-  auto end = experiment.groups_.end();
-
-  for (auto &p : pchain) {
-    std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
-
-    if (found_sth_unique ) {
-      return true;
-    }
-    
-    if (begin == end){
-      return false;
-    }
-    
-  }
-  
-  // This has to be here
-  if (begin+1 == end) {
-    spdlog::debug("There is only one!");
-    return true;
-  }else if (begin != end) { /// We found a bunch
-
-    return true;
-  } else {
-    return false;
-  }
-
-
-  return false;
+  // Checking whether all policies are returning `true`
+  return std::all_of(pchain.begin(), pchain.end(), [this](auto &policy) {
+        return policy.func(this->final_submission_candidate);
+      });
 };
 
 DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
+  saveEveryOutcome(*experiment);
+  
   spdlog::debug("Collected pile of every submission: ");
   for (auto &s : submissions_pool) {
     spdlog::debug("\t{}", s);

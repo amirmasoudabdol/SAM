@@ -117,10 +117,20 @@
                     "num": 25
                 },
                 [
-                    [
-                        "effect > 0",
-                        "min(pvalue)"
-                    ]
+                    {
+                        "selection": [
+                            [
+                                "effect > 0",
+                                "min(pvalue)"
+                            ]
+                        ]
+                    },
+                    {
+                        "will_continue_hacking": [
+                            "effect < 0",
+                            "!sig"
+                        ]
+                    }
                 ],
                 {
                     "_name": "OutliersRemoval",
@@ -135,10 +145,20 @@
                     "order": "random"
                 },
                 [
-                    [
-                        "effect > 0",
-                        "min(pvalue)"
-                    ]
+                    {
+                        "selection": [
+                            [
+                                "effect > 0",
+                                "min(pvalue)"
+                            ]
+                        ]
+                    },
+                    {
+                        "will_continue_hacking": [
+                            "effect < 0",
+                            "!sig"
+                        ]
+                    }
                 ]
             ]
         ],
