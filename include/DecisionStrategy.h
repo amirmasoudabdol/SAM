@@ -236,6 +236,14 @@ public:
   virtual bool willBeHacking(Experiment &experiment) { return not has_any_candidates; };
   
   
+  
+  /// @brief  This will be used by `letTheHackBegin` and uses the decision policy to decide
+  /// whether the next hacking strategy is going to be executed or not!
+  ///
+  /// @param  experiment A reference to the experiment
+  virtual bool willContinueHacking(Experiment &experiment, PolicyChain &pchain) {return false;};
+  
+  
   /// \brief      Implementation of decision-making procedure.
   ///
   /// \param      experiment
