@@ -260,7 +260,7 @@ bool MarjansDecisionMaker::willContinueHacking(Experiment &experiment,
                                        PolicyChain &pchain) {
 
   
-  saveEverySubmission(experiment);
+  saveEveryOutcome(experiment);
   
   
   assert(!pchain.empty() && "PolicySet is empty!");

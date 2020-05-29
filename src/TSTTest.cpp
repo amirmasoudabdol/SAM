@@ -13,8 +13,6 @@ void TTest::run(Experiment *experiment) {
 
   ResultType res;
 
-  ResultType res1;
-
   // The first group is always the control group
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {

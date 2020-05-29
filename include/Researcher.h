@@ -178,7 +178,6 @@ public:
       for (auto &set :
            config["researcher_parameters"]["hacking_strategies"]) {
         
-        std::optional<PolicyChainSet> temp_pchain_set;
         for (auto &item : set) {
           if (item.type() == nlohmann::detail::value_t::object) {
             researcher.workflow.push_back(HackingStrategy::build(item));

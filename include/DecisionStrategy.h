@@ -259,7 +259,7 @@ protected:
     submissions_pool.push_back(current_submission_candidate);
   };
   
-  void saveEverySubmission(Experiment &experiment) {
+  void saveEveryOutcome(Experiment &experiment) {
     for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
          ++i, ++d %= experiment.setup.nd()) {
       submissions_pool.emplace_back(experiment, i);
