@@ -44,9 +44,9 @@ void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
   // Get the new observations
   auto new_observations =
       experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
-
-  std::for_each(experiment->begin(), experiment->end(),
-                [&, i = 0](auto &group) mutable {
-                  group.add_measurements(new_observations[i++]);
-                });
+  
+  for (int g{0}; g < experiment->setup.ng(); ++g) {
+    (*experiment)[g].add_measurements(new_observations[g]);
+  }
+  
 }
