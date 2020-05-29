@@ -14,21 +14,17 @@ ResearcherBuilder Researcher::create(std::string name) {
 
 void Researcher::letTheHackBegin() {
   
-  Experiment copy_of_experiment;
-  for (auto &set : workflow) {
-    
-    if (std::holds_alternative<HackingSet>(set))
-      copy_of_experiment = *experiment;
+  Experiment copy_of_experiment = *experiment;
+  
+  for (auto &step : workflow) {
         
     std::visit(overload {
 
-        [&](HackingSet& hset) {
+        [&](std::shared_ptr<HackingStrategy>& hset) {
           spdlog::debug("++++++++++++++++");
           spdlog::debug("→ Starting a new HackingSet");
-          for (auto &method : hset) {
-            (*method)(&copy_of_experiment);
+            (*hset)(&copy_of_experiment);
             copy_of_experiment.is_hacked = true;
-          }
         },
         [&](PolicyChainSet& policy) {
           /// FIXME: There is a problem here, where this operation overwrite the `final_submissino_candidate` even if
@@ -39,8 +35,9 @@ void Researcher::letTheHackBegin() {
           /// going to save stuff,
           if (not decision_strategy->willBeHacking(copy_of_experiment))
               decision_strategy->operator()(&copy_of_experiment, policy);
+          
         }
-    }, set);
+    }, step);
     
     if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking(copy_of_experiment))){
       return;
@@ -54,18 +51,14 @@ void Researcher::letTheHackBegin() {
 /// Iterating over the registrated methods and run them on the current
 /// experiment.
 ///
-/// \note       This has a very similar implemention to the `hack()` but it
-/// doesn't
-///             perform any of the secondary checks.
+/// \note This has a very similar implemention to the `hack()` but it
+/// doesn't perform any of the secondary checks.
 ///
-/// \bug        I think there is a possible bug here, since pre-processing
-/// methods
-///             can be much more aggresive, they can cause some issues when it
-///             comes to calculating statistics.
+/// \bug  I think there is a possible bug here, since pre-processing
+/// methods can be much more aggresive, they can cause some issues when it
+/// comes to calculating statistics.
 ///
 void Researcher::preProcessData() {
-
-//  static NoDecision no_decision = NoDecision();
 
   experiment->calculateStatistics();
 
@@ -75,20 +68,30 @@ void Researcher::preProcessData() {
   }
 }
 
+/// \brief Checking the final submission and submitting it to
+/// the Journal.
+///
+/// \todo Maybe I should pass the `final_submission` to this, and don't rely on it
+/// reading it from the `decision_strategy`
 void Researcher::checkAndsubmitTheResearch() {
+  
   if (decision_strategy->has_a_final_candidate
       and decision_strategy->willBeSubmitting(decision_strategy->submission_policies)) {
     spdlog::debug("To be submitted submission: ");
     spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
     journal->review(decision_strategy->final_submission_candidate);
   }
+  
 }
 
+/// \brief  Executing the research workflow
+///
+/// This is the main routine that the Researcher execute.
 void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
 
-  
+  // Performing maximum `nreps` replications
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep){
     
     spdlog::debug("–––––––––––––––––––");
@@ -102,6 +105,7 @@ void Researcher::research() {
       preProcessData();
     }
     
+    // Computing the statistics, effects, etc.
     computeStuff();
     
     /// Checking the Initial Policies
@@ -119,7 +123,7 @@ void Researcher::research() {
       
       decision_strategy->reset();
       experiment->clear();
-      decision_strategy->clearHistory();
+//      decision_strategy->clear();
       
       this->submissions_from_reps.clear();
       
@@ -159,7 +163,8 @@ void Researcher::research() {
     /// else: She didn't find anything, and nothing will be submitted to the Journal.
     ///       Current experiment will be discarded...
     
-    decision_strategy->clearHistory();
+//    decision_strategy->clear();
+    // Reset also clear the decision strategy
     decision_strategy->reset();
     experiment->clear();
 
