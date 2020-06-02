@@ -172,14 +172,14 @@ public:
   bool hasSubmissionCandidate() const { return has_any_candidates; };
 
   /// Experiment
-  void operator()(Experiment *experiment, PolicyChainSet &pchain_set) {
-    verdict(experiment, pchain_set);
-  }
-
-  /// Submission Pool
-  void operator()(SubmissionPool &spool, PolicyChainSet &pchain_set) {
-    verdict(spool, pchain_set);
-  }
+//  void operator()(Experiment *experiment, PolicyChainSet &pchain_set) {
+//    selectOutcomeFromExperiment(experiment, pchain_set);
+//  }
+//
+//  /// Submission Pool
+//  void operator()(SubmissionPool &spool, PolicyChainSet &pchain_set) {
+//    selectOutcomeFromPool(spool, pchain_set);
+//  }
   
   /// Submission
   bool willBeSubmitting(PolicyChain &pchain);
@@ -231,10 +231,10 @@ public:
   ///                         stages of the development.
   ///
   /// \return     A boolean indicating whether result is satisfactory or not
-  virtual DecisionStrategy &verdict(Experiment *experiment,
+  virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) = 0;
   
-  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+  virtual DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) = 0;
 
   void saveEveryOutcome(Experiment &experiment) {
@@ -298,10 +298,10 @@ public:
     will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, lua);
   };
 
-  virtual DecisionStrategy &verdict(Experiment *experiment,
+  virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) override;
   
-  virtual DecisionStrategy &verdict(SubmissionPool &spool,
+  virtual DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) override;
 
   virtual bool willStartHacking() override;

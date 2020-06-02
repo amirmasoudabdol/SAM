@@ -33,13 +33,13 @@ void Researcher::letTheHackBegin() {
         [&](PolicyChainSet& selection_policies) {
           /// Performing a Selection
           /// With PolicyChainSet we can look for different results
-          decision_strategy->operator()(&copy_of_experiment, selection_policies);
+          decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
         },
         [&](PolicyChain &decision_policy) {
           /// Performing a Decision
           /// With PolicyChain, we can only validate if a submission passes all the criteria
           
-          if (decision_strategy->hasSubmissionCandidate() and !decision_strategy->willContinueHacking(decision_policy)) {
+          if (decision_strategy->hasSubmissionCandidate() and decision_strategy->willContinueHacking(decision_policy)) {
             found_something_and_done_hacking = true;
           }
         }
@@ -118,7 +118,7 @@ void Researcher::research() {
     
     /// Checking the Initial Policies
     spdlog::debug("→ Checking the INITIAL policies");
-    decision_strategy->operator()(experiment,
+    decision_strategy->selectOutcomeFromExperiment(experiment,
                                   decision_strategy->initial_selection_policies);
     
     /// Checking if hacknig is necessary
@@ -150,7 +150,7 @@ void Researcher::research() {
       
       assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
       
-      decision_strategy->operator()(decision_strategy->submissions_pool,
+      decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
                                     decision_strategy->between_hacks_selection_policies);
     }
      /// else
@@ -192,7 +192,7 @@ void Researcher::research() {
     spdlog::debug("__________");
     spdlog::debug("→ Choosing Between Replications");
     assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
-    decision_strategy->operator()(submissions_from_reps, decision_strategy->between_reps_policies);
+    decision_strategy->selectOutcomeFromPool(submissions_from_reps, decision_strategy->between_reps_policies);
   }else{
     if (submissions_from_reps.size() == 1) {
       decision_strategy->final_submission_candidate = submissions_from_reps.front();

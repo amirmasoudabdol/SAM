@@ -228,7 +228,7 @@ bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
   
 };
 
-DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,
+DecisionStrategy &MarjansDecisionMaker::selectOutcomeFromExperiment(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
   saveEveryOutcome(*experiment);
@@ -240,7 +240,7 @@ DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,
   return *this;
 }
   
-DecisionStrategy &MarjansDecisionMaker::verdict(SubmissionPool &spool,
+DecisionStrategy &MarjansDecisionMaker::selectOutcomeFromPool(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
   clear();
