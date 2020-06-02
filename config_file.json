@@ -99,6 +99,9 @@
                     "effect > 0"
                 ]
             ],
+            "replication_stopping_decision_policy": [
+                ""
+            ],
             "submission_decision_policies": [
                 ""
             ],

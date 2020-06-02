@@ -176,7 +176,7 @@ public:
   
   PolicyChain will_be_hacking_decision_policies;
 
-
+  PolicyChain replication_stopping_decision_policy;
 
 
   //! If `true`, the Researcher will continue traversing through the
@@ -407,6 +407,8 @@ public:
     std::vector<std::vector<std::string>> between_replications_selection_policies_defs;
     
     std::vector<std::string> will_be_hacking_decision_policies_def;
+    
+    std::vector<std::string> replication_stopping_decision_policy_def;
   };
 
   Parameters params;
@@ -422,6 +424,8 @@ public:
     between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
     
     will_be_hacking_decision_policies = PolicyChain(p.will_be_hacking_decision_policies_def, lua);
+    
+    replication_stopping_decision_policy = PolicyChain(p.replication_stopping_decision_policy_def, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -442,7 +446,8 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
            {"submission_decision_policies", p.submission_decision_policies_defs},
            {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
            {"between_replications_selection_policies", p.between_replications_selection_policies_defs},
-          {"will_be_hacking_decision_policies", p.will_be_hacking_decision_policies_def}
+          {"will_be_hacking_decision_policies", p.will_be_hacking_decision_policies_def},
+          {"replication_stopping_decision_policy", p.replication_stopping_decision_policy_def}
   };
 }
 
@@ -453,6 +458,7 @@ inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
   j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
   j.at("will_be_hacking_decision_policies").get_to(p.will_be_hacking_decision_policies_def);
+  j.at("replication_stopping_decision_policy").get_to(p.replication_stopping_decision_policy_def);
 }
 
 

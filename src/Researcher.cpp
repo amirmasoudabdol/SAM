@@ -22,40 +22,36 @@ void Researcher::letTheHackBegin() {
     /// In each step, we either run a hack or a policy
     std::visit(overload {
 
-        [&](std::shared_ptr<HackingStrategy>& hset) {
+        [&](std::shared_ptr<HackingStrategy>& hacking_strategy) {
+          /// Performing a Hack
+          
           spdlog::debug("++++++++++++++++");
           spdlog::debug("→ Starting a new HackingSet");
-            (*hset)(&copy_of_experiment);
-            copy_of_experiment.is_hacked = true;
+          (*hacking_strategy)(&copy_of_experiment);
+          copy_of_experiment.is_hacked = true;
         },
-        [&](PolicyChainSet& policy) {
-          /// FIXME: There is a problem here, where this operation overwrite the `final_submissino_candidate` even if
-          /// I'm not going to hack anymore. I should be able to check the willBeHacking() before this.
-          /// This is not a good solution, but let's do it for now
-          
-          /// NOW, the problem is, if I'm not going to continue hacking, I'm not also
-          /// going to save stuff,
-//          if (not decision_strategy->willBeHacking(copy_of_experiment))
-          decision_strategy->operator()(&copy_of_experiment, policy);
-          
+        [&](PolicyChainSet& selection_policies) {
+          /// Performing a Selection
+          /// With PolicyChainSet we can look for different results
+          decision_strategy->operator()(&copy_of_experiment, selection_policies);
         },
-        [&](PolicyChain &pchain) {
-          // TODO: willBeSubmitting should be replaced by willContinueHacking, I just used it because willCotinueHacking has
-          // a different signiture now
-          if (decision_strategy->hasSubmissionCandidate() and !decision_strategy->willContinueHacking(pchain)) {
+        [&](PolicyChain &decision_policy) {
+          /// Performing a Decision
+          /// With PolicyChain, we can only validate if a submission passes all the criteria
+          
+          /// \todo: willBeSubmitting should be replaced by willContinueHacking, I just used it because willCotinueHacking has
+          /// a different signiture now
+          if (decision_strategy->hasSubmissionCandidate() and !decision_strategy->willContinueHacking(decision_policy)) {
             found_something = true;
           }
         }
       
     }, step);
     
+    /// We leave the workflow when we have a submission, and it also passes the decision policy
     if (found_something) {
       return;
     }
-    
-//    if (decision_strategy->hasSubmissionCandidate() and (not decision_strategy->willBeHacking(copy_of_experiment))){
-//      return;
-//    }
     
   }
   
@@ -177,14 +173,18 @@ void Researcher::research() {
     /// else: She didn't find anything, and nothing will be submitted to the Journal.
     ///       Current experiment will be discarded...
     
-//    decision_strategy->clear();
+    /// \todo: This is an ugly `if`, but it works, the problem is that WillBeSubmitting is not designed robust enough
+    /// to handle this situation.
+    if (decision_strategy->has_a_final_candidate
+        and (!decision_strategy->replication_stopping_decision_policy.empty()
+        and decision_strategy->willBeSubmitting(decision_strategy->replication_stopping_decision_policy))) {
+      break;
+    }
+    
+    //    decision_strategy->clear();
     // Reset also clear the decision strategy
     decision_strategy->reset();
     experiment->clear();
-
-    // TODO: Here I can check if I want to stop the replication process or not, based on some set of policies
-    // .....
-    // .......... break;
     
   }
   
