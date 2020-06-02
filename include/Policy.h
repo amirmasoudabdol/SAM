@@ -55,19 +55,6 @@ struct Policy {
       type = PolicyType::Max;
       func = lua[f_name];
       def = p_def;
-    } else if (p_def.find("sig") != std::string::npos) {
-
-      auto f_name = "cond_sig";
-
-      auto f_def =
-          fmt::format(lua_temp_scripts["comp_script"], f_name, "sig == true");
-
-      lua.script(f_def);
-
-      type = PolicyType::Comp;
-      func = lua[f_name];
-      def = p_def;
-      
     } else if (p_def.find("!sig") != std::string::npos) {
 
       auto f_name = "cond_not_sig";
@@ -81,7 +68,20 @@ struct Policy {
       func = lua[f_name];
       def = p_def;
       
-    } else if (p_def.find("random") != std::string::npos) {
+    } else if (p_def.find("sig") != std::string::npos) {
+
+      auto f_name = "cond_sig";
+
+      auto f_def =
+          fmt::format(lua_temp_scripts["comp_script"], f_name, "sig == true");
+
+      lua.script(f_def);
+
+      type = PolicyType::Comp;
+      func = lua[f_name];
+      def = p_def;
+      
+    }  else if (p_def.find("random") != std::string::npos) {
 
       type = PolicyType::Random;
       func = sol::function();
