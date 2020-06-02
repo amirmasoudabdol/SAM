@@ -202,11 +202,19 @@ bool DecisionStrategy::willBeSubmitting(PolicyChain &pchain) {
   return is_it_submittable;
 }
 
-bool MarjansDecisionMaker::willBeHacking(Experiment &experiment) {
+bool MarjansDecisionMaker::willStartHacking() {
   /// \todo: Watch out, this might cause issues, I'm calling it in other places with different signicutes
-  return willContinueHacking(will_be_hacking_decision_policies);
+  return willContinueHacking(will_start_hacking_decision_policies);
 };
 
+
+/// Determines whether the `final_submission_candidates` complies with **any** of the
+/// given policies.
+///
+/// @note The important difference between this and `willBeSubmitting` is the fact that, the latter
+/// will check if **all** of the rules are passing.
+///
+/// @param pchain a reference to the given policy chain
 bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`

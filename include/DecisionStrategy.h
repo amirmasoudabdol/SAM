@@ -151,7 +151,7 @@ public:
   PolicyChainSet between_hacks_selection_policies;
   PolicyChainSet between_reps_policies;
   
-  PolicyChain will_be_hacking_decision_policies;
+  PolicyChain will_start_hacking_decision_policies;
 
   PolicyChain will_continue_replicating_decision_policy;
 
@@ -211,7 +211,7 @@ public:
   /// maybe this implementation bool willBeHacking() override { return not has_any_candidates; };
 //  virtual bool willBeHacking() {return not has_any_candidates; };
   
-  virtual bool willBeHacking(Experiment &experiment) { return not has_any_candidates; };
+  virtual bool willStartHacking() { return not has_any_candidates; };
   
   
   
@@ -276,7 +276,7 @@ public:
     std::vector<std::vector<std::string>> between_hacks_selection_policies_defs;
     std::vector<std::vector<std::string>> between_replications_selection_policies_defs;
     
-    std::vector<std::string> will_be_hacking_decision_policies_def;
+    std::vector<std::string> will_start_hacking_decision_policies_def;
     
     std::vector<std::string> will_continue_replicating_decision_policy_def;
   };
@@ -293,7 +293,7 @@ public:
     
     between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
     
-    will_be_hacking_decision_policies = PolicyChain(p.will_be_hacking_decision_policies_def, lua);
+    will_start_hacking_decision_policies = PolicyChain(p.will_start_hacking_decision_policies_def, lua);
     
     will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, lua);
   };
@@ -304,7 +304,7 @@ public:
   virtual DecisionStrategy &verdict(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) override;
 
-  virtual bool willBeHacking(Experiment &experiment) override;
+  virtual bool willStartHacking() override;
   
   virtual bool willContinueHacking(PolicyChain &pchain) override;
 };
@@ -316,7 +316,7 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
            {"submission_decision_policies", p.submission_decision_policies_defs},
            {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
            {"between_replications_selection_policies", p.between_replications_selection_policies_defs},
-          {"will_be_hacking_decision_policies", p.will_be_hacking_decision_policies_def},
+          {"will_start_hacking_decision_policies", p.will_start_hacking_decision_policies_def},
           {"will_continue_replicating_decision_policy", p.will_continue_replicating_decision_policy_def}
   };
 }
@@ -327,7 +327,7 @@ inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
   j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
   j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
-  j.at("will_be_hacking_decision_policies").get_to(p.will_be_hacking_decision_policies_def);
+  j.at("will_start_hacking_decision_policies").get_to(p.will_start_hacking_decision_policies_def);
   j.at("will_continue_replicating_decision_policy").get_to(p.will_continue_replicating_decision_policy_def);
 }
 

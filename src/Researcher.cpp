@@ -123,8 +123,10 @@ void Researcher::research() {
     
     /// Checking if hacknig is necessary
     if (isHacker() and
-        decision_strategy->willContinueHacking(decision_strategy->will_be_hacking_decision_policies)) {
+        decision_strategy->willStartHacking()) {
+      
       letTheHackBegin();
+      
     }else if (experiment->setup.nreps() <= 1) {
       checkAndsubmitTheResearch();
       
@@ -172,6 +174,7 @@ void Researcher::research() {
     
     /// \todo: This is an ugly `if`, but it works, the problem is that WillBeSubmitting is not designed robust enough
     /// to handle this situation.
+    /// \todo: this can move to the for-loop check
     if (decision_strategy->has_a_final_candidate
         and (!decision_strategy->will_continue_replicating_decision_policy.empty()
         and decision_strategy->willBeSubmitting(decision_strategy->will_continue_replicating_decision_policy))) {

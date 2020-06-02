@@ -11,7 +11,15 @@
 
 namespace sam {
 
-enum class PolicyType { Min, Max, Comp, Random, First, Last, All };
+enum class PolicyType : int { Min, Max, Comp, Random, First, Last, All };
+enum class PChainExecType : int { AllOf, AnyOf, NoneOf };
+
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+PChainExecType,
+{{PChainExecType::AllOf, "all_of"},
+ {PChainExecType::AnyOf, "any_of"},
+ {PChainExecType::NoneOf, "none_of"}})
 
 struct Policy {
   PolicyType type;
@@ -165,6 +173,10 @@ struct Policy {
     os << policy.def;
     return os;
   }
+  
+  bool operator()(const Submission& sub) {
+    return func(sub);
+  }
 
 private:
   std::map<std::string, std::string> lua_temp_scripts{
@@ -180,6 +192,7 @@ private:
 };
 
 struct PolicyChain {
+  PChainExecType etype = PChainExecType::AllOf;
   std::vector<Policy> pchain;
 
   PolicyChain() = default;
@@ -200,6 +213,16 @@ struct PolicyChain {
   auto cbegin() const { return pchain.cbegin(); };
   auto end() { return pchain.end(); };
   auto cend() const { return pchain.cend(); };
+  
+  bool operator()(const Submission &sub) {
+    /// \todo: we check if we comply with the rules
+  }
+  
+  std::optional<Submission> operator()(const Experiment *expr) {
+    /// \todo: we check the experiment, and return the submission
+    
+    return Submission{};
+  }
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
     os << "[";
@@ -230,6 +253,12 @@ struct PolicyChainSet {
   auto cbegin() const { return pchains.cbegin(); };
   auto end() { return pchains.end(); };
   auto cend() const { return pchains.cend(); };
+  
+  std::optional<Submission> operator()(const Experiment *expr) {
+    /// \todo: Check and return,
+    
+    return Submission{};
+  }
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChainSet &set) {
     fmt::print(os, "[{}]", fmt::join(set.cbegin(), set.cend(), ", "));
