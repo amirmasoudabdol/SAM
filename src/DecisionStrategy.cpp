@@ -79,19 +79,7 @@ DecisionStrategy::DecisionStrategy() {
 std::unique_ptr<DecisionStrategy>
 DecisionStrategy::build(json &decision_strategy_config) {
 
-  if (decision_strategy_config["_name"] == "ImpatientDecisionMaker") {
-
-    auto params =
-        decision_strategy_config.get<ImpatientDecisionMaker::Parameters>();
-    return std::make_unique<ImpatientDecisionMaker>(params);
-
-  } else if (decision_strategy_config["_name"] == "PatientDecisionMaker") {
-
-    auto params =
-        decision_strategy_config.get<PatientDecisionMaker::Parameters>();
-    return std::make_unique<PatientDecisionMaker>(params);
-
-  } else if (decision_strategy_config["_name"] == "MarjansDecisionMaker") {
+  if (decision_strategy_config["_name"] == "MarjansDecisionMaker") {
 
     auto params =
         decision_strategy_config.get<MarjansDecisionMaker::Parameters>();
@@ -167,9 +155,6 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
-
-//  spdlog::debug("---");
-//  spdlog::debug("Selecting between collected submissions.");
   
   spdlog::debug("→ Current Submission Pool...");
   for (auto &s : spool) {
@@ -217,57 +202,22 @@ bool DecisionStrategy::willBeSubmitting(PolicyChain &pchain) {
   return is_it_submittable;
 }
 
-
-
-
-
-// -----------------
-
-DecisionStrategy &ImpatientDecisionMaker::verdict(Experiment *experiment,
-                                                  PolicyChainSet &pchain_set) {
-  selectOutcome(*experiment, pchain_set);
-  return *this;
-}
-
-DecisionStrategy &ImpatientDecisionMaker::verdict(SubmissionPool &spool,
-                                                  PolicyChainSet &pchain_set) {
-  clear();
-  return *this;
-}
-
-DecisionStrategy &PatientDecisionMaker::verdict(Experiment *experiment,
-                                                PolicyChainSet &pchain_set) {
-  selectOutcome(*experiment, pchain_set);
-  if (has_a_final_candidate) {
-    saveCurrentSubmission();
-  }
-  return *this;
-}
-
-DecisionStrategy &PatientDecisionMaker::verdict(SubmissionPool &spool,
-                                                PolicyChainSet &pchain_set) {
-  selectBetweenSubmissions(spool, pchain_set);
-  clear();
-  return *this;
-}
-
 bool MarjansDecisionMaker::willBeHacking(Experiment &experiment) {
-//  return not willContinueHacking(experiment, will_be_hacking_decision_policies);
-  
-  // TODO: Watch out, this might cause issues, I'm calling it in other places with different signicutes
-  return not willContinueHacking(will_be_hacking_decision_policies);
+  /// \todo: Watch out, this might cause issues, I'm calling it in other places with different signicutes
+  return willContinueHacking(will_be_hacking_decision_policies);
 };
 
-// this is private
 bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
-
-  
-//  saveEveryOutcome(experiment);
   
   // Checking whether all policies are returning `true`
-  return std::all_of(pchain.begin(), pchain.end(), [this](auto &policy) {
-        return policy.func(this->final_submission_candidate);
-      });
+  if (this->has_a_final_candidate) {
+    return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
+          return policy.func(this->final_submission_candidate);
+        });
+  }else{
+    return true;
+  }
+  
 };
 
 DecisionStrategy &MarjansDecisionMaker::verdict(Experiment *experiment,

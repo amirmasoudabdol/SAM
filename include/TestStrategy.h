@@ -144,7 +144,7 @@ public:
       unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative);
 };
 
-// JSON Parser for ImpatientDecisionStrategy::Parameters
+
 inline void to_json(json &j, const TTest::Parameters &p) {
   j = json{
       {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
@@ -209,7 +209,7 @@ public:
                     double alpha);
 };
 
-// JSON Parser for ImpatientDecisionStrategy::Parameters
+
 inline void to_json(json &j, const FTest::Parameters &p) {
   j = json{{"_name", p.name}, {"alpha", p.alpha}};
 }
@@ -283,7 +283,7 @@ public:
       const TestStrategy::TestAlternative alternative, double trim, double mu);
 };
 
-// JSON Parser for ImpatientDecisionStrategy::Parameters
+
 inline void to_json(json &j, const YuenTest::Parameters &p) {
   j = json{
       {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
@@ -356,7 +356,7 @@ public:
                 const TestStrategy::TestAlternative alternative);
 };
 
-// JSON Parser for ImpatientDecisionStrategy::Parameters
+
 inline void to_json(json &j, const WilcoxonTest::Parameters &p) {
   j = json{
       {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}

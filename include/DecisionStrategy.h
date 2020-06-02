@@ -26,37 +26,14 @@ using json = nlohmann::json;
 namespace sam {
 
 enum class DecisionMethod {
-  HonestDecisionMaker,
-  PatientDecisionMaker,
-  ImpatientDecisionMaker,
-  MarjansDecisionMaker,
-  NoDecision
+  MarjansDecisionMaker
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     DecisionMethod,
-    {{DecisionMethod::HonestDecisionMaker, "HonestDecisionMaker"},
-     {DecisionMethod::PatientDecisionMaker, "PatientDecisionMaker"},
-     {DecisionMethod::ImpatientDecisionMaker, "ImpatientDecisionMaker"},
-     {DecisionMethod::MarjansDecisionMaker, "MarjansDecisionMaker"},
-     {DecisionMethod::NoDecision, "NoDecision"}})
-
-///
-/// DecisionStage enum indicates on what stages of the _research_ the Researcher
-/// is making decision in.
-///
-enum class DecisionStage { Initial, WhileHacking, DoneHacking, Final };
-
-NLOHMANN_JSON_SERIALIZE_ENUM(DecisionStage,
-                             {{DecisionStage::Initial, "Initial"},
-                              {DecisionStage::WhileHacking, "WhileHacking"},
-                              {DecisionStage::DoneHacking, "DoneHacking"},
-                              {DecisionStage::Final, "Final"}})
-
+    {{DecisionMethod::MarjansDecisionMaker, "MarjansDecisionMaker"}})
 
 using SubmissionPool = std::vector<Submission>;
-
-
 
 
 template <typename ForwardIt>
@@ -176,7 +153,7 @@ public:
   
   PolicyChain will_be_hacking_decision_policies;
 
-  PolicyChain replication_stopping_decision_policy;
+  PolicyChain will_continue_replicating_decision_policy;
 
 
   //! If `true`, the Researcher will continue traversing through the
@@ -214,9 +191,10 @@ public:
     submissions_pool.clear();
   }
   
-  // TODO: This needs to be private but currently, I don't have a good place to put it.
-  // The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
-  // and I cannot just call it in any other methods because then it's hidden
+  /// \todo: This needs to be private but currently, I don't have a good place to put it.
+  /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
+  /// and I cannot just call it in any other methods because then it's hidden
+  /// 
   /// Reset the internal state of the decision strategy
   void reset() {
     is_still_hacking = false;
@@ -283,114 +261,6 @@ protected:
   
 };
 
-/// \ingroup    DecisionStrategies
-///
-/// \brief      Implementation of an impatient researcher. In this case, the
-///             Researcher will stop as soon as find a significant result and
-///             will not continue exploring other hacking methods in his
-///             arsenal.
-class ImpatientDecisionMaker final : public DecisionStrategy {
-
-public:
-  struct Parameters {
-    DecisionMethod name = DecisionMethod::ImpatientDecisionMaker;
-
-    std::vector<std::vector<std::string>> initial_selection_policies_defs;
-    std::vector<std::string> submission_decision_policies_defs;
-  };
-
-  Parameters params;
-
-  explicit ImpatientDecisionMaker(const Parameters &p) {
-
-    spdlog::debug("Registering decision policies...");
-
-    initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
-
-    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
-  }
-
-  bool willBeHacking(Experiment &experiment) override { return not has_any_candidates; };
-
-  virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChainSet &pchain_set) override;
-  
-  virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChainSet &pchain_set) override;
-};
-
-// JSON Parser for ImpatientDecisionStrategy::Parameters
-inline void to_json(json &j, const ImpatientDecisionMaker::Parameters &p) {
-  j = json{{"_name", p.name},
-           {"initial_selection_policies", p.initial_selection_policies_defs},
-           {"submission_decision_policies", p.submission_decision_policies_defs}};
-}
-
-inline void from_json(const json &j, ImpatientDecisionMaker::Parameters &p) {
-  j.at("_name").get_to(p.name);
-  j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
-  j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
-}
-
-///
-/// \ingroup    DecisionStrategies
-/// \brief      { item_description }
-///
-class PatientDecisionMaker final : public DecisionStrategy {
-
-public:
-  struct Parameters {
-    DecisionMethod name = DecisionMethod::PatientDecisionMaker;
-
-    std::vector<std::vector<std::string>> initial_selection_policies_defs;
-    std::vector<std::string> submission_decision_policies_defs;
-    std::vector<std::vector<std::string>> between_hacks_selection_policies_defs;
-    std::vector<std::vector<std::string>> between_replications_selection_policies_defs;
-  };
-
-  Parameters params;
-
-  explicit PatientDecisionMaker(const Parameters &p) : params{p} {
-
-    initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
-
-    between_hacks_selection_policies = PolicyChainSet(p.between_hacks_selection_policies_defs, lua);
-
-    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
-    
-    between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
-  };
-
-  virtual DecisionStrategy &verdict(Experiment *experiment,
-                                    PolicyChainSet &pchain_set) override;
-  
-  virtual DecisionStrategy &verdict(SubmissionPool &spool,
-                                    PolicyChainSet &pchain_set) override;
-
-  // She is always hacking
-  virtual bool willBeHacking(Experiment &experiment) override { return true; }
-};
-
-// JSON Parser for PatientDecisionStrategy::Parameters
-inline void to_json(json &j, const PatientDecisionMaker::Parameters &p) {
-  j = json{{"_name", p.name},
-           {"initial_selection_policies", p.initial_selection_policies_defs},
-           {"submission_decision_policies", p.submission_decision_policies_defs},
-           {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
-           {"between_replications_selection_policies", p.between_replications_selection_policies_defs}
-  };
-}
-
-inline void from_json(const json &j, PatientDecisionMaker::Parameters &p) {
-  j.at("_name").get_to(p.name);
-  j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
-  j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
-  j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
-  j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
-}
-
-
-
 ///
 /// \ingroup    DecisionStrategies
 /// \brief      { item_description }
@@ -408,7 +278,7 @@ public:
     
     std::vector<std::string> will_be_hacking_decision_policies_def;
     
-    std::vector<std::string> replication_stopping_decision_policy_def;
+    std::vector<std::string> will_continue_replicating_decision_policy_def;
   };
 
   Parameters params;
@@ -425,7 +295,7 @@ public:
     
     will_be_hacking_decision_policies = PolicyChain(p.will_be_hacking_decision_policies_def, lua);
     
-    replication_stopping_decision_policy = PolicyChain(p.replication_stopping_decision_policy_def, lua);
+    will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, lua);
   };
 
   virtual DecisionStrategy &verdict(Experiment *experiment,
@@ -439,7 +309,7 @@ public:
   virtual bool willContinueHacking(PolicyChain &pchain) override;
 };
 
-// JSON Parser for PatientDecisionStrategy::Parameters
+// JSON Parser for MarjansDecisionStrategy::Parameters
 inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
            {"initial_selection_policies", p.initial_selection_policies_defs},
@@ -447,7 +317,7 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
            {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
            {"between_replications_selection_policies", p.between_replications_selection_policies_defs},
           {"will_be_hacking_decision_policies", p.will_be_hacking_decision_policies_def},
-          {"replication_stopping_decision_policy", p.replication_stopping_decision_policy_def}
+          {"will_continue_replicating_decision_policy", p.will_continue_replicating_decision_policy_def}
   };
 }
 
@@ -458,7 +328,7 @@ inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
   j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
   j.at("will_be_hacking_decision_policies").get_to(p.will_be_hacking_decision_policies_def);
-  j.at("replication_stopping_decision_policy").get_to(p.replication_stopping_decision_policy_def);
+  j.at("will_continue_replicating_decision_policy").get_to(p.will_continue_replicating_decision_policy_def);
 }
 
 

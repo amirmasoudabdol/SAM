@@ -99,15 +99,15 @@
                     "effect > 0"
                 ]
             ],
-            "replication_stopping_decision_policy": [
-                ""
-            ],
             "submission_decision_policies": [
                 ""
             ],
             "will_be_hacking_decision_policies": [
-                "effect > 0",
-                "sig"
+                "effect < 0",
+                "!sig"
+            ],
+            "will_continue_replicating_decision_policy": [
+                ""
             ]
         },
         "hacking_strategies": [

@@ -16,7 +16,7 @@ void Researcher::letTheHackBegin() {
   
   Experiment copy_of_experiment = *experiment;
   
-  bool found_something {false};
+  bool found_something_and_done_hacking {false};
   
   for (auto &step : workflow) {
     /// In each step, we either run a hack or a policy
@@ -39,17 +39,15 @@ void Researcher::letTheHackBegin() {
           /// Performing a Decision
           /// With PolicyChain, we can only validate if a submission passes all the criteria
           
-          /// \todo: willBeSubmitting should be replaced by willContinueHacking, I just used it because willCotinueHacking has
-          /// a different signiture now
           if (decision_strategy->hasSubmissionCandidate() and !decision_strategy->willContinueHacking(decision_policy)) {
-            found_something = true;
+            found_something_and_done_hacking = true;
           }
         }
       
     }, step);
     
     /// We leave the workflow when we have a submission, and it also passes the decision policy
-    if (found_something) {
+    if (found_something_and_done_hacking) {
       return;
     }
     
@@ -125,8 +123,7 @@ void Researcher::research() {
     
     /// Checking if hacknig is necessary
     if (isHacker() and
-        (not decision_strategy->has_a_final_candidate) and
-        decision_strategy->willBeHacking(*experiment)) {
+        decision_strategy->willContinueHacking(decision_strategy->will_be_hacking_decision_policies)) {
       letTheHackBegin();
     }else if (experiment->setup.nreps() <= 1) {
       checkAndsubmitTheResearch();
@@ -176,8 +173,8 @@ void Researcher::research() {
     /// \todo: This is an ugly `if`, but it works, the problem is that WillBeSubmitting is not designed robust enough
     /// to handle this situation.
     if (decision_strategy->has_a_final_candidate
-        and (!decision_strategy->replication_stopping_decision_policy.empty()
-        and decision_strategy->willBeSubmitting(decision_strategy->replication_stopping_decision_policy))) {
+        and (!decision_strategy->will_continue_replicating_decision_policy.empty()
+        and decision_strategy->willBeSubmitting(decision_strategy->will_continue_replicating_decision_policy))) {
       break;
     }
     
