@@ -188,8 +188,8 @@ public:
                   researcher.workflow.push_back(PolicyChainSet{p["selection"].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
               } else {
                 // It's a decision
-                if (!p["will_continue_hacking"].empty())
-                  researcher.workflow.push_back(PolicyChain{p["will_continue_hacking"].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
+                if (!p["will_continue_hacking_decision_policy"].empty())
+                  researcher.workflow.push_back(PolicyChain{p["will_continue_hacking_decision_policy"].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
               }
             }
             

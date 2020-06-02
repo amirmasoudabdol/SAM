@@ -129,7 +129,7 @@
                         ]
                     },
                     {
-                        "will_continue_hacking": [
+                        "will_continue_hacking_decision_policy": [
                             "effect < 0",
                             "!sig"
                         ]
@@ -157,7 +157,7 @@
                         ]
                     },
                     {
-                        "will_continue_hacking": [
+                        "will_continue_hacking_decision_policy": [
                             "effect < 0",
                             "!sig"
                         ]
