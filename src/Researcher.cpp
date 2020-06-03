@@ -16,7 +16,7 @@ void Researcher::letTheHackBegin() {
   
   Experiment copy_of_experiment = *experiment;
   
-  bool found_something_and_done_hacking {false};
+  bool stopped_hacking {false};
   
   for (auto &step : h_workflow) {
     /// In each step, we either run a hack or a policy
@@ -39,15 +39,17 @@ void Researcher::letTheHackBegin() {
           /// Performing a Decision
           /// With PolicyChain, we can only validate if a submission passes all the criteria
           
-          if (decision_strategy->willContinueHacking(decision_policy)) {
-            found_something_and_done_hacking = true;
+          if (!decision_strategy->willContinueHacking(decision_policy)) {
+            stopped_hacking = true;
           }
         }
       
     }, step);
     
     /// We leave the workflow when we have a submission, and it also passes the decision policy
-    if (found_something_and_done_hacking) {
+    if (stopped_hacking) {
+      spdlog::debug("✓ Found something during hacking!");
+      spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
       return;
     }
     
