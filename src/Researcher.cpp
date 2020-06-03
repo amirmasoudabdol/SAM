@@ -120,12 +120,14 @@ void Researcher::research() {
     // Computing the statistics, effects, etc.
     computeStuff();
     
-    /// Checking the Initial Policies
+    /// -----------------
+    /// Initial SELECTION
     spdlog::debug("→ Checking the INITIAL policies");
     decision_strategy->selectOutcomeFromExperiment(experiment,
                                   decision_strategy->initial_selection_policies);
     
-    
+    /// ----------------------
+    /// WillBeHacking DECISION
     if (isHacker() and
         decision_strategy->willStartHacking()) {
       /// If we are a hacker, and we decide to start hacking — based on the current submission —,
@@ -133,63 +135,44 @@ void Researcher::research() {
       
       letTheHackBegin();
       
-    } else if (experiment->setup.nreps() <= 1) {
-      /// If we only doing one replication, and we already have something,
-      /// then we are done. We'll check the submission, and decide whether
-      /// we want to submit it or not
-      
-      checkAndsubmitTheResearch(decision_strategy->submission_candidate);
-      
-      decision_strategy->reset();
-      experiment->clear();
-      
-      this->submissions_from_reps.clear();
-      
-      return;
+      /// ------------------------------
+      /// BetweenHackedOutcome SELECTION
+      if (not decision_strategy->submission_candidate and
+          not decision_strategy->submissions_pool.empty()){
+        /// If the pool of viable submissions is not empty, then we have to choose between them!
+        /// Otherwise, we don't have to look into the pile!
+        
+        {
+          spdlog::debug("→ Selecting between Hacked and Stashed Outcome!");
+          for (auto &sub : decision_strategy->submissions_pool)
+            spdlog::debug("\t{}", sub);
+          spdlog::debug("-----^");
+          assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
+        } // Logging
+        
+        decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
+                                                 decision_strategy->between_hacks_selection_policies);
+      }
+
     }
     
-    /// Checking if we are Patient, if so, going to select among those
-    if (not decision_strategy->submissions_pool.empty()
-        and not decision_strategy->submission_candidate){
-      
-      {
-        spdlog::debug("→ Checking the FINAL policies");
-        for (auto &sub : decision_strategy->submissions_pool)
-          spdlog::debug("\t{}", sub);
-        spdlog::debug("-----^");
-      } // Logging
-      assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
-      
-      decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
-                                    decision_strategy->between_hacks_selection_policies);
-    }
-     /// else
-     ///  then we don't need to look into the pile
-    
-    /// Checking the Submission Policies
-    /// If we have a final candidate, and it's submitable, we are saving it to the submissions_from_reps
-    if (decision_strategy->submission_candidate
-        and decision_strategy->willBeSubmitting(decision_strategy->submission_candidate, decision_strategy->submission_decision_policies)) {
+    /// ---------------------
+    /// Replication Stashings
+    if (decision_strategy->willBeSubmitting(decision_strategy->submission_candidate, decision_strategy->submission_decision_policies)) {
+      /// If we have a submittable candidate, then we collect it
       
       {
         spdlog::debug("Final Submission Candidate: ");
         spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
-      }
+      } // Logging
       
-      last_submission_candidate = decision_strategy->submission_candidate.value();
-      
-      submissions_from_reps.push_back(last_submission_candidate);
+      submissions_from_reps.push_back(decision_strategy->submission_candidate.value());
       
     }
-    /// else: She didn't find anything, and nothing will be submitted to the Journal.
-    ///       Current experiment will be discarded...
     
-    /// \todo: This is an ugly `if`, but it works, the problem is that WillBeSubmitting is not designed robust enough
-    /// to handle this situation.
-    /// \todo: this can move to the for-loop check
-    if (decision_strategy->submission_candidate
-        and (!decision_strategy->will_continue_replicating_decision_policy.empty()
-        and decision_strategy->willBeSubmitting(decision_strategy->submission_candidate, decision_strategy->will_continue_replicating_decision_policy))) {
+    /// ----------------------------------
+    /// Will Continue Replicating DECISION
+    if (!decision_strategy->willContinueReplicating(decision_strategy->will_continue_replicating_decision_policy)) {
       break;
     }
     
@@ -198,6 +181,7 @@ void Researcher::research() {
     
   }
   
+  /// BetweenReplications SELECTION
   if (submissions_from_reps.size() > 1) {
     /// If we have done more than one replication, then we have to select between them
     {
@@ -209,10 +193,6 @@ void Researcher::research() {
   }else{
     /// If we did only one replication, then if there is anything, that's our final submission
     if (submissions_from_reps.size() == 1) {
-      /// \todo: The reason I have to do this is that all functions depends on internal states of
-      /// DecisionStrategy, if everything is more functional, then I don't have to do this...
-      /// \todo Specially this one is unnecessary, I've already cleaned up the decision_strategy, and has to
-      /// do this only for the checkAndSubmit function
       decision_strategy->submission_candidate = submissions_from_reps.front();
     }
   }

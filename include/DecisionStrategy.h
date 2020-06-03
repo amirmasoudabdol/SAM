@@ -165,13 +165,13 @@ public:
   /// whether the next hacking strategy is going to be executed or not!
   ///
   /// @param  experiment A reference to the experiment
-  virtual bool willContinueHacking(PolicyChain &pchain) {return false;};
+  virtual bool willContinueHacking(PolicyChain &pchain) {return false; };
   
   
   /// Submission
   bool willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain);
   
-  bool willBeReplicating(PolicyChain &pchain);
+  virtual bool willContinueReplicating(PolicyChain &pchain) {return false; };
   
   /// Clear the contents of the decision strategy, this include the
   /// submission pools or other collected information by the decision
@@ -291,6 +291,8 @@ public:
   virtual bool willStartHacking() override;
   
   virtual bool willContinueHacking(PolicyChain &pchain) override;
+  
+  virtual bool willContinueReplicating(PolicyChain &pchain) override;
 };
 
 // JSON Parser for MarjansDecisionStrategy::Parameters

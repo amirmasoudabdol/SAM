@@ -65,7 +65,6 @@ public:
   bool isHacker() const { return is_hacker; }
 
   //! A Submission record that Researcher is going to submit to the Journal
-  Submission last_submission_candidate;
   SubmissionPool submissions_from_reps;
 
   void preProcessData();

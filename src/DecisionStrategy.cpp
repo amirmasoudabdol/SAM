@@ -184,6 +184,9 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
 bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
 
+  if (pchain.empty())
+    return true;
+  
   // Checking whether all policies are returning `true`
   if (sub)
       return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
@@ -214,6 +217,28 @@ bool MarjansDecisionMaker::willStartHacking() {
 bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
+  
+  if (pchain.empty())
+    return true;
+  
+  if (submission_candidate) {
+    return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
+        return policy.func(this->submission_candidate.value());
+        });
+  }else{
+    return true;
+  }
+  
+};
+
+
+bool MarjansDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
+  
+  // Checking whether all policies are returning `true`
+  
+  if (pchain.empty())
+    return true;
+  
   if (submission_candidate) {
     return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
         return policy.func(this->submission_candidate.value());
