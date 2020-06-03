@@ -201,6 +201,25 @@ public:
     }
   };
   
+  
+  
+  /// Create and save all possible submissions from an experiment, if they pass
+  /// the given policy predicate
+  ///
+  /// @param experiment a reference to the experiment
+  /// @param pchain a policy chain, usually stored in `stashing_policy` in the config file
+  void saveOutcomes(Experiment &experiment, PolicyChain &pchain) {
+    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
+         ++i, ++d %= experiment.setup.nd()) {
+      Submission sub{experiment, i};
+      auto verdict = std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
+                                          return policy.func(sub);
+                                        });
+      if (verdict)
+        submissions_pool.push_back(sub);
+    }
+  }
+  
 protected:
   
   /// A helper method to save the current submission. This needs to be called
@@ -237,6 +256,8 @@ public:
     std::vector<std::string> will_start_hacking_decision_policies_def;
     
     std::vector<std::string> will_continue_replicating_decision_policy_def;
+    
+    std::vector<std::string> stashing_policy_def;
   };
 
   Parameters params;
@@ -254,6 +275,8 @@ public:
     will_start_hacking_decision_policies = PolicyChain(p.will_start_hacking_decision_policies_def, lua);
     
     will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, lua);
+    
+    stashing_policy = PolicyChain(p.stashing_policy_def, lua);
   };
 
   virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
@@ -275,7 +298,8 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
            {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
            {"between_replications_selection_policies", p.between_replications_selection_policies_defs},
           {"will_start_hacking_decision_policies", p.will_start_hacking_decision_policies_def},
-          {"will_continue_replicating_decision_policy", p.will_continue_replicating_decision_policy_def}
+          {"will_continue_replicating_decision_policy", p.will_continue_replicating_decision_policy_def},
+          {"stashing_policy", p.stashing_policy_def}
   };
 }
 
@@ -287,6 +311,7 @@ inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
   j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
   j.at("will_start_hacking_decision_policies").get_to(p.will_start_hacking_decision_policies_def);
   j.at("will_continue_replicating_decision_policy").get_to(p.will_continue_replicating_decision_policy_def);
+  j.at("stashing_policy").get_to(p.stashing_policy_def);
 }
 
 

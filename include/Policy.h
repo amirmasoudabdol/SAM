@@ -89,7 +89,7 @@ struct Policy {
       func = lua[f_name];
       def = p_def;
       
-    }  else if (p_def.find("random") != std::string::npos) {
+    } else if (p_def.find("random") != std::string::npos) {
 
       type = PolicyType::Random;
       func = sol::function();
@@ -184,7 +184,8 @@ private:
 
       {"max_script", "function {} (l, r) return l.{} > r.{} end"},
 
-      {"comp_script", "function {} (d) return d.{} end"}};
+      {"comp_script", "function {} (d) return d.{} end"}
+      };
 
   std::map<std::string, std::string> cops = {
       {">=", "greater_eq"}, {"<=", "lesser_eq"}, {">", "greater"},

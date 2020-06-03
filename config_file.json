@@ -62,6 +62,9 @@
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "MarjansDecisionMaker",
+            "stashing_policy": [
+                "all"
+            ],
             "between_hacks_selection_policies": [
                 [
                     "effect > 0",
