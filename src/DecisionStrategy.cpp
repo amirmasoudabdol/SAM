@@ -182,19 +182,24 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
   spdlog::debug("✗ Found none in the pile!");
 }
 
-bool DecisionStrategy::willBeSubmitting(PolicyChain &pchain) {
+bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
 
   // Checking whether all policies are returning `true`
-  auto is_it_submittable =
-      std::all_of(pchain.begin(), pchain.end(), [this](auto &policy) {
-        return policy.func(this->submission_candidate);
+  if (sub)
+      return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
+        return policy.func(sub.value());
       });
+  else
+      return false;
 
-  return is_it_submittable;
 }
 
+
+/// @brief  Decides whether we are going to start hacking or not.
+/// In this canse, we only check if the `current_submission` complies with
+/// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
+/// if no, then we will not continue to the hacking procedure
 bool MarjansDecisionMaker::willStartHacking() {
-  /// \todo: Watch out, this might cause issues, I'm calling it in other places with different signicutes
   return willContinueHacking(will_start_hacking_decision_policies);
 };
 
@@ -222,7 +227,8 @@ bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
 DecisionStrategy &MarjansDecisionMaker::selectOutcomeFromExperiment(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
-  saveEveryOutcome(*experiment);
+  
+  saveOutcomes(*experiment, stashing_policy);
   
   spdlog::debug("Collected pile of every submission: ");
   for (auto &s : submissions_pool) {

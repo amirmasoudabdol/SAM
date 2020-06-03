@@ -140,7 +140,7 @@ public:
   
   std::optional<Submission> submission_candidate;
   
-  //! List of selected Submission by the researcher.
+  //! List of selected Submission by the researcher, during the hacking procedure
   SubmissionPool submissions_pool;
 
   /// TODO: These guys should move to their own class, I don't have to keep everything here!
@@ -153,8 +153,25 @@ public:
 
   PolicyChain will_continue_replicating_decision_policy;
   
+  PolicyChain stashing_policy;
+  
+  
+  /// @brief  Indicates whether the researcher will start going to the hacking procedure.
+  /// The default here is to not go for hacking if we already have one candidate; but this
+  /// can be overridden in different decision strategies
+  virtual bool willStartHacking() { return false; };
+  
+  /// @brief  This will be used by `letTheHackBegin` and uses the decision policy to decide
+  /// whether the next hacking strategy is going to be executed or not!
+  ///
+  /// @param  experiment A reference to the experiment
+  virtual bool willContinueHacking(PolicyChain &pchain) {return false;};
+  
+  
   /// Submission
-  bool willBeSubmitting(PolicyChain &pchain);
+  bool willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain);
+  
+  bool willBeReplicating(PolicyChain &pchain);
   
   /// Clear the contents of the decision strategy, this include the
   /// submission pools or other collected information by the decision
@@ -172,20 +189,6 @@ public:
     submission_candidate.reset();
     clear();
   }
-  
-  /// @brief  Indicates whether the researcher will start going to the hacking procedure.
-  /// The default here is to not go for hacking if we already have one candidate; but this
-  /// can be overridden in different decision strategies
-  virtual bool willStartHacking() { return false; };
-  
-  
-  
-  /// @brief  This will be used by `letTheHackBegin` and uses the decision policy to decide
-  /// whether the next hacking strategy is going to be executed or not!
-  ///
-  /// @param  experiment A reference to the experiment
-  virtual bool willContinueHacking(PolicyChain &pchain) {return false;};
-  
   
   /// \brief      Implementation of decision-making procedure.
   virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,

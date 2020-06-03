@@ -18,7 +18,7 @@ void Researcher::letTheHackBegin() {
   
   bool found_something_and_done_hacking {false};
   
-  for (auto &step : workflow) {
+  for (auto &step : h_workflow) {
     /// In each step, we either run a hack or a policy
     std::visit(overload {
 
@@ -81,10 +81,10 @@ void Researcher::preProcessData() {
 ///
 /// \todo Maybe I should pass the `final_submission` to this, and don't rely on it
 /// reading it from the `decision_strategy`
-void Researcher::checkAndsubmitTheResearch() {
+void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub) {
   
-  if (decision_strategy->submission_candidate
-      and decision_strategy->willBeSubmitting(decision_strategy->submission_decision_policies)) {
+  if (sub and
+      decision_strategy->willBeSubmitting(sub, decision_strategy->submission_decision_policies)) {
     spdlog::debug("To be submitted submission: ");
     spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
     journal->review(decision_strategy->submission_candidate.value());
@@ -124,19 +124,22 @@ void Researcher::research() {
                                   decision_strategy->initial_selection_policies);
     
     
-    /// Whether we are going to start hacking
-    ///--------------------------------------
     if (isHacker() and
         decision_strategy->willStartHacking()) {
+      /// If we are a hacker, and we decide to start hacking — based on the current submission —,
+      /// then, we are going to the hacking procedure!
       
       letTheHackBegin();
       
-    }else if (experiment->setup.nreps() <= 1) {
-      checkAndsubmitTheResearch();
+    } else if (experiment->setup.nreps() <= 1) {
+      /// If we only doing one replication, and we already have something,
+      /// then we are done. We'll check the submission, and decide whether
+      /// we want to submit it or not
+      
+      checkAndsubmitTheResearch(decision_strategy->submission_candidate);
       
       decision_strategy->reset();
       experiment->clear();
-//      decision_strategy->clear();
       
       this->submissions_from_reps.clear();
       
@@ -164,7 +167,7 @@ void Researcher::research() {
     /// Checking the Submission Policies
     /// If we have a final candidate, and it's submitable, we are saving it to the submissions_from_reps
     if (decision_strategy->submission_candidate
-        and decision_strategy->willBeSubmitting(decision_strategy->submission_decision_policies)) {
+        and decision_strategy->willBeSubmitting(decision_strategy->submission_candidate, decision_strategy->submission_decision_policies)) {
       
       {
         spdlog::debug("Final Submission Candidate: ");
@@ -184,18 +187,17 @@ void Researcher::research() {
     /// \todo: this can move to the for-loop check
     if (decision_strategy->submission_candidate
         and (!decision_strategy->will_continue_replicating_decision_policy.empty()
-        and decision_strategy->willBeSubmitting(decision_strategy->will_continue_replicating_decision_policy))) {
+        and decision_strategy->willBeSubmitting(decision_strategy->submission_candidate, decision_strategy->will_continue_replicating_decision_policy))) {
       break;
     }
     
-    //    decision_strategy->clear();
     // Reset also clear the decision strategy
     decision_strategy->reset();
-    experiment->clear();
     
   }
   
   if (submissions_from_reps.size() > 1) {
+    /// If we have done more than one replication, then we have to select between them
     {
       spdlog::debug("__________");
       spdlog::debug("→ Choosing Between Replications");
@@ -203,16 +205,21 @@ void Researcher::research() {
     }
     decision_strategy->selectOutcomeFromPool(submissions_from_reps, decision_strategy->between_reps_policies);
   }else{
+    /// If we did only one replication, then if there is anything, that's our final submission
     if (submissions_from_reps.size() == 1) {
+      /// \todo: The reason I have to do this is that all functions depends on internal states of
+      /// DecisionStrategy, if everything is more functional, then I don't have to do this...
+      /// \todo Specially this one is unnecessary, I've already cleaned up the decision_strategy, and has to
+      /// do this only for the checkAndSubmit function
       decision_strategy->submission_candidate = submissions_from_reps.front();
     }
   }
   
-  checkAndsubmitTheResearch();
+  checkAndsubmitTheResearch(decision_strategy->submission_candidate);
   
   decision_strategy->reset();
   experiment->clear();
   
-  this->submissions_from_reps.clear();
+  submissions_from_reps.clear();
   
 }

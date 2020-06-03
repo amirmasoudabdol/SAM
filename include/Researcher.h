@@ -22,7 +22,7 @@ using json = nlohmann::json;
 
 class ResearcherBuilder;
 
-using Workflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>;
+using HackingWorkflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>;
 
 class Researcher {
   // Making the ResearcherBuilder a friend class in order to give it access to
@@ -70,13 +70,13 @@ public:
 
   void preProcessData();
   
-  Workflow workflow;
+  HackingWorkflow h_workflow;
   
   void research();
   void letTheHackBegin();
   
   
-  void checkAndsubmitTheResearch();
+  void checkAndsubmitTheResearch(const std::optional<Submission> &sub);
 
   // This could be renamed to something like, selectThePreferedSubmission()
 //  void prepareTheSubmission();
@@ -180,16 +180,16 @@ public:
         
         for (auto &item : set) {
           if (item.type() == nlohmann::detail::value_t::object) {
-            researcher.workflow.push_back(HackingStrategy::build(item));
+            researcher.h_workflow.push_back(HackingStrategy::build(item));
           }else if (item.type() == nlohmann::detail::value_t::array) {
             for (auto &p : item) {
               if (p.contains("selection")) {
                 if (!p["selection"].empty())
-                  researcher.workflow.push_back(PolicyChainSet{p["selection"].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+                  researcher.h_workflow.push_back(PolicyChainSet{p["selection"].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
               } else {
                 // It's a decision
                 if (!p["will_continue_hacking_decision_policy"].empty())
-                  researcher.workflow.push_back(PolicyChain{p["will_continue_hacking_decision_policy"].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
+                  researcher.h_workflow.push_back(PolicyChain{p["will_continue_hacking_decision_policy"].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
               }
             }
             
