@@ -39,7 +39,7 @@ void Researcher::letTheHackBegin() {
           /// Performing a Decision
           /// With PolicyChain, we can only validate if a submission passes all the criteria
           
-          if (decision_strategy->hasSubmissionCandidate() and decision_strategy->willContinueHacking(decision_policy)) {
+          if (decision_strategy->willContinueHacking(decision_policy)) {
             found_something_and_done_hacking = true;
           }
         }
@@ -83,11 +83,11 @@ void Researcher::preProcessData() {
 /// reading it from the `decision_strategy`
 void Researcher::checkAndsubmitTheResearch() {
   
-  if (decision_strategy->has_a_final_candidate
+  if (decision_strategy->submission_candidate
       and decision_strategy->willBeSubmitting(decision_strategy->submission_decision_policies)) {
     spdlog::debug("To be submitted submission: ");
-    spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
-    journal->review(decision_strategy->final_submission_candidate);
+    spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
+    journal->review(decision_strategy->submission_candidate.value());
   }
   
 }
@@ -102,8 +102,10 @@ void Researcher::research() {
   // Performing maximum `nreps` replications
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep){
     
-    spdlog::debug("–––––––––––––––––––");
-    spdlog::debug("Replication #{} ↓", rep);
+    {
+      spdlog::debug("–––––––––––––––––––");
+      spdlog::debug("Replication #{} ↓", rep);
+    }
   
     experiment->generateData();
     
@@ -121,7 +123,9 @@ void Researcher::research() {
     decision_strategy->selectOutcomeFromExperiment(experiment,
                                   decision_strategy->initial_selection_policies);
     
-    /// Checking if hacknig is necessary
+    
+    /// Whether we are going to start hacking
+    ///--------------------------------------
     if (isHacker() and
         decision_strategy->willStartHacking()) {
       
@@ -141,13 +145,14 @@ void Researcher::research() {
     
     /// Checking if we are Patient, if so, going to select among those
     if (not decision_strategy->submissions_pool.empty()
-        and not decision_strategy->has_a_final_candidate){
+        and not decision_strategy->submission_candidate){
       
-      spdlog::debug("→ Checking the FINAL policies");
-      for (auto &sub : decision_strategy->submissions_pool)
-        spdlog::debug("\t{}", sub);
-      spdlog::debug("-----^");
-      
+      {
+        spdlog::debug("→ Checking the FINAL policies");
+        for (auto &sub : decision_strategy->submissions_pool)
+          spdlog::debug("\t{}", sub);
+        spdlog::debug("-----^");
+      } // Logging
       assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
       
       decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
@@ -158,13 +163,15 @@ void Researcher::research() {
     
     /// Checking the Submission Policies
     /// If we have a final candidate, and it's submitable, we are saving it to the submissions_from_reps
-    if (decision_strategy->has_a_final_candidate
+    if (decision_strategy->submission_candidate
         and decision_strategy->willBeSubmitting(decision_strategy->submission_decision_policies)) {
       
-      spdlog::debug("Final Submission Candidate: ");
-      spdlog::debug("\t{}", decision_strategy->final_submission_candidate);
+      {
+        spdlog::debug("Final Submission Candidate: ");
+        spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
+      }
       
-      last_submission_candidate = decision_strategy->final_submission_candidate;
+      last_submission_candidate = decision_strategy->submission_candidate.value();
       
       submissions_from_reps.push_back(last_submission_candidate);
       
@@ -175,7 +182,7 @@ void Researcher::research() {
     /// \todo: This is an ugly `if`, but it works, the problem is that WillBeSubmitting is not designed robust enough
     /// to handle this situation.
     /// \todo: this can move to the for-loop check
-    if (decision_strategy->has_a_final_candidate
+    if (decision_strategy->submission_candidate
         and (!decision_strategy->will_continue_replicating_decision_policy.empty()
         and decision_strategy->willBeSubmitting(decision_strategy->will_continue_replicating_decision_policy))) {
       break;
@@ -189,14 +196,15 @@ void Researcher::research() {
   }
   
   if (submissions_from_reps.size() > 1) {
-    spdlog::debug("__________");
-    spdlog::debug("→ Choosing Between Replications");
-    assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
+    {
+      spdlog::debug("__________");
+      spdlog::debug("→ Choosing Between Replications");
+      assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
+    }
     decision_strategy->selectOutcomeFromPool(submissions_from_reps, decision_strategy->between_reps_policies);
   }else{
     if (submissions_from_reps.size() == 1) {
-      decision_strategy->final_submission_candidate = submissions_from_reps.front();
-      decision_strategy->has_a_final_candidate = true;
+      decision_strategy->submission_candidate = submissions_from_reps.front();
     }
   }
   

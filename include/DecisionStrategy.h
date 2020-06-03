@@ -138,9 +138,7 @@ public:
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
   
-  Submission current_submission_candidate;
-  
-  Submission final_submission_candidate;
+  std::optional<Submission> submission_candidate;
   
   //! List of selected Submission by the researcher.
   SubmissionPool submissions_pool;
@@ -154,32 +152,6 @@ public:
   PolicyChain will_start_hacking_decision_policies;
 
   PolicyChain will_continue_replicating_decision_policy;
-
-
-  //! If `true`, the Researcher will continue traversing through the
-  //! hacknig methods, otherwise, he/she will stop the hacking and
-  //! prepare the finalSubmission. It will be updated on each call of
-  //! verdict(). Basically verdict() decides if the Researcher is
-  //! happy with the submission record or not.
-  bool is_still_hacking{false};
-
-  bool will_be_submitting{false};
-
-  bool has_any_candidates{false};
-  
-  bool has_a_final_candidate{false};
-
-  bool hasSubmissionCandidate() const { return has_any_candidates; };
-
-  /// Experiment
-//  void operator()(Experiment *experiment, PolicyChainSet &pchain_set) {
-//    selectOutcomeFromExperiment(experiment, pchain_set);
-//  }
-//
-//  /// Submission Pool
-//  void operator()(SubmissionPool &spool, PolicyChainSet &pchain_set) {
-//    selectOutcomeFromPool(spool, pchain_set);
-//  }
   
   /// Submission
   bool willBeSubmitting(PolicyChain &pchain);
@@ -197,21 +169,14 @@ public:
   /// 
   /// Reset the internal state of the decision strategy
   void reset() {
-    is_still_hacking = false;
-    will_be_submitting = false;
-    has_any_candidates = false;
-    has_a_final_candidate = false;
+    submission_candidate.reset();
     clear();
   }
   
-  
-  /// The logic of continuation should be implemented here. Researcher will
-  /// ask this method to asses the state of its progress.
-  /// TODO: Consider making this just virtual and not pure abstract,
-  /// maybe this implementation bool willBeHacking() override { return not has_any_candidates; };
-//  virtual bool willBeHacking() {return not has_any_candidates; };
-  
-  virtual bool willStartHacking() { return not has_any_candidates; };
+  /// @brief  Indicates whether the researcher will start going to the hacking procedure.
+  /// The default here is to not go for hacking if we already have one candidate; but this
+  /// can be overridden in different decision strategies
+  virtual bool willStartHacking() { return false; };
   
   
   
@@ -223,14 +188,6 @@ public:
   
   
   /// \brief      Implementation of decision-making procedure.
-  ///
-  /// \param      experiment
-  /// \param[in]  stage       The stage in which the researcher is asking
-  ///                         for the verdict. The implementation of verdict
-  ///                         sould provide different procedure for different
-  ///                         stages of the development.
-  ///
-  /// \return     A boolean indicating whether result is satisfactory or not
   virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) = 0;
   
@@ -248,8 +205,9 @@ protected:
   
   /// A helper method to save the current submission. This needs to be called
   /// after verdict.
-  void saveCurrentSubmission() {
-    submissions_pool.push_back(current_submission_candidate);
+  void saveCurrentSubmissionCandidate() {
+    if (submission_candidate)
+      submissions_pool.push_back(submission_candidate.value());
   };
   
 

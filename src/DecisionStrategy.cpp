@@ -111,10 +111,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
       std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
 
       if (found_sth_unique) {
-        current_submission_candidate = Submission{experiment, begin->id_};
-        final_submission_candidate = current_submission_candidate;
-        has_any_candidates = true;
-        has_a_final_candidate = true;
+        submission_candidate = Submission{experiment, begin->id_};
         spdlog::debug("✓ Found One!");
         return;
       }
@@ -128,10 +125,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     
     // This has to be here
     if (begin+1 == end) {
-      current_submission_candidate = Submission{experiment, begin->id_};
-      final_submission_candidate = current_submission_candidate;
-      has_any_candidates = true;
-      has_a_final_candidate = true;
+      submission_candidate = Submission{experiment, begin->id_};
       spdlog::debug("✓ Found the only one!");
       return;
     }else if (begin != end) { /// We found a bunch
@@ -141,7 +135,6 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
         submissions_pool.emplace_back(experiment, it->id_);
         spdlog::debug("\t {}", *it);
       }
-      has_any_candidates = true;
       return;
     } else {
       spdlog::debug("✗ Found nothing! To the next one!");
@@ -150,7 +143,6 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     pset_inx++;
   }
 
-  has_any_candidates = false;
 }
 
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
@@ -176,8 +168,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
       if (found_something) {
         spdlog::debug("✓ Found something in the pile!");
-        final_submission_candidate = *begin;
-        has_a_final_candidate = true;
+        submission_candidate = *begin;
         return;
       } else {
         if (begin == end)
@@ -196,7 +187,7 @@ bool DecisionStrategy::willBeSubmitting(PolicyChain &pchain) {
   // Checking whether all policies are returning `true`
   auto is_it_submittable =
       std::all_of(pchain.begin(), pchain.end(), [this](auto &policy) {
-        return policy.func(this->final_submission_candidate);
+        return policy.func(this->submission_candidate);
       });
 
   return is_it_submittable;
@@ -218,9 +209,9 @@ bool MarjansDecisionMaker::willStartHacking() {
 bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
-  if (this->has_a_final_candidate) {
+  if (submission_candidate) {
     return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
-          return policy.func(this->final_submission_candidate);
+        return policy.func(this->submission_candidate.value());
         });
   }else{
     return true;
