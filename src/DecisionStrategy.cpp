@@ -184,8 +184,10 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
 bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
 
-  if (pchain.empty())
+  if (pchain.empty() and sub)
     return true;
+  else
+    return false;
   
   // Checking whether all policies are returning `true`
   if (sub)
