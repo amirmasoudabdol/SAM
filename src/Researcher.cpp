@@ -39,7 +39,8 @@ void Researcher::letTheHackBegin() {
           /// Performing a Decision
           /// With PolicyChain, we can only validate if a submission passes all the criteria
           
-          if (!decision_strategy->willContinueHacking(decision_policy)) {
+          if (!decision_strategy->willContinueHacking(&copy_of_experiment,
+                                                      decision_policy)) {
             stopped_hacking = true;
           }
         }
@@ -135,26 +136,27 @@ void Researcher::research() {
       
       letTheHackBegin();
       
-      /// ------------------------------
-      /// BetweenHackedOutcome SELECTION
-      if (not decision_strategy->submission_candidate and
-          not decision_strategy->submissions_pool.empty()){
-        /// If the pool of viable submissions is not empty, then we have to choose between them!
-        /// Otherwise, we don't have to look into the pile!
-        
-        {
-          spdlog::debug("→ Selecting between Hacked and Stashed Outcome!");
-          for (auto &sub : decision_strategy->submissions_pool)
-            spdlog::debug("\t{}", sub);
-          spdlog::debug("-----^");
-          assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
-        } // Logging
-        
-        decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
-                                                 decision_strategy->between_hacks_selection_policies);
-      }
-
     }
+    
+    /// ------------------------------
+    /// BetweenHackedOutcome SELECTION
+    if (not decision_strategy->submission_candidate and
+        not decision_strategy->submissions_pool.empty()){
+      /// If the pool of viable submissions is not empty, then we have to choose between them!
+      /// Otherwise, we don't have to look into the pile!
+      
+      {
+        spdlog::debug("→ Selecting between Hacked and Stashed Outcome!");
+        for (auto &sub : decision_strategy->submissions_pool)
+          spdlog::debug("\t{}", sub);
+        spdlog::debug("-----^");
+        // assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
+      } // Logging
+      
+      decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
+                                               decision_strategy->between_hacks_selection_policies);
+    }
+
     
     /// ---------------------
     /// Replication Stashings
@@ -172,7 +174,7 @@ void Researcher::research() {
     
     /// ----------------------------------
     /// Will Continue Replicating DECISION
-    if (!decision_strategy->willContinueReplicating(decision_strategy->will_continue_replicating_decision_policy)) {
+    if(!decision_strategy->willContinueReplicating(decision_strategy->will_continue_replicating_decision_policy)) {
       break;
     }
     

@@ -205,7 +205,16 @@ bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, Po
 /// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
 /// if no, then we will not continue to the hacking procedure
 bool MarjansDecisionMaker::willStartHacking() {
-  return willContinueHacking(will_start_hacking_decision_policies);
+    if (will_start_hacking_decision_policies.empty())
+      return true;
+    
+    if (submission_candidate) {
+      return std::any_of(will_start_hacking_decision_policies.begin(), will_start_hacking_decision_policies.end(), [this](auto &policy) -> bool {
+          return policy.func(this->submission_candidate.value());
+          });
+    }else{
+      return true;
+    }
 };
 
 
@@ -216,20 +225,31 @@ bool MarjansDecisionMaker::willStartHacking() {
 /// will check if **all** of the rules are passing.
 ///
 /// @param pchain a reference to the given policy chain
-bool MarjansDecisionMaker::willContinueHacking(PolicyChain &pchain) {
+bool MarjansDecisionMaker::willContinueHacking(Experiment *experiment,
+                                               PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
   
   if (pchain.empty())
     return true;
   
-  if (submission_candidate) {
-    return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
-        return policy.func(this->submission_candidate.value());
-        });
-  }else{
-    return true;
+//  if (submission_candidate) {
+//    return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
+//        return policy.func(this->submission_candidate.value());
+//        });
+//  }else{
+//    return true;
+//  }
+  
+  bool verdict {true};
+  for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
+  ++i, ++d %= experiment->setup.nd()) {
+    verdict &= std::any_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
+                  return policy.func(Submission{*experiment, i});
+                });
   }
+  
+  return verdict;
   
 };
 

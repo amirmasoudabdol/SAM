@@ -165,7 +165,8 @@ public:
   /// whether the next hacking strategy is going to be executed or not!
   ///
   /// @param  experiment A reference to the experiment
-  virtual bool willContinueHacking(PolicyChain &pchain) {return false; };
+  virtual bool willContinueHacking(Experiment *experiment,
+                                   PolicyChain &pchain) {return false; };
   
   
   /// Submission
@@ -290,7 +291,8 @@ public:
 
   virtual bool willStartHacking() override;
   
-  virtual bool willContinueHacking(PolicyChain &pchain) override;
+  virtual bool willContinueHacking(Experiment *experiment,
+                                   PolicyChain &pchain) override;
   
   virtual bool willContinueReplicating(PolicyChain &pchain) override;
 };
