@@ -8,7 +8,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
-#include <filesystem>
+//#include <filesystem>
 
 #include "sam.h"
 
@@ -64,12 +64,12 @@ int main(int argc, const char **argv) {
 
   json configs;
 
-  std::filesystem::path configfilename;
+  std::string configfilename;
   if (vm.count("config")) {
     configfilename = vm["config"].as<string>();
-    if (!exists(configfilename)){
-      throw std::invalid_argument("Config file doesn't exist");
-    }
+//    if (!exists(configfilename)){
+//      throw std::invalid_argument("Config file doesn't exist");
+//    }
   } else {
     configfilename = "/Users/amabdol/Projects/SAMpp/config_file.json";
   }
@@ -132,25 +132,25 @@ void runSimulation(json &simConfig) {
   // Initiate the csvWriter
   // I need an interface for this
   bool is_saving_pubs = simConfig["simulation_parameters"]["save_pubs"];
-  std::filesystem::path pubsfilename =
+  std::string pubsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_pubs.csv";
 
   bool is_saving_rejected = simConfig["simulation_parameters"]["save_rejected"];
-  std::filesystem::path rejectedfilename =
+  std::string rejectedfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_rejected.csv";
 
   bool is_saving_stats = simConfig["simulation_parameters"]["save_stats"];
-  std::filesystem::path statsfilename =
+  std::string statsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_stats.csv";
 
   bool is_saving_sims = simConfig["simulation_parameters"]["save_sims"];
-  std::filesystem::path simsfilename =
+  std::string simsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_sims.csv";
