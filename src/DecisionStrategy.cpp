@@ -153,7 +153,8 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     spdlog::debug("\t\t{}", s);
   }
   
-  assert(!pchain_set.empty() && "PolicySet is empty!");
+  if (pchain_set.empty())
+    return;   // we just don't have anything to work with
 
   for (auto &pchain : pchain_set) {
 

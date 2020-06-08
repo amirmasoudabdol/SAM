@@ -152,7 +152,7 @@ private:
   ///
   ///   \param experiment A pointer to the experiment
   ///   \param n number of new observations to be added
-  void addObservations(Experiment *experiment, const int &n);
+  void addObservations(Experiment *experiment, const int n);
 };
 
 inline void to_json(json &j, const OptionalStopping::Parameters &p) {

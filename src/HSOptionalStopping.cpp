@@ -24,14 +24,12 @@ void OptionalStopping::perform(Experiment *experiment) {
 
     addObservations(experiment, params.num);
 
-    // TODO: This can still be done nicer
+    /// \todo: This can still be done nicer
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
 
-//    if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
-//             .isStillHacking())
-//      return;
+    /// \todo Implement a stopping condition if it makes sense
     
   }
   
@@ -39,7 +37,7 @@ void OptionalStopping::perform(Experiment *experiment) {
     spdlog::debug("\t{}", g);
 }
 
-void OptionalStopping::addObservations(Experiment *experiment, const int &n) {
+void OptionalStopping::addObservations(Experiment *experiment, const int n) {
 
   // Get the new observations
   auto new_observations =
