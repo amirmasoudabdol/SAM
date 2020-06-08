@@ -180,9 +180,10 @@ struct Policy {
 
 private:
   std::map<std::string, std::string> lua_temp_scripts{
+    /// \todo these should be joined, they're technically the same!
       {"min_script", "function {} (l, r) return l.{} < r.{} end"},
 
-      {"max_script", "function {} (l, r) return l.{} > r.{} end"},
+      {"max_script", "function {} (l, r) return l.{} < r.{} end"},
 
       {"comp_script", "function {} (d) return d.{} end"}
       };
