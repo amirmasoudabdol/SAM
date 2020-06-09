@@ -153,6 +153,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     spdlog::debug("\t\t{}", s);
   }
   
+  /// \todo Check what this actually means!
   if (pchain_set.empty())
     return;   // we just don't have anything to work with
 
@@ -171,14 +172,28 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
         spdlog::debug("✓ Found something in the pile!");
         submission_candidate = *begin;
         return;
-      } else {
-        if (begin == end)
+      }
+        
+      if (begin == end)
           break;
         /// else:
         ///     We are still looking. This happens when I'm testing a comparison
-      }
     }
+    
+    if (begin+1 == end) {
+      submission_candidate = *end;
+      spdlog::debug("✓ Found the only one!");
+      return;
+    } else if (begin != end) { /// We found a bunch
+      /// This is not a acceptable case for now!
+      /// \todo But it should be!
+      return;
+    } else {
+      spdlog::debug("✓ Found nothing!");
+    }
+    
   }
+
 
   spdlog::debug("✗ Found none in the pile!");
 }
