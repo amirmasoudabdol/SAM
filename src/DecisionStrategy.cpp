@@ -96,7 +96,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
 
 //  spdlog::debug("---");
-  assert(!pchain_set.empty() && "PolicySet is empty!");
+  assert(!pchain_set.empty() && "PolicyChainSet is empty!");
   
   int pset_inx{0};
   for (auto &pchain : pchain_set) {
@@ -159,16 +159,16 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
   for (auto &pchain : pchain_set) {
 
-    auto found_something{false};
+    auto found_sth_unique{false};
     auto begin = spool.begin();
     auto end = spool.end();
 
     for (auto &policy : pchain) {
 
-      std::tie(found_something, begin, end) =
+      std::tie(found_sth_unique, begin, end) =
           checkThePolicy(begin, end, policy);
 
-      if (found_something) {
+      if (found_sth_unique) {
         spdlog::debug("✓ Found something in the pile!");
         submission_candidate = *begin;
         return;
