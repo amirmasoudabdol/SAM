@@ -181,7 +181,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     }
     
     if (begin+1 == end) {
-      submission_candidate = *end;
+      submission_candidate = *begin;
       spdlog::debug("✓ Found the only one!");
       return;
     } else if (begin != end) { /// We found a bunch
@@ -189,7 +189,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
       /// \todo But it should be!
       return;
     } else {
-      spdlog::debug("✓ Found nothing!");
+      spdlog::debug("✗ Found nothing!");
     }
     
   }
