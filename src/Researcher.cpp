@@ -49,8 +49,9 @@ void Researcher::letTheHackBegin() {
     
     /// We leave the workflow when we have a submission, and it also passes the decision policy
     if (stopped_hacking) {
-      spdlog::debug("✓ Found something during hacking!");
-      spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
+      /// \todo: Investigate why this triggered the bad_optional_access
+//      spdlog::debug("✓ Found something during hacking!");
+//      spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
       return;
     }
     
