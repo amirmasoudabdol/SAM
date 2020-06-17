@@ -101,7 +101,7 @@ checkThePolicy(const ForwardIt &begin, ForwardIt &end,
       spdlog::debug("Last: {}", p.def);
       spdlog::debug("\t {}", *begin);
 
-      return {true, end, end};
+      return {true, begin, end};
 
   } break;
 
