@@ -38,10 +38,12 @@ void Researcher::letTheHackBegin() {
         [&](PolicyChain &decision_policy) {
           /// Performing a Decision
           /// With PolicyChain, we can only validate if a submission passes all the criteria
-          
-          if (!decision_strategy->willContinueHacking(&copy_of_experiment,
-                                                      decision_policy)) {
+          spdlog::debug("Checking whether we are going to continue hacking or not?");
+          if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
+            spdlog::debug("Done Hacking!");
             stopped_hacking = true;
+          }else{
+            spdlog::debug("Continue Hacking...");
           }
         }
       

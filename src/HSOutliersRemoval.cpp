@@ -35,8 +35,9 @@ void OutliersRemoval::perform(Experiment *experiment) {
     }
   }
   
-  for (auto &g : experiment->groups_)
-    spdlog::debug("\t{}", g);
+  for (int g{0}; g < experiment->setup.ng(); ++g) {
+    spdlog::debug("\t {}", (*experiment)[g]);
+  }
 }
 
 int OutliersRemoval::removeOutliers(Experiment *experiment, const int n,

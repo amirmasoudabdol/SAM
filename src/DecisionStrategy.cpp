@@ -106,6 +106,10 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     auto found_sth_unique{false};
     auto begin = experiment.groups_.begin() + experiment.setup.nd();
     auto end = experiment.groups_.end();
+    
+    for (auto it{begin}; it != end; ++it) {
+      spdlog::debug("\t\t {}", *it);
+    }
 
     for (auto &p : pchain) {
       std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);

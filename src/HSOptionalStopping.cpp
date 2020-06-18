@@ -21,7 +21,8 @@ void OptionalStopping::perform(Experiment *experiment) {
   spdlog::debug("Optional Stopping: ");
 
   for (int t = 0; t < params.n_attempts && t < params.max_attempts; ++t) {
-
+    spdlog::debug("\t #{} attempt(s)", t);
+    
     addObservations(experiment, params.num);
 
     /// \todo: This can still be done nicer
@@ -33,10 +34,12 @@ void OptionalStopping::perform(Experiment *experiment) {
     
   }
   
-  for (auto &g : experiment->groups_)
-    spdlog::debug("\t{}", g);
+  for (int g{0}; g < experiment->setup.ng(); ++g) {
+    spdlog::debug("\t {}", (*experiment)[g]);
+  }
 }
 
+/// \todo This can be static and be used by other similar methods, e.g., Subjective Optional Stopping
 void OptionalStopping::addObservations(Experiment *experiment, const int n) {
 
   // Get the new observations

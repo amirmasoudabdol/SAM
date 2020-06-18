@@ -46,7 +46,7 @@ public: // Public for now
   double stddev_{0};
   double sei_{0};
 
-  bool is_stats_updated_{false};
+  bool is_stats_up_to_date{false};
 
   /// --- Test statistics
   /// ... These can be their own type, and determined by the TestStrategies
@@ -79,7 +79,7 @@ public: // Public for now
   void set_measurements(const arma::Row<double> meas) {
     measurements_ = meas;
     nobs_ = meas.size();
-    is_stats_updated_ = false;
+    is_stats_up_to_date = false;
     
     true_nobs_ = nobs_;
     
@@ -88,12 +88,14 @@ public: // Public for now
 
   void add_measurements(const arma::Row<double> new_meas) {
     measurements_.insert_cols(nobs_, new_meas);
-    is_stats_updated_ = false;
+    n_added_obs += new_meas.n_elem;
+    is_stats_up_to_date = false;
   }
 
   void del_measurements(const arma::uvec &idxs) {
     measurements_.shed_cols(idxs);
-    is_stats_updated_ = false;
+    n_removed_obs += idxs.n_elem;
+    is_stats_up_to_date = false;
   }
 
   template <typename OStream>

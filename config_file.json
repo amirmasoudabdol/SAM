@@ -8,8 +8,8 @@
                 "means": [
                     0.0,
                     0.0,
-                    0.1,
-                    0.1
+                    0.0,
+                    0.0
                 ],
                 "sigma": [
                     [
@@ -45,8 +45,8 @@
         },
         "n_conditions": 2,
         "n_dep_vars": 2,
-        "n_obs": 100,
-        "n_reps": 1,
+        "n_obs": 25,
+        "n_reps": 5,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -54,7 +54,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 100,
+        "max_pubs": 25,
         "selection_strategy": {
             "_name": "FreeSelection"
         }
@@ -74,7 +74,7 @@
             ],
             "between_replications_selection_policies": [
                 [
-                    ""
+                    "last"
                 ]
             ],
             "initial_selection_policies": [
@@ -106,23 +106,44 @@
         "hacking_strategies": [
             [
                 {
-                    "_name": "SubjectiveOutlierRemoval",
-                    "min_observations": 10,
-                    "range": [
-                        2,
-                        4
-                    ],
-                    "step_size": 0.5,
-                    "stopping_condition": [
-                        "sig"
-                    ]
+                    "_name": "OptionalStopping",
+                    "level": "dv",
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 10
                 },
                 [
                     {
                         "selection": [
                             [
-                                "effect > 0",
-                                "min(pvalue)"
+                                "max(id)"
+                            ]
+                        ]
+                    },
+                    {
+                        "will_continue_hacking_decision_policy": [
+                            "effect < 0",
+                            "!sig"
+                        ]
+                    }
+                ],
+                {
+                    "_name": "OutliersRemoval",
+                    "level": "dv",
+                    "max_attempts": 1,
+                    "min_observations": 1,
+                    "multipliers": [
+                        2
+                    ],
+                    "n_attempts": 1,
+                    "num": 25,
+                    "order": "random"
+                },
+                [
+                    {
+                        "selection": [
+                            [
+                                "max(id)"
                             ]
                         ]
                     },
@@ -155,17 +176,17 @@
                     2
                 ],
                 "n_attempts": 1,
-                "num": 100,
+                "num": 25,
                 "order": "random"
             }
         ]
     },
     "simulation_parameters": {
         "debug": true,
-        "master_seed": 1591956408,
+        "master_seed": 1592403902,
         "n_sims": 1,
         "output_path": "../outputs/",
-        "output_prefix": "3949f70e-388d-474d-aa29-286bd83a4471",
+        "output_prefix": "68f2f7d1-20a9-4f3f-a564-38d9d701cec8",
         "progress": false,
         "save_pubs": true,
         "save_rejected": false,

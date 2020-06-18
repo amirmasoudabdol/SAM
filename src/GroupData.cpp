@@ -8,7 +8,7 @@ using namespace sam;
 
 void GroupData::updateStats() {
 
-  if (not is_stats_updated_) {
+  if (not is_stats_up_to_date) {
     nobs_ = measurements_.size();
     mean_ = arma::mean(measurements_);
     var_ = arma::var(measurements_);
@@ -16,7 +16,7 @@ void GroupData::updateStats() {
     sei_ = sqrt(var_ / nobs_);
   }
 
-  is_stats_updated_ = true;
+  is_stats_up_to_date = true;
 }
 
 GroupData::operator std::map<std::string, std::string>() {
@@ -50,4 +50,6 @@ void GroupData::clear() {
   
   measurements_.clear();
   is_measurements_initd_ = false;
+  
+  is_stats_up_to_date = false;
 }
