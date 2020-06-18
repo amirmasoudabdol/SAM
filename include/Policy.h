@@ -12,14 +12,14 @@
 namespace sam {
 
 enum class PolicyType : int { Min, Max, Comp, Random, First, Last, All };
-enum class PChainExecType : int { AllOf, AnyOf, NoneOf };
+enum class LogicType : int { AllOf, AnyOf, NoneOf };
 
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
-PChainExecType,
-{{PChainExecType::AllOf, "all_of"},
- {PChainExecType::AnyOf, "any_of"},
- {PChainExecType::NoneOf, "none_of"}})
+LogicType,
+{{LogicType::AllOf, "all_of"},
+ {LogicType::AnyOf, "any_of"},
+ {LogicType::NoneOf, "none_of"}})
 
 struct Policy {
   PolicyType type;
@@ -168,6 +168,82 @@ struct Policy {
       throw std::invalid_argument("Invalid policy definition.");
     }
   }
+  
+  template <typename ForwardIt>
+  std::tuple<bool, ForwardIt, ForwardIt>
+  operator()(const ForwardIt &begin, ForwardIt &end) {
+      switch (type) {
+
+      case PolicyType::Min: {
+        auto it = std::min_element(begin, end, func);
+        spdlog::debug("Min: {}", def);
+        spdlog::debug("\t {}", *it);
+        return {true, it, it};
+      } break;
+
+      case PolicyType::Max: {
+        auto it = std::max_element(begin, end, func);
+        spdlog::debug("Max: {}", def);
+        spdlog::debug("\t {}", *it);
+        return {true, it, it};
+      } break;
+
+      case PolicyType::Comp: {
+        auto pit = std::partition(begin, end, func);
+        spdlog::debug("Comp: {}", def);
+        for (auto it{begin}; it != pit; ++it) {
+          spdlog::debug("\t {}", *it);
+        }
+
+        return {false, begin, pit};
+
+      } break;
+
+      case PolicyType::Random: {
+        /// Shuffling the array and setting the end pointer to the first time,
+        /// this basically mimic the process of selecting a random element from
+        /// the list.
+        Random::shuffle(begin, end);
+        spdlog::debug("Shuffled: {}", def);
+        for (auto it{begin}; it != end; ++it) {
+          spdlog::debug("\t {}", *it);
+        }
+        return {true, begin, end};
+
+      } break;
+
+      case PolicyType::First: {
+        /// \todo: to be properly implemented
+        
+        // Sorting the groups based on their index
+        //    std::sort(begin, end, func);
+
+        spdlog::debug("First: {}", def);
+        spdlog::debug("\t {}", *begin);
+
+        return {true, begin, end};
+
+      } break;
+          
+      case PolicyType::Last: {
+          /// \todo: to be properly implemented
+        
+          // Sorting the groups based on their index
+          //    std::sort(begin, end, func);
+
+          spdlog::debug("Last: {}", def);
+          spdlog::debug("\t {}", *end);
+
+          return {true, end, end};
+
+      } break;
+
+      case PolicyType::All: {
+        return {false, begin, end};
+
+      } break;
+      }
+  }
 
   friend std::ostream &operator<<(std::ostream &os, const Policy &policy) {
     os << policy.def;
@@ -193,14 +269,34 @@ private:
       {"<", "lesser"},      {"==", "equal"},     {"!=", "not_equal"}};
 };
 
+inline void to_json(json &j, const Policy &p) {
+  j = json{{"definition", p.def}};
+}
+
+inline void from_json(const json &j, Policy &p, sol::state &lua) {
+  p = Policy(j.at("definition"), lua);
+}
+
 struct PolicyChain {
-  PChainExecType etype = PChainExecType::AllOf;
+  LogicType ltype = LogicType::AllOf;
+  std::vector<std::string> defs;
   std::vector<Policy> pchain;
 
   PolicyChain() = default;
 
   PolicyChain(const std::vector<std::string> &pchain_defs, sol::state &lua) {
 
+    for (auto &p_def : pchain_defs) {
+      if (p_def.empty())
+        continue;
+      pchain.emplace_back(p_def, lua);
+    }
+  }
+  
+  PolicyChain(const std::vector<std::string> &pchain_defs, LogicType logic, sol::state &lua) {
+
+    ltype = logic;
+    
     for (auto &p_def : pchain_defs) {
       if (p_def.empty())
         continue;
@@ -235,6 +331,18 @@ struct PolicyChain {
   
   bool empty() const { return pchain.empty(); };
 };
+
+inline void to_json(json &j, const PolicyChain &p) {
+  j = json{
+    {"definitions", p.defs},
+    {"logic", p.ltype}
+  };
+}
+
+inline void from_json(const json &j, PolicyChain &p, sol::state &lua) {
+  p = PolicyChain(j.at("definitions"), j.at("logic"), lua);
+}
+
 
 struct PolicyChainSet {
   std::vector<PolicyChain> pchains;
