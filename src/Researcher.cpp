@@ -43,6 +43,10 @@ void Researcher::letTheHackBegin() {
             spdlog::debug("Done Hacking!");
             stopped_hacking = true;
           }else{
+            /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
+            /// evaluated again, read more here, x-devonthink-item://79CAE5D6-C2C8-4892-878C-1F82FD2F7066
+            /// \todo Test this for other potential errors,
+            decision_strategy->submission_candidate.reset();
             spdlog::debug("Continue Hacking...");
           }
         }
