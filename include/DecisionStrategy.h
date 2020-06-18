@@ -99,9 +99,9 @@ checkThePolicy(const ForwardIt &begin, ForwardIt &end,
   //    std::sort(begin, end, p.func);
 
       spdlog::debug("Last: {}", p.def);
-      spdlog::debug("\t {}", *begin);
+      spdlog::debug("\t {}", *(end-1));
 
-      return {true, begin, end};
+      return {true, end-1, end};
 
   } break;
 
