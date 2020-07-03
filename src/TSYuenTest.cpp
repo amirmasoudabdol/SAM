@@ -50,7 +50,7 @@ YuenTest::ResultType YuenTest::yuen_t_test_one_sample(
   bool sig{false};
   double Sm1 = arma::mean(x);
 
-  int n = x.n_elem;
+  auto n = x.n_elem;
 
   int g = static_cast<int>(floor(trim * n));
 
@@ -111,7 +111,7 @@ YuenTest::yuen_t_test_paired(const arma::Row<double> &x,
 
   bool sig{false};
 
-  int h1 = x.n_elem - 2 * static_cast<int>(floor(trim * x.n_elem));
+  auto h1 = x.n_elem - 2 * static_cast<int>(floor(trim * x.n_elem));
 
   double q1 = (x.n_elem - 1) * win_var(x, trim);
 

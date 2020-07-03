@@ -127,8 +127,8 @@ arma::Row<double> win_val(const arma::Row<double> &x, double trim) {
 
   arma::rowvec y{arma::sort(x)};
 
-  int ibot = floor(trim * x.n_elem) + 1;
-  int itop = x.n_elem - ibot + 1;
+  auto ibot = floor(trim * x.n_elem) + 1;
+  auto itop = x.n_elem - ibot + 1;
 
   double xbot{y.at(ibot - 1)};
   double xtop{y.at(itop - 1)};
@@ -141,8 +141,8 @@ arma::Row<double> win_val(const arma::Row<double> &x, double trim) {
 double trim_mean(const arma::Row<double> &x, double trim) {
   arma::rowvec y{arma::sort(x)};
 
-  int ibot = floor(trim * x.n_elem) + 1;
-  int itop = x.n_elem - ibot + 1;
+  auto ibot = floor(trim * x.n_elem) + 1;
+  auto itop = x.n_elem - ibot + 1;
 
   return arma::mean(y.subvec(ibot - 1, itop - 1));
 }
@@ -162,7 +162,7 @@ double tie_correct(const arma::vec &rankvals) {
 
   arma::uvec cnt = arma::diff(indx);
 
-  int size = arr.n_elem;
+  auto size = arr.n_elem;
 
   if (size < 2) {
     return 1.0;

@@ -147,8 +147,8 @@ template <typename T> void to_json(json &j, const arma::Mat<T> &mat) {
 
 template <typename T> void from_json(const json &j, arma::Mat<T> &mat) {
 
-  int n_rows = j.size();
-  int n_cols = j[0].size();
+  auto n_rows = j.size();
+  auto n_cols = j[0].size();
   for (int i{0}; i < n_rows; ++i)
     assert(j[i].size() == n_cols);
 
