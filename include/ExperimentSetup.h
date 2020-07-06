@@ -43,7 +43,6 @@ class ExperimentSetup {
   arma::Row<int> nobs_;
 
 public:
-  //        std::string ds_name {};
 
   ///
   /// Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.

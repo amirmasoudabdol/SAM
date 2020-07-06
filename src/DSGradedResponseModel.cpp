@@ -31,8 +31,7 @@ void GRMDataStrategy::genData(Experiment *experiment) {
   for (int g{0}; g < experiment->setup.ng(); ++g) {
 
     arma::Row<double> data(experiment->setup.nobs()[g]);
-
-    static double theta{0};
+    
     do {
       
       /// This is somewhat better, but it's still not perfect

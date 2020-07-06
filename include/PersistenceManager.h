@@ -37,7 +37,7 @@ class PersistenceManager::Writer {
   int counter{0};
 
   //! A unique pointer to a new writer object,
-  //! TODO: Check if there is a better way of implementing this
+  //! \todo: Check if there is a better way of implementing this
   std::unique_ptr<csv::Writer> writer;
 
   bool is_header_set = false;

@@ -143,7 +143,7 @@ public:
   //! List of selected Submission by the researcher, during the hacking procedure
   SubmissionPool submissions_pool;
 
-  /// TODO: These guys should move to their own class, I don't have to keep everything here!
+  /// \todo: These guys should move to their own class, I don't have to keep everything here!
   PolicyChainSet initial_selection_policies;
   PolicyChain submission_decision_policies;
   PolicyChainSet between_hacks_selection_policies;

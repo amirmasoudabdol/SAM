@@ -44,8 +44,8 @@ void Researcher::letTheHackBegin() {
             stopped_hacking = true;
           }else{
             /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
-            /// evaluated again, read more here, x-devonthink-item://79CAE5D6-C2C8-4892-878C-1F82FD2F7066
-            /// \todo Test this for other potential errors,
+            /// evaluated again, and I've already performed a selection, I'm going to reset the selected
+            /// submission.
             decision_strategy->submission_candidate.reset();
             spdlog::debug("Continue Hacking...");
           }
@@ -55,9 +55,6 @@ void Researcher::letTheHackBegin() {
     
     /// We leave the workflow when we have a submission, and it also passes the decision policy
     if (stopped_hacking) {
-      /// \todo: Investigate why this triggered the bad_optional_access
-//      spdlog::debug("✓ Found something during hacking!");
-//      spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
       return;
     }
     
@@ -71,11 +68,6 @@ void Researcher::letTheHackBegin() {
 ///
 /// \note This has a very similar implemention to the `hack()` but it
 /// doesn't perform any of the secondary checks.
-///
-/// \bug  I think there is a possible bug here, since pre-processing
-/// methods can be much more aggresive, they can cause some issues when it
-/// comes to calculating statistics.
-///
 void Researcher::preProcessData() {
 
   experiment->calculateStatistics();

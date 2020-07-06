@@ -213,10 +213,8 @@ struct Policy {
       } break;
 
       case PolicyType::First: {
-        /// \todo: to be properly implemented
-        
-        // Sorting the groups based on their index
-        //    std::sort(begin, end, func);
+        /// This strictly returns a pointer to the __first__ element of a
+        /// given container
 
         spdlog::debug("First: {}", def);
         spdlog::debug("\t {}", *begin);
@@ -226,10 +224,8 @@ struct Policy {
       } break;
           
       case PolicyType::Last: {
-          /// \todo: to be properly implemented
-        
-          // Sorting the groups based on their index
-          //    std::sort(begin, end, func);
+        /// This strictly returns a pointer to the __last__ element of a
+        /// given container
 
           spdlog::debug("Last: {}", def);
           spdlog::debug("\t {}", *end);
@@ -314,6 +310,7 @@ struct PolicyChain {
   
   bool operator()(const Submission &sub) {
     /// \todo: we check if we comply with the rules
+    return false;
   }
   
   std::optional<Submission> operator()(const Experiment *expr) {
