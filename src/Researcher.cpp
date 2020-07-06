@@ -104,6 +104,8 @@ void Researcher::research() {
   // Performing maximum `nreps` replications
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep){
     
+    experiment->repid = rep;
+    
     {
       spdlog::debug("–––––––––––––––––––");
       spdlog::debug("Replication #{} ↓", rep);

@@ -23,7 +23,7 @@ PersistenceManager::Writer::Writer(const string &filename)
 
 PersistenceManager::Writer::~Writer() { writer->close(); }
 
-void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
+void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid) {
 
   int i = 0;
   // This initiates a copy and it's not very efficient.
@@ -34,7 +34,7 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int sid) {
       is_header_set = true;
     }
 
-    s["simid"] = std::to_string(sid);
+    s["simid"] = std::to_string(simid);
     s["pubid"] = std::to_string(i++);
 
     writer->write_row(s);

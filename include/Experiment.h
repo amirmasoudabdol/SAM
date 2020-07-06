@@ -27,6 +27,8 @@ class Experiment {
 
 public:
   int expr_uuid{0};
+  
+  int repid{0};
 
   //! Indicates if any hacking routine has been applied on the experiment
   bool is_hacked = false;

@@ -12,6 +12,8 @@ Submission::Submission(Experiment &e, const int &index) {
   tnobs = e[index].true_nobs_.value();
 
   group_ = e[index];
+  
+  repid = e.repid;
 };
 
 std::vector<std::string> Submission::cols() {
@@ -27,6 +29,7 @@ std::vector<std::string> Submission::cols() {
 Submission::operator std::map<std::string, std::string>() {
 
   record["simid"] = std::to_string(simid);
+  record["repid"] = std::to_string(repid);
   record["pubid"] = std::to_string(pubid);
 
   record["tnobs"] = std::to_string(tnobs);

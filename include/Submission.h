@@ -24,9 +24,13 @@ public:
   std::vector<std::string> cols();
 
   //! Simulation ID
-  int simid = 0;
+  int simid {0};
+  //! Replicaiton ID
+  int repid {0};
   //! Publication ID
-  int pubid = 0;
+  int pubid {0};
+  
+  
   //! Index of the selected group
 
   //! True number of observations
@@ -46,7 +50,7 @@ public:
 
   template <typename OStream>
   friend OStream &operator<<(OStream &os, const Submission &s) {
-    os << s.simid << ",\t" << s.pubid << ",\t" << s.tnobs << ",\t" << s.group_;
+    os << s.simid << ",\t" << s.repid << ",\t"  << s.pubid << ",\t" << s.tnobs << ",\t" << s.group_;
 
     return os;
   }
