@@ -9,7 +9,11 @@
 #include "SelectionStrategy.h"
 #include "Submission.h"
 
+#include <variant>
+
 namespace sam {
+
+class MetaAnalysis;
 
 class Journal {
 
@@ -30,6 +34,10 @@ public:
 
   //! Effect Estimator
   std::unique_ptr<MetaAnalysis> meta_analysis_strategy;
+  
+  std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
+  
+  std::vector<std::variant<FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType>> meta_analysis_submissions;
 
   struct Parameters {
     std::string name;
@@ -92,7 +100,7 @@ public:
   ///
   void saveSubmissions(int simid, std::ofstream &writer);
 
-  auto publications() const { return publications_list; }
+//  auto &publications() const { return publications_list; }
 
   ///
   /// Clear the publications_list vector.
@@ -102,6 +110,12 @@ public:
     rejection_list.clear();
     still_accepting = true;
   }
+  
+  void runMetaAnalysis() {
+    for (auto &method : meta_analysis_strategies) {
+      method->estimate(this);
+    }
+  };
 
   void testMeta();
 };

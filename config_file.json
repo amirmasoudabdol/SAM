@@ -55,6 +55,10 @@
     },
     "journal_parameters": {
         "max_pubs": 25,
+        "meta_analysis_metrics": [
+            "FixedEffectEstimator",
+            "RandomEffectEstimator"
+        ],
         "selection_strategy": {
             "_name": "FreeSelection"
         }

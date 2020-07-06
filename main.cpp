@@ -223,6 +223,8 @@ void runSimulation(json &simConfig) {
       rejectedwriter->write(researcher.journal->rejection_list, i);
     }
 
+    researcher.journal->runMetaAnalysis();
+    
     researcher.journal->clear();
   }
 

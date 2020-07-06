@@ -171,6 +171,8 @@ public:
       }
     }
     
+    // \todo: I can probably use emplace_back for the vector of variants, and would perform better
+    
     // Parsing Hacking Strategies
     researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
     if (researcher.is_hacker) {

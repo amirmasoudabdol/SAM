@@ -15,6 +15,10 @@ Journal::Journal(json &journal_config) {
       SelectionStrategy::build(journal_config["selection_strategy"]);
 
   this->meta_analysis_strategy = MetaAnalysis::build("FixedEffectEstimator");
+  
+  for (auto const &method : journal_config["meta_analysis_metrics"]) {
+    meta_analysis_strategies.push_back(MetaAnalysis::build(method));
+  }
 }
 
 // Journal::Journal(JournalParameters &jp,
@@ -52,8 +56,8 @@ void Journal::reject(const Submission &s) {
   n_rejected++;
 }
 
-void Journal::testMeta() {
-  FixedEffectEstimator fes;
-
-  cerr << fes.estimate(publications_list);
-}
+//void Journal::testMeta() {
+//  FixedEffectEstimator fes;
+//
+////  cerr << fes.estimate(publications_list);
+//}
