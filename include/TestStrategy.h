@@ -129,6 +129,9 @@ public:
                            double Sd2, double Sn2, double alpha,
                            TestStrategy::TestAlternative alternative,
                            bool equal_var);
+  
+  static std::pair<double, bool> compute_pvalue(double tstat, double df, double alpha,
+                                                TestStrategy::TestAlternative alternative);
 
   static ResultType
   single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
@@ -205,7 +208,7 @@ public:
 
   virtual void run(GroupData &group_1, GroupData &group_2) override{};
 
-  ResultType f_test(double Sd1, unsigned Sn1, double Sd2, unsigned Sn2,
+  static ResultType f_test(double Sd1, unsigned Sn1, double Sd2, unsigned Sn2,
                     double alpha);
 };
 

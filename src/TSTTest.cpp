@@ -71,6 +71,45 @@ TTest::ResultType TTest::t_test(double Sm1, double Sd1, double Sn1, double Sm2,
   }
 }
 
+std::pair<double, bool>
+TTest::compute_pvalue(double t_stat, double df, double alpha, TestStrategy::TestAlternative alternative) {
+  
+  using boost::math::students_t;
+  students_t dist(df);
+  
+  double p;
+  double sig;
+  
+  if (alternative == TestStrategy::TestAlternative::TwoSided) {
+    // Mean != M
+    p = 2 * cdf(complement(dist, fabs(t_stat)));
+    if (p < alpha) // Alternative "NOT REJECTED"
+      sig = true;
+    else // Alternative "REJECTED"
+      sig = false;
+  }
+  
+  if (alternative == TestStrategy::TestAlternative::Greater) {
+    // Mean  > M
+    p = cdf(dist, t_stat);
+    if (p > alpha) // Alternative "NOT REJECTED"
+      sig = true;
+    else // Alternative "REJECTED"
+      sig = false;
+  }
+  
+  if (alternative == TestStrategy::TestAlternative::Less) {
+    // Mean  < M
+    p = cdf(complement(dist, t_stat));
+    if (p > alpha) // Alternative "NOT REJECTED"
+      sig = true;
+    else // Alternative "REJECTED"
+      sig = false;
+  }
+  
+  return std::make_pair(p, sig);
+}
+
 ///
 /// A Students t test applied to a single set of data. We are testing the null
 /// hypothesis that the true mean of the sample is M, and that any variation is

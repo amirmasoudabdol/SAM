@@ -5,6 +5,7 @@
 #ifndef SAMPP_METAANALYSIS_H
 #define SAMPP_METAANALYSIS_H
 
+#include <ostream>
 #include <vector>
 
 #include "sam.h"
@@ -47,6 +48,15 @@ public:
     double tau2;
     
     ResultType() = default;
+
+    friend ostream &operator<<(ostream &os, const ResultType &type) {
+      os << "est: " << type.est << " se: " << type.se
+         << " ci_lb: " << type.ci_lb << " ci_ub: " << type.ci_ub
+         << " zval: " << type.zval << " pval: " << type.pval
+         << " q_stat: " << type.q_stat << " q_pval: " << type.q_pval
+         << " tau2: " << type.tau2;
+      return os;
+    }
   };
   
   // \todo: To be implemented
@@ -93,6 +103,15 @@ public:
       
       tau2 = 0;
     }
+
+    friend ostream &operator<<(ostream &os, const ResultType &type) {
+      os << "est: " << type.est << " se: " << type.se
+         << " ci_lb: " << type.ci_lb << " ci_ub: " << type.ci_ub
+         << " zval: " << type.zval << " pval: " << type.pval
+         << " q_stat: " << type.q_stat << " q_pval: " << type.q_pval
+         << " tau2: " << type.tau2;
+      return os;
+    }
   };
   
   FixedEffectEstimator() = default;
@@ -104,11 +123,33 @@ public:
   }
 };
 
-class EggersTest : public MetaAnalysis {
+class EggersTestEstimator : public MetaAnalysis {
 public:
-  EggersTest() = default;
   
-  void estimate(Journal *journal) override {};
+  struct ResultType {
+    double slope;
+    double se;
+    double stat;
+    double pval;
+    bool sig;
+    double df;
+  };
+  
+  /// \todo: to be extended! and be properly implemented
+  struct Parameters {
+    double alpha {0.10};
+  };
+  
+  Parameters params;
+  
+  EggersTestEstimator() = default;
+  
+  EggersTestEstimator(const Parameters &p) : params(p) {};
+  
+  void estimate(Journal *journal);
+  
+  static ResultType EggersTest(const arma::Row<double> &yi, const arma::Row<double> &vi, double alpha);
+  
 };
 
 } // namespace sam

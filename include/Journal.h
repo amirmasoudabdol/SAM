@@ -37,7 +37,7 @@ public:
   
   std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
   
-  std::vector<std::variant<FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType>> meta_analysis_submissions;
+  std::vector<std::variant<FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType, EggersTestEstimator::ResultType>> meta_analysis_submissions;
 
   struct Parameters {
     std::string name;

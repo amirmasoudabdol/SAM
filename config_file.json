@@ -57,7 +57,8 @@
         "max_pubs": 25,
         "meta_analysis_metrics": [
             "FixedEffectEstimator",
-            "RandomEffectEstimator"
+            "RandomEffectEstimator",
+            "EggersTestEstimator"
         ],
         "selection_strategy": {
             "_name": "FreeSelection"
@@ -187,7 +188,7 @@
     },
     "simulation_parameters": {
         "debug": true,
-        "master_seed": 1592403902,
+        "master_seed": 1592403901,
         "n_sims": 1,
         "output_path": "../outputs/",
         "output_prefix": "68f2f7d1-20a9-4f3f-a564-38d9d701cec8",

@@ -31,6 +31,8 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
     return std::make_unique<FixedEffectEstimator>();
   }else if (name == "RandomEffectEstimator") {
     return std::make_unique<RandomEffectEstimator>();
+  }else if (name == "EggersTestEstimator") {
+    return std::make_unique<EggersTestEstimator>();
   }
 
   return nullptr;
@@ -64,6 +66,22 @@ void RandomEffectEstimator::estimate(Journal *journal) {
   auto tau2_DL = RandomEffectEstimator::DL(yi, vi, ai);
   
   journal->meta_analysis_submissions.push_back(RandomEffect(yi, vi, tau2_DL));
+}
+
+
+void EggersTestEstimator::estimate(Journal *journal) {
+  auto n = journal->publications_list.size();
+  arma::Row<double> yi(n);
+  arma::Row<double> vi(n);
+  arma::Row<double> sei(n);
+  
+  for (int i{0}; i < n; ++i) {
+    yi[i] = journal->publications_list[i].group_.effect_;
+    vi[i] = journal->publications_list[i].group_.var_;
+    sei[i] = journal->publications_list[i].group_.sei_;
+  }
+  
+  journal->meta_analysis_submissions.push_back(EggersTest(yi, vi, params.alpha));
 }
 
 
@@ -125,9 +143,56 @@ double RandomEffectEstimator::PM(const arma::Row<double> &yi, const arma::Row<do
     // Meta-analytic effect size
   auto theta = arma::accu(yi % wi)/arma::accu(wi);
     // Q-statistic
-  auto Q = arma::accu(wi % arma::pow(yi - theta,2));
+  auto Q = arma::accu(wi % arma::pow(yi - theta, 2));
 
   // Stop iterating if computed Q-statistic equals degrees of freedom
 
   return (Q - df);
+}
+
+EggersTestEstimator::ResultType
+EggersTestEstimator::EggersTest(const arma::Row<double> &yi, const arma::Row<double> &vi, double alpha) {
+  
+  using namespace mlpack;
+  using namespace mlpack::regression;
+  
+  using boost::math::students_t;
+  
+  auto n = yi.n_elem;
+  auto p = 2;
+  double df = n - p;
+  
+  arma::rowvec wi = 1./vi;
+  arma::rowvec wts = arma::sqrt(wi);
+  arma::rowvec si = arma::sqrt(vi);
+  
+  arma::rowvec predictions(n);
+  
+  arma::mat X(2, n);
+  X.row(0) = arma::ones(n).as_row();
+  X.row(1) = si;
+  
+  LinearRegression lg(X, yi, wi);
+  lg.Train(X, yi, wi, false);
+  lg.Predict(X, predictions);
+
+  arma::rowvec errors = yi - predictions;
+  
+  auto slope = lg.Parameters().at(1);
+
+  arma::mat W = arma::diagmat(wi);
+  
+  double res_var_2 = sqrt(arma::accu(wi % arma::pow(errors, 2)) / (n - 2));
+  arma::mat S_2 = arma::diagmat(arma::pow(res_var_2 / sqrt(wi), 2));
+  
+  arma::mat Z = X.t();
+  arma::mat var_betas = arma::sqrt(arma::inv(Z.t() * W * Z) * (Z.t() * W * S_2 * W.t() * Z) * arma::inv(Z.t() * W * Z));
+  
+  double slope_se = var_betas.diag().at(1);
+  
+  double slope_stat = slope / slope_se;
+  
+  auto res = TTest::compute_pvalue(slope_stat, n - 2, 0.1, TestStrategy::TestAlternative::TwoSided);
+  
+  return ResultType{slope, slope_se, slope_stat, res.first, res.second, df};
 }
