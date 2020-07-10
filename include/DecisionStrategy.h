@@ -12,10 +12,10 @@
 #ifndef SAMPP_DECISIONSTRATEGY_H
 #define SAMPP_DECISIONSTRATEGY_H
 
+#include <spdlog/spdlog.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <sol/sol.hpp>
-#include <spdlog/spdlog.h>
 
 #include "Experiment.h"
 #include "Utilities.h"

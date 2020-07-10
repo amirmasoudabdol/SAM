@@ -177,7 +177,7 @@ void runSimulation(json &simConfig) {
     simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
 
   // Hide cursor
-  std::cout << "\e[?25l";
+//  std::cout << "\e[?25l";
   indicators::BlockProgressBar sim_progress_bar{
       indicators::option::BarWidth{50},
       indicators::option::Start{"["},
@@ -229,7 +229,7 @@ void runSimulation(json &simConfig) {
   }
 
   // Show cursor
-  std::cout << "\e[?25h";
+//  std::cout << "\e[?25h";
 
   //  if (FLAGS::PROGRESS)
   //    progress_bar.finish();

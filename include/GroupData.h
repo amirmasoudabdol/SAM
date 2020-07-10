@@ -7,6 +7,8 @@
 
 #include <armadillo>
 
+#include <fmt/format.h>
+
 namespace sam {
 
 class TestStrategy;
@@ -126,5 +128,29 @@ public: // Public for now
 };
 
 } // namespace sam
+
+
+template <>
+struct fmt::formatter<sam::GroupData> {
+  // Presentation format: 'f' - fixed, 'e' - exponential.
+  char presentation = 'f';
+  
+  // Parses format specifications of the form ['f' | 'e'].
+  constexpr auto parse(format_parse_context& ctx) {
+    return ctx.begin();
+  }
+  
+  // Formats the point p using the parsed format specification (presentation)
+  // stored in this formatter.
+  template <typename FormatContext>
+  auto format(const sam::GroupData& g, FormatContext& ctx) {
+    // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
+    // ctx.out() is an output iterator to write to.
+    return format_to(
+                     ctx.out(),
+                     "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} sig: {} side: {}",
+                     g.id_, g.nobs_, g.mean_, g.var_, g.stddev_, g.sei_, g.stats_, g.pvalue_, g.effect_, g.sig_, g.eff_side_);
+  }
+};
 
 #endif // SAMPP_GROUPDATA_H

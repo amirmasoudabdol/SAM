@@ -321,7 +321,7 @@ struct PolicyChain {
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
     os << "[";
-    fmt::print(os, "{}", fmt::join(chain.cbegin(), chain.cend(), ", "));
+//    fmt::print(os, "{}", fmt::join(chain.cbegin(), chain.cend(), ", "));
     os << "]";
     return os;
   }
@@ -368,7 +368,7 @@ struct PolicyChainSet {
   }
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChainSet &set) {
-    fmt::print(os, "[{}]", fmt::join(set.cbegin(), set.cend(), ", "));
+//    fmt::print(os, "[{}]", fmt::join(set.cbegin(), set.cend(), ", "));
     return os;
   }
 

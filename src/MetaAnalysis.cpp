@@ -5,10 +5,19 @@
 #include <algorithm>
 #include <iostream>
 
+#include <spdlog/spdlog.h>
+#include <fmt/core.h>
+#include <fmt/format.h>
+
 #include "MetaAnalysis.h"
 #include "Journal.h"
 #include <boost/math/distributions/normal.hpp>
+#include <boost/math/distributions/students_t.hpp>
+#include <boost/math/distributions/non_central_t.hpp>
 #include <boost/math/distributions/chi_squared.hpp>
+
+#include <mlpack/core.hpp>
+#include <mlpack/methods/linear_regression/linear_regression.hpp>
 
 using namespace std;
 using namespace sam;
