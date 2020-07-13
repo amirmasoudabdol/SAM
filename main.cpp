@@ -227,6 +227,13 @@ void runSimulation(json &simConfig) {
     
     researcher.journal->clear();
   }
+  
+  
+  /// \bug This is very strange, I don't understand why I should call these manually,
+  /// and if I don't they won't be destroyed properly!
+  for (auto &writer : researcher.journal->meta_writers) {
+    writer.second.~Writer();
+  }
 
   // Show cursor
 //  std::cout << "\e[?25h";
