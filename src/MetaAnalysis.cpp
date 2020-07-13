@@ -38,12 +38,26 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
   return nullptr;
 }
 
+std::vector<std::string> MetaAnalysis::Columns(std::string name) {
+  if (name == "FixedEffectEstimator") {
+    return FixedEffectEstimator::ResultType::Columns();
+  }else if (name == "RandomEffectEstimator") {
+    return RandomEffectEstimator::ResultType::Columns();
+  }else if (name == "EggersTestEstimator") {
+    return EggersTestEstimator::ResultType::Columns();
+  }
+  
+  return {};
+}
+
 void FixedEffectEstimator::estimate(Journal *journal) {
   
   auto n = journal->publications_list.size();
   arma::Row<double> yi(n);
   arma::Row<double> vi(n);
   
+  
+  /// \todo these loops can be refactored, and maybe cached somewhere
   for (int i{0}; i < n; ++i) {
     yi[i] = journal->publications_list[i].group_.effect_;
     vi[i] = journal->publications_list[i].group_.var_;
@@ -57,6 +71,7 @@ void RandomEffectEstimator::estimate(Journal *journal) {
   arma::Row<double> yi(n);
   arma::Row<double> vi(n);
   
+  /// \todo these loops can be refactored, and maybe cached somewhere
   for (int i{0}; i < n; ++i) {
     yi[i] = journal->publications_list[i].group_.effect_;
     vi[i] = journal->publications_list[i].group_.var_;
@@ -73,12 +88,11 @@ void EggersTestEstimator::estimate(Journal *journal) {
   auto n = journal->publications_list.size();
   arma::Row<double> yi(n);
   arma::Row<double> vi(n);
-  arma::Row<double> sei(n);
   
+  /// \todo these loops can be refactored, and maybe cached somewhere
   for (int i{0}; i < n; ++i) {
     yi[i] = journal->publications_list[i].group_.effect_;
     vi[i] = journal->publications_list[i].group_.var_;
-    sei[i] = journal->publications_list[i].group_.sei_;
   }
   
   journal->meta_analysis_submissions.push_back(EggersTest(yi, vi, params.alpha));

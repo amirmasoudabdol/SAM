@@ -9,11 +9,15 @@
 #include "SelectionStrategy.h"
 #include "Submission.h"
 
+#include "PersistenceManager.h"
+
 #include <variant>
 
 namespace sam {
 
 class MetaAnalysis;
+
+using MetaAnalysisResults = std::vector<std::variant<FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType, EggersTestEstimator::ResultType>>;
 
 class Journal {
 
@@ -36,8 +40,9 @@ public:
   std::unique_ptr<MetaAnalysis> meta_analysis_strategy;
   
   std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
+  std::map<std::string, PersistenceManager::Writer> meta_writers;
   
-  std::vector<std::variant<FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType, EggersTestEstimator::ResultType>> meta_analysis_submissions;
+  MetaAnalysisResults meta_analysis_submissions;
 
   struct Parameters {
     std::string name;
@@ -47,6 +52,8 @@ public:
   Parameters params;
 
   Journal() = default;
+  
+  ~Journal() = default;
 
   explicit Journal(json &journal_config);
 
@@ -99,8 +106,8 @@ public:
   /// \param      writer  The output file.
   ///
   void saveSubmissions(int simid, std::ofstream &writer);
-
-//  auto &publications() const { return publications_list; }
+  
+  void saveMetaAnalysis();
 
   ///
   /// Clear the publications_list vector.
@@ -108,6 +115,7 @@ public:
   void clear() {
     publications_list.clear();
     rejection_list.clear();
+    meta_analysis_submissions.clear();
     still_accepting = true;
   }
   
@@ -117,7 +125,6 @@ public:
     }
   };
 
-  void testMeta();
 };
 
 } // namespace sam

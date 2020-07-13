@@ -13,20 +13,17 @@ Journal::Journal(json &journal_config) {
   // Setting up the SelectionStrategy
   this->selection_strategy =
       SelectionStrategy::build(journal_config["selection_strategy"]);
-
-  this->meta_analysis_strategy = MetaAnalysis::build("FixedEffectEstimator");
   
   for (auto const &method : journal_config["meta_analysis_metrics"]) {
     meta_analysis_strategies.push_back(MetaAnalysis::build(method));
+    
+    meta_writers.try_emplace(method.get<std::string>(),
+                             journal_config["output_path"].get<std::string>() +
+                             journal_config["output_prefix"].get<std::string>() +
+                             "_" + method.get<std::string>() + "_meta.csv", MetaAnalysis::Columns(method));
+
   }
 }
-
-// Journal::Journal(JournalParameters &jp,
-//                 SelectionStrategy::SelectionStrategyParameters &ssp) {
-//    params = jp;
-//    max_pubs = jp.max_pubs;
-//    this->selection_strategy = SelectionStrategy::build(ssp);
-//}
 
 bool Journal::review(const Submission &s) {
 
@@ -56,8 +53,21 @@ void Journal::reject(const Submission &s) {
   n_rejected++;
 }
 
-//void Journal::testMeta() {
-//  FixedEffectEstimator fes;
-//
-////  cerr << fes.estimate(publications_list);
-//}
+void Journal::saveMetaAnalysis() { 
+  for (auto &res : meta_analysis_submissions) {
+    std::visit(overload{
+      [&](FixedEffectEstimator::ResultType &res) {
+        std::vector<std::string> row = res;
+        meta_writers["FixedEffectEstimator"].write(row);
+      },
+      [&](RandomEffectEstimator::ResultType &res) {
+        std::vector<std::string> row = res;
+        meta_writers["RandomEffectEstimator"].write(row);
+      },
+      [&](EggersTestEstimator::ResultType &res) {
+        std::vector<std::string> row = res;
+        meta_writers["EggersTestEstimator"].write(row);
+      }
+    }, res);
+  }
+}

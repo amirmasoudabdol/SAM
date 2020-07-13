@@ -20,6 +20,10 @@ struct FLAGS {
   static bool DEBUG;
   static bool UPDATECONFIG;
 };
+
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>;
+
 } // namespace sam
 
 #endif // SAMPP_MAIN_H

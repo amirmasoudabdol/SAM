@@ -28,6 +28,10 @@ public:
 
   static std::unique_ptr<MetaAnalysis> build(std::string name);
   
+//  static std::unique_ptr<MetaAnalysis> build(const json &config);
+  
+  static std::vector<std::string> Columns(std::string name);
+  
   virtual void estimate(Journal *journal) = 0;
 };
 
@@ -57,6 +61,39 @@ public:
          << " tau2: " << type.tau2;
       return os;
     }
+    
+    static std::vector<std::string> Columns() {
+      return {"est", "se", "ci_lb", "ci_ub", "zval", "pval", "q_stat", "q_pval", "tau2"};
+    }
+    
+    operator std::vector<std::string>() {
+      return {
+        std::to_string(est),
+        std::to_string(se),
+        std::to_string(ci_lb),
+        std::to_string(ci_ub),
+        std::to_string(zval),
+        std::to_string(pval),
+        std::to_string(q_stat),
+        std::to_string(q_pval),
+        std::to_string(tau2)
+      };
+    }
+    
+    operator std::map<std::string, std::string>() {
+      return {
+        {"est", std::to_string(est)},
+        {"se", std::to_string(se)},
+        {"ci_lb", std::to_string(ci_lb)},
+        {"ci_ub", std::to_string(ci_ub)},
+        {"zval", std::to_string(zval)},
+        {"pval", std::to_string(pval)},
+        {"q_stat", std::to_string(q_stat)},
+        {"q_pval", std::to_string(q_pval)},
+        {"tau2", std::to_string(tau2)}
+      };
+    }
+    
   };
   
   // \todo: To be implemented
@@ -72,6 +109,7 @@ public:
   double DL(const arma::Row<double> &yi, const arma::Row<double> &vi, const arma::Row<double> &ai);
   double PM(const arma::Row<double> &yi, const arma::Row<double> &vi, const double tau2);
 };
+
 
 class FixedEffectEstimator : public MetaAnalysis {
   
@@ -103,6 +141,24 @@ public:
       
       tau2 = 0;
     }
+    
+    static std::vector<std::string> Columns() {
+      return {"est", "se", "ci_lb", "ci_ub", "zval", "pval", "q_stat", "q_pval", "tau2"};
+    }
+    
+    operator std::vector<std::string>() {
+      return {
+        std::to_string(est),
+        std::to_string(se),
+        std::to_string(ci_lb),
+        std::to_string(ci_ub),
+        std::to_string(zval),
+        std::to_string(pval),
+        std::to_string(q_stat),
+        std::to_string(q_pval),
+        std::to_string(tau2)
+      };
+    }
 
     friend ostream &operator<<(ostream &os, const ResultType &type) {
       os << "est: " << type.est << " se: " << type.se
@@ -129,10 +185,25 @@ public:
   struct ResultType {
     double slope;
     double se;
-    double stat;
+    double tstat;
     double pval;
     bool sig;
     double df;
+    
+    static std::vector<std::string> Columns() {
+      return {"slope", "se", "tstat", "pval", "sig", "df"};
+    }
+    
+    operator std::vector<std::string>() {
+      return {
+        std::to_string(slope),
+        std::to_string(se),
+        std::to_string(tstat),
+        std::to_string(pval),
+        std::to_string(sig),
+        std::to_string(df)
+      };
+    }
   };
   
   /// \todo: to be extended! and be properly implemented

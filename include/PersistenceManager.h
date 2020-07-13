@@ -31,6 +31,8 @@ public:
 class PersistenceManager::Writer {
 
   //! Filename
+  string path_;
+  string prefix_;
   string file_name_;
 
   //! Keeps track of number of records corrently written into the file
@@ -39,6 +41,8 @@ class PersistenceManager::Writer {
   //! A unique pointer to a new writer object,
   //! \todo: Check if there is a better way of implementing this
   std::unique_ptr<csv::Writer> writer;
+  
+  std::vector<std::string> column_names;
 
   bool is_header_set = false;
 
@@ -47,6 +51,14 @@ public:
   ~Writer();
 
   Writer(const string &filename);
+  
+  Writer(const string &path, const string &prefix, const string filename);
+  
+  Writer(const string &filename, const std::vector<std::string> colnames);
+  
+  void write(const std::vector<std::string> &row_entries);
+  
+  void write(const std::map<string, string> &row);
 
   void write(const Submission &sub);
 
@@ -61,6 +73,9 @@ public:
   /// Write part of the Experiment to a file, or a database
   /// \param A constance reference to the Experiment
   void write(Experiment *experiment, string_view mode, int sid);
+  
+  void setColumnNames(const std::vector<std::string> &colnames);
+  
 };
 
 class PersistenceManager::Reader {

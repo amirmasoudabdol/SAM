@@ -15,9 +15,6 @@ using Random = effolkronium::random_static;
 
 namespace sam {
 
-template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
-template<class... Ts> overload(Ts...) -> overload<Ts...>;
-
 using json = nlohmann::json;
 
 class ResearcherBuilder;
@@ -155,6 +152,8 @@ public:
 
     researcher.experiment = new Experiment(config["experiment_parameters"]);
 
+    config["journal_parameters"]["output_path"] = config["simulation_parameters"]["output_path"];
+    config["journal_parameters"]["output_prefix"] = config["simulation_parameters"]["output_prefix"];
     researcher.journal = new Journal(config["journal_parameters"]);
 
     researcher.decision_strategy = DecisionStrategy::build(

@@ -187,9 +187,9 @@
         ]
     },
     "simulation_parameters": {
-        "debug": true,
+        "debug": false,
         "master_seed": 1592403901,
-        "n_sims": 1,
+        "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "68f2f7d1-20a9-4f3f-a564-38d9d701cec8",
         "progress": false,

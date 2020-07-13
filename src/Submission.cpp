@@ -16,7 +16,7 @@ Submission::Submission(Experiment &e, const int &index) {
   repid = e.repid;
 };
 
-std::vector<std::string> Submission::cols() {
+std::vector<std::string> Submission::Columns() {
 
   if (!record.empty()) {
     for (const auto &item : record) {

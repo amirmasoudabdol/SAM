@@ -176,8 +176,6 @@ void runSimulation(json &simConfig) {
   if (is_saving_sims)
     simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
 
-  // Hide cursor
-//  std::cout << "\e[?25l";
   indicators::BlockProgressBar sim_progress_bar{
       indicators::option::BarWidth{50},
       indicators::option::Start{"["},
@@ -225,6 +223,8 @@ void runSimulation(json &simConfig) {
 
     researcher.journal->runMetaAnalysis();
     
+    researcher.journal->saveMetaAnalysis();
+    
     researcher.journal->clear();
   }
   
@@ -235,21 +235,4 @@ void runSimulation(json &simConfig) {
     writer.second.~Writer();
   }
 
-  // Show cursor
-//  std::cout << "\e[?25h";
-
-  //  if (FLAGS::PROGRESS)
-  //    progress_bar.finish();
-
-  // if (is_saving_pubs)
-  //     std::cout << "\nSaved to: " << pubsfilename << "\n";
-
-  // if (is_saving_rejected)
-  //     std::cout << "\nSaved to: " << rejectedfilename << "\n";
-
-  // if (is_saving_stats)
-  //     std::cout << "\nSaved to: " << statsfilename << "\n";
-
-  // if (is_saving_sims)
-  //     std::cout << "\nSaved to: " << simsfilename << "\n";
 }

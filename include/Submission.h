@@ -21,7 +21,7 @@ class Submission {
   std::map<std::string, std::string> record;
 
 public:
-  std::vector<std::string> cols();
+  std::vector<std::string> Columns();
 
   //! Simulation ID
   int simid {0};

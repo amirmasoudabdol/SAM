@@ -21,7 +21,24 @@ PersistenceManager::Writer::Writer(const string &filename)
   writer->configure_dialect().delimiter(",");
 };
 
+PersistenceManager::Writer::Writer(const string &filename, const std::vector<std::string> colnames)
+    : file_name_(filename), column_names(colnames) {
+      writer = std::make_unique<csv::Writer>(file_name_);
+      writer->configure_dialect().delimiter(",")
+                                 .column_names(column_names);
+      
+      is_header_set = true;
+}
+
 PersistenceManager::Writer::~Writer() { writer->close(); }
+
+void PersistenceManager::Writer::write(const std::map<std::string, std::string> &row) {
+  writer->write_row(row);
+}
+
+void PersistenceManager::Writer::write(const std::vector<std::string> &row_entries) {
+  writer->write_row(row_entries);
+}
 
 void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid) {
 
@@ -30,7 +47,7 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid)
   // TODO: Optimize me!
   for (std::map<std::string, std::string> &&s : subs) {
     if (!is_header_set) {
-      writer->configure_dialect().column_names(subs.front().cols());
+      writer->configure_dialect().column_names(subs.front().Columns());
       is_header_set = true;
     }
 
@@ -43,6 +60,10 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid)
   for (const auto &s : subs) {
     spdlog::debug("{}", s);
   }
+}
+
+void PersistenceManager::Writer::setColumnNames(const std::vector<std::string> &colnames) {
+  writer->configure_dialect().column_names(colnames);
 }
 
 PersistenceManager::Reader::Reader(const string &filename)

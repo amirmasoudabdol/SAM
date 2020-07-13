@@ -59,7 +59,7 @@ public: // Public for now
   bool sig_{false};
   bool is_test_updated_ {false};
   
-  
+  static std::vector<std::string> Columns();
 
   /// --- Hacking Meta
   bool is_hacked_{false};
