@@ -21,8 +21,7 @@ ExperimentSetup::ExperimentSetup(json &config) {
   
   n_reps_ = config["n_reps"];
 
-  auto nobs_t = get_expr_setup_params<int>(config["n_obs"], ng_);
-  nobs_ = nobs_t;
+  nobs_ = Parameter<int>(config["n_obs"], ng_);
 
   tsp_conf = config["test_strategy"];
   dsp_conf = config["data_strategy"];

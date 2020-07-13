@@ -9,12 +9,83 @@
 
 #include "Utilities.h"
 
+#include <variant>
+
 namespace sam {
 
 using json = nlohmann::json;
 
 // Forward declration of the necessary classes.
 class ExperimentSetupBuilder;
+
+///
+/// \todo Implement a copy constructor that can handle the copy
+/// from arma::Row<T>
+template <typename T>
+class Parameter : public arma::Row<T> {
+  
+  std::variant<Distribution, MultivariateDistribution> dist;
+  
+public:
+  Parameter() : arma::Row<T>() {};
+    
+  Parameter(const json &j, size_t size) {
+    
+    this->resize(size);
+    
+    std::vector<T> val;
+    
+    std::cout << "Constructed!\n";
+    switch (j.type()) {
+      case nlohmann::detail::value_t::array: {
+        val = j.get<std::vector<T>>();
+      } break;
+        
+      case nlohmann::detail::value_t::number_integer:
+      case nlohmann::detail::value_t::number_unsigned:
+      case nlohmann::detail::value_t::number_float:
+        val = std::vector<T>(size, j.get<T>());
+        break;
+        
+      case nlohmann::detail::value_t::object: {
+        std::cout << j.dump(4) << std::endl;
+        std::string name = j.at("dist").get<std::string>();
+        if (name.find("mv") != std::string::npos) {
+          // Multivariante Distribution
+          /// \todo This is still need to be implemented, maybe a bit later after some tests on nobs
+//          dist = make_multivariate_distribution(j);
+//          val = static_cast<T>(Random::get(std::get<1>(dist)));
+        }else{
+          // Univariate Distribution
+          dist = make_distribution(j);
+          auto v = static_cast<T>(Random::get(std::get<0>(dist)));
+          val = std::vector<T>(size, v);
+        }
+      } break;
+        
+      case nlohmann::detail::value_t::null:
+      default:
+        throw std::invalid_argument("Missing parameter.\n");
+        break;
+    }
+    
+    this->imbue([&, i = 0]() mutable {
+      return val[i++];
+    });
+  }
+
+  void setDistribution(json &j) {
+    dist = make_distribution(j);
+  }
+  
+  void randomize() {
+    if (not dist.valueless_by_exception()) {
+      auto v = static_cast<T>(Random::get(std::get<0>(dist)));
+      this->fill(v);
+    }
+  }
+  
+};
 
 ///
 /// \brief      Define a class for ExperimentSetup.
@@ -40,7 +111,7 @@ class ExperimentSetup {
   int n_reps_{1};
 
   ///! Indicates the number of observations in each group
-  arma::Row<int> nobs_;
+  Parameter<int> nobs_;
 
 public:
 
@@ -72,7 +143,7 @@ public:
   const int nreps() const { return n_reps_; };
 
   const arma::Row<int> &nobs() const { return nobs_; };
-  void set_nobs(arma::Row<int> &val) { nobs_ = val; };
+//  void set_nobs(arma::Row<int> &val) { nobs_ = val; };
 
   void randomize_parameters();
 };
@@ -168,7 +239,8 @@ public:
     }
 
     // If everything ok, replace the vector with the given vector
-    setup.nobs_ = nobs;
+    /// \todo: Recover this, it's been removed during the Parameter transition
+//    setup.nobs_ = nobs;
 
     return *this;
   }
