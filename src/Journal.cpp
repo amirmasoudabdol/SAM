@@ -23,6 +23,11 @@ Journal::Journal(json &journal_config) {
                              "_" + method.get<std::string>() + "_meta.csv", MetaAnalysis::Columns(method));
 
   }
+  
+  /// Removing the higher level information because I don't want
+  /// them to be written to the config file again.
+  journal_config.erase("output_path");
+  journal_config.erase("output_prefix");
 }
 
 bool Journal::review(const Submission &s) {

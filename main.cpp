@@ -47,6 +47,8 @@ int main(int argc, const char **argv) {
       "debug", po::bool_switch(), "Print debugging information")(
       "update-config", po::bool_switch()->default_value(true),
       "Update the config file with the drawn seeds")(
+      "progress", po::bool_switch()->default_value(false),
+      "Shows the progress bar")(
       "master-seed", po::value<int>()->default_value(42),
       "Set the master seed")("output-prefix", po::value<string>(),
                              "Output prefix used for saving files")(
@@ -88,6 +90,10 @@ int main(int argc, const char **argv) {
     const string output_prefix = vm["output-prefix"].as<string>();
     configs["simulation_parameters"]["output_prefix"] = output_prefix;
   }
+  
+  if (vm.count("progress")) {
+    FLAGS::PROGRESS = vm["progress"].as<bool>();
+  }
 
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
@@ -114,8 +120,8 @@ int main(int argc, const char **argv) {
 
 void runSimulation(json &simConfig) {
 
-  FLAGS::PROGRESS = simConfig["simulation_parameters"]["progress"];
-  FLAGS::DEBUG = simConfig["simulation_parameters"]["debug"];
+  FLAGS::PROGRESS |= simConfig["simulation_parameters"]["progress"].get<bool>();
+  FLAGS::DEBUG = simConfig["simulation_parameters"]["debug"].get<bool>();
 
   int masterseed{0};
   if (simConfig["simulation_parameters"]["master_seed"] == "random") {
