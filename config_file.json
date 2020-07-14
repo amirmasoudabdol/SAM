@@ -46,9 +46,11 @@
         "n_conditions": 2,
         "n_dep_vars": 2,
         "n_obs": {
-            "dist": "normal_distribution",
+            "dist": "truncated_normal_distribution",
+            "lower": 24,
             "mean": 25,
-            "stddev": 5
+            "stddev": 5,
+            "upper": 30
         },
         "n_reps": 5,
         "test_strategy": {
@@ -64,7 +66,10 @@
             "EggersTestEstimator"
         ],
         "selection_strategy": {
-            "_name": "FreeSelection"
+            "_name": "SignificantSelection",
+            "alpha": 0.05,
+            "pub_bias": 0.1,
+            "side": 1
         }
     },
     "researcher_parameters": {
