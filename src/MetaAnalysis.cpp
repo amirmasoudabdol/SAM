@@ -52,50 +52,20 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
 
 void FixedEffectEstimator::estimate(Journal *journal) {
   
-  auto n = journal->publications_list.size();
-  arma::Row<double> yi(n);
-  arma::Row<double> vi(n);
-  
-  
-  /// \todo these loops can be refactored, and maybe cached somewhere
-  for (int i{0}; i < n; ++i) {
-    yi[i] = journal->publications_list[i].group_.effect_;
-    vi[i] = journal->publications_list[i].group_.var_;
-  }
-  
-  journal->meta_analysis_submissions.push_back(FixedEffect(yi, vi));
+  journal->meta_analysis_submissions.push_back(FixedEffect(journal->yi, journal->vi));
 }
 
 void RandomEffectEstimator::estimate(Journal *journal) {
-  auto n = journal->publications_list.size();
-  arma::Row<double> yi(n);
-  arma::Row<double> vi(n);
+
+  auto tau2_DL = RandomEffectEstimator::DL(journal->yi, journal->vi, journal->wi);
   
-  /// \todo these loops can be refactored, and maybe cached somewhere
-  for (int i{0}; i < n; ++i) {
-    yi[i] = journal->publications_list[i].group_.effect_;
-    vi[i] = journal->publications_list[i].group_.var_;
-  }
-  
-  arma::Row<double> ai = 1./vi;
-  auto tau2_DL = RandomEffectEstimator::DL(yi, vi, ai);
-  
-  journal->meta_analysis_submissions.push_back(RandomEffect(yi, vi, tau2_DL));
+  journal->meta_analysis_submissions.push_back(RandomEffect(journal->yi, journal->vi, tau2_DL));
 }
 
 
 void EggersTestEstimator::estimate(Journal *journal) {
-  auto n = journal->publications_list.size();
-  arma::Row<double> yi(n);
-  arma::Row<double> vi(n);
   
-  /// \todo these loops can be refactored, and maybe cached somewhere
-  for (int i{0}; i < n; ++i) {
-    yi[i] = journal->publications_list[i].group_.effect_;
-    vi[i] = journal->publications_list[i].group_.var_;
-  }
-  
-  journal->meta_analysis_submissions.push_back(EggersTest(yi, vi, params.alpha));
+  journal->meta_analysis_submissions.push_back(EggersTest(journal->yi, journal->vi, params.alpha));
 }
 
 

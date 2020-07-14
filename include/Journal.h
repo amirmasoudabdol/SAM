@@ -22,12 +22,17 @@ using MetaAnalysisResults = std::vector<std::variant<FixedEffectEstimator::Resul
 class Journal {
 
   bool still_accepting = true;
-
+  
 public:
   double max_pubs;
   //! List of all accepted Submissions, i.e., publications
   std::vector<Submission> publications_list;
   int n_accepted{0};
+  
+  //! Caching variables
+  arma::Row<double> yi;
+  arma::Row<double> vi;
+  arma::Row<double> wi;
 
   //! Rejected Submissions
   std::vector<Submission> rejection_list;
@@ -119,7 +124,23 @@ public:
     still_accepting = true;
   }
   
+  void prepareForMetaAnalysis() {
+    auto n = publications_list.size();
+    
+    yi.resize(n); vi.resize(n); wi.resize(n);
+    
+    for (int i{0}; i < n; ++i) {
+      yi[i] = publications_list[i].group_.effect_;
+      vi[i] = publications_list[i].group_.var_;
+    }
+    
+    wi = 1./vi;
+  }
+  
   void runMetaAnalysis() {
+    
+    prepareForMetaAnalysis();
+    
     for (auto &method : meta_analysis_strategies) {
       method->estimate(this);
     }
