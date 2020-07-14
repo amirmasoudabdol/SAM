@@ -133,7 +133,7 @@ Distribution make_distribution(json const &j) {
   if (distributionName == "truncated_normal_distribution") {
     return baaraan::truncated_normal_distribution<>(
         baaraan::truncated_normal_distribution<>::param_type(
-            j.at("mean"), j.at("stddev"), j.at("min"), j.at("max")));
+            j.at("mean"), j.at("stddev"), j.at("lower"), j.at("upper")));
   }
 
 ///
