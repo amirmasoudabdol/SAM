@@ -100,6 +100,12 @@ void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub)
 void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
+  
+  
+  // Randomizing the experiment parameters if necessary
+  experiment->setup.randomizeTheParameters();
+  experiment->initExperiment();
+  
 
   // Performing maximum `nreps` replications
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep){

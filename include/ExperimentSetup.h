@@ -18,13 +18,17 @@ using json = nlohmann::json;
 // Forward declration of the necessary classes.
 class ExperimentSetupBuilder;
 
+/// \brief An abstract class for a random variable parameter.
+///
+/// This is designed to capture the encapsulate a distribution and therefore
+/// mimic the behavior or a random variable.
 ///
 /// \todo Implement a copy constructor that can handle the copy
 /// from arma::Row<T>
 template <typename T>
 class Parameter : public arma::Row<T> {
   
-  std::variant<Distribution, MultivariateDistribution> dist;
+  std::variant<std::monostate, Distribution, MultivariateDistribution> dist;
   
 public:
   Parameter() : arma::Row<T>() {};
@@ -33,12 +37,12 @@ public:
     
     this->resize(size);
     
-    std::vector<T> val;
+    arma::Col<T> val(size);
     
     std::cout << "Constructed!\n";
     switch (j.type()) {
       case nlohmann::detail::value_t::array: {
-        val = j.get<std::vector<T>>();
+        val = arma::Col<T>(j.get<std::vector<T>>());
       } break;
         
       case nlohmann::detail::value_t::number_integer:
@@ -51,15 +55,17 @@ public:
         std::cout << j.dump(4) << std::endl;
         std::string name = j.at("dist").get<std::string>();
         if (name.find("mv") != std::string::npos) {
-          // Multivariante Distribution
-          /// \todo This is still need to be implemented, maybe a bit later after some tests on nobs
-//          dist = make_multivariate_distribution(j);
-//          val = static_cast<T>(Random::get(std::get<1>(dist)));
+          /// Multivariante Distribution
+          dist = make_multivariate_distribution(j);
+          auto v = Random::get(std::get<2>(dist));
+          val.imbue([&, i = 0]() mutable {
+            return static_cast<T>(v[i++]);
+          });
         }else{
-          // Univariate Distribution
+          /// Univariate Distribution
           dist = make_distribution(j);
-          auto v = static_cast<T>(Random::get(std::get<0>(dist)));
-          val = std::vector<T>(size, v);
+          auto v = static_cast<T>(Random::get(std::get<1>(dist)));
+          val = arma::Col<T>(std::vector<T>(size, v));
         }
       } break;
         
@@ -73,15 +79,26 @@ public:
       return val[i++];
     });
   }
-
-  void setDistribution(json &j) {
-    dist = make_distribution(j);
-  }
   
   void randomize() {
-    if (not dist.valueless_by_exception()) {
-      auto v = static_cast<T>(Random::get(std::get<0>(dist)));
-      this->fill(v);
+    if (dist.index() != 0) {
+      std::visit(overload {
+        [&](Distribution &d) {
+          auto v = static_cast<T>(Random::get(d));
+          this->fill(v);
+          return;
+        },
+        [&](MultivariateDistribution &md) {
+          auto v = Random::get(md);
+          this->imbue([&, i = 0]() mutable {
+            return static_cast<T>(v[i++]);
+          });
+          return;
+        },
+        [&](auto &monostate) {
+          return;
+        }
+      }, dist);
     }
   }
   
@@ -145,7 +162,7 @@ public:
   const arma::Row<int> &nobs() const { return nobs_; };
 //  void set_nobs(arma::Row<int> &val) { nobs_ = val; };
 
-  void randomize_parameters();
+  void randomizeTheParameters();
 };
 
 class ExperimentSetupBuilder {

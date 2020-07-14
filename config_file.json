@@ -45,7 +45,11 @@
         },
         "n_conditions": 2,
         "n_dep_vars": 2,
-        "n_obs": 25,
+        "n_obs": {
+            "dist": "normal_distribution",
+            "mean": 25,
+            "stddev": 5
+        },
         "n_reps": 5,
         "test_strategy": {
             "_name": "TTest",
@@ -56,7 +60,6 @@
     "journal_parameters": {
         "max_pubs": 25,
         "meta_analysis_metrics": [
-            "FixedEffectEstimator",
             "RandomEffectEstimator",
             "EggersTestEstimator"
         ],
@@ -187,9 +190,9 @@
         ]
     },
     "simulation_parameters": {
-        "debug": false,
+        "debug": true,
         "master_seed": 1592403901,
-        "n_sims": 5,
+        "n_sims": 1,
         "output_path": "../outputs/",
         "output_prefix": "68f2f7d1-20a9-4f3f-a564-38d9d701cec8",
         "progress": false,

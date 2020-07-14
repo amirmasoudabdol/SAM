@@ -52,10 +52,8 @@ void Experiment::generateData() { data_strategy->genData(this); }
 void Experiment::runTest() { test_strategy->run(this); }
 
 void Experiment::initExperiment() {
+  clear();
   initResources();
-  generateData();
-  calculateStatistics();
-  calculateEffects();
 }
 
 void Experiment::initResources() {

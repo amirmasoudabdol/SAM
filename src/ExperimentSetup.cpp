@@ -28,12 +28,10 @@ ExperimentSetup::ExperimentSetup(json &config) {
   esp_conf = config["effect_strategy"];
 }
 
-void ExperimentSetup::randomize_parameters() {
-
-  //    if (params_dist["n_obs"]){
-  //        fill_vector<int>(nobs_, nobs_.size(),
-  //        Random::get(params_dist["n_obs"]));
-  //    }
+void ExperimentSetup::randomizeTheParameters() {
+  
+  nobs_.randomize();
+  
 }
 
 ExperimentSetupBuilder &ExperimentSetupBuilder::fromConfigFile(json &config) {
