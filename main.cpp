@@ -141,25 +141,25 @@ void runSimulation(json &simConfig) {
   std::string pubsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
-      "_pubs.csv";
+      "_Publications.csv";
 
   bool is_saving_rejected = simConfig["simulation_parameters"]["save_rejected"];
   std::string rejectedfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
-      "_rejected.csv";
+      "_Rejected.csv";
 
   bool is_saving_stats = simConfig["simulation_parameters"]["save_stats"];
   std::string statsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
-      "_stats.csv";
+      "_Statistics.csv";
 
   bool is_saving_sims = simConfig["simulation_parameters"]["save_sims"];
   std::string simsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
-      "_sims.csv";
+      "_Experiments.csv";
 
   int n_sims = simConfig["simulation_parameters"]["n_sims"];
 

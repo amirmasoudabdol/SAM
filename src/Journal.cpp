@@ -20,7 +20,7 @@ Journal::Journal(json &journal_config) {
     meta_writers.try_emplace(method.get<std::string>(),
                              journal_config["output_path"].get<std::string>() +
                              journal_config["output_prefix"].get<std::string>() +
-                             "_" + method.get<std::string>() + "_meta.csv", MetaAnalysis::Columns(method));
+                             "_" + method.get<std::string>() + ".csv", MetaAnalysis::Columns(method));
 
   }
   
