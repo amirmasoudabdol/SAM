@@ -78,7 +78,7 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
   normal norm(0, 1);
   
   // Weight per study
-  auto wi = 1. / (vi + tau2);
+  arma::rowvec wi = 1. / (vi + tau2);
   // Meta-analytic estimate
   auto est = arma::accu(yi % wi) / arma::accu(wi);
   // Standard error of meta-analytic estimate
@@ -94,7 +94,7 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
   // Compute two-tailed p-value
   auto pval = pval_one > 0.5 ? (1. - pval_one) * 2 : pval_one * 2;
     
-  auto wi_fe = 1. / vi;
+  arma::rowvec wi_fe = 1. / vi;
   auto est_fe = arma::accu(wi_fe % yi)/ arma::accu(wi_fe);
   
   // Q-statistic
@@ -123,7 +123,7 @@ double RandomEffectEstimator::PM(const arma::Row<double> &yi, const arma::Row<do
   // Degrees of freedom of Q-statistic (df is also expected value because chi square distributed)
   auto df = yi.n_elem - 1;
     // Weights in meta-analysis
-  auto wi = 1. / (vi + tau2);
+  arma::rowvec wi = 1. / (vi + tau2);
     // Meta-analytic effect size
   auto theta = arma::accu(yi % wi)/arma::accu(wi);
     // Q-statistic
