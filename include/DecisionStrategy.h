@@ -109,6 +109,10 @@ checkThePolicy(const ForwardIt &begin, ForwardIt &end,
     return {false, begin, end};
 
   } break;
+
+  default: {
+    throw std::invalid_argument("Invalid Policy Type.");
+  }
   }
 }
 

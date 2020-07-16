@@ -5,8 +5,9 @@
 #ifndef SAMPP_GROUPDATA_H
 #define SAMPP_GROUPDATA_H
 
-#include <armadillo>
+// #include <armadillo>
 
+#include "sam.h"
 #include <fmt/format.h>
 
 namespace sam {

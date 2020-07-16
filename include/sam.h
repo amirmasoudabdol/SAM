@@ -10,9 +10,7 @@
 #define SAMPP_VERSION_MINOR 1 // for backwards-compatible features
 #define SAMPP_VERSION_PATCH 0 // for backwards-compatible bug fixes
 
-//#include <mlpack/core.hpp>
-//#include <mlpack/methods/neighbor_search/neighbor_search.hpp>
-//#include <mlpack/methods/linear_regression/linear_regression.hpp>
+#include <mlpack/core.hpp>
 
 namespace sam {
 struct FLAGS {
