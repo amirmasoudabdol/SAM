@@ -76,6 +76,10 @@ void Journal::saveMetaAnalysis() {
       [&](TestOfObsOverExptSig::ResultType &res) {
         std::vector<std::string> row = res;
         meta_writers["TestOfObsOverExptSig"].write(row);
+      },
+      [&](TrimAndFill::ResultType &res) {
+        std::vector<std::string> row = res;
+        meta_writers["TrimAndFill"].write(row);
       }
     }, res);
   }

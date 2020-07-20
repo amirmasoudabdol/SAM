@@ -20,7 +20,8 @@ class MetaAnalysis;
 using MetaAnalysisResults = std::vector<std::variant<FixedEffectEstimator::ResultType,
                                                       RandomEffectEstimator::ResultType,
                                                       EggersTestEstimator::ResultType,
-                                                      TestOfObsOverExptSig::ResultType>>;
+                                                      TestOfObsOverExptSig::ResultType,
+                                                      TrimAndFill::ResultType>>;
 
 class Journal {
 

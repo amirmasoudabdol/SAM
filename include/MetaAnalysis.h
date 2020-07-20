@@ -263,6 +263,51 @@ public:
   
 };
 
+class TrimAndFill : public MetaAnalysis {
+public:
+  
+  struct ResultType {
+    double k0;
+    double se_k0;
+    double k_all;
+    int side;
+    std::optional<double> k0_pval;
+    std::optional<double> imputed_est;
+    std::optional<double> imputed_pval;
+    
+    static std::vector<std::string> Columns() {
+      return {"k0", "se_k0", "k_all", "side"};
+    }
+    
+    operator std::vector<std::string>() {
+      return {
+        std::to_string(k0),
+        std::to_string(se_k0),
+        std::to_string(k_all),
+        std::to_string(side),
+      };
+    }
+  };
+  
+  /// \todo: to be extended! and be properly implemented
+  struct Parameters {
+    std::string side = "left";
+    std::string estimator = "R0";
+    double alpha {0.10};
+  };
+  
+  Parameters params;
+  
+  TrimAndFill() = default;
+  
+  TrimAndFill(const Parameters &p) : params(p) {};
+  
+  void estimate(Journal *journal);
+  
+  static ResultType TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni);
+  
+};
+
 } // namespace sam
 
 #endif // SAMPP_METAANALYSIS_H
