@@ -35,6 +35,8 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
     return std::make_unique<RandomEffectEstimator>();
   }else if (name == "EggersTestEstimator") {
     return std::make_unique<EggersTestEstimator>();
+  }else if (name == "TestOfObsOverExptSig") {
+    return std::make_unique<TestOfObsOverExptSig>();
   }
 
   return nullptr;
@@ -47,6 +49,8 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
     return RandomEffectEstimator::ResultType::Columns();
   }else if (name == "EggersTestEstimator") {
     return EggersTestEstimator::ResultType::Columns();
+  }else if (name == "TestOfObsOverExptSig") {
+    return TestOfObsOverExptSig::ResultType::Columns();
   }
   
   return {};
@@ -181,4 +185,58 @@ EggersTestEstimator::EggersTest(const arma::Row<double> &yi, const arma::Row<dou
   auto res = TTest::compute_pvalue(slope_stat, n - 2, 0.1, TestStrategy::TestAlternative::TwoSided);
   
   return ResultType{slope, slope_se, slope_stat, res.first, res.second, df};
+}
+
+using namespace sam;
+
+sam::TestOfObsOverExptSig::ResultType
+TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double> &ni, double beta, double alpha) {
+  
+  using boost::math::students_t;
+  using boost::math::non_central_t;
+  using boost::math::chi_squared;
+  
+  double k = sigs.n_elem;
+  
+  students_t tdist(k - 1);
+  
+  double O = arma::accu(sigs);
+  
+  double tcv = quantile(tdist, 0.95);
+  
+  arma::rowvec p_ncts(k);
+  p_ncts.imbue([&, i = 0]() mutable {
+    non_central_t nct(ni[i] - 1, beta * sqrt(ni[i])); i++;
+    return cdf(nct, tcv);
+  });
+
+  arma::rowvec power = 1. - p_ncts;
+
+  double E = arma::accu(power);
+
+  double A = pow(O - E, 2) / E + pow(O - E, 2)/(k - E);
+
+  chi_squared chisq(1);
+  double pval = 1. - cdf(chisq, A);
+    
+  return TestOfObsOverExptSig::ResultType{E, A, pval, pval < alpha};
+}
+
+
+void TestOfObsOverExptSig::estimate(Journal *journal) {
+  
+  double beta = FixedEffectEstimator::FixedEffect(journal->yi, journal->vi).est;
+  
+  arma::rowvec sigs(journal->yi.n_elem);
+  sigs.imbue([&, i = 0]() mutable {
+    return journal->publications_list[i++].group_.sig_;
+  });
+  
+  arma::rowvec ni(journal->yi.n_elem);
+  ni.imbue([&, i = 0]() mutable {
+    return journal->publications_list[i++].group_.nobs_;
+  });
+  
+  
+  journal->meta_analysis_submissions.push_back(TestOfObsOverExptSig::TES(sigs, ni, beta, 0.05));
 }

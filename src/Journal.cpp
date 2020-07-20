@@ -72,6 +72,10 @@ void Journal::saveMetaAnalysis() {
       [&](EggersTestEstimator::ResultType &res) {
         std::vector<std::string> row = res;
         meta_writers["EggersTestEstimator"].write(row);
+      },
+      [&](TestOfObsOverExptSig::ResultType &res) {
+        std::vector<std::string> row = res;
+        meta_writers["TestOfObsOverExptSig"].write(row);
       }
     }, res);
   }

@@ -223,6 +223,46 @@ public:
   
 };
 
+class TestOfObsOverExptSig : public MetaAnalysis {
+public:
+  
+  struct ResultType {
+    double E;
+    double A;
+    double pval;
+    bool sig;
+    
+    static std::vector<std::string> Columns() {
+      return {"E", "A", "pval", "sig"};
+    }
+    
+    operator std::vector<std::string>() {
+      return {
+        std::to_string(E),
+        std::to_string(A),
+        std::to_string(pval),
+        std::to_string(sig),
+      };
+    }
+  };
+  
+  /// \todo: to be extended! and be properly implemented
+  struct Parameters {
+    double alpha {0.10};
+  };
+  
+  Parameters params;
+  
+  TestOfObsOverExptSig() = default;
+  
+  TestOfObsOverExptSig(const Parameters &p) : params(p) {};
+  
+  void estimate(Journal *journal);
+  
+  static ResultType TES(const arma::Row<double> &sigs, const arma::Row<double> &ni, double beta, double alpha);
+  
+};
+
 } // namespace sam
 
 #endif // SAMPP_METAANALYSIS_H

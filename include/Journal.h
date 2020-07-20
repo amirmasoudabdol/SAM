@@ -17,7 +17,10 @@ namespace sam {
 
 class MetaAnalysis;
 
-using MetaAnalysisResults = std::vector<std::variant<FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType, EggersTestEstimator::ResultType>>;
+using MetaAnalysisResults = std::vector<std::variant<FixedEffectEstimator::ResultType,
+                                                      RandomEffectEstimator::ResultType,
+                                                      EggersTestEstimator::ResultType,
+                                                      TestOfObsOverExptSig::ResultType>>;
 
 class Journal {
 
