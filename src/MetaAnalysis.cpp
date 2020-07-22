@@ -672,8 +672,8 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   arma::mat res_qrs = arma::solve(sWX, arma::diagmat(arma::vec(k, arma::fill::ones)));
   auto vb = arma::as_scalar(res_qrs * res_qrs.t());
   
-  auto vi_star = vi - vb;
-  auto yi_star = (yi - beta) / arma::sqrt(vi_star);
+  arma::rowvec vi_star = vi - vb;
+  arma::rowvec yi_star = (yi - beta) / arma::sqrt(vi_star);
   auto ken_res = kendall_cor_test(yi_star, vi, params.alternative);
   
   auto tau  = ken_res.first;
