@@ -217,15 +217,67 @@ public:
   /// @param experiment a reference to the experiment
   /// @param pchain a policy chain, usually stored in `stashing_policy` in the config file
   void saveOutcomes(Experiment &experiment, PolicyChain &pchain) {
-    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
-         ++i, ++d %= experiment.setup.nd()) {
-      Submission sub{experiment, i};
-      auto verdict = std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
-                                          return policy.func(sub);
-                                        });
-      if (verdict)
-        submissions_pool.push_back(sub);
+    
+    spdlog::debug("Stashing...");
+    
+    Submission sub;
+    
+    /// This loop is a slightly different version of the selectOutcome,
+    /// instead of selecting and setting the submission pool, it collects
+    /// them
+    
+    auto found_sth_unique {false};
+    auto begin = experiment.groups_.begin() + experiment.setup.nd();
+    auto end = experiment.groups_.end();
+    
+    for (auto it{begin}; it != end; ++it) {
+      spdlog::debug("\t\t {}", *it);
     }
+    
+    for (auto &p : pchain) {
+      std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
+      
+      if (found_sth_unique) {
+        submissions_pool.emplace_back(experiment, begin->id_);
+        spdlog::debug("✓ Found One!");
+        return;
+      }
+      
+      if (begin == end) {
+        spdlog::debug("✗ Found nothing!");
+        break;
+      }
+      
+    }
+    
+    // This has to be here
+    if (begin+1 == end) {
+      submissions_pool.emplace_back(experiment, begin->id_);
+      spdlog::debug("✓ Found the only one!");
+      return;
+    }else if (begin != end) { /// We found a bunch
+      
+      spdlog::debug("✓ Found a bunch: ");
+      for (auto it{begin}; it != end; ++it) {
+        submissions_pool.emplace_back(experiment, it->id_);
+        spdlog::debug("\t {}", *it);
+      }
+      return;
+    } else {
+      spdlog::debug("✗ Found nothing! To the next one!");
+    }
+    
+    
+    
+//    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
+//         ++i, ++d %= experiment.setup.nd()) {
+//      Submission sub{experiment, i};
+//      auto verdict = std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
+//                                          return policy.func(sub);
+//                                        });
+//      if (verdict)
+//        submissions_pool.push_back(sub);
+//    }
   }
   
 protected:
