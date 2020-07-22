@@ -19,6 +19,8 @@
 #include <boost/math/distributions/students_t.hpp>
 #include <boost/math/distributions/non_central_t.hpp>
 #include <boost/math/distributions/chi_squared.hpp>
+#include <boost/math/special_functions/gamma.hpp>
+#include <boost/math/special_functions/binomial.hpp>
 
 // #include <mlpack/core.hpp>
 #include <mlpack/methods/linear_regression/linear_regression.hpp>
@@ -41,9 +43,40 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
     return std::make_unique<TestOfObsOverExptSig>();
   }else if (name == "TrimAndFill") {
     return std::make_unique<TrimAndFill>();
+  }else if (name == "RankCorrelation") {
+    return std::make_unique<RankCorrelation>();
+  }else{
+    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
   }
-  
-  return nullptr;
+}
+
+std::unique_ptr<MetaAnalysis> MetaAnalysis::build(const json &config) {
+  if (config["_name"] == "FixedEffectEstimator") {
+    return std::make_unique<FixedEffectEstimator>();
+  }else if (config["_name"] == "RandomEffectEstimator") {
+    
+    auto p = config.get<RandomEffectEstimator::Parameters>();
+    return std::make_unique<RandomEffectEstimator>(p);
+    
+  }else if (config["_name"] == "EggersTestEstimator") {
+    auto p = config.get<EggersTestEstimator::Parameters>();
+    return std::make_unique<EggersTestEstimator>(p);
+    
+  }else if (config["_name"] == "TestOfObsOverExptSig") {
+    auto p = config.get<TestOfObsOverExptSig::Parameters>();
+    return std::make_unique<TestOfObsOverExptSig>(p);
+    
+  }else if (config["_name"] == "TrimAndFill") {
+    auto p = config.get<TrimAndFill::Parameters>();
+    return std::make_unique<TrimAndFill>(p);
+    
+  }else if (config["_name"] == "RankCorrelation") {
+    auto p = config.get<RankCorrelation::Parameters>();
+    return std::make_unique<RankCorrelation>(p);
+    
+  }else{
+    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+  }
 }
 
 std::vector<std::string> MetaAnalysis::Columns(std::string name) {
@@ -57,9 +90,11 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
     return TestOfObsOverExptSig::ResultType::Columns();
   }else if (name == "TrimAndFill") {
     return TrimAndFill::ResultType::Columns();
+  }else if (name == "RankCorrelation") {
+    return RankCorrelation::ResultType::Columns();
+  }else{
+    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
   }
-  
-  return {};
 }
 
 void FixedEffectEstimator::estimate(Journal *journal) {
@@ -69,9 +104,16 @@ void FixedEffectEstimator::estimate(Journal *journal) {
 
 void RandomEffectEstimator::estimate(Journal *journal) {
   
-  auto tau2_DL = RandomEffectEstimator::DL(journal->yi, journal->vi, journal->wi);
+  double tau2 {0};
   
-  journal->meta_analysis_submissions.push_back(RandomEffect(journal->yi, journal->vi, tau2_DL));
+  if (params.estimator.find("DL") != std::string::npos){
+    tau2 = RandomEffectEstimator::DL(journal->yi, journal->vi, journal->wi);
+  }else if (params.estimator.find("DL") != std::string::npos){
+    throw std::invalid_argument("Not implemented yet!");
+//    tau2 = RandomEffectEstimator::PM(journal->yi, journal->vi, tau2);
+  }
+  
+  journal->meta_analysis_submissions.push_back(RandomEffect(journal->yi, journal->vi, tau2));
 }
 
 
@@ -193,8 +235,6 @@ EggersTestEstimator::EggersTest(const arma::Row<double> &yi, const arma::Row<dou
   return ResultType{slope, slope_se, slope_stat, res.first, res.second, df};
 }
 
-using namespace sam;
-
 sam::TestOfObsOverExptSig::ResultType
 TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double> &ni, double beta, double alpha) {
   
@@ -254,60 +294,48 @@ void TrimAndFill::estimate(Journal *journal) {
     return journal->publications_list[i++].group_.nobs_;
   });
   
-  journal->meta_analysis_submissions.push_back(TrimAndFill::TF(journal->yi, journal->vi, ni));
+  journal->meta_analysis_submissions.push_back(TrimAndFill::TF(journal->yi, journal->vi, ni, params));
 }
 
-sam::TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni) {
+TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni, const Parameters &params) {
   
+  int k = yi.n_elem;
   arma::rowvec wi = 1. / vi;
   
-  // determine side (if none is specified)
+  std::string side = params.side;
+
+  /// Determining the side
   double beta = FixedEffectEstimator::FixedEffect(yi, vi).est;
   
-  std::string side{"right"};
-  std::string estimator{"R0"};
-  //  if (is.null(side)) {
-  //    auto res = suppressWarnings(rma.uni(yi, vi, weights=wi, mods=sqrt(vi), method=x$method, weighted=x$weighted, ...));
-  // TODO: add check in case there are problems with fitting the model
-  if (beta < 0) {
-    side = "right";
-  } else {
-    side = "left";
+  if (params.side.find("auto") != std::string::npos) {
+    if (beta < 0) {
+      side = "right";
+    } else {
+      side = "left";
+    }
   }
-  //  }
-  //else {
-  //    auto side = match.arg(side, c("left", "right"));
-  //  }
   
-  // flip data if examining right side
-  side = "right";
+  /// flip data if examining right side
   if (side.find("right") != std::string::npos){
     yi = -1. * yi;
   }
   
-  
-  // sort data by increasing yi
-  
+  /// sort data by increasing yi
   arma::uvec ix = arma::sort_index(yi);
   arma::rowvec yi_s = yi.elem(ix).as_row();
   arma::rowvec vi_s = vi.elem(ix).as_row();
   arma::rowvec wi_s = wi.elem(ix).as_row();
   arma::rowvec ni_s = wi.elem(ix).as_row();
   
-  
-  int k = yi.n_elem;
-  
-  
-  
   int iter{0};
   int maxiter{100};
   
-  double k0_sav = -1;
-  double k0    =  0; // estimated number of missing studies;
-  double se_k0 = 0;
+  double k0_sav{-1};
+  double k0{0}; // estimated number of missing studies;
+  double se_k0{0};
   double Sr{0};
   double varSr{0};
-  double k0_pval;
+  double k0_pval{0};
   
   arma::rowvec yi_c;
   arma::rowvec yi_c_r;
@@ -331,22 +359,21 @@ sam::TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<dou
     
     //  intercept estimate based on truncated data
     beta = FixedEffectEstimator::FixedEffect(yi_t, vi_t).est;
-        
-    yi_c     = yi_s - beta;                            //  centered values;
-    /// \todo use the first to rank the data
-    yi_c_r   = rankdata(abs(yi_c), "average").as_row(); //, ties_method="first"); //  ranked absolute centered values;
-    yi_c_r_s = arma::sign(yi_c) % yi_c_r;                  //  signed ranked centered values;
+    
+    yi_c     = yi_s - beta;                             ///  centered values;
+    yi_c_r   = rankdata(abs(yi_c), "average").as_row(); /// \todo ties_method="first"); //  ranked absolute centered values;
+    yi_c_r_s = arma::sign(yi_c) % yi_c_r;               ///  signed ranked centered values;
     
     //  estimate the number of missing studies with the R0 estimator
     
-    if (estimator.find("R0") != std::string::npos) {
+    if (params.estimator.find("R0") != std::string::npos) {
       arma::uvec inx = arma::find(yi_c_r_s < 0);
       k0 = (k - arma::max(-1. * yi_c_r_s.elem(inx))) - 1;
       se_k0 = sqrt(2 * std::max(0., k0) + 2);
     }
     
     ///  estimate the number of missing studies with the L0 estimator
-    if (estimator.find("L0") != std::string::npos) {
+    if (params.estimator.find("L0") != std::string::npos) {
       arma::uvec inx = arma::find(yi_c_r_s > 0);
       Sr = arma::accu(yi_c_r_s.elem(inx));
       k0 = (4.*Sr - k*(k+1.)) / (2.*k - 1.);
@@ -355,7 +382,7 @@ sam::TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<dou
     }
     
     ///  estimate the number of missing studies with the Q0 estimator
-    if (estimator.find("Q0") != std::string::npos) {
+    if (params.estimator.find("Q0") != std::string::npos) {
       arma::uvec inx = arma::find(yi_c_r_s > 0);
       Sr = arma::accu(yi_c_r_s.elem(inx));
       k0 = k - 1./2 - sqrt(2*pow(k,2) - 4.*Sr + 1./4);
@@ -373,10 +400,9 @@ sam::TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<dou
   
   /// ------------------ Filling and estimating ----------------
   
-  
-  double vi_c{0};
-  double imputed_beta;
-  double imputed_pval;
+  auto res = FixedEffectEstimator::FixedEffect(yi, vi);
+  double imputed_est = res.est;
+  double imputed_pval = res.pval;
   
   /// if estimated number of missing studies is > 0
   if (k0 > 0) {
@@ -414,24 +440,252 @@ sam::TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<dou
     
     /// fit model with imputed data
     auto res = FixedEffectEstimator::FixedEffect(yi_fill, vi_fill);
-    imputed_beta = res.est;
+    imputed_est = res.est;
     imputed_pval = res.pval;
     
-  } else {
+  }
     
-    /// Rerpoting without the imputed results
+  /// \todo need to be integrated!
+  std::optional<double> p_k0;
+  
+  /// Adjustment for p_k0
+  if (params.estimator.find("R0") != std::string::npos) {
+    arma::rowvec m {arma::regspace<arma::rowvec>(-1, 1, (k0-1))};
+    arma::rowvec bin_coefs(m.n_elem);
+    /// \todo This imbue can be improved
+    bin_coefs.imbue([&, i = 0]() mutable {
+      auto x = boost::math::binomial_coefficient<double>(0+m.at(i)+1, m.at(i)+1);
+      i++;
+      return x;
+    });
+    arma::rowvec tmp(m.n_elem);
+    tmp.imbue([&, i = 0]() mutable {
+      return pow(0.5, static_cast<int>(0 + m.at(i++) + 2));
+    });
+    p_k0 = 1 - arma::accu(bin_coefs % tmp);
+  } //else
+    // p_k0 = NA
+  
+  /// \todo Still need to report the p_k0
+  return ResultType{.k0 = k0, .se_k0 = se_k0, .k_all = k + k0, .side = side, .imputed_est = imputed_est, .imputed_pval = imputed_pval};
+  
+}
+
+namespace sam {
+
+/*-------------------------------------------------------------------------
+ * This function calculates the Kendall correlation tau_b.
+ *
+ * from: https://afni.nimh.nih.gov/pub/dist/src/ktaub.c
+ */
+double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y) {
+  
+  int len = x.n_elem;
+  
+  int m1 = 0, m2 = 0, s = 0, nPair , i,j ;
+  float cor ;
+  
+  for(i = 0; i < len; i++) {
+    for(j = i + 1; j < len; j++) {
+      if(y[i] > y[j]) {
+        if (x[i] > x[j]) {
+          s++;
+        } else if(x[i] < x[j]) {
+          s--;
+        } else {
+          m1++;
+        }
+      } else if(y[i] < y[j]) {
+        if (x[i] > x[j]) {
+          s--;
+        } else if(x[i] < x[j]) {
+          s++;
+        } else {
+          m1++;
+        }
+      } else {
+        m2++;
+        
+        if(x[i] == x[j]) {
+          m1++;
+        }
+      }
+    }
+  }
+  
+  nPair = len * (len - 1) / 2;
+  
+  if( m1 < nPair && m2 < nPair )
+    cor = s / ( sqrtf((float)(nPair-m1)) * sqrtf((float)(nPair-m2)) );
+  else
+    cor = 0.0f;
+  
+  return cor;
+}
+
+double ckendall(int k, int n, arma::mat &w) {
+  int i, u;
+  double s;
+  
+  u =  (n * (n - 1) / 2);
+  if ((k < 0) || (k > u))
+    return(0);
+  
+  if (w.at(n, k) < 0) {
+    if (n == 1)
+      w.at(n, k) = (k == 0);
+    else {
+      s = 0;
+      for (i = 0; i < n; i++)
+        s += ckendall(k - i, n - 1, w);
+      w.at(n, k) = s;
+    }
+  }
+  return(w.at(n, k));
+}
+
+double pkendall(int len, int n) {
+  
+  int i, j;
+  double p, q;
+  
+  /// \todo I most likely don't need an array of Q and Ps,
+  /// and should replcae them at some point. I think rlang uses
+  /// arrays because they expect an matrix, ie., everything
+  /// is vectorized
+  arma::vec Q(len); Q.fill(len);
+  arma::vec P(len); P.fill(0);
+  
+  
+  
+  size_t u =  (n * (n - 1) / 2);
+  arma::mat w(n, u); w.fill(-1);
+  
+  for (i = 0; i < len; i++) {
+    q = floor(Q.at(i) + 1e-7);
+    if (q < 0)
+      P.at(i) = 0;
+    else if (q > (n * (n - 1) / 2))
+      P.at(i) = 1;
+    else {
+      p = 0;
+      for (j = 0; j <= q; j++)
+        p += ckendall(j, n, w);
+      P.at(i) = p / boost::math::tgamma(n + 1);
+    }
+  }
+  p = P.at(0);
+  return p;
+}
+
+std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arma::Row<double> &y, const TestStrategy::TestAlternative alternative) {
+  auto n = x.n_elem;
+  auto r = kendallcor(x, y);
+  
+  auto q = round((r + 1.) * n * (n - 1.) / 4.);
+  
+//  size_t x_n_uqniues = arma::size(arma::unique(x));
+//  size_t y_n_uqniues = arma::size(arma::unique(y));
+//  bool ties = (min(x_n_uqniues, y_n_uqniues) < n);
+  bool ties = false;
+  
+  double p{0};
+  double statistic;
+  
+  if (!ties) {
+    
+    statistic = q;
+    
+    switch (alternative) {
+      case TestStrategy::TestAlternative::TwoSided: {
+        if(q > n * (n - 1) / 4){
+          p = 1 - pkendall(q - 1, n);
+        }else{
+          p = pkendall(q, n);
+        }
+        p = std::min(2. * p, 1.);
+      }; break;
+      case TestStrategy::TestAlternative::Greater: {
+        p = 1. - pkendall(q - 1, n);
+      }; break;
+      case TestStrategy::TestAlternative::Less: {
+        p = pkendall(q, n);
+      }; break;
+    }
+    
+  }else{
+    /// \todo compute these
+    //      auto xties = table(x[duplicated(x)]) + 1;
+    //      auto yties = table(y[duplicated(y)]) + 1;
+    arma::rowvec xties;
+    arma::rowvec yties;
+    auto T0 = n * (n - 1)/2;
+    auto T1 = arma::accu(xties % (xties - 1))/2;
+    auto T2 = arma::accu(yties % (yties - 1))/2;
+    auto S = r * sqrt((T0 - T1) * (T0 - T2));
+    auto v0 = n * (n - 1) * (2 * n + 5);
+    auto vt = arma::accu(xties % (xties - 1) * (2 * xties + 5));
+    auto vu = arma::accu(yties % (yties - 1) * (2 * yties + 5));
+    auto v1 = arma::accu(xties % (xties - 1)) * arma::accu(yties % (yties - 1));
+    auto v2 = arma::accu(xties % (xties - 1) % (xties - 2)) * arma::accu(yties % (yties - 1) % (yties - 2));
+    
+    auto var_S = (v0 - vt - vu) / 18 + v1 / (2 * n * (n - 1)) + v2 / (9 * n * (n - 1) * (n - 2));
+    
+    statistic = S / sqrt(var_S);
+    
+    using boost::math::normal;
+    normal norm;
+    
+    /// \todo check if these are what I want
+    switch (alternative) {
+      case TestStrategy::TestAlternative::TwoSided: {
+        p = 2 * min(cdf(norm, statistic), cdf(complement(norm, statistic)));
+      }; break;
+      case TestStrategy::TestAlternative::Greater: {
+        p = cdf(complement(norm, statistic));
+      }; break;
+      case TestStrategy::TestAlternative::Less: {
+        p = cdf(norm, statistic);
+      }; break;
+    }
     
   }
   
-  /// \todo need to be integrated!
-  //  if (estimator.find("R0") != std::string::npos) {
-  //    m = -1:(k0-1)
-  //    res$p.k0 = 1 - sum(choose(0+m+1, m+1) * 0.5^(0+m+2))
-  //  } else {
-  //    res$p.k0 = NA
-  //  }
   
-  /// \TODO Need to report the imputed stuff as well
-  return ResultType{.k0 = k0, .se_k0 = se_k0, .k_all = k + k0, .side = 1};
+  
+  
+  return std::make_pair(r, p);
+}
+
+}
+
+RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma::Row<double> vi, const Parameters &params) {
+  
+  auto res  = FixedEffectEstimator::FixedEffect(yi, vi);
+  auto beta = res.est;
+  
+  auto k = yi.n_elem;
+  arma::vec X = yi.as_col();
+  arma::vec wi = 1./vi.as_col();
+  arma::mat W = arma::diagmat(wi);
+  arma::mat sWX = arma::sqrt(W) * X;
+  arma::mat res_qrs = arma::solve(sWX, arma::diagmat(arma::vec(k, arma::fill::ones)));
+  auto vb = arma::as_scalar(res_qrs * res_qrs.t());
+  
+  auto vi_star = vi - vb;
+  auto yi_star = (yi - beta) / arma::sqrt(vi_star);
+  auto ken_res = kendall_cor_test(yi_star, vi, params.alternative);
+  
+  auto tau  = ken_res.first;
+  auto pval = ken_res.second;
+  
+  
+  return {.est = tau, .pval = pval, .sig = pval < params.alpha};
+  
   
 }
+
+void RankCorrelation::estimate(sam::Journal *journal) { 
+  journal->meta_analysis_submissions.push_back(RankCorrelation::RankCor(journal->yi, journal->vi, params));
+}
+

@@ -21,7 +21,8 @@ using MetaAnalysisResults = std::vector<std::variant<FixedEffectEstimator::Resul
                                                       RandomEffectEstimator::ResultType,
                                                       EggersTestEstimator::ResultType,
                                                       TestOfObsOverExptSig::ResultType,
-                                                      TrimAndFill::ResultType>>;
+                                                      TrimAndFill::ResultType,
+                                                      RankCorrelation::ResultType>>;
 
 class Journal {
 

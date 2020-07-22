@@ -17,10 +17,10 @@ Journal::Journal(json &journal_config) {
   for (auto const &method : journal_config["meta_analysis_metrics"]) {
     meta_analysis_strategies.push_back(MetaAnalysis::build(method));
     
-    meta_writers.try_emplace(method.get<std::string>(),
+    meta_writers.try_emplace(method["_name"].get<std::string>(),
                              journal_config["output_path"].get<std::string>() +
                              journal_config["output_prefix"].get<std::string>() +
-                             "_" + method.get<std::string>() + ".csv", MetaAnalysis::Columns(method));
+                             "_" + method["_name"].get<std::string>() + ".csv", MetaAnalysis::Columns(method["_name"]));
 
   }
   
@@ -80,6 +80,10 @@ void Journal::saveMetaAnalysis() {
       [&](TrimAndFill::ResultType &res) {
         std::vector<std::string> row = res;
         meta_writers["TrimAndFill"].write(row);
+      },
+      [&](RankCorrelation::ResultType &res) {
+        std::vector<std::string> row = res;
+        meta_writers["RankCorrelation"].write(row);
       }
     }, res);
   }

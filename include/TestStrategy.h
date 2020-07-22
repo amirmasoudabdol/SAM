@@ -393,8 +393,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {TestStrategy::TestAlternative::Greater, "Greater"},
      {TestStrategy::TestAlternative::TwoSided, "TwoSided"}})
 
-// Stats Utility
-
+/// Stats Utility
 double single_sample_find_df(double M, double Sm, double Sd, double alpha,
                              TestStrategy::TestAlternative alternative);
 
@@ -402,6 +401,8 @@ std::pair<double, double>
 confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
                           TestStrategy::TestAlternative alternative);
 
+/// Stats Utility
+/// \todo These need to go into arma namespace
 double win_var(const arma::Row<double> &x, const double trim);
 
 std::pair<double, double> win_cor_cov(const arma::Row<double> &x,

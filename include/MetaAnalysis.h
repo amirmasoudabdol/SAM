@@ -28,7 +28,7 @@ public:
 
   static std::unique_ptr<MetaAnalysis> build(std::string name);
   
-//  static std::unique_ptr<MetaAnalysis> build(const json &config);
+  static std::unique_ptr<MetaAnalysis> build(const json &config);
   
   static std::vector<std::string> Columns(std::string name);
   
@@ -98,10 +98,15 @@ public:
   
   // \todo: To be implemented
   struct Parameters {
-    std::string tau2_estimator{"DL"};
+    std::string name{"RandomEffectEstimator"};
+    std::string estimator{"DL"};
   };
   
+  Parameters params;
+  
   RandomEffectEstimator() = default;
+  
+  RandomEffectEstimator(const Parameters &p) : params{p} {};
   
   void estimate(Journal *journal);
   
@@ -110,6 +115,19 @@ public:
   double PM(const arma::Row<double> &yi, const arma::Row<double> &vi, const double tau2);
 };
 
+
+inline void to_json(json &j, const RandomEffectEstimator::Parameters &p) {
+  j = json{
+    {"_name", p.name}, {"estimator", p.estimator}};
+}
+
+inline void from_json(const json &j, RandomEffectEstimator::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("_name").get_to(p.name);
+  j.at("estimator").get_to(p.estimator);
+}
 
 class FixedEffectEstimator : public MetaAnalysis {
   
@@ -208,6 +226,7 @@ public:
   
   /// \todo: to be extended! and be properly implemented
   struct Parameters {
+    std::string name {"EggersTestEstimator"};
     double alpha {0.10};
   };
   
@@ -222,6 +241,19 @@ public:
   static ResultType EggersTest(const arma::Row<double> &yi, const arma::Row<double> &vi, double alpha);
   
 };
+
+inline void to_json(json &j, const EggersTestEstimator::Parameters &p) {
+  j = json{
+    {"_name", p.name}, {"alpha", p.alpha}};
+}
+
+inline void from_json(const json &j, EggersTestEstimator::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("_name").get_to(p.name);
+  j.at("alpha").get_to(p.alpha);
+}
 
 class TestOfObsOverExptSig : public MetaAnalysis {
 public:
@@ -248,6 +280,7 @@ public:
   
   /// \todo: to be extended! and be properly implemented
   struct Parameters {
+    std::string name {"TestOfObsOverExptSig"};
     double alpha {0.10};
   };
   
@@ -263,6 +296,20 @@ public:
   
 };
 
+
+inline void to_json(json &j, const TestOfObsOverExptSig::Parameters &p) {
+  j = json{
+    {"_name", p.name}, {"alpha", p.alpha}};
+}
+
+inline void from_json(const json &j, TestOfObsOverExptSig::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("_name").get_to(p.name);
+  j.at("alpha").get_to(p.alpha);
+}
+
 class TrimAndFill : public MetaAnalysis {
 public:
   
@@ -270,13 +317,13 @@ public:
     double k0;
     double se_k0;
     double k_all;
-    int side;
-    std::optional<double> k0_pval;
-    std::optional<double> imputed_est;
-    std::optional<double> imputed_pval;
+    std::string side;
+    double imputed_est;
+    double imputed_pval;
+//    std::optional<double> k0_pval;  // I don't report this yet
     
     static std::vector<std::string> Columns() {
-      return {"k0", "se_k0", "k_all", "side"};
+      return {"k0", "se_k0", "k_all", "side", "imputed_est", "imputed_pval"};
     }
     
     operator std::vector<std::string>() {
@@ -284,15 +331,18 @@ public:
         std::to_string(k0),
         std::to_string(se_k0),
         std::to_string(k_all),
-        std::to_string(side),
+        side,
+        std::to_string(imputed_est),
+        std::to_string(imputed_pval)
       };
     }
   };
   
   /// \todo: to be extended! and be properly implemented
   struct Parameters {
-    std::string side = "left";
-    std::string estimator = "R0";
+    std::string name {"TrimAndFill"};
+    std::string side {"auto"};
+    std::string estimator {"R0"};
     double alpha {0.10};
   };
   
@@ -304,9 +354,91 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni);
+  static ResultType TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni, const Parameters &params);
   
 };
+
+inline void to_json(json &j, const TrimAndFill::Parameters &p) {
+  j = json{
+    {"_name", p.name}, {"side", p.side}, {"estimator", p.estimator}, {"alpha", p.alpha}};
+}
+
+inline void from_json(const json &j, TrimAndFill::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("_name").get_to(p.name);
+  j.at("side").get_to(p.side);
+  j.at("estimator").get_to(p.estimator);
+  j.at("alpha").get_to(p.alpha);
+}
+
+
+class RankCorrelation : public MetaAnalysis {
+public:
+  
+  struct ResultType {
+    double est;
+    double pval;
+    bool sig;
+    
+    static std::vector<std::string> Columns() {
+      return {"est", "pval", "sig"};
+    }
+    
+    operator std::vector<std::string>() {
+      return {
+        std::to_string(est),
+        std::to_string(pval),
+        std::to_string(sig)
+      };
+    }
+  };
+  
+  /// \todo: to be extended! and be properly implemented
+  struct Parameters {
+    std::string name{"RankCorrelation"};
+    TestStrategy::TestAlternative alternative = TestStrategy::TestAlternative::TwoSided;
+    double alpha {0.10};
+  };
+  
+  Parameters params;
+  
+  RankCorrelation() = default;
+  
+  RankCorrelation(const Parameters &p) : params(p) {};
+  
+  void estimate(Journal *journal);
+  
+  static ResultType RankCor(arma::Row<double> yi, arma::Row<double> vi, const Parameters &params);
+  
+  static arma::Row<int> duplicate_count(arma::rowvec x);
+  
+};
+
+inline void to_json(json &j, const RankCorrelation::Parameters &p) {
+  j = json{
+    {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
+}
+
+inline void from_json(const json &j, RankCorrelation::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("_name").get_to(p.name);
+  j.at("alternative").get_to(p.alternative);
+  j.at("alpha").get_to(p.alpha);
+}
+
+
+
+double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y);
+
+std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arma::Row<double> &y, const TestStrategy::TestAlternative alternative);
+
+double ckendall(int k, int n, double **w);
+
+void pkendall(int len, double *Q, double *P, int n);
 
 } // namespace sam
 
