@@ -8,8 +8,8 @@
                 "means": [
                     0.0,
                     0.0,
-                    0.0,
-                    0.0
+                    0.05,
+                    0.05
                 ],
                 "sigma": [
                     [
@@ -45,13 +45,7 @@
         },
         "n_conditions": 2,
         "n_dep_vars": 2,
-        "n_obs": {
-            "dist": "truncated_normal_distribution",
-            "lower": 24,
-            "mean": 25,
-            "stddev": 5,
-            "upper": 30
-        },
+        "n_obs": 5,
         "n_reps": 5,
         "test_strategy": {
             "_name": "TTest",
@@ -62,14 +56,38 @@
     "journal_parameters": {
         "max_pubs": 25,
         "meta_analysis_metrics": [
-            "RandomEffectEstimator",
-            "EggersTestEstimator"
+            {
+                "_name": "FixedEffectEstimator"
+            },
+            {
+                "_name": "RandomEffectEstimator",
+                "estimator": "DL"
+            },
+            {
+                "_name": "EggersTestEstimator",
+                "alpha": 0.1
+            },
+            {
+                "_name": "TestOfObsOverExptSig",
+                "alpha": 0.1
+            },
+            {
+                "_name": "TrimAndFill",
+                "alpha": 0.1,
+                "estimator": "R0",
+                "side": "right"
+            },
+            {
+                "_name": "RankCorrelation",
+                "alpha": 0.1,
+                "alternative": "TwoSided"
+            }
         ],
         "selection_strategy": {
             "_name": "SignificantSelection",
-            "alpha": 0.05,
-            "pub_bias": 0.1,
-            "side": 1
+            "alpha": 0.95,
+            "pub_bias": 0.7,
+            "side": 0
         }
     },
     "researcher_parameters": {
@@ -87,7 +105,17 @@
             ],
             "between_replications_selection_policies": [
                 [
-                    "last"
+                    "effect > 0",
+                    "sig",
+                    "first"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
                 ]
             ],
             "initial_selection_policies": [
@@ -109,7 +137,8 @@
                 ""
             ],
             "will_continue_replicating_decision_policy": [
-                ""
+                "effect < 0",
+                "!sig"
             ],
             "will_start_hacking_decision_policies": [
                 "effect < 0",
@@ -123,13 +152,14 @@
                     "level": "dv",
                     "max_attempts": 1,
                     "n_attempts": 1,
-                    "num": 10
+                    "num": 5
                 },
                 [
                     {
                         "selection": [
                             [
-                                "max(id)"
+                                "effect > 0",
+                                "min(pvalue)"
                             ]
                         ]
                     },
@@ -141,22 +171,23 @@
                     }
                 ],
                 {
-                    "_name": "OutliersRemoval",
-                    "level": "dv",
-                    "max_attempts": 1,
-                    "min_observations": 1,
-                    "multipliers": [
-                        2
+                    "_name": "SubjectiveOutlierRemoval",
+                    "min_observations": 2.5,
+                    "range": [
+                        2,
+                        4
                     ],
-                    "n_attempts": 1,
-                    "num": 25,
-                    "order": "random"
+                    "step_size": 0.5,
+                    "stopping_condition": [
+                        "sig"
+                    ]
                 },
                 [
                     {
                         "selection": [
                             [
-                                "max(id)"
+                                "effect > 0",
+                                "min(pvalue)"
                             ]
                         ]
                     },
@@ -189,17 +220,17 @@
                     2
                 ],
                 "n_attempts": 1,
-                "num": 25,
+                "num": 5,
                 "order": "random"
             }
         ]
     },
     "simulation_parameters": {
         "debug": true,
-        "master_seed": 1592403901,
+        "master_seed": 1594991235,
         "n_sims": 1,
         "output_path": "../outputs/",
-        "output_prefix": "68f2f7d1-20a9-4f3f-a564-38d9d701cec8",
+        "output_prefix": "03428ec1-b0ca-4952-bb2d-9be15aef173c",
         "progress": false,
         "save_pubs": true,
         "save_rejected": false,
