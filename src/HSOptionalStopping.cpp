@@ -20,10 +20,17 @@ void OptionalStopping::perform(Experiment *experiment) {
 
   spdlog::debug("Optional Stopping: ");
 
+  double n_new_items = params.num;
+  
   for (int t = 0; t < params.n_attempts && t < params.max_attempts; ++t) {
     spdlog::debug("\t #{} attempt(s)", t);
     
-    addObservations(experiment, params.num);
+    /// \todo this can be improved, I think I should send an array to addObservations for
+    /// each group, maybe an overload of it with this condition
+    if (params.num == 0) {
+      n_new_items = static_cast<int>(params.add_by_fraction * experiment->groups_[0].nobs_);
+    }
+    addObservations(experiment, n_new_items);
 
     /// \todo: This can still be done nicer
     experiment->calculateStatistics();
@@ -31,6 +38,8 @@ void OptionalStopping::perform(Experiment *experiment) {
     experiment->runTest();
 
     /// \todo Implement a stopping condition if it makes sense
+    
+    
     
   }
   

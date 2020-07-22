@@ -121,6 +121,9 @@ public:
 
     //! Number of new observations to be added to each group
     int num = 3;
+    
+    //! If not 0., `add_by_fraction` * n_obs will be added to the experiment.
+    double add_by_fraction = 0.;
 
     //! Number of times that Researcher add `num` observations to each group
     int n_attempts = 1;
@@ -161,6 +164,7 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
            {"num", p.num},
            {"n_attempts", p.n_attempts},
            {"max_attempts", p.max_attempts},
+           {"add_by_fraction", p.add_by_fraction},
            {"stopping_condition", p.stopping_cond_defs}
   };
 }
@@ -177,6 +181,9 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  
+  if (j.contains("add_by_fraction"))
+    j.at("add_by_fraction").get_to(p.add_by_fraction);
   
 }
 
