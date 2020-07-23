@@ -104,9 +104,7 @@ int main(int argc, const char **argv) {
 
   if (configs["simulation_parameters"]["debug"].get<bool>())
     spdlog::set_level(spdlog::level::debug);
-
-  runSimulation(configs);
-
+  
   if (vm.count("update-config")) {
     const bool update_config = vm["update-config"].as<bool>();
     if (update_config) {
@@ -114,6 +112,8 @@ int main(int argc, const char **argv) {
       o << std::setw(4) << configs << std::endl;
     }
   }
+
+  runSimulation(configs);
 
   return 0;
 }
