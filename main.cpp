@@ -94,6 +94,10 @@ int main(int argc, const char **argv) {
   if (vm.count("progress")) {
     FLAGS::PROGRESS = vm["progress"].as<bool>();
   }
+  
+  if (vm.count("debug")) {
+    FLAGS::DEBUG = vm["debug"].as<bool>();
+  }
 
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
@@ -105,11 +109,24 @@ int main(int argc, const char **argv) {
   if (configs["simulation_parameters"]["debug"].get<bool>())
     spdlog::set_level(spdlog::level::debug);
   
+  
+  /// Setting and saving the config file before starting the simulation
+  int masterseed{0};
+  if (configs["simulation_parameters"]["master_seed"] == "random") {
+    masterseed = static_cast<int>(time(NULL));
+    configs["simulation_parameters"]["master_seed"] = masterseed;
+  } else {
+    masterseed = configs["simulation_parameters"]["master_seed"].get<int>();
+  }
+  Random::seed(masterseed);
+  
+  /// Saving the updated config file if necessary
   if (vm.count("update-config")) {
     const bool update_config = vm["update-config"].as<bool>();
     if (update_config) {
       std::ofstream o(configfilename);
       o << std::setw(4) << configs << std::endl;
+      o.close();
     }
   }
 
@@ -121,16 +138,7 @@ int main(int argc, const char **argv) {
 void runSimulation(json &simConfig) {
 
   FLAGS::PROGRESS |= simConfig["simulation_parameters"]["progress"].get<bool>();
-  FLAGS::DEBUG = simConfig["simulation_parameters"]["debug"].get<bool>();
-
-  int masterseed{0};
-  if (simConfig["simulation_parameters"]["master_seed"] == "random") {
-    masterseed = static_cast<int>(time(NULL));
-    simConfig["simulation_parameters"]["master_seed"] = masterseed;
-  } else {
-    masterseed = simConfig["simulation_parameters"]["master_seed"].get<int>();
-  }
-  Random::seed(masterseed);
+  FLAGS::DEBUG |= simConfig["simulation_parameters"]["debug"].get<bool>();
 
   Researcher researcher =
       Researcher::create("Peter").fromConfigFile(simConfig).build();
@@ -200,6 +208,12 @@ void runSimulation(json &simConfig) {
     spdlog::debug("---> Sim {}", i);
 
     float j{0};
+    
+    // Reseting the experiment Id, this is mainly for counting the number of trial
+    // before collecting `k` publications...
+    researcher.experiment->exprid = 0;
+    
+    // Doning research until Journal doesn't accept anything
     while (researcher.journal->isStillAccepting()) {
 
       spdlog::debug("---> Experiment #{}", j++);
@@ -237,8 +251,8 @@ void runSimulation(json &simConfig) {
   
   /// \bug This is very strange, I don't understand why I should call these manually,
   /// and if I don't they won't be destroyed properly!
-  for (auto &writer : researcher.journal->meta_writers) {
-    writer.second.~Writer();
-  }
+//  for (auto &writer : researcher.journal->meta_writers) {
+//    writer.second.~Writer();
+//  }
 
 }

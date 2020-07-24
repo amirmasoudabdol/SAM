@@ -51,7 +51,7 @@ public:
   static ResearcherBuilder create(std::string name);
 
   Experiment *experiment;
-  Journal *journal;
+  std::shared_ptr<Journal> journal;
   std::unique_ptr<DecisionStrategy> decision_strategy;
   std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
 
@@ -116,7 +116,7 @@ public:
   ///
   /// \param      j     The pointer to a Journal instance
   ///
-  void setJournal(Journal *j) { journal = j; };
+//  void setJournal(Journal *j) { journal = j; };
 };
 
 ///
@@ -154,7 +154,7 @@ public:
 
     config["journal_parameters"]["output_path"] = config["simulation_parameters"]["output_path"];
     config["journal_parameters"]["output_prefix"] = config["simulation_parameters"]["output_prefix"];
-    researcher.journal = new Journal(config["journal_parameters"]);
+    researcher.journal = std::make_shared<Journal>(config["journal_parameters"]);
 
     researcher.decision_strategy = DecisionStrategy::build(
         config["researcher_parameters"]["decision_strategy"]);
@@ -224,10 +224,10 @@ public:
   /// \note       The configuration needs to include information about the
   ///             SelectionStrategy as well.
   ///
-  ResearcherBuilder &createJournal(json &journal_config) {
-    researcher.journal = new Journal(journal_config);
-    return *this;
-  }
+//  ResearcherBuilder &createJournal(json &journal_config) {
+//    researcher.journal = new Journal(journal_config);
+//    return *this;
+//  }
 
   ///
   /// \brief      Create a new Experiment based on the given ExperimentSetup.
@@ -282,10 +282,10 @@ public:
     return *this;
   };
 
-  ResearcherBuilder &setJournal(Journal *j) {
-    researcher.journal = j;
-    return *this;
-  };
+//  ResearcherBuilder &setJournal(Journal *j) {
+//    researcher.journal = j;
+//    return *this;
+//  };
 
   ResearcherBuilder &
   setJournalSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {

@@ -101,6 +101,10 @@ void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
   
+  /// Preparing the experiment for a new Research
+  
+  // Incrementing the experiment Id
+  experiment->exprid++;
   
   // Randomizing the experiment parameters if necessary
   experiment->setup.randomizeTheParameters();

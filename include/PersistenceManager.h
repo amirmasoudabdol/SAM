@@ -24,7 +24,7 @@ public:
   class Writer;
   class Reader;
 
-  ~PersistenceManager(){};
+  ~PersistenceManager() = default;
 };
 
 /// Declration of the Writer class

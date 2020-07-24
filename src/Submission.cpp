@@ -13,6 +13,7 @@ Submission::Submission(Experiment &e, const int &index) {
 
   group_ = e[index];
   
+  exprid = e.exprid;
   repid = e.repid;
 };
 
@@ -29,6 +30,7 @@ std::vector<std::string> Submission::Columns() {
 Submission::operator std::map<std::string, std::string>() {
 
   record["simid"] = std::to_string(simid);
+  record["exprid"] = std::to_string(exprid);
   record["repid"] = std::to_string(repid);
   record["pubid"] = std::to_string(pubid);
 

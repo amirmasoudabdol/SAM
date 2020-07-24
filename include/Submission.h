@@ -25,6 +25,8 @@ public:
 
   //! Simulation ID
   int simid {0};
+  //! Experiment ID
+  int exprid {0};
   //! Replicaiton ID
   int repid {0};
   //! Publication ID

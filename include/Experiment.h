@@ -28,7 +28,7 @@ namespace sam {
 class Experiment {
 
 public:
-  int expr_uuid{0};
+  int exprid{0};
   
   int repid{0};
 
