@@ -568,31 +568,31 @@ double pkendall(int len, int n) {
   /// and should replcae them at some point. I think rlang uses
   /// arrays because they expect an matrix, ie., everything
   /// is vectorized
-  arma::vec Q(len); Q.fill(len);
-  arma::vec P(len); P.fill(0);
-  
-  
+//  arma::vec Q(len); Q.fill(len);
+//  arma::vec P(len); P.fill(0);
+  p = 0;
+  q = len;
   
   size_t u =  (n * (n - 1) / 2);
   arma::mat w(n, u); w.fill(-1);
   
-  for (i = 0; i < len; i++) {
-    q = floor(Q.at(i) + 1e-7);
+//  for (i = 0; i < len; i++) {
+//    q = floor(Q.at(i) + 1e-7);
     if (q < 0)
-      P.at(i) = 0;
+      p = 0;
     else if (q > (n * (n - 1) / 2))
-      P.at(i) = 1;
+      p = 1;
     else {
       p = 0;
       for (j = 0; j <= q; j++)
         p += ckendall(j, n, w);
-      P.at(i) = p / boost::math::tgamma(n + 1);
+      p = p / boost::math::tgamma(n + 1);
     }
-  }
+//  }
   
   spdlog::debug(" → Done!");
-  p = P.at(0);
-  spdlog::debug(" → → {:f}", p);
+//  p = P.at(0);
+  spdlog::debug(" → → p = {:f}", p);
   return p;
 }
 
