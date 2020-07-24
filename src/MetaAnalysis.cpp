@@ -98,11 +98,14 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
 }
 
 void FixedEffectEstimator::estimate(Journal *journal) {
+  spdlog::debug("Computing Fixed Effect Estimate...");
   
   journal->meta_analysis_submissions.push_back(FixedEffect(journal->yi, journal->vi));
 }
 
 void RandomEffectEstimator::estimate(Journal *journal) {
+  
+  spdlog::debug("Computing Random Effect Estimate...");
   
   double tau2 {0};
   
@@ -118,6 +121,8 @@ void RandomEffectEstimator::estimate(Journal *journal) {
 
 
 void EggersTestEstimator::estimate(Journal *journal) {
+  
+  spdlog::debug("Computing Eggers Estimate...");
   
   journal->meta_analysis_submissions.push_back(EggersTest(journal->yi, journal->vi, params.alpha));
 }
@@ -164,6 +169,8 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
 
 // General method-of-moments estimate (Eq. 6 in DerSimonian and Kacker, 2007)
 double RandomEffectEstimator::DL(const arma::Row<double> &yi, const arma::Row<double> &vi, const arma::Row<double> &ai) {
+  
+  spdlog::debug("→ Estimating the tau2 using DL ...");
   
   auto yw = arma::accu(ai % yi) / arma::accu(ai);
   auto est_tau2 = (arma::accu(ai % arma::pow(yi-yw, 2))-(arma::accu(ai % vi)-arma::accu(arma::pow(ai, 2) % vi)/arma::accu(ai)))/(arma::accu(ai)-arma::accu(arma::pow(ai, 2))/arma::accu(ai));
@@ -263,13 +270,15 @@ TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double>
   double A = pow(O - E, 2) / E + pow(O - E, 2)/(k - E);
   
   chi_squared chisq(1);
-  double pval = 1. - cdf(chisq, A);
+  double pval = 1. - cdf(chisq, A);   /// \bug ok, the bug is here, I need to investigate this method anyway
   
   return TestOfObsOverExptSig::ResultType{E, A, pval, pval < alpha};
 }
 
 
 void TestOfObsOverExptSig::estimate(Journal *journal) {
+  
+  spdlog::debug("Computing Test Of Obs Over Expt Significance...");
   
   double beta = FixedEffectEstimator::FixedEffect(journal->yi, journal->vi).est;
   
@@ -288,6 +297,8 @@ void TestOfObsOverExptSig::estimate(Journal *journal) {
 }
 
 void TrimAndFill::estimate(Journal *journal) {
+  
+  spdlog::debug("Computing Trim And Fill...");
   
   arma::rowvec ni(journal->yi.n_elem);
   ni.imbue([&, i = 0]() mutable {
@@ -480,6 +491,8 @@ namespace sam {
  */
 double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y) {
   
+  spdlog::debug(" → Computing Kendall Correlation...");
+  
   int len = x.n_elem;
   
   int m1 = 0, m2 = 0, s = 0, nPair , i,j ;
@@ -579,6 +592,9 @@ double pkendall(int len, int n) {
 }
 
 std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arma::Row<double> &y, const TestStrategy::TestAlternative alternative) {
+  
+  spdlog::debug(" → Running Kendall Correlation Test...");
+  
   auto n = x.n_elem;
   auto r = kendallcor(x, y);
   
@@ -670,7 +686,7 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   arma::mat W = arma::diagmat(wi);
   arma::mat sWX = arma::sqrt(W) * X;
   arma::mat res_qrs = arma::solve(sWX, arma::diagmat(arma::vec(k, arma::fill::ones)));
-  auto vb = arma::as_scalar(res_qrs * res_qrs.t());
+  double vb = arma::as_scalar(res_qrs * res_qrs.t());
   
   arma::rowvec vi_star = vi - vb;
   arma::rowvec yi_star = (yi - beta) / arma::sqrt(vi_star);
