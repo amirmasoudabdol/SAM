@@ -109,7 +109,7 @@ public:
   ///
   /// \param      e     The pointer to an Experiment
   ///
-  void setExperiment(Experiment *e) { experiment = e; };
+//  void setExperiment(Experiment *e) { experiment = e; };
 
   ///
   /// \brief      Set the Jouranl
@@ -235,10 +235,10 @@ public:
   /// \note       : This assumes that the experiment setup is correctly
   /// initiated.
   ///
-  ResearcherBuilder &createExperiment(ExperimentSetup es) {
-    researcher.experiment = new Experiment(es);
-    return *this;
-  }
+//  ResearcherBuilder &createExperiment(ExperimentSetup es) {
+//    researcher.experiment = new Experiment(es);
+//    return *this;
+//  }
 
   ResearcherBuilder &
   createNewHackingStrategyGroup(json &hacking_strategy_group_config) {
@@ -260,15 +260,15 @@ public:
   //            return *this;
   //        };
 
-  ResearcherBuilder &setExperiment(Experiment *expr) {
-    researcher.experiment = expr;
-    return *this;
-  }
-
-  ResearcherBuilder &setExperimentSetup(ExperimentSetup es) {
-    researcher.experiment = new Experiment(es);
-    return *this;
-  };
+//  ResearcherBuilder &setExperiment(Experiment *expr) {
+//    researcher.experiment = expr;
+//    return *this;
+//  }
+//
+//  ResearcherBuilder &setExperimentSetup(ExperimentSetup es) {
+//    researcher.experiment = new Experiment(es);
+//    return *this;
+//  };
 
   // I'm not sure if I should leave these here or not
   ResearcherBuilder &setDataStrategy(std::shared_ptr<DataStrategy> ds) {

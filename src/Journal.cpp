@@ -6,6 +6,15 @@
 
 using namespace sam;
 
+std::vector<std::string>
+Journal::Columns() {
+  return {
+    "n_accepted",
+    "n_rejected"
+  };
+}
+
+
 Journal::Journal(json &journal_config) {
 
   max_pubs = journal_config["max_pubs"];
@@ -17,10 +26,14 @@ Journal::Journal(json &journal_config) {
   for (auto const &method : journal_config["meta_analysis_metrics"]) {
     meta_analysis_strategies.push_back(MetaAnalysis::build(method));
     
+    auto cols = Columns();  // Journal Columns
+    auto method_cols = MetaAnalysis::Columns(method["_name"]);
+    cols.insert(cols.end(), method_cols.begin(), method_cols.end());
+    
     meta_writers.try_emplace(method["_name"].get<std::string>(),
                              journal_config["output_path"].get<std::string>() +
                              journal_config["output_prefix"].get<std::string>() +
-                             "_" + method["_name"].get<std::string>() + ".csv", MetaAnalysis::Columns(method["_name"]));
+                             "_" + method["_name"].get<std::string>() + ".csv", cols);
 
   }
   
@@ -58,31 +71,46 @@ void Journal::reject(const Submission &s) {
   n_rejected++;
 }
 
-void Journal::saveMetaAnalysis() { 
+void Journal::saveMetaAnalysis() {
+  
+  
+  static std::vector<std::string> row;
+  static std::vector<std::string> mrow;
+  
   for (auto &res : meta_analysis_submissions) {
+    
+    // This uses the conversion operator to cast the Journal to vector of strings
+    row = *this;
+    
     std::visit(overload{
       [&](FixedEffectEstimator::ResultType &res) {
-        std::vector<std::string> row = res;
+        mrow = res;
+        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["FixedEffectEstimator"].write(row);
       },
       [&](RandomEffectEstimator::ResultType &res) {
-        std::vector<std::string> row = res;
+        mrow = res;
+        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["RandomEffectEstimator"].write(row);
       },
       [&](EggersTestEstimator::ResultType &res) {
-        std::vector<std::string> row = res;
+        mrow = res;
+        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["EggersTestEstimator"].write(row);
       },
       [&](TestOfObsOverExptSig::ResultType &res) {
-        std::vector<std::string> row = res;
+        mrow = res;
+        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["TestOfObsOverExptSig"].write(row);
       },
       [&](TrimAndFill::ResultType &res) {
-        std::vector<std::string> row = res;
+        mrow = res;
+        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["TrimAndFill"].write(row);
       },
       [&](RankCorrelation::ResultType &res) {
-        std::vector<std::string> row = res;
+        mrow = res;
+        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["RankCorrelation"].write(row);
       }
     }, res);

@@ -17,11 +17,10 @@ class GroupData;
 
 class Submission {
 
-  std::vector<std::string> columns;
   std::map<std::string, std::string> record;
 
 public:
-  std::vector<std::string> Columns();
+  static std::vector<std::string> Columns();
 
   //! Simulation ID
   int simid {0};

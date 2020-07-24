@@ -47,7 +47,7 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid)
   // TODO: Optimize me!
   for (std::map<std::string, std::string> &&s : subs) {
     if (!is_header_set) {
-      writer->configure_dialect().column_names(subs.front().Columns());
+      writer->configure_dialect().column_names(Submission::Columns());
       is_header_set = true;
     }
 

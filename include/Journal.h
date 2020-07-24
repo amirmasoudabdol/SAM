@@ -38,6 +38,14 @@ public:
   arma::Row<double> yi;
   arma::Row<double> vi;
   arma::Row<double> wi;
+  
+  static std::vector<std::string> Columns();
+  operator std::vector<std::string>() {
+    return {
+      std::to_string(n_accepted),
+      std::to_string(n_rejected)
+    };
+  }
 
   //! Rejected Submissions
   std::vector<Submission> rejection_list;
@@ -127,6 +135,9 @@ public:
     rejection_list.clear();
     meta_analysis_submissions.clear();
     still_accepting = true;
+    
+    n_accepted = 0;
+    n_rejected = 0;
   }
   
   void prepareForMetaAnalysis() {

@@ -19,6 +19,23 @@ void GroupData::updateStats() {
   is_stats_up_to_date = true;
 }
 
+std::vector<std::string>
+GroupData::Columns() {
+  return {
+    "gid",
+    "nobs",
+    "mean",
+    "var",
+    "stddev",
+    "sei",
+    "pvalue",
+    "effect",
+    "sig",
+    "side",
+    "is_hacked"
+  };
+}
+
 GroupData::operator std::map<std::string, std::string>() {
 
   static std::map<std::string, std::string> record;

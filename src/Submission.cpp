@@ -8,7 +8,7 @@ namespace sam {
 
 Submission::Submission(Experiment &e, const int &index) {
   
-  // TODO: This can be simplified further
+  /// \todo This can be simplified further
   tnobs = e[index].true_nobs_.value();
 
   group_ = e[index];
@@ -19,12 +19,11 @@ Submission::Submission(Experiment &e, const int &index) {
 
 std::vector<std::string> Submission::Columns() {
 
-  if (!record.empty()) {
-    for (const auto &item : record) {
-      columns.push_back(item.first);
-    }
-  }
-  return columns;
+  std::vector<std::string> cols {"simid", "exprid", "repid", "pubid", "tnobs"};
+  auto group_cols = GroupData::Columns();
+  cols.insert(cols.end(), group_cols.begin(), group_cols.end());
+  
+  return cols;
 }
 
 Submission::operator std::map<std::string, std::string>() {
