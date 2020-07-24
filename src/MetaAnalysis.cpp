@@ -559,6 +559,8 @@ double ckendall(int k, int n, arma::mat &w) {
 
 double pkendall(int len, int n) {
   
+  spdlog::debug(" → Computing pKendall...");
+  
   int i, j;
   double p, q;
   
@@ -587,7 +589,10 @@ double pkendall(int len, int n) {
       P.at(i) = p / boost::math::tgamma(n + 1);
     }
   }
+  
+  spdlog::debug(" → Done!");
   p = P.at(0);
+  spdlog::debug(" → → {:f}", p);
   return p;
 }
 
