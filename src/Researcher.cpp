@@ -89,7 +89,9 @@ void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub)
       decision_strategy->willBeSubmitting(sub, decision_strategy->submission_decision_policies)) {
     spdlog::debug("To be submitted submission: ");
     spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
-    journal->review(decision_strategy->submission_candidate.value());
+    
+    if (Random::get<bool>(submission_probability))
+      journal->review(decision_strategy->submission_candidate.value());
   }
   
 }
@@ -145,7 +147,19 @@ void Researcher::research() {
       /// If we are a hacker, and we decide to start hacking — based on the current submission —,
       /// then, we are going to the hacking procedure!
       
-      letTheHackBegin();
+      
+      /// I'm checking whether I have a method to determine the hacking probability
+      /// If so, then I'm going to query it, and decide whether I'm going to hack or not
+      if (hacking_probability_strategy){
+        bool is_hacking {false};
+        double hp = hacking_probability_strategy->estimate(experiment);
+        is_hacking = Random::get<bool>(hp);
+        
+        if (is_hacking)
+          letTheHackBegin();
+      }else{
+        letTheHackBegin();
+      }
       
     }
     

@@ -3,50 +3,57 @@
         "data_strategy": {
             "_name": "LinearModel",
             "measurements": {
-                "covs": 0.5,
+                "covs": 0.0,
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.0,
-                    0.05,
-                    0.05
-                ],
-                "sigma": [
-                    [
-                        1.0,
-                        0.5,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        0.5,
-                        1.0,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        0.0,
-                        0.0,
-                        1.0,
-                        0.5
-                    ],
-                    [
-                        0.0,
-                        0.0,
-                        0.5,
-                        1.0
-                    ]
+                    0.7000000000000001,
+                    0.7000000000000001,
+                    0.7000000000000001,
+                    0.7000000000000001
                 ],
                 "stddevs": 1.0
             }
         },
         "effect_strategy": {
-            "_name": "MeanDifference"
+            "_name": "CohensD"
         },
-        "n_conditions": 2,
-        "n_dep_vars": 2,
-        "n_obs": 5,
-        "n_reps": 5,
+        "n_conditions": 5,
+        "n_dep_vars": 1,
+        "n_obs": {
+            "densities": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1,
+                0.75,
+                0.25,
+                0.1,
+                0.1,
+                0.05,
+                0.05,
+                0.05
+            ],
+            "dist": "piecewise_linear_distribution",
+            "intervals": [
+                0,
+                3,
+                5.9,
+                6,
+                20,
+                24,
+                25,
+                30,
+                40,
+                50,
+                100,
+                200,
+                300
+            ]
+        },
+        "n_reps": 1,
         "test_strategy": {
             "_name": "TTest",
             "alpha": 0.05,
@@ -54,7 +61,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 25,
+        "max_pubs": 8,
         "meta_analysis_metrics": [
             {
                 "_name": "FixedEffectEstimator"
@@ -68,132 +75,133 @@
                 "alpha": 0.1
             },
             {
-                "_name": "TestOfObsOverExptSig",
-                "alpha": 0.1
-            },
-            {
                 "_name": "TrimAndFill",
-                "alpha": 0.1,
+                "alpha": 0.05,
                 "estimator": "R0",
-                "side": "right"
+                "side": "auto"
             },
             {
                 "_name": "RankCorrelation",
-                "alpha": 0.1,
+                "alpha": 0.05,
                 "alternative": "TwoSided"
             }
         ],
         "selection_strategy": {
             "_name": "SignificantSelection",
-            "alpha": 0.95,
-            "pub_bias": 0.7,
+            "alpha": 0.05,
+            "pub_bias": 0.2,
             "side": 0
         }
     },
+    "name": "This and that",
     "researcher_parameters": {
         "decision_strategy": {
             "_name": "MarjansDecisionMaker",
             "between_hacks_selection_policies": [
                 [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
+                    "last"
                 ]
             ],
             "between_replications_selection_policies": [
                 [
-                    "effect > 0",
-                    "sig",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
+                    ""
                 ]
             ],
             "initial_selection_policies": [
                 [
-                    "id == 2",
-                    "sig",
-                    "effect > 0"
-                ],
-                [
-                    "id == 3",
-                    "sig",
-                    "effect > 0"
+                    "min(pvalue)"
                 ]
             ],
             "stashing_policy": [
-                "all"
+                "min(pvalue)"
             ],
             "submission_decision_policies": [
                 ""
             ],
             "will_continue_replicating_decision_policy": [
-                "effect < 0",
-                "!sig"
+                ""
             ],
             "will_start_hacking_decision_policies": [
-                "effect < 0",
-                "!sig"
+                ""
             ]
+        },
+        "hacking_probability": 1,
+        "hacking_probability_strategy": {
+            "base_hp": 1,
+            "hi_p": 0.6,
+            "hi_sei": 0.6,
+            "lo_p": 0.4,
+            "lo_sei": 0.1,
+            "method": "FrankenbachStrategy"
         },
         "hacking_strategies": [
             [
                 {
                     "_name": "OptionalStopping",
+                    "add_by_fraction": 0.3,
                     "level": "dv",
                     "max_attempts": 1,
                     "n_attempts": 1,
-                    "num": 5
+                    "num": 0
                 },
                 [
                     {
                         "selection": [
                             [
-                                "effect > 0",
                                 "min(pvalue)"
                             ]
                         ]
                     },
                     {
                         "will_continue_hacking_decision_policy": [
-                            "effect < 0",
                             "!sig"
                         ]
                     }
-                ],
+                ]
+            ],
+            [
                 {
-                    "_name": "SubjectiveOutlierRemoval",
-                    "min_observations": 2.5,
-                    "range": [
-                        2,
-                        4
-                    ],
-                    "step_size": 0.5,
-                    "stopping_condition": [
-                        "sig"
-                    ]
+                    "_name": "OptionalStopping",
+                    "add_by_fraction": 0.3,
+                    "level": "dv",
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 0
                 },
                 [
                     {
                         "selection": [
                             [
-                                "effect > 0",
                                 "min(pvalue)"
                             ]
                         ]
                     },
                     {
                         "will_continue_hacking_decision_policy": [
-                            "effect < 0",
+                            "!sig"
+                        ]
+                    }
+                ]
+            ],
+            [
+                {
+                    "_name": "OptionalStopping",
+                    "add_by_fraction": 0.3,
+                    "level": "dv",
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 0
+                },
+                [
+                    {
+                        "selection": [
+                            [
+                                "min(pvalue)"
+                            ]
+                        ]
+                    },
+                    {
+                        "will_continue_hacking_decision_policy": [
                             "!sig"
                         ]
                     }
@@ -209,28 +217,16 @@
                 "max_attempts": 1,
                 "n_attempts": 1,
                 "num": 10
-            },
-            {
-                "_name": "OutliersRemoval",
-                "level": "dv",
-                "max_attempts": 1,
-                "min_observations": 1,
-                "mode": "Recursive",
-                "multipliers": [
-                    2
-                ],
-                "n_attempts": 1,
-                "num": 5,
-                "order": "random"
             }
-        ]
+        ],
+        "submission_probability": 0.5
     },
     "simulation_parameters": {
         "debug": true,
-        "master_seed": 1594991235,
+        "master_seed": 1595582862,
         "n_sims": 1,
         "output_path": "../outputs/",
-        "output_prefix": "03428ec1-b0ca-4952-bb2d-9be15aef173c",
+        "output_prefix": "dae865c0-6f69-494c-af5b-516d904ce162",
         "progress": false,
         "save_pubs": true,
         "save_rejected": false,

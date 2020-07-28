@@ -10,6 +10,7 @@
 #include "HackingStrategy.h"
 #include "Journal.h"
 #include "Submission.h"
+#include "HackingProbabilityStrategy.h"
 
 using Random = effolkronium::random_static;
 
@@ -52,12 +53,18 @@ public:
   std::shared_ptr<Journal> journal;
   std::unique_ptr<DecisionStrategy> decision_strategy;
   std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
+  
+  std::unique_ptr<HackingProbabilityStrategy> hacking_probability_strategy;
 
   bool is_pre_processing{false};
   std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
 
   bool is_hacker = false;
   bool isHacker() const { return is_hacker; }
+  
+  Parameter<double> hacking_probability;
+  
+  double submission_probability {1};
 
   //! A Submission record that Researcher is going to submit to the Journal
   SubmissionPool submissions_from_reps;
@@ -145,7 +152,7 @@ public:
 
     this->config = config;
 
-    /// TODO: I can technically replace all these direct calls with calls
+    /// \todo I can technically replace all these direct calls with calls
     /// to their counterpart in the Builder!
 
     researcher.experiment = new Experiment(config["experiment_parameters"]);
@@ -196,7 +203,21 @@ public:
 
       }
     }
+    
+    
+    /// Setting up the new Hacking Probability details
+    
+    researcher.hacking_probability = Parameter<double>(config["researcher_parameters"]["hacking_probability"],
+                                                       1);
+    
+    ///
+    if (config["researcher_parameters"].contains("hacking_probability_strategy"))
+      researcher.hacking_probability_strategy = HackingProbabilityStrategy::build(config["researcher_parameters"]["hacking_probability_strategy"]);
 
+    
+    /// Indicate what percentage of Researcher's work is going to be submitted
+      researcher.submission_probability = config["researcher_parameters"]["submission_probability"].get<double>();
+    
     build_from_config = true;
 
     return *this;

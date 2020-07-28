@@ -18,6 +18,7 @@ namespace sam {
 ///
 /// \todo Implement a copy constructor that can handle the copy
 /// from arma::Row<T>
+/// \todo Implement a double operator()()
 template <typename T>
 class Parameter : public arma::Row<T> {
   

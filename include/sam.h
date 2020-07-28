@@ -12,6 +12,7 @@
 
 #include <mlpack/core.hpp>
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 
 using json = nlohmann::json;
 
