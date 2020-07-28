@@ -151,8 +151,8 @@ struct fmt::formatter<sam::GroupData> {
     // ctx.out() is an output iterator to write to.
     return format_to(
                      ctx.out(),
-                     "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} sig: {} side: {}",
-                     g.id_, g.nobs_, g.mean_, g.var_, g.stddev_, g.sei_, g.stats_, g.pvalue_, g.effect_, g.sig_, g.eff_side_);
+                     "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {}",
+                     g.id_, g.nobs_, g.mean_, g.var_, g.stddev_, g.sei_, g.stats_, g.pvalue_, g.effect_, g.var_effect_, g.se_effect_, g.sig_, g.eff_side_);
   }
 };
 

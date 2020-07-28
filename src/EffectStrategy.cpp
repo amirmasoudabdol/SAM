@@ -31,12 +31,12 @@ void CohensD::computeEffects(Experiment *experiment) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
     auto res =
-        cohens_d((*experiment)[d].mean_, (*experiment)[d].stddev_,
-                 (*experiment)[d].nobs_, (*experiment)[i].mean_,
-                 (*experiment)[i].stddev_, (*experiment)[i].nobs_);
+        cohens_d((*experiment)[i].mean_, (*experiment)[i].stddev_,
+                 (*experiment)[i].nobs_, (*experiment)[d].mean_,
+                 (*experiment)[d].stddev_, (*experiment)[d].nobs_);
     (*experiment)[i].effect_ = std::get<0>(res);
-    (*experiment)[i].effect_ = std::get<1>(res);
-    (*experiment)[i].effect_ = std::get<2>(res);
+    (*experiment)[i].var_effect_ = std::get<1>(res);
+    (*experiment)[i].se_effect_ = std::get<2>(res);
   }
 }
 
@@ -46,9 +46,9 @@ void HedgesG::computeEffects(Experiment *experiment) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
     (*experiment)[i].effect_ =
-        hedges_g((*experiment)[d].mean_, (*experiment)[d].stddev_,
-                 (*experiment)[d].nobs_, (*experiment)[i].mean_,
-                 (*experiment)[i].stddev_, (*experiment)[i].nobs_);
+        hedges_g((*experiment)[i].mean_, (*experiment)[i].stddev_,
+                 (*experiment)[i].nobs_, (*experiment)[d].mean_,
+                 (*experiment)[d].stddev_, (*experiment)[d].nobs_);
   }
 }
 

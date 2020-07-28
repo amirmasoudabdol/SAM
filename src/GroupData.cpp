@@ -30,6 +30,8 @@ GroupData::Columns() {
     "sei",
     "pvalue",
     "effect",
+    "var_effect",
+    "se_effect",
     "sig",
     "side",
     "is_hacked"
@@ -52,6 +54,8 @@ GroupData::operator std::map<std::string, std::string>() {
   /// just insert TestStrategy's map() operator
   record["pvalue"] = std::to_string(pvalue_);
   record["effect"] = std::to_string(effect_);
+  record["var_effect"] = std::to_string(var_effect_);
+  record["se_effect"] = std::to_string(se_effect_);
   record["sig"] = std::to_string(sig_);
   record["side"] = std::to_string(eff_side_);
 

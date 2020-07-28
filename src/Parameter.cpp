@@ -77,5 +77,5 @@ void Parameter<T>::randomize() {
 
 namespace sam {
   template class Parameter<int>;
-//  template class Parameter<double>;
+  template class Parameter<double>;
 }
