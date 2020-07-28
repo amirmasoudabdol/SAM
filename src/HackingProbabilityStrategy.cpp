@@ -59,7 +59,6 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
           
           double d_sig = experiment->groups_[i].se_effect_ * 1.959964;
           arma::rowvec danger_breaks = arma::linspace<arma::rowvec>(dangers[i], d_sig, 11);
-          std::cout << danger_breaks;
             
           return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->groups_[i++].se_effect_))));
           
@@ -70,6 +69,7 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
       
     }
     
+    spdlog::debug("Chance of hacking: {}", arma::max(probabilities));
     return arma::max(probabilities);
     
   }

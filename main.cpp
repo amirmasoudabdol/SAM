@@ -199,7 +199,7 @@ void runSimulation(json &simConfig) {
       indicators::option::ShowRemainingTime{true}};
 
   int n_pubs = simConfig["journal_parameters"]["max_pubs"];
-  int n_total_pubs = n_sims * n_pubs;
+  int n_total_pubs = n_sims;
 
   auto progress = 0.0f;
   // This loop can be parallelized
@@ -225,12 +225,12 @@ void runSimulation(json &simConfig) {
       if (is_saving_stats)
         statswriter->write(researcher.experiment, "stats", i);
 
-      if (FLAGS::PROGRESS) {
-        progress += 1. / n_total_pubs;
-        sim_progress_bar.set_progress(progress * 100);
-      }
-
       spdlog::debug("\n\n==========================================================================\n");
+    }
+    
+    if (FLAGS::PROGRESS) {
+      progress += 1. / n_sims;
+      sim_progress_bar.set_progress(progress * 100);
     }
 
     if (is_saving_pubs) {
