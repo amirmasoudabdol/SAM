@@ -9,12 +9,9 @@
 
 #include "ExperimentSetup.h"
 
-
 using Random = effolkronium::random_static;
 
 namespace sam {
-
-using json = nlohmann::json;
 
 class Experiment;
 class ExperimentSetup;

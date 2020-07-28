@@ -5,14 +5,12 @@
 #ifndef SAMPP_EFFECTSTRATEGY_H
 #define SAMPP_EFFECTSTRATEGY_H
 
-#include "nlohmann/json.hpp"
+#include "sam.h"
 
 namespace sam {
 
 class Experiment;
 class ExperimentSetup;
-
-using json = nlohmann::json;
 
 ///
 /// \brief      Abstract class for Effect Size Strategy

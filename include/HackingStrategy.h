@@ -29,8 +29,6 @@
 
 namespace sam {
 
-using json = nlohmann::json;
-
 /// \ingroup    HackingStrategies
 ///
 /// \brief      Abstract class for hacking strategies.

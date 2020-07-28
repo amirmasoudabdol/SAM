@@ -8,9 +8,7 @@
 #include "sam.h"
 #include "baaraan.hpp"
 #include "effolkronium/random.hpp"
-#include "nlohmann/json.hpp"
 
-using json = nlohmann::json;
 using Generator = std::mt19937;
 using Distribution = std::function<double(Generator &)>;
 using MultivariateDistribution = std::function<arma::mat(Generator &)>;

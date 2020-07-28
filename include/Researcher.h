@@ -15,8 +15,6 @@ using Random = effolkronium::random_static;
 
 namespace sam {
 
-using json = nlohmann::json;
-
 class ResearcherBuilder;
 
 using HackingWorkflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>;

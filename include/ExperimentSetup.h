@@ -14,8 +14,6 @@
 
 namespace sam {
 
-using json = nlohmann::json;
-
 // Forward declration of the necessary classes.
 class ExperimentSetupBuilder;
 

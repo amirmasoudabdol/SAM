@@ -11,6 +11,9 @@
 #define SAMPP_VERSION_PATCH 0 // for backwards-compatible bug fixes
 
 #include <mlpack/core.hpp>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace sam {
 struct FLAGS {

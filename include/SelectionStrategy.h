@@ -12,8 +12,6 @@ namespace sam {
 
 class Journal;
 
-using json = nlohmann::json;
-
 enum class SelectionMethod {
   SignificantSelection,
   RandomSelection,

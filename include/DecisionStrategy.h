@@ -21,8 +21,6 @@
 #include "Utilities.h"
 #include "Policy.h"
 
-using json = nlohmann::json;
-
 namespace sam {
 
 enum class DecisionMethod {

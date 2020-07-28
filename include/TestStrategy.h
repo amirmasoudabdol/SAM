@@ -11,8 +11,6 @@
 
 namespace sam {
 
-using json = nlohmann::json;
-
 class GroupData;
 class ExperimentSetup;
 class Experiment;

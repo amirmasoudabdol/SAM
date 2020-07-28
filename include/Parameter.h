@@ -7,11 +7,7 @@
 
 #include "sam.h"
 #include "Utilities.h"
-// #include <armadillo>
-#include <nlohmann/json.hpp>
 #include <variant>
-
-using json = nlohmann::json;
 
 namespace sam {
 
