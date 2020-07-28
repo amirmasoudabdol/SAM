@@ -30,10 +30,13 @@ void CohensD::computeEffects(Experiment *experiment) {
 
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
-    (*experiment)[i].effect_ =
+    auto res =
         cohens_d((*experiment)[d].mean_, (*experiment)[d].stddev_,
                  (*experiment)[d].nobs_, (*experiment)[i].mean_,
                  (*experiment)[i].stddev_, (*experiment)[i].nobs_);
+    (*experiment)[i].effect_ = std::get<0>(res);
+    (*experiment)[i].effect_ = std::get<1>(res);
+    (*experiment)[i].effect_ = std::get<2>(res);
   }
 }
 
@@ -64,7 +67,7 @@ double mean_difference(double Sm1, double Sd1, double Sm2, double Sd2) {
   return (Sm1 - Sm2) / sqrt(0.5 * (pow(Sd1, 2) + pow(Sd2, 2)));
 }
 
-double cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
+std::tuple<double, double, double> cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
                 double Sn2) {
 
   // Degrees of freedom:
@@ -72,9 +75,13 @@ double cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
 
   // Pooled variance and hence standard deviation:
   double sp = sqrt(((Sn1 - 1) * Sd1 * Sd1 + (Sn2 - 1) * Sd2 * Sd2) / df);
+  
+  double d = (Sm1 - Sm2) / sp;
+  double var_d = ((Sn1 + Sn2) / (Sn1 * Sn2) + pow(d, 2) / (2 * df)) * ((Sn1 + Sn2) / (df));
+  double se_d = sqrt(var_d);
 
   // Cohen's D:
-  return std::abs(Sm1 - Sm2) / sp;
+  return std::make_tuple(d, var_d, se_d);
 }
 
 double hedges_g(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,

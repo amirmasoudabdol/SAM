@@ -56,6 +56,8 @@ public: // Public for now
   double stats_{0};
   double pvalue_{0};
   double effect_{0};
+  double var_effect_{0};
+  double se_effect_{0};
   int eff_side_{0};
   bool sig_{false};
   bool is_test_updated_ {false};

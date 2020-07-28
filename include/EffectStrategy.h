@@ -121,7 +121,8 @@ double mean_difference(double Sm1, double Sd1, double Sm2, double Sd2);
 
 void cohens_d(Experiment *expr);
 
-double cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
+std::tuple<double, double, double>
+cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
                 double Sn2);
 double hedges_g(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
                 double Sn2);
