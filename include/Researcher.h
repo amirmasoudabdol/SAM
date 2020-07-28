@@ -205,9 +205,11 @@ public:
     }
     
     
-    /// Setting up the new Hacking Probability details
-    
-    researcher.hacking_probability = Parameter<double>(config["researcher_parameters"]["hacking_probability"],
+    /// \note This is not yet implemented, so, I made it optional for now. I'm thinking to
+    /// implement this together with hacking probability strategy as a variant
+    /// std::variant<Parameter<double>, std::unique_ptr<HackingProbabilityStrategy>>
+    if (config["researcher_parameters"].contains("hacking_probability"))
+      researcher.hacking_probability = Parameter<double>(config["researcher_parameters"]["hacking_probability"],
                                                        1);
     
     ///
@@ -216,6 +218,7 @@ public:
 
     
     /// Indicate what percentage of Researcher's work is going to be submitted
+    if (config["researcher_parameters"].contains("submission_probability"))
       researcher.submission_probability = config["researcher_parameters"]["submission_probability"].get<double>();
     
     build_from_config = true;
