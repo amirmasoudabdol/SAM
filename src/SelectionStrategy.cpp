@@ -27,7 +27,9 @@ SelectionStrategy::build(json &selection_strategy_config) {
     return std::make_unique<RandomSelection>(params);
 
   } else if (selection_strategy_config["_name"] == "FreeSelection") {
+
     return std::make_unique<FreeSelection>();
+    
   } else {
     throw std::invalid_argument("Unknown Selection Strategy.");
   }

@@ -66,10 +66,10 @@ public:
   
   // These will modify the experiment
   
-  void operator()(Experiment *experiment,
-                          DecisionStrategy *decisionStrategy) {
-//    perform(experiment, decisionStrategy);
-  };
+//  void operator()(Experiment *experiment,
+//                          DecisionStrategy *decisionStrategy) {
+////    perform(experiment, decisionStrategy);
+//  };
 
   void operator()(Experiment *experiment) {
     perform(experiment);

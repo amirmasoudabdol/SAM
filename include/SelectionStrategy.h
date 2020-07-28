@@ -14,12 +14,18 @@ class Journal;
 
 using json = nlohmann::json;
 
-enum class SelectionMethod { SignificantSelection, RandomSelection };
+enum class SelectionMethod {
+  SignificantSelection,
+  RandomSelection,
+  FreeSelection
+};
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     SelectionMethod,
     {{SelectionMethod::SignificantSelection, "SignificantSelection"},
-     {SelectionMethod::RandomSelection, "RandomSelection"}})
+     {SelectionMethod::RandomSelection, "RandomSelection"},
+     {SelectionMethod::FreeSelection, "FreeSelection"}
+})
 
 ///
 /// \brief      Abstract class for Journal's selection strategies.
