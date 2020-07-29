@@ -39,6 +39,8 @@ public:
   arma::Row<double> vi;
   arma::Row<double> wi;
   
+  arma::running_stat_vec<arma::Row<double>> publications_stats;
+  
   static std::vector<std::string> Columns();
   operator std::vector<std::string>() {
     return {
@@ -59,7 +61,11 @@ public:
   
   std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
   std::map<std::string, PersistenceManager::Writer> meta_writers;
+  std::unique_ptr<PersistenceManager::Writer> stats_writer;
   
+  // Instrument of the stats writer...
+  std::vector<std::string> submission_columns;
+  std::vector<std::string> stats_columns;
   MetaAnalysisResults meta_analysis_submissions;
 
   struct Parameters {
@@ -126,6 +132,8 @@ public:
   void saveSubmissions(int simid, std::ofstream &writer);
   
   void saveMetaAnalysis();
+  
+  void savePulicationsStats();
 
   ///
   /// Clear the publications_list vector.

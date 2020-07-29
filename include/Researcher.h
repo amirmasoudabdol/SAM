@@ -157,6 +157,7 @@ public:
 
     researcher.experiment = new Experiment(config["experiment_parameters"]);
 
+    config["journal_parameters"]["save_stats"] = config["simulation_parameters"]["save_stats"];
     config["journal_parameters"]["output_path"] = config["simulation_parameters"]["output_path"];
     config["journal_parameters"]["output_prefix"] = config["simulation_parameters"]["output_prefix"];
     researcher.journal = std::make_shared<Journal>(config["journal_parameters"]);

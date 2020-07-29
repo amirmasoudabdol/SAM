@@ -119,6 +119,7 @@ public: // Public for now
   auto end() { return measurements_.end(); };
 
   operator std::map<std::string, std::string>();
+  operator arma::Row<double>();
 
   void updateStats();
 

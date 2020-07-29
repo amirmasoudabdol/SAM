@@ -57,6 +57,7 @@ public:
   }
 
   operator std::map<std::string, std::string>();
+  operator arma::Row<double>();
 };
 
 } // namespace sam

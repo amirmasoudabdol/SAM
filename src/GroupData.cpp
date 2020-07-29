@@ -64,6 +64,24 @@ GroupData::operator std::map<std::string, std::string>() {
   return record;
 }
 
+GroupData::operator arma::Row<double>() {
+  
+  return {static_cast<double>(id_),
+    static_cast<double>(nobs_),
+    mean_,
+    var_,
+    stddev_,
+    sei_,
+    pvalue_,
+    effect_,
+    var_effect_,
+    se_effect_,
+    static_cast<double>(sig_),
+    static_cast<double>(eff_side_),
+    static_cast<double>(is_hacked_)};
+  
+}
+
 void GroupData::clear() {
   
   hacking_history_.clear();

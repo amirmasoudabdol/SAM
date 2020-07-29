@@ -220,11 +220,6 @@ void runSimulation(json &simConfig) {
 
       researcher.research();
 
-      // If Experiment handles the Submission, it can handle the
-      // stats output as well.
-      if (is_saving_stats)
-        statswriter->write(researcher.experiment, "stats", i);
-
       spdlog::debug("\n\n==========================================================================\n");
     }
     
@@ -244,6 +239,9 @@ void runSimulation(json &simConfig) {
     researcher.journal->runMetaAnalysis();
     
     researcher.journal->saveMetaAnalysis();
+    
+    if (is_saving_stats)
+      researcher.journal->savePulicationsStats();
     
     researcher.journal->clear();
   }

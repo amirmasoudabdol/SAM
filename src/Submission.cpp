@@ -28,6 +28,8 @@ std::vector<std::string> Submission::Columns() {
 
 Submission::operator std::map<std::string, std::string>() {
 
+  /// \todo It's somewhat a bad idea to declare `record` as static
+  
   record["simid"] = std::to_string(simid);
   record["exprid"] = std::to_string(exprid);
   record["repid"] = std::to_string(repid);
@@ -39,6 +41,20 @@ Submission::operator std::map<std::string, std::string>() {
   record.insert(g_record.begin(), g_record.end());
 
   return record;
+}
+
+Submission::operator arma::Row<double>() {
+  
+  arma::Row<double> row {
+    static_cast<double>(simid),
+    static_cast<double>(exprid),
+    static_cast<double>(repid),
+    static_cast<double>(pubid),
+    static_cast<double>(tnobs)};
+  
+  row.insert_cols(row.n_elem, static_cast<arma::Row<double>>(group_));
+  
+  return row;
 }
 
 } // namespace sam
