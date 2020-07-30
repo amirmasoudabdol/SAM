@@ -158,7 +158,7 @@ public:
     researcher.experiment = new Experiment(config["experiment_parameters"]);
 
     config["journal_parameters"]["save_meta"] = config["simulation_parameters"]["save_meta"];
-    config["journal_parameters"]["save_pubs_summaries"] = config["simulation_parameters"]["save_pubs_summaries"];
+    config["journal_parameters"]["save_pubs_per_sim_summaries"] = config["simulation_parameters"]["save_pubs_per_sim_summaries"];
     config["journal_parameters"]["save_overall_summaries"] = config["simulation_parameters"]["save_overall_summaries"];
     
     config["journal_parameters"]["output_path"] = config["simulation_parameters"]["output_path"];

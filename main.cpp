@@ -157,7 +157,7 @@ void runSimulation(json &simConfig) {
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
 
-  bool is_saving_pubs_summaries_per_sim = simConfig["simulation_parameters"]["save_pubs_summaries"];
+  bool is_saving_pubs_summaries_per_sim = simConfig["simulation_parameters"]["save_pubs_per_sim_summaries"];
   bool is_saving_summaries = simConfig["simulation_parameters"]["save_overall_summaries"];
   bool is_saving_meta = simConfig["simulation_parameters"]["save_meta"];
 

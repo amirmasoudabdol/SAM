@@ -195,11 +195,11 @@
         "output_path": "../outputs/",
         "output_prefix": "fff041b8-aca6-4bf5-806a-99bb25b83cd3",
         "progress": false,
-        "save_all_pubs": true,
+        "save_all_pubs": false,
         "save_meta": true,
-        "save_overall_summaries": true,
-        "save_pubs_summaries": true,
-        "save_rejected": true,
+        "save_overall_summaries": false,
+        "save_pubs_per_sim_summaries": true,
+        "save_rejected": false,
         "verbose": false
     }
 }

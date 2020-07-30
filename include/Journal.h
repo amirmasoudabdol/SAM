@@ -41,8 +41,7 @@ public:
   
   bool is_saving_summaries;
   bool is_saving_meta;
-  bool is_saving_pubs_summaries;
-  bool is_saving_pubs_summaries_per_sim;
+  bool is_saving_pubs_per_sim_summaries;
   
   arma::running_stat_vec<arma::Row<double>> pubs_per_sim_stat_runner;
   std::unique_ptr<PersistenceManager::Writer> pubs_per_sim_stats_writer;
@@ -179,14 +178,8 @@ public:
     wi = 1./vi;
   }
   
-  void runMetaAnalysis() {
-    
-    prepareForMetaAnalysis();
-    
-    for (auto &method : meta_analysis_strategies) {
-      method->estimate(this);
-    }
-  };
+  void runMetaAnalysis();
+  void updateTheOverallRunner();
 
 };
 
