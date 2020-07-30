@@ -19,6 +19,8 @@
 
 #include <indicators/block_progress_bar.hpp>
 #include <indicators/progress_bar.hpp>
+#include <indicators/termcolor.hpp>
+#include <indicators/cursor_control.hpp>
 
 #include "Researcher.h"
 #include "PersistenceManager.h"
@@ -169,6 +171,8 @@ void runSimulation(json &simConfig) {
     rejectedwriter =
         std::make_unique<PersistenceManager::Writer>(rejectedfilename);
 
+  indicators::show_console_cursor(false);
+  
   indicators::BlockProgressBar sim_progress_bar{
       indicators::option::BarWidth{50},
       indicators::option::Start{"["},
@@ -232,6 +236,9 @@ void runSimulation(json &simConfig) {
   if (is_saving_summaries) {
     researcher.journal->saveSummaries();
   }
+  
+  
+  indicators::show_console_cursor(true);
   
 
 }
