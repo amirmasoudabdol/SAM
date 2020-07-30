@@ -9,14 +9,14 @@
                     0.0,
                     0.0
                 ],
-                "stddevs": 0.0
+                "stddevs": 0.1
             },
             "measurements": {
                 "covs": 0.0,
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.0
+                    0.8
                 ],
                 "stddevs": 1.0
             }
@@ -43,16 +43,16 @@
             "dist": "piecewise_linear_distribution",
             "intervals": [
                 0,
-                69,
-                69,
-                70,
-                70,
-                75,
+                19,
+                19,
+                20,
+                20,
+                25,
+                30,
+                40,
+                60,
                 80,
-                140,
-                110,
-                130,
-                150
+                100
             ]
         },
         "n_reps": 1,
@@ -77,7 +77,7 @@
         "selection_strategy": {
             "_name": "SignificantSelection",
             "alpha": 0.05,
-            "pub_bias": 0.8,
+            "pub_bias": 1.0,
             "side": 0
         }
     },
@@ -114,10 +114,10 @@
             ]
         },
         "hacking_probability_strategy": {
-            "base_hp": 0,
-            "hi_p": 0.8,
+            "base_hp": 0.2,
+            "hi_p": 0.2,
             "hi_sei": 0.6,
-            "lo_p": 0.6,
+            "lo_p": 0.0,
             "lo_sei": 0.1,
             "method": "FrankenbachStrategy"
         },
@@ -125,7 +125,7 @@
             [
                 {
                     "_name": "OptionalStopping",
-                    "add_by_fraction": 0.2,
+                    "add_by_fraction": 0.5,
                     "level": "dv",
                     "max_attempts": 1,
                     "n_attempts": 1,
@@ -190,15 +190,15 @@
     },
     "simulation_parameters": {
         "debug": false,
-        "master_seed": 1595963039,
-        "n_sims": 5,
+        "master_seed": 1596102769,
+        "n_sims": 1000,
         "output_path": "../outputs/",
-        "output_prefix": "fff041b8-aca6-4bf5-806a-99bb25b83cd3",
+        "output_prefix": "0153aac7-b6c7-4e21-8fbf-74ce75d14040",
         "progress": false,
         "save_all_pubs": false,
         "save_meta": true,
-        "save_overall_summaries": false,
-        "save_pubs_per_sim_summaries": true,
+        "save_overall_summaries": true,
+        "save_pubs_per_sim_summaries": false,
         "save_rejected": false,
         "verbose": false
     }

@@ -63,7 +63,7 @@ public:
     using boost::math::normal; normal norm;
     
     se_seq = arma::regspace<arma::rowvec>(params.lo_sei, 0.0001, params.hi_sei);
-    p_seq = arma::linspace<arma::rowvec>(params.lo_p, params.hi_p, se_seq.n_elem);
+    p_seq = arma::linspace<arma::rowvec>(params.lo_p + 0.0001, params.hi_p - 0.0001, se_seq.n_elem);
     
     se_seq_p.resize(p_seq.n_elem);
     se_seq_p.imbue([&, i = 0]() mutable {
