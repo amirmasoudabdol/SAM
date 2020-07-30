@@ -189,7 +189,7 @@
         "submission_probability": 0.7
     },
     "simulation_parameters": {
-        "debug": false,
+        "log_level": "off",
         "master_seed": 1596102769,
         "n_sims": 1000,
         "output_path": "../outputs/",
@@ -199,7 +199,6 @@
         "save_meta": true,
         "save_overall_summaries": true,
         "save_pubs_per_sim_summaries": false,
-        "save_rejected": false,
-        "verbose": false
+        "save_rejected": false
     }
 }

@@ -153,6 +153,7 @@ void Researcher::research() {
       if (hacking_probability_strategy){
         bool is_hacking {false};
         double hp = hacking_probability_strategy->estimate(experiment);
+        
         is_hacking = Random::get<bool>(hp);
         
         if (is_hacking)

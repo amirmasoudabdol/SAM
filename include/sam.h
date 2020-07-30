@@ -17,10 +17,35 @@
 using json = nlohmann::json;
 
 namespace sam {
+
+enum class LogLevel
+{
+  trace = 0,
+  debug,
+  info,
+  warn,
+  err,
+  critical,
+  off
+};
+
+NLOHMANN_JSON_SERIALIZE_ENUM(
+LogLevel,
+{
+  {LogLevel::trace, "trace"},
+  {LogLevel::debug, "debug"},
+  {LogLevel::info, "info"},
+  {LogLevel::warn, "warn"},
+  {LogLevel::err, "err"},
+  {LogLevel::critical, "critical"},
+  {LogLevel::off, "off"}
+})
+
 struct FLAGS {
   static bool PROGRESS;
   static bool DEBUG;
   static bool UPDATECONFIG;
+  static LogLevel LOG_LEVEL;
 };
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };

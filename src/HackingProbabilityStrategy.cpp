@@ -52,15 +52,15 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
       dangers.imbue([&, i = d]() mutable {
         return this->border(experiment->groups_[i++].se_effect_);
       });
-      
+            
       probabilities.resize(g - d);
       probabilities.imbue([&, i = d]() mutable {
-        if (experiment->groups_[i].effect_ > dangers[i]) {
+        if (experiment->groups_[i].effect_ > dangers[i - 1]) {
           
           double d_sig = experiment->groups_[i].se_effect_ * 1.959964;
-          arma::rowvec danger_breaks = arma::linspace<arma::rowvec>(dangers[i], d_sig, 11);
-            
-          return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->groups_[i++].se_effect_))));
+          arma::rowvec danger_breaks = arma::linspace<arma::rowvec>(dangers[i - 1], d_sig, 11);
+          
+          return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->groups_[i++].effect_))));
           
         }else{
           return 0.;

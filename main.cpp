@@ -94,20 +94,15 @@ int main(int argc, const char **argv) {
   if (vm.count("progress")) {
     FLAGS::PROGRESS = vm["progress"].as<bool>();
   }
-  
-  if (vm.count("debug")) {
-    FLAGS::DEBUG = vm["debug"].as<bool>();
-  }
 
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
-  spdlog::set_level(spdlog::level::off);
-
-  if (configs["simulation_parameters"]["verbose"].get<bool>())
-    spdlog::set_level(spdlog::level::info);
-
-  if (configs["simulation_parameters"]["debug"].get<bool>())
-    spdlog::set_level(spdlog::level::debug);
+  auto log_level = static_cast<spdlog::level::level_enum>(configs["simulation_parameters"]["log_level"].get<LogLevel>());
+  spdlog::set_level(log_level);
+  
+  // Overwriting the logging level if given in CLI
+  if (vm.count("debug"))
+    FLAGS::DEBUG = vm["debug"].as<bool>();
   
   
   /// Setting and saving the config file before starting the simulation
@@ -138,7 +133,7 @@ int main(int argc, const char **argv) {
 void runSimulation(json &simConfig) {
 
   FLAGS::PROGRESS |= simConfig["simulation_parameters"]["progress"].get<bool>();
-  FLAGS::DEBUG |= simConfig["simulation_parameters"]["debug"].get<bool>();
+//  FLAGS::DEBUG |= simConfig["simulation_parameters"]["debug"].get<bool>();
 
   Researcher researcher =
       Researcher::create("Peter").fromConfigFile(simConfig).build();
@@ -187,6 +182,7 @@ void runSimulation(json &simConfig) {
 
   auto progress = 0.0f;
   // This loop can be parallelized
+  spdlog::info("Starting the simulation...");
   for (int i = 0; i < n_sims; ++i) {
 
     spdlog::debug("---> Sim {}", i);
