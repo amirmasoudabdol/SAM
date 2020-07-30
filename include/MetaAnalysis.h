@@ -94,6 +94,20 @@ public:
       };
     }
     
+    operator arma::Row<double>() {
+      return {
+          est,
+          se,
+          ci_lb,
+          ci_ub,
+          zval,
+          pval,
+          q_stat,
+          q_pval,
+          tau2
+      };
+    }
+    
   };
   
   // \todo: To be implemented
@@ -177,6 +191,20 @@ public:
         std::to_string(tau2)
       };
     }
+    
+    operator arma::Row<double>() {
+      return {
+        est,
+        se,
+        ci_lb,
+        ci_ub,
+        zval,
+        pval,
+        q_stat,
+        q_pval,
+        tau2
+      };
+    }
 
     friend ostream &operator<<(ostream &os, const ResultType &type) {
       os << "est: " << type.est << " se: " << type.se
@@ -222,6 +250,18 @@ public:
         std::to_string(df)
       };
     }
+    
+    operator arma::Row<double>() {
+      return {
+        slope,
+        se,
+        tstat,
+        pval,
+        static_cast<double>(sig),
+        df
+      };
+    }
+    
   };
   
   /// \todo: to be extended! and be properly implemented
@@ -276,6 +316,16 @@ public:
         std::to_string(sig),
       };
     }
+    
+    operator arma::Row<double>() {
+      return {
+        E,
+        A,
+        pval,
+        static_cast<double>(sig)
+      };
+    }
+    
   };
   
   /// \todo: to be extended! and be properly implemented
@@ -336,6 +386,17 @@ public:
         std::to_string(imputed_pval)
       };
     }
+    
+    operator arma::Row<double>() {
+      return {
+        k0,
+        se_k0,
+        k_all,
+        1. ? (side.find("left") != std::string::npos) : -1.,
+        imputed_est,
+        imputed_pval
+      };
+    }
   };
   
   /// \todo: to be extended! and be properly implemented
@@ -393,6 +454,15 @@ public:
         std::to_string(sig)
       };
     }
+    
+    operator arma::Row<double>() {
+      return {
+        est,
+        pval,
+        static_cast<double>(sig)
+      };
+    }
+    
   };
   
   /// \todo: to be extended! and be properly implemented

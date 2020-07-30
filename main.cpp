@@ -145,7 +145,7 @@ void runSimulation(json &simConfig) {
 
   // Initiate the csvWriter
   // I need an interface for this
-  bool is_saving_pubs = simConfig["simulation_parameters"]["save_pubs"];
+  bool is_saving_all_pubs = simConfig["simulation_parameters"]["save_all_pubs"];
   std::string pubsfilename =
       simConfig["simulation_parameters"]["output_path"].get<std::string>() +
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
@@ -157,38 +157,22 @@ void runSimulation(json &simConfig) {
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
 
-  bool is_saving_stats = simConfig["simulation_parameters"]["save_stats"];
-  std::string statsfilename =
-      simConfig["simulation_parameters"]["output_path"].get<std::string>() +
-      simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
-      "_Statistics.csv";
-
-  bool is_saving_sims = simConfig["simulation_parameters"]["save_sims"];
-  std::string simsfilename =
-      simConfig["simulation_parameters"]["output_path"].get<std::string>() +
-      simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
-      "_Experiments.csv";
+  bool is_saving_pubs_summaries_per_sim = simConfig["simulation_parameters"]["save_pubs_summaries"];
+  bool is_saving_summaries = simConfig["simulation_parameters"]["save_overall_summaries"];
+  bool is_saving_meta = simConfig["simulation_parameters"]["save_meta"];
 
   int n_sims = simConfig["simulation_parameters"]["n_sims"];
 
   std::unique_ptr<PersistenceManager::Writer> pubswriter;
   std::unique_ptr<PersistenceManager::Writer> rejectedwriter;
-  std::unique_ptr<PersistenceManager::Writer> statswriter;
-  std::unique_ptr<PersistenceManager::Writer> simswriter;
 
   // Initializing the csv writer
-  if (is_saving_pubs)
+  if (is_saving_all_pubs)
     pubswriter = std::make_unique<PersistenceManager::Writer>(pubsfilename);
 
   if (is_saving_rejected)
     rejectedwriter =
         std::make_unique<PersistenceManager::Writer>(rejectedfilename);
-
-  if (is_saving_stats)
-    statswriter = std::make_unique<PersistenceManager::Writer>(statsfilename);
-
-  if (is_saving_sims)
-    simswriter = std::make_unique<PersistenceManager::Writer>(simsfilename);
 
   indicators::BlockProgressBar sim_progress_bar{
       indicators::option::BarWidth{50},
@@ -228,7 +212,7 @@ void runSimulation(json &simConfig) {
       sim_progress_bar.set_progress(progress * 100);
     }
 
-    if (is_saving_pubs) {
+    if (is_saving_all_pubs) {
       pubswriter->write(researcher.journal->publications_list, i);
     }
 
@@ -236,14 +220,21 @@ void runSimulation(json &simConfig) {
       rejectedwriter->write(researcher.journal->rejection_list, i);
     }
 
-    researcher.journal->runMetaAnalysis();
+    if (is_saving_summaries or is_saving_meta)
+      researcher.journal->runMetaAnalysis();
     
-    researcher.journal->saveMetaAnalysis();
+    if (is_saving_meta)
+      researcher.journal->saveMetaAnalysis();
     
-    if (is_saving_stats)
-      researcher.journal->savePulicationsStats();
+    if (is_saving_pubs_summaries_per_sim) {
+      researcher.journal->savePulicationsPerSimSummaries();
+    }
     
     researcher.journal->clear();
+  }
+  
+  if (is_saving_summaries) {
+    researcher.journal->saveSummaries();
   }
   
 

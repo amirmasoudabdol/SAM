@@ -23,36 +23,70 @@ Journal::Journal(json &journal_config) {
   this->selection_strategy =
       SelectionStrategy::build(journal_config["selection_strategy"]);
   
+  is_saving_meta = journal_config["save_meta"];
+  is_saving_summaries = journal_config["save_overall_summaries"];
+  is_saving_pubs_summaries = journal_config["save_pubs_summaries"];
+  
   for (auto const &method : journal_config["meta_analysis_metrics"]) {
     meta_analysis_strategies.push_back(MetaAnalysis::build(method));
     
-    auto cols = Columns();  // Journal Columns
-    auto method_cols = MetaAnalysis::Columns(method["_name"]);
-    cols.insert(cols.end(), method_cols.begin(), method_cols.end());
+    auto method_name = method["_name"].get<std::string>();
     
-    meta_writers.try_emplace(method["_name"].get<std::string>(),
-                             journal_config["output_path"].get<std::string>() +
-                             journal_config["output_prefix"].get<std::string>() +
-                             "_" + method["_name"].get<std::string>() + ".csv", cols);
-
-  }
-  
-  bool is_saving_stats = journal_config["save_stats"];
-  if (is_saving_stats){
-    
-    submission_columns = Submission::Columns();
-    
-    for (auto &col : submission_columns) {
-      stats_columns.push_back("mean_" + col);
-      stats_columns.push_back("min_" + col);
-      stats_columns.push_back("max_" + col);
-      stats_columns.push_back("var_" + col);
-      stats_columns.push_back("stddev_" + col);
+    if (is_saving_meta) {
+//      auto cols = Columns();  // Journal Columns
+      auto cols = MetaAnalysis::Columns(method["_name"]);
+//      cols.insert(cols.end(), method_cols.begin(), method_cols.end());
+      
+      meta_columns.try_emplace(method_name, cols);
+      
+      meta_writers.try_emplace(method_name,
+                               journal_config["output_path"].get<std::string>() +
+                               journal_config["output_prefix"].get<std::string>() +
+                               "_" + method_name + ".csv", cols);
+      
+      if (is_saving_summaries) {
+        meta_stat_runners.try_emplace(method_name, arma::running_stat_vec<arma::Row<double>>());
+        
+        std::vector<std::string> meta_stats_cols;
+        for (auto &col : meta_columns[method_name]) {
+          meta_stats_cols.push_back("mean_" + col);
+          meta_stats_cols.push_back("min_" + col);
+          meta_stats_cols.push_back("max_" + col);
+          meta_stats_cols.push_back("var_" + col);
+          meta_stats_cols.push_back("stddev_" + col);
+        }
+        
+        meta_stats_columns[method_name] = meta_stats_cols;
+        
+        meta_stats_writers.try_emplace(method_name,
+                                       journal_config["output_path"].get<std::string>() +
+                                       journal_config["output_prefix"].get<std::string>() +
+                                       "_" + method_name + "_Summaries.csv", meta_stats_columns[method_name]);
+      }
     }
     
-    stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
-                                                                journal_config["output_prefix"].get<std::string>() +
-                                                                "_Statistics.csv", stats_columns);
+  }
+
+  submission_columns = Submission::Columns();
+  
+  for (auto &col : submission_columns) {
+    stats_columns.push_back("mean_" + col);
+    stats_columns.push_back("min_" + col);
+    stats_columns.push_back("max_" + col);
+    stats_columns.push_back("var_" + col);
+    stats_columns.push_back("stddev_" + col);
+  }
+  
+  if (is_saving_pubs_summaries) {
+    pubs_per_sim_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
+                                                                   journal_config["output_prefix"].get<std::string>() +
+                                                                   "_Publications_Per_Sim_Summaries.csv", stats_columns);
+  }
+  
+  if (is_saving_summaries){
+    pubs_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
+                                                                     journal_config["output_prefix"].get<std::string>() +
+                                                                     "_Publications_Summaries.csv", stats_columns);
   }
     
   
@@ -60,15 +94,20 @@ Journal::Journal(json &journal_config) {
   /// them to be written to the config file again.
   journal_config.erase("output_path");
   journal_config.erase("output_prefix");
-  journal_config.erase("save_stats");
+  journal_config.erase("save_overall_summaries");
 }
 
-bool Journal::review(const Submission &s) {
+bool Journal::review(Submission &s) {
 
   bool decision = this->selection_strategy->review(s);
 
   if (decision) {
     accept(s);
+    
+    if (is_saving_summaries) {
+        pubs_stat_runner(static_cast<arma::rowvec>(s));
+    }
+    
   } else {
     reject(s);
   }
@@ -96,69 +135,119 @@ void Journal::reject(const Submission &s) {
 void Journal::saveMetaAnalysis() {
   
   
-  static std::vector<std::string> row;
+//  static std::vector<std::string> row;
   static std::vector<std::string> mrow;
   
   for (auto &res : meta_analysis_submissions) {
     
     // This uses the conversion operator to cast the Journal to vector of strings
-    row = *this;
+//    row = *this;
     
     std::visit(overload{
       [&](FixedEffectEstimator::ResultType &res) {
         mrow = res;
-        row.insert(row.end(), mrow.begin(), mrow.end());
-        meta_writers["FixedEffectEstimator"].write(row);
+//        row.insert(row.end(), mrow.begin(), mrow.end());
+        meta_writers["FixedEffectEstimator"].write(mrow);
+        
+        if (is_saving_summaries)
+          meta_stat_runners["FixedEffectEstimator"](static_cast<arma::rowvec>(res));
       },
       [&](RandomEffectEstimator::ResultType &res) {
         mrow = res;
-        row.insert(row.end(), mrow.begin(), mrow.end());
-        meta_writers["RandomEffectEstimator"].write(row);
+//        row.insert(row.end(), mrow.begin(), mrow.end());
+        meta_writers["RandomEffectEstimator"].write(mrow);
+        
+        if (is_saving_summaries)
+          meta_stat_runners["RandomEffectEstimator"](static_cast<arma::rowvec>(res));
       },
       [&](EggersTestEstimator::ResultType &res) {
         mrow = res;
-        row.insert(row.end(), mrow.begin(), mrow.end());
-        meta_writers["EggersTestEstimator"].write(row);
+//        row.insert(row.end(), mrow.begin(), mrow.end());
+        meta_writers["EggersTestEstimator"].write(mrow);
+        
+        if (is_saving_summaries)
+          meta_stat_runners["EggersTestEstimator"](static_cast<arma::rowvec>(res));
       },
       [&](TestOfObsOverExptSig::ResultType &res) {
         mrow = res;
-        row.insert(row.end(), mrow.begin(), mrow.end());
-        meta_writers["TestOfObsOverExptSig"].write(row);
+//        row.insert(row.end(), mrow.begin(), mrow.end());
+        meta_writers["TestOfObsOverExptSig"].write(mrow);
+        
+        if (is_saving_summaries)
+          meta_stat_runners["TestOfObsOverExptSig"](static_cast<arma::rowvec>(res));
       },
       [&](TrimAndFill::ResultType &res) {
         mrow = res;
-        row.insert(row.end(), mrow.begin(), mrow.end());
-        meta_writers["TrimAndFill"].write(row);
+//        row.insert(row.end(), mrow.begin(), mrow.end());
+        meta_writers["TrimAndFill"].write(mrow);
+        
+        if (is_saving_summaries)
+          meta_stat_runners["TrimAndFill"](static_cast<arma::rowvec>(res));
       },
       [&](RankCorrelation::ResultType &res) {
         mrow = res;
-        row.insert(row.end(), mrow.begin(), mrow.end());
-        meta_writers["RankCorrelation"].write(row);
+//        row.insert(row.end(), mrow.begin(), mrow.end());
+        meta_writers["RankCorrelation"].write(mrow);
+        
+        if (is_saving_summaries)
+          meta_stat_runners["RankCorrelation"](static_cast<arma::rowvec>(res));
       }
     }, res);
   }
 }
 
+void Journal::saveSummaries() {
+  
+  for (auto &item : meta_stat_runners) {
+    
+    std::map<std::string, std::string> record;
+    
+    for (int c{0}; c < meta_columns[item.first].size(); ++c) {
+      record["mean_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].mean()[c]);
+      record["min_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].min()[c]);
+      record["max_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].max()[c]);
+      record["var_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].var()[c]);
+      record["stddev_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].stddev()[c]);
+    }
+    
+    meta_stats_writers[item.first].write(record);
+    
+  }
+  
+  std::map<std::string, std::string> record;
+  
+  for (int c{0}; c < submission_columns.size(); ++c) {
+    record["mean_" + submission_columns[c]] = std::to_string(pubs_stat_runner.mean()[c]);
+    record["min_" + submission_columns[c]] = std::to_string(pubs_stat_runner.min()[c]);
+    record["max_" + submission_columns[c]] = std::to_string(pubs_stat_runner.max()[c]);
+    record["var_" + submission_columns[c]] = std::to_string(pubs_stat_runner.var()[c]);
+    record["stddev_" + submission_columns[c]] = std::to_string(pubs_stat_runner.stddev()[c]);
+  }
+  
+  pubs_stats_writer->write(record);
+  
+}
 
-void Journal::savePulicationsStats() {
+
+void Journal::savePulicationsPerSimSummaries() {
   
   static std::map<std::string, std::string> record;
   
   /// Calculating the statistics
-  publications_stats.reset();
+  pubs_per_sim_stat_runner.reset();
   for (auto &s : publications_list) {
     arma::rowvec row = s;
-    publications_stats(row);
+    pubs_per_sim_stat_runner(row);
   }
   
   for (int c{0}; c < submission_columns.size(); ++c) {
-    record["mean_" + submission_columns[c]] = std::to_string(publications_stats.mean()[c]);
-    record["min_" + submission_columns[c]] = std::to_string(publications_stats.min()[c]);
-    record["max_" + submission_columns[c]] = std::to_string(publications_stats.max()[c]);
-    record["var_" + submission_columns[c]] = std::to_string(publications_stats.var()[c]);
-    record["stddev_" + submission_columns[c]] = std::to_string(publications_stats.stddev()[c]);
+    record["mean_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.mean()[c]);
+    record["min_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.min()[c]);
+    record["max_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.max()[c]);
+    record["var_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.var()[c]);
+    record["stddev_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.stddev()[c]);
   }
   
-  stats_writer->write(record);
+  pubs_per_sim_stats_writer->write(record);
   
 }

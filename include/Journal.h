@@ -39,7 +39,16 @@ public:
   arma::Row<double> vi;
   arma::Row<double> wi;
   
-  arma::running_stat_vec<arma::Row<double>> publications_stats;
+  bool is_saving_summaries;
+  bool is_saving_meta;
+  bool is_saving_pubs_summaries;
+  bool is_saving_pubs_summaries_per_sim;
+  
+  arma::running_stat_vec<arma::Row<double>> pubs_per_sim_stat_runner;
+  std::unique_ptr<PersistenceManager::Writer> pubs_per_sim_stats_writer;
+  
+  arma::running_stat_vec<arma::Row<double>> pubs_stat_runner;
+  std::unique_ptr<PersistenceManager::Writer> pubs_stats_writer;
   
   static std::vector<std::string> Columns();
   operator std::vector<std::string>() {
@@ -58,10 +67,16 @@ public:
 
   //! Effect Estimator
   std::unique_ptr<MetaAnalysis> meta_analysis_strategy;
+  std::map<std::string, arma::running_stat_vec<arma::Row<double>>> meta_stat_runners;
+  
+  std::map<std::string, std::vector<std::string>> meta_columns;
+  std::map<std::string, std::vector<std::string>> meta_stats_columns;
+  
   
   std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
   std::map<std::string, PersistenceManager::Writer> meta_writers;
-  std::unique_ptr<PersistenceManager::Writer> stats_writer;
+  std::map<std::string, PersistenceManager::Writer> meta_stats_writers;
+  
   
   // Instrument of the stats writer...
   std::vector<std::string> submission_columns;
@@ -105,7 +120,7 @@ public:
   /// or
   ///             not.
   ///
-  bool review(const Submission &s);
+  bool review(Submission &s);
 
   ///
   /// \brief      Accept the Submission by adding it to the `publicationList`.
@@ -132,8 +147,11 @@ public:
   void saveSubmissions(int simid, std::ofstream &writer);
   
   void saveMetaAnalysis();
+  void saveSummaries();
+  void saveMetaStatsOf(std::string method);
   
-  void savePulicationsStats();
+  void savePulicationsPerSimSummaries();
+  
 
   ///
   /// Clear the publications_list vector.

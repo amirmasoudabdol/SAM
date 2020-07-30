@@ -9,7 +9,7 @@
                     0.0,
                     0.0
                 ],
-                "stddevs": 0.32
+                "stddevs": 0.0
             },
             "measurements": {
                 "covs": 0.0,
@@ -191,14 +191,15 @@
     "simulation_parameters": {
         "debug": false,
         "master_seed": 1595963039,
-        "n_sims": 500,
+        "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "fff041b8-aca6-4bf5-806a-99bb25b83cd3",
         "progress": false,
-        "save_pubs": true,
-        "save_rejected": false,
-        "save_sims": false,
-        "save_stats": false,
+        "save_all_pubs": true,
+        "save_meta": true,
+        "save_overall_summaries": true,
+        "save_pubs_summaries": true,
+        "save_rejected": true,
         "verbose": false
     }
 }
