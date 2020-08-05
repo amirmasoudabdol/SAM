@@ -116,10 +116,10 @@
         "hacking_probability_strategy": {
             "base_hp": 0.8,
             "hi_se": 1.0,
-            "max_se": 0.6,
             "lo_se": 0.8,
-            "min_se": 0.1,
-            "method": "FrankenbachStrategy"
+            "max_se": 0.6,
+            "method": "FrankenbachStrategy",
+            "min_se": 0.1
         },
         "hacking_strategies": [
             [
@@ -189,9 +189,9 @@
         "submission_probability": 0.7
     },
     "simulation_parameters": {
-        "log_level": "off",
+        "log_level": "debug",
         "master_seed": 1596102769,
-        "n_sims": 1000,
+        "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "0153aac7-b6c7-4e21-8fbf-74ce75d14040",
         "progress": false,

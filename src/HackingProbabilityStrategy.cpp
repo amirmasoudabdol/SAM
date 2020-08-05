@@ -60,6 +60,9 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
           
           /// If the hacking probablity is 1, then everything in this range is going to be
           /// hacked, a.k.a, hp = 1;
+          /// Update: I think I had this wrong previously, where I assing the probability to
+          /// everything, while it should only be assigned to those studies that are passing
+          /// the effect test in the first place
           if (relative_difference(params.base_hp, 1.) < 0.00001) {
             return 1.;
           }
