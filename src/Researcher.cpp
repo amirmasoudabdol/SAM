@@ -73,8 +73,7 @@ void Researcher::preProcessData() {
   experiment->calculateStatistics();
 
   for (auto &method : pre_processing_methods) {
-
-    (*method)(experiment);
+    method->operator()(experiment.get());
   }
 }
 
@@ -137,7 +136,7 @@ void Researcher::research() {
     /// -----------------
     /// Initial SELECTION
     spdlog::debug("→ Checking the INITIAL policies");
-    decision_strategy->selectOutcomeFromExperiment(experiment,
+    decision_strategy->selectOutcomeFromExperiment(experiment.get(),
                                   decision_strategy->initial_selection_policies);
     
     /// ----------------------
@@ -152,7 +151,7 @@ void Researcher::research() {
       /// If so, then I'm going to query it, and decide whether I'm going to hack or not
       if (hacking_probability_strategy){
         bool is_hacking {false};
-        double hp = hacking_probability_strategy->estimate(experiment);
+        double hp = hacking_probability_strategy->estimate(experiment.get());
         
         is_hacking = Random::get<bool>(hp);
         

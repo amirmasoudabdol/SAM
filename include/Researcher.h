@@ -49,7 +49,7 @@ public:
   ///
   static ResearcherBuilder create(std::string name);
 
-  Experiment *experiment;
+  std::unique_ptr<Experiment> experiment;
   std::shared_ptr<Journal> journal;
   std::unique_ptr<DecisionStrategy> decision_strategy;
   std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
@@ -155,7 +155,7 @@ public:
     /// \todo I can technically replace all these direct calls with calls
     /// to their counterpart in the Builder!
 
-    researcher.experiment = new Experiment(config["experiment_parameters"]);
+    researcher.experiment = std::make_unique<Experiment>(config["experiment_parameters"]);
 
     config["journal_parameters"]["save_meta"] = config["simulation_parameters"]["save_meta"];
     config["journal_parameters"]["save_pubs_per_sim_summaries"] = config["simulation_parameters"]["save_pubs_per_sim_summaries"];
