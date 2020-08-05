@@ -230,7 +230,11 @@ void Journal::saveSummaries() {
       record["min_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].min()[c]);
       record["max_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].max()[c]);
       record["var_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].var()[c]);
-      record["stddev_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].stddev()[c]);
+      
+      if (meta_stat_runners.size() > 2)
+        record["stddev_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].stddev()[c]);
+      else
+        record["stddev_" + meta_columns[item.first][c]] = "0";
     }
     
     meta_stats_writers[item.first].write(record);
