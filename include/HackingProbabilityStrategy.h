@@ -48,10 +48,10 @@ public:
   struct Parameters {
     std::string method {"FrankenbachStrategy"};
     double base_hp {0};
-    double lo_p {0.4};
-    double hi_p {0.6};
-    double lo_sei {0.1};
-    double hi_sei {0.6};
+    double lo_se {0.4};
+    double hi_se {0.6};
+    double min_se {0.1};
+    double max_se {0.6};
   };
   
   Parameters params;
@@ -62,8 +62,8 @@ public:
     
     using boost::math::normal; normal norm;
     
-    se_seq = arma::regspace<arma::rowvec>(params.lo_sei, 0.0001, params.hi_sei);
-    p_seq = arma::linspace<arma::rowvec>(params.lo_p + 0.0001, params.hi_p - 0.0001, se_seq.n_elem);
+    se_seq = arma::regspace<arma::rowvec>(params.min_se, 0.0001, params.max_se);
+    p_seq = arma::linspace<arma::rowvec>(params.lo_se + 0.0001, params.hi_se - 0.0001, se_seq.n_elem);
     
     se_seq_p.resize(p_seq.n_elem);
     se_seq_p.imbue([&, i = 0]() mutable {
@@ -84,10 +84,10 @@ public:
 inline void to_json(json &j, const FrankenbachStrategy::Parameters &p) {
   j = json{{"method", p.method},
     {"base_hp", p.base_hp},
-    {"lo_p", p.lo_p},
-    {"hi_p", p.hi_p},
-    {"lo_sei", p.lo_sei},
-    {"hi_sei", p.hi_sei}
+    {"lo_se", p.lo_se},
+    {"hi_se", p.hi_se},
+    {"min_se", p.min_se},
+    {"max_se", p.max_se}
   };
 }
 
@@ -95,10 +95,10 @@ inline void from_json(const json &j, FrankenbachStrategy::Parameters &p) {
   
   j.at("method").get_to(p.method);
   j.at("base_hp").get_to(p.base_hp);
-  j.at("lo_p").get_to(p.lo_p);
-  j.at("hi_p").get_to(p.hi_p);
-  j.at("lo_sei").get_to(p.lo_sei);
-  j.at("hi_sei").get_to(p.hi_sei);
+  j.at("lo_se").get_to(p.lo_se);
+  j.at("hi_se").get_to(p.hi_se);
+  j.at("min_se").get_to(p.min_se);
+  j.at("max_se").get_to(p.max_se);
 }
 
 

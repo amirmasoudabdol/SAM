@@ -114,11 +114,11 @@
             ]
         },
         "hacking_probability_strategy": {
-            "base_hp": 0.2,
-            "hi_p": 0.2,
-            "hi_sei": 0.6,
-            "lo_p": 0.0,
-            "lo_sei": 0.1,
+            "base_hp": 0.8,
+            "hi_se": 1.0,
+            "max_se": 0.6,
+            "lo_se": 0.8,
+            "min_se": 0.1,
             "method": "FrankenbachStrategy"
         },
         "hacking_strategies": [

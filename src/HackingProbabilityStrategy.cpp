@@ -27,8 +27,6 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
   
   if (relative_difference(params.base_hp, 0) < 0.00001) {
     return 0.;
-  }else if (relative_difference(params.base_hp, 1) < 0.00001) {
-    return 1.;
   }else {
     /// We have something in the middle now, so, we are calculating based on the p-value
     /// we check for significance, if sig, then we return 0.
@@ -60,6 +58,12 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
           double d_sig = experiment->groups_[i].se_effect_ * 1.959964;
           arma::rowvec danger_breaks = arma::linspace<arma::rowvec>(dangers[i - 1], d_sig, 11);
           
+          /// If the hacking probablity is 1, then everything in this range is going to be
+          /// hacked, a.k.a, hp = 1;
+          if (relative_difference(params.base_hp, 1.) < 0.00001) {
+            return 1.;
+          }
+          
           return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->groups_[i++].effect_))));
           
         }else{
@@ -70,6 +74,11 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
     }
     
     spdlog::debug("Chance of hacking: {}", arma::max(probabilities));
+    
+    /// \todo Remember that you should consider some option here. At the moment,
+    /// I'm returning the maximum of all probabilities, but that's not neceassirly the
+    /// best things to do, also, it works just fine in Frankenbach simulation because
+    /// they have only one one outcome anyway
     return arma::max(probabilities);
     
   }
