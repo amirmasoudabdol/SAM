@@ -201,7 +201,6 @@ public:
   /// {
   ///     "_name": "OutliersRemoval",
   ///     "level": "dv",
-  ///     "max_attempts": 1000,
   ///     "min_observations": 10,
   ///     "multipliers": [
   ///         0.5
@@ -231,9 +230,6 @@ public:
     //! outliers
     int n_attempts{1};
 
-    //! Indicates the maximum number of attempts
-    int max_attempts{10};
-
     //! Indicates the minimum number of observations allowed during the process
     int min_observations{15};
 
@@ -254,7 +250,7 @@ public:
   virtual void perform(Experiment *experiment) override;
 
 private:
-  int removeOutliers(Experiment *experiment, const int n, const double d);
+  bool removeOutliers(Experiment *experiment, const int n, const double k);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -263,7 +259,6 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"order", p.order},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
-           {"max_attempts", p.max_attempts},
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers}};
 }
@@ -278,7 +273,6 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
-  j.at("max_attempts").get_to(p.max_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
 }

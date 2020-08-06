@@ -15,16 +15,17 @@ void OutliersRemoval::perform(Experiment *experiment) {
 
   spdlog::debug("Outliers Removal: ");
 
-  /// result flag
-  int res = 0;
+  for (const auto k : params.multipliers) {
+    
+    bool res {true};
 
-  for (const auto d : params.multipliers) {
+    /// Removing outliers `n` at a time, for the total of `n_attempts`
+    /// It'll stop either when n_attempts are exhausted, or there is no
+    /// more observations left to be removed
+    for (int t = 0; t < params.n_attempts && res; ++t) {
 
-    for (int t = 0;
-         t < params.n_attempts && t < params.max_attempts && res != 1; ++t) {
-
-      res = this->removeOutliers(experiment, params.num, d);
-
+      res = this->removeOutliers(experiment, params.num, k);
+      
       experiment->calculateStatistics();
       experiment->calculateEffects();
       experiment->runTest();
@@ -40,10 +41,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
   }
 }
 
-int OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
-                                    const double d) {
-
-  int res = 0;
+bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const double k) {
 
   arma::rowvec standaraized;
 
@@ -56,8 +54,7 @@ int OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
 
     // At least one row has less than `min_observations`
     if (row.size() <= params.min_observations)
-      return 1; // Unsuccessful retrun, nothing has removed.
-                // TODO: I can improve this with `std::optional`
+      return false; // Unsuccessful retrun, nothing has removed.
 
     // This trick makes finding the largest outlier easier. I'll see if I can
     // find a better way
@@ -68,7 +65,7 @@ int OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
         arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
 
     // Finding the outliers, returning only `n` of them
-    arma::uvec inx = arma::find(standaraized > d, n, "first");
+    arma::uvec inx = arma::find(standaraized > k, n, "first");
 
     if ((row.n_elem - inx.n_elem) <= params.min_observations)
       inx = inx.head(row.n_elem - params.min_observations);
@@ -77,5 +74,5 @@ int OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
   }
 
   // Success Code
-  return res;
+  return true;
 }
