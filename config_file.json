@@ -63,7 +63,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 24,
+        "max_pubs": 72,
         "meta_analysis_metrics": [
             {
                 "_name": "RandomEffectEstimator",
@@ -77,7 +77,7 @@
         "selection_strategy": {
             "_name": "SignificantSelection",
             "alpha": 0.05,
-            "pub_bias": 1.0,
+            "pub_bias": 0.0,
             "side": 0
         }
     },
@@ -86,7 +86,6 @@
             "_name": "MarjansDecisionMaker",
             "between_hacks_selection_policies": [
                 [
-                    "sig",
                     "min(pvalue)"
                 ]
             ],
@@ -101,7 +100,7 @@
                 ]
             ],
             "stashing_policy": [
-                "sig"
+                "all"
             ],
             "submission_decision_policies": [
                 ""
@@ -113,19 +112,11 @@
                 "!sig"
             ]
         },
-        "hacking_probability_strategy": {
-            "base_hp": 0.8,
-            "hi_se": 1.0,
-            "lo_se": 0.8,
-            "max_se": 0.6,
-            "method": "FrankenbachStrategy",
-            "min_se": 0.1
-        },
         "hacking_strategies": [
             [
                 {
                     "_name": "OptionalStopping",
-                    "add_by_fraction": 0.5,
+                    "add_by_fraction": 0.3,
                     "level": "dv",
                     "max_attempts": 1,
                     "n_attempts": 1,
@@ -135,34 +126,6 @@
                     {
                         "selection": [
                             [
-                                "sig",
-                                "min(pvalue)"
-                            ]
-                        ]
-                    },
-                    {
-                        "will_continue_hacking_decision_policy": [
-                            "!sig"
-                        ]
-                    }
-                ],
-                {
-                    "_name": "OutliersRemoval",
-                    "level": "dv",
-                    "max_attempts": 1,
-                    "min_observations": 1,
-                    "multipliers": [
-                        2
-                    ],
-                    "n_attempts": 1,
-                    "num": 10,
-                    "order": "random"
-                },
-                [
-                    {
-                        "selection": [
-                            [
-                                "sig",
                                 "min(pvalue)"
                             ]
                         ]
@@ -191,14 +154,14 @@
     "simulation_parameters": {
         "log_level": "debug",
         "master_seed": 1596102769,
-        "n_sims": 5,
+        "n_sims": 1,
         "output_path": "../outputs/",
         "output_prefix": "0153aac7-b6c7-4e21-8fbf-74ce75d14040",
         "progress": false,
-        "save_all_pubs": false,
+        "save_all_pubs": true,
         "save_meta": true,
         "save_overall_summaries": true,
-        "save_pubs_per_sim_summaries": false,
-        "save_rejected": false
+        "save_pubs_per_sim_summaries": true,
+        "save_rejected": true
     }
 }

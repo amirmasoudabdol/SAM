@@ -95,15 +95,14 @@ private:
   virtual void perform(Experiment *experiment) override{};
 };
 
+/// Declartion of OptionalStopping hacking strategy
 ///
-/// @brief      Declartion of OptionalStopping hacking strategy
-///
-/// @ingroup    HackingStrategies
+/// @ingroup  HackingStrategies
 ///
 class OptionalStopping final : public HackingStrategy {
 
 public:
-  /// @brief    Parameter of optional stopping method.
+  /// Parameter of optional stopping method.
   ///
   /// @ingroup  HackingStrategiesParameters
   ///

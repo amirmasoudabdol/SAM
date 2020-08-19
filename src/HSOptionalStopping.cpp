@@ -6,16 +6,15 @@
 
 using namespace sam;
 
+/// Implementation of Optional Stopping method
 ///
-/// \brief      Implementation of optional stopping.
+/// Iterates for maximum `n_attemps` and add new obversations to experiment's
+/// gourps. The number of new observations to be added to each group is deducted
+/// either a fixed number indicated by `params.num` or a variable number for each
+/// group, calculated as a fraction of already existing observations, `params.add_by_fraction`.
 ///
-/// This will use two parameters set at construction of the OptionalStopping
-/// class, `n_trials` and `n_new_obs` for every trial, the routine will add
-/// `n_new_obs` to all groups, recalculate the statistics, and run the test. It
-/// will then select an outcome based on researcher's preference and check it's
-/// significance. If the results is significant, it'll not make a new attempt to
-/// add more data, and will return to the hack() routine.
-///
+/// After each optional stopping step, all statistics will be recalculated and experiment will
+/// be passed to the `research` method.
 void OptionalStopping::perform(Experiment *experiment) {
 
   spdlog::debug("Optional Stopping: ");
@@ -38,9 +37,7 @@ void OptionalStopping::perform(Experiment *experiment) {
     experiment->recalculateEverything();
 
     /// \todo Implement a stopping condition if it makes sense
-    
-    
-    
+
   }
   
   for (int g{0}; g < experiment->setup.ng(); ++g) {
