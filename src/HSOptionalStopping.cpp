@@ -22,20 +22,20 @@ void OptionalStopping::perform(Experiment *experiment) {
 
   double n_new_items = params.num;
   
-  for (int t = 0; t < params.n_attempts && t < params.max_attempts; ++t) {
+  for (int t = 0; t < params.n_attempts; ++t) {
     spdlog::debug("\t #{} attempt(s)", t);
     
-    /// \todo this can be improved, I think I should send an array to addObservations for
-    /// each group, maybe an overload of it with this condition
     if (params.num == 0) {
-      n_new_items = static_cast<int>(params.add_by_fraction * experiment->groups_[0].nobs_);
+      arma::Row<int> ns(experiment->setup.ng());
+      ns.imbue([&, i = 0]() mutable {
+        return params.add_by_fraction * experiment->groups_[i++].nobs_;
+      });
+      addObservations(experiment, ns);
+    }else{
+      addObservations(experiment, n_new_items);
     }
-    addObservations(experiment, n_new_items);
-
-    /// \todo: This can still be done nicer
-    experiment->calculateStatistics();
-    experiment->calculateEffects();
-    experiment->runTest();
+    
+    experiment->recalculateEverything();
 
     /// \todo Implement a stopping condition if it makes sense
     
@@ -48,7 +48,6 @@ void OptionalStopping::perform(Experiment *experiment) {
   }
 }
 
-/// \todo This can be static and be used by other similar methods, e.g., Subjective Optional Stopping
 void OptionalStopping::addObservations(Experiment *experiment, const int n) {
 
   // Get the new observations
@@ -57,6 +56,20 @@ void OptionalStopping::addObservations(Experiment *experiment, const int n) {
   
   for (int g{0}; g < experiment->setup.ng(); ++g) {
     (*experiment)[g].add_measurements(new_observations[g]);
+  }
+  
+}
+
+void OptionalStopping::addObservations(Experiment *experiment, const arma::Row<int> ns) {
+  
+  // Getting max(ns) observations, sending max to the method is necessary due to the possibility
+  // of dealing with multivariate distribution
+  auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment,
+                                                                                    ns.max());
+  
+  // Distributing new items according to the requested size
+  for (int g{0}; g < experiment->setup.ng(); ++g) {
+    (*experiment)[g].add_measurements(new_observations[g].head(ns.at(g)));
   }
   
 }

@@ -30,9 +30,6 @@ void OutliersRemoval::perform(Experiment *experiment) {
       experiment->calculateEffects();
       experiment->runTest();
 
-//      if (!decisionStrategy->verdict(*experiment, DecisionStage::WhileHacking)
-//               .isStillHacking())
-//        return;
     }
   }
   

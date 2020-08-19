@@ -92,7 +92,7 @@ make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
 ///
 /// \tparam     T     The type of the vector and value.
 ///
-/// TODO: Just use the return value here, passing by reference is not safe and
+/// \todo       Just use the return value here, passing by reference is not safe and
 /// necessary, also due to the move sematic, I can just do this easily without
 /// preformance lose.
 ///

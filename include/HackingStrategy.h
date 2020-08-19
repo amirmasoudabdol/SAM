@@ -96,26 +96,20 @@ private:
 };
 
 ///
-/// \brief      Declartion of OptionalStopping hacking strategy
+/// @brief      Declartion of OptionalStopping hacking strategy
 ///
-/// \ingroup    HackingStrategies
+/// @ingroup    HackingStrategies
 ///
 class OptionalStopping final : public HackingStrategy {
 
 public:
-  /// \ingroup  HackingStrategiesParameters
+  /// @brief    Parameter of optional stopping method.
   ///
-  /// \brief    Parameter of optional stopping method.
+  /// @ingroup  HackingStrategiesParameters
   ///
   struct Parameters {
     //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::OptionalStopping;
-
-    //! Indicates where the optional stopping should be applied!
-    std::string level = "dv";
-    
-    //! Indicate which group is going to accept the new observations
-    std::string target = "control-and-treatment";
 
     //! Number of new observations to be added to each group
     int num = 3;
@@ -125,10 +119,6 @@ public:
 
     //! Number of times that Researcher add `num` observations to each group
     int n_attempts = 1;
-
-    //! Maximum number of times that Researcher tries to add new observations to
-    //! each group
-    int max_attempts = 10;
     
     std::vector<std::vector<std::string>> stopping_cond_defs;
     
@@ -143,25 +133,28 @@ public:
       : params{p} {
         stopping_pchain_set = PolicyChainSet{p.stopping_cond_defs, lua};
         };
+  
+  /// Adds `n` observations to all groups
+  ///
+  /// @param experiment A pointer to the experiment
+  /// @param n number of new observations to be added
+  static void addObservations(Experiment *experiment, const int n);
+  
+  
+  /// Adds `ns[i]` new items to `i`th group
+  ///
+  /// @param experiment A pointer to an experiment
+  /// @param ns An array indicating how many new items should be added to each group
+  static void addObservations(Experiment *experiment, const arma::Row<int> ns);
 
 private:
   virtual void perform(Experiment *experiment) override;
-
-private:
-  ///   Add _n_ observations to all groups and return the updated experiment to
-  ///   the `perform()` method.
-  ///
-  ///   \param experiment A pointer to the experiment
-  ///   \param n number of new observations to be added
-  void addObservations(Experiment *experiment, const int n);
 };
 
 inline void to_json(json &j, const OptionalStopping::Parameters &p) {
   j = json{{"_name", p.name},
-           {"level", p.level},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
-           {"max_attempts", p.max_attempts},
            {"add_by_fraction", p.add_by_fraction},
            {"stopping_condition", p.stopping_cond_defs}
   };
@@ -172,10 +165,8 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("_name").get_to(p.name);
-  j.at("level").get_to(p.level);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
-  j.at("max_attempts").get_to(p.max_attempts);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
