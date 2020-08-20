@@ -29,9 +29,9 @@
 
 namespace sam {
 
-/// \ingroup    HackingStrategies
+/// @ingroup    HackingStrategies
 ///
-/// \brief      Abstract class for hacking strategies.
+/// @brief      Abstract class for hacking strategies.
 ///
 /// Each HackingStrategy should provide a `perform()` method. The `perform()`
 /// method will take over a pointer to an Experiment and apply the implemented
@@ -44,44 +44,32 @@ public:
   
   sol::state lua;
   
-  /// \brief      Pure deconstuctor of the Base calss. This is important
+  /// @brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
   
   HackingStrategy();
 
-  /// \brief      Factory method for building a HackingStrategy
+  /// @brief      Factory method for building a HackingStrategy
   ///
-  /// \param      config  A reference to an item of the
+  /// @param      config  A reference to an item of the
   ///             `json['--hacking-strategy']`. Researcher::Builder is
   ///             responsible for passing this object correctly.
   ///
-  /// \return     A new HackingStrategy
+  /// @return     A new HackingStrategy
   static std::unique_ptr<HackingStrategy> build(json &hacking_strategy_config);
 
   static std::unique_ptr<HackingStrategy> build(HackingMethod method);
 
   
-  // These will modify the experiment
-  
-//  void operator()(Experiment *experiment,
-//                          DecisionStrategy *decisionStrategy) {
-////    perform(experiment, decisionStrategy);
-//  };
-
   void operator()(Experiment *experiment) {
     perform(experiment);
   };
 
 private:
-  /// \brief      Applies the hacking method on the Experiment.
+  /// @brief  Applies the hacking method on the Experiment.
   ///
-  /// \param      experiment        A pointer to an Experiment.
-  ///
-  /// \param      decisionStrategy  A pointer to Researcher's
-  ///                               DecisionStrategy. The HackingStrategy
-  ///                               decides with what flag it is going to use
-  ///                               the DecisionStrategy.
+  /// @param  experiment    A pointer to an Experiment.
   virtual void perform(Experiment *experiment) = 0;
 };
 
