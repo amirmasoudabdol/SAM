@@ -4,47 +4,6 @@
 
 #include "DecisionStrategy.h"
 
-namespace sam {
-  bool isItSatisfactory(Experiment &experiment,
-                              PolicyChain &pchain) {
-
-    assert(!pchain.empty() && "PolicySet is empty!");
-    spdlog::debug("Deciding whether we are going to continue hacking!");
-    
-    auto found_sth_unique{false};
-    auto begin = experiment.groups_.begin() + experiment.setup.nd();
-    auto end = experiment.groups_.end();
-
-    for (auto &p : pchain) {
-      std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
-
-      if (found_sth_unique ) {
-        return true;
-      }
-      
-      if (begin == end){
-        return false;
-      }
-      
-    }
-    
-    // This has to be here
-    if (begin+1 == end) {
-      spdlog::debug("There is only one!");
-      return true;
-    }else if (begin != end) { /// We found a bunch
-
-      return true;
-    } else {
-      return false;
-    }
-
-
-    return false;
-  };
-}
-
-
 using namespace sam;
 
 ///

@@ -36,7 +36,12 @@ void OptionalStopping::perform(Experiment *experiment) {
     
     experiment->recalculateEverything();
 
-    /// \todo Implement a stopping condition if it makes sense
+    if (!params.stopping_cond_defs.empty()) {
+      if (stopping_condition(experiment)) {
+        spdlog::trace("⚠️ Stopping the hacking procedure, stopping condition has been met!");
+        return;
+      }
+    }
 
   }
   

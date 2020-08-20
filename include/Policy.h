@@ -155,6 +155,10 @@ struct Policy {
           fmt::format("cond_{}", var_name + "_" + cops[s_op] + "_" +
                                      p_def.substr(op_start + s_op.size() + 1,
                                                   p_def.size()));
+
+      // In case any of the logics has decimal points
+      std::replace(f_name.begin(), f_name.end(), '.', '_');
+      
       auto f_def = fmt::format(lua_temp_scripts["comp_script"], f_name,
                                p_def); // Full text goes here
 
@@ -273,6 +277,12 @@ inline void from_json(const json &j, Policy &p, sol::state &lua) {
   p = Policy(j.at("definition"), lua);
 }
 
+/// Implementation of PolicyChain
+///
+/// PolicyChain is a list of Policies that will be executed chronologically. They
+/// often being used to check whether an Experiment or a Submission can satisfy
+/// the set of given rules.
+///
 struct PolicyChain {
   LogicType ltype = LogicType::AllOf;
   std::vector<std::string> defs;
@@ -313,11 +323,44 @@ struct PolicyChain {
     return false;
   }
   
-  std::optional<Submission> operator()(const Experiment *expr) {
-    /// \todo: we check the experiment, and return the submission
+  /// @brief  Determine whether the experiment satisfies any of the given policies
+  ///
+  /// For every dependent variable, we check whether that dv satisfies any of the given rules,
+  /// if so, we set the verdict to `true` meaning that at least part of the experiment satisfies
+  /// all the policies. However, if after going through all outcomes, none satisfies all the rules
+  /// `false` will be returned, meaning that none of the outcomes satisfied all the given rules
+  ///
+  /// @note Currently this only uses `all_of` meaning that all policies need to be satisfied for
+  /// the check to be passed.
+  ///
+  /// @todo I'm planning to implement the `logic` variable by which one can control which logic
+  /// is going to be used
+  ///
+  bool operator()(Experiment *experiment) {
     
-    return Submission{};
+    bool verdict {false};
+    for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
+         ++i, ++d %= experiment->setup.nd()) {
+      
+      verdict |= std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
+        return policy.func(Submission{*experiment, i});
+      });
+      
+      if (verdict)
+        return verdict;
+      
+    }
+    
+    return verdict;
   }
+  
+  /// \note this is probably a better implementation but for now, I'll stay with the one above
+  /// to get around the stopping condition implementation
+//  std::optional<Submission> operator()(const Experiment *expr) {
+//    /// \todo: we check the experiment, and return the submission
+//
+//    return Submission{};
+//  }
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
     os << "[";

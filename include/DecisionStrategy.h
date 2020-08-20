@@ -114,9 +114,6 @@ checkThePolicy(const ForwardIt &begin, ForwardIt &end,
   }
 }
 
-bool isItSatisfactory(Experiment &experiment,
-                      PolicyChain &pchain);
-
 ///
 /// \brief      Abstract class for different decision strategies.
 ///

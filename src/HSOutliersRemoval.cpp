@@ -26,9 +26,14 @@ void OutliersRemoval::perform(Experiment *experiment) {
 
       res = this->removeOutliers(experiment, params.num, k);
       
-      experiment->calculateStatistics();
-      experiment->calculateEffects();
-      experiment->runTest();
+      experiment->recalculateEverything();
+      
+      if(!params.stopping_cond_defs.empty()) {
+        if (stopping_condition(experiment)) {
+          spdlog::trace("⚠️ Stopping the hacking procedure, stopping condition has been met!");
+          return;
+        }
+      }
 
     }
   }

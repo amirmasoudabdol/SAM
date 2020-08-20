@@ -41,21 +41,14 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
       (*experiment)[i].del_measurements(inx);
     }
 
-    experiment->calculateStatistics();
-    experiment->calculateEffects();
-    experiment->runTest();
+    experiment->recalculateEverything();
     
-//    spdlog::debug("k: {}", k);
-    if (isItSatisfactory(*experiment, stopping_pchain)) {
-      spdlog::debug("✓ Found something after removing outliers!, k = {}", k);
-      return;
+    if (!params.stopping_cond_defs.empty()) {
+      if (stopping_condition(experiment)) {
+        spdlog::trace("⚠️ Stopping the hacking procedure, stopping condition has been met!");
+        return;
+      }
     }
     
-//    if (!decision_strategy->)
-
-//    if (!decision_strategy->verdict(*experiment, DecisionStage::WhileHacking)
-//             .isStillHacking()) {
-//      return;
-//    }
   }
 }

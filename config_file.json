@@ -7,6 +7,8 @@
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
+                    0.0,
+                    0.0,
                     0.0
                 ],
                 "stddevs": 0.1
@@ -16,7 +18,9 @@
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.8
+                    0.25,
+                    0.25,
+                    0.25
                 ],
                 "stddevs": 1.0
             }
@@ -24,7 +28,7 @@
         "effect_strategy": {
             "_name": "CohensD"
         },
-        "n_conditions": 2,
+        "n_conditions": 4,
         "n_dep_vars": 1,
         "n_obs": {
             "densities": [
@@ -117,10 +121,12 @@
                 {
                     "_name": "OptionalStopping",
                     "add_by_fraction": 0.3,
-                    "level": "dv",
-                    "max_attempts": 1,
-                    "n_attempts": 1,
-                    "num": 0
+                    "n_attempts": 5,
+                    "num": 0,
+                    "stopping_condition": [
+                        "sig",
+                        "effect > 0.3"
+                    ]
                 },
                 [
                     {
@@ -152,7 +158,7 @@
         "submission_probability": 0.7
     },
     "simulation_parameters": {
-        "log_level": "debug",
+        "log_level": "trace",
         "master_seed": 1596102769,
         "n_sims": 1,
         "output_path": "../outputs/",

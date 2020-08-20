@@ -107,19 +107,20 @@ public:
     //! Number of times that Researcher add `num` observations to each group
     int n_attempts = 1;
     
-    std::vector<std::vector<std::string>> stopping_cond_defs;
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs;
     
   };
 
   Parameters params;
-  PolicyChainSet stopping_pchain_set;
+  PolicyChain stopping_condition;
 
   OptionalStopping() = default;
 
   OptionalStopping(const Parameters &p)
       : params{p} {
-        stopping_pchain_set = PolicyChainSet{p.stopping_cond_defs, lua};
-        };
+        stopping_condition = PolicyChain{p.stopping_cond_defs, lua};
+  };
   
   /// Adds `n` observations to all groups
   ///
@@ -213,15 +214,20 @@ public:
 
     //! A list of standard deviation multipliers for identidying outliers
     std::vector<double> multipliers = {3};
+    
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs;
   };
 
   Parameters params;
+  
+  PolicyChain stopping_condition;
 
   OutliersRemoval() = default;
 
   OutliersRemoval(const Parameters &p)
       : params{p} {
-
+        stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
         };
 
   // Submission hackedSubmission;
@@ -238,7 +244,8 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"num", p.num},
            {"n_attempts", p.n_attempts},
            {"min_observations", p.min_observations},
-           {"multipliers", p.multipliers}};
+           {"multipliers", p.multipliers},
+           {"stopping_condition", p.stopping_cond_defs}};
 }
 
 inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
@@ -253,6 +260,9 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
 }
 
 ///
@@ -301,19 +311,18 @@ public:
     //! Indicates minimum number of observatons
     int min_observations{5};
     
+    //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {{"sig"}};
-    
-    
   };
 
   Parameters params;
-  PolicyChain stopping_pchain;
+  PolicyChain stopping_condition;
 
   SubjectiveOutlierRemoval() = default;
 
   SubjectiveOutlierRemoval(const Parameters &p)
       : params(p) {
-          stopping_pchain = PolicyChain(params.stopping_cond_defs, lua);
+          stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
         };
 
 private:
@@ -358,7 +367,6 @@ public:
         
         };
 
-  // Submission hackedSubmission;
   virtual void perform(Experiment *experiment) override;
 
 private:
