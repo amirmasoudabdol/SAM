@@ -13,7 +13,7 @@
 
 namespace sam {
 
-class GroupData;
+class Group;
 
 class Submission {
 
@@ -37,7 +37,7 @@ public:
   //! True number of observations
   int tnobs;
 
-  GroupData group_;
+  Group group_;
 
   Submission() = default;
   Submission(Experiment &e, const int &index);

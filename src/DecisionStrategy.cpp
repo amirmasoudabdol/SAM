@@ -20,10 +20,10 @@ DecisionStrategy::DecisionStrategy() {
 
   lua.open_libraries();
 
-  lua.new_usertype<GroupData>("GroupData", "id", &GroupData::id_, "nobs",
-                              &GroupData::nobs_, "pvalue", &GroupData::pvalue_,
-                              "effect", &GroupData::effect_, "sig",
-                              &GroupData::sig_);
+  lua.new_usertype<Group>("GroupData", "id", &Group::id_, "nobs",
+                              &Group::nobs_, "pvalue", &Group::pvalue_,
+                              "effect", &Group::effect_, "sig",
+                              &Group::sig_);
 
   lua.new_usertype<Submission>(
       "Submission", "id",

@@ -2,11 +2,11 @@
 // Created by Amir Masoud Abdol on 2019-03-03.
 //
 
-#include "GroupData.h"
+#include "Group.h"
 
 using namespace sam;
 
-void GroupData::updateStats() {
+void Group::updateStats() {
 
   if (not is_stats_up_to_date) {
     nobs_ = measurements_.size();
@@ -20,7 +20,7 @@ void GroupData::updateStats() {
 }
 
 std::vector<std::string>
-GroupData::Columns() {
+Group::Columns() {
   return {
     "gid",
     "nobs",
@@ -38,7 +38,7 @@ GroupData::Columns() {
   };
 }
 
-GroupData::operator std::map<std::string, std::string>() {
+Group::operator std::map<std::string, std::string>() {
 
   static std::map<std::string, std::string> record;
 
@@ -64,7 +64,7 @@ GroupData::operator std::map<std::string, std::string>() {
   return record;
 }
 
-GroupData::operator arma::Row<double>() {
+Group::operator arma::Row<double>() {
   
   return {static_cast<double>(id_),
     static_cast<double>(nobs_),
@@ -82,7 +82,7 @@ GroupData::operator arma::Row<double>() {
   
 }
 
-void GroupData::clear() {
+void Group::clear() {
   
   hacking_history_.clear();
   is_hacked_ = false;

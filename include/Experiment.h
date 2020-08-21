@@ -9,7 +9,7 @@
 
 #include "DataStrategy.h"
 #include "EffectStrategy.h"
-#include "GroupData.h"
+#include "Group.h"
 #include "Submission.h"
 #include "TestStrategy.h"
 
@@ -44,7 +44,7 @@ public:
   std::shared_ptr<TestStrategy> test_strategy;
   std::shared_ptr<EffectStrategy> effect_strategy;
 
-  std::vector<GroupData> groups_;
+  std::vector<Group> groups_;
 
   Experiment() = default;
 
@@ -67,7 +67,7 @@ public:
   /// like `get_group`, and `set_group` or even a `Group operator()` why not.
   /// \note This means I need to change the DataStrategy too, and make sure that
   /// in each iteration, I start with a fresh Experiment rather than a half cleanup one.
-  GroupData &operator[](std::size_t idx) {
+  Group &operator[](std::size_t idx) {
     if (idx > groups_.size())
       throw std::invalid_argument("Index out of bound.");
     
@@ -75,7 +75,7 @@ public:
     return *g;
   };
   
-  const GroupData &operator[](std::size_t idx) const {
+  const Group &operator[](std::size_t idx) const {
     if (idx > groups_.size())
       throw std::invalid_argument("Index out of bound.");
     
@@ -83,8 +83,8 @@ public:
     return *g;
   };
 
-  GroupData &get_group(std::size_t idx) { return groups_[idx]; };
-  const GroupData &get_group(std::size_t idx) const { return groups_[idx]; };
+  Group &get_group(std::size_t idx) { return groups_[idx]; };
+  const Group &get_group(std::size_t idx) const { return groups_[idx]; };
 
   auto begin() { return groups_.begin(); };
   auto end() { return groups_.end(); };

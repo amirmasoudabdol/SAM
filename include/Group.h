@@ -24,7 +24,7 @@ enum class GroupType {
   Pooled
 };
 
-class GroupData {
+class Group {
 
   //! Measurements
   arma::Row<double> measurements_;
@@ -70,11 +70,11 @@ public: // Public for now
   int n_added_obs{0};
   int n_removed_obs{0};
 
-  GroupData(){};
+  Group(){};
 
-  GroupData(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
+  Group(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
 
-  GroupData(arma::Row<double> &data) : measurements_{data} { updateStats(); };
+  Group(arma::Row<double> &data) : measurements_{data} { updateStats(); };
 
   /// Getter / Setter
 
@@ -104,7 +104,7 @@ public: // Public for now
   }
 
   template <typename OStream>
-  friend OStream &operator<<(OStream &os, const GroupData &data) {
+  friend OStream &operator<<(OStream &os, const Group &data) {
     os << "id: " << data.id_ << " nobs: " << data.nobs_
        << " mean: " << data.mean_ << " var: " << data.var_
        << " stddev: " << data.stddev_ << " sei: " << data.sei_
@@ -123,9 +123,9 @@ public: // Public for now
 
   void updateStats();
 
-  void testAgaist(const GroupData &other_group, TestStrategy &test_strategy);
+  void testAgaist(const Group &other_group, TestStrategy &test_strategy);
 
-  void effectComparedTo(const GroupData &other_group,
+  void effectComparedTo(const Group &other_group,
                         EffectStrategy &effect_strategy);
   
   void clear();
@@ -135,7 +135,7 @@ public: // Public for now
 
 
 template <>
-struct fmt::formatter<sam::GroupData> {
+struct fmt::formatter<sam::Group> {
   // Presentation format: 'f' - fixed, 'e' - exponential.
   char presentation = 'f';
   
@@ -147,7 +147,7 @@ struct fmt::formatter<sam::GroupData> {
   // Formats the point p using the parsed format specification (presentation)
   // stored in this formatter.
   template <typename FormatContext>
-  auto format(const sam::GroupData& g, FormatContext& ctx) {
+  auto format(const sam::Group& g, FormatContext& ctx) {
     // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
     // ctx.out() is an output iterator to write to.
     return format_to(
