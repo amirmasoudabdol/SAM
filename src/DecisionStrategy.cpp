@@ -57,53 +57,20 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 //  spdlog::debug("---");
   assert(!pchain_set.empty() && "PolicyChainSet is empty!");
   
-  int pset_inx{0};
   for (auto &pchain : pchain_set) {
-
-    /// These needs to be reset since I'm starting a new set of policies
-    /// New policies will scan the set again!
-    auto found_sth_unique{false};
-    auto begin = experiment.groups_.begin() + experiment.setup.nd();
-    auto end = experiment.groups_.end();
     
-    for (auto it{begin}; it != end; ++it) {
-      spdlog::debug("\t\t {}", *it);
-    }
-
-    for (auto &p : pchain) {
-      std::tie(found_sth_unique, begin, end) = checkThePolicy(begin, end, p);
-
-      if (found_sth_unique) {
-        submission_candidate = Submission{experiment, begin->id_};
-        spdlog::debug("✓ Found One!");
+    auto selections = pchain(experiment);
+    
+    if (selections) {
+      if (selections.value().size() == 1) {
+        submission_candidate = selections.value().back();
+        return;
+      } else {
+        /// If we find many, we just collect them, and quit
+        submissions_pool.insert(submissions_pool.end(), selections.value().begin(), selections.value().end());
         return;
       }
-      
-      if (begin == end) {
-        spdlog::debug("✗ Found nothing!");
-        break;
-      }
-      
     }
-    
-    // This has to be here
-    if (begin+1 == end) {
-      submission_candidate = Submission{experiment, begin->id_};
-      spdlog::debug("✓ Found the only one!");
-      return;
-    }else if (begin != end) { /// We found a bunch
-
-      spdlog::debug("✓ Found a bunch: ");
-      for (auto it{begin}; it != end; ++it) {
-        submissions_pool.emplace_back(experiment, it->id_);
-        spdlog::debug("\t {}", *it);
-      }
-      return;
-    } else {
-      spdlog::debug("✗ Found nothing! To the next one!");
-    }
-
-    pset_inx++;
   }
 
 }
@@ -121,38 +88,15 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     return;   // we just don't have anything to work with
 
   for (auto &pchain : pchain_set) {
-
-    auto found_sth_unique{false};
-    auto begin = spool.begin();
-    auto end = spool.end();
-
-    for (auto &policy : pchain) {
-
-      std::tie(found_sth_unique, begin, end) =
-          checkThePolicy(begin, end, policy);
-
-      if (found_sth_unique) {
-        spdlog::debug("✓ Found something in the pile!");
-        submission_candidate = *begin;
-        return;
-      }
-        
-      if (begin == end)
-          break;
-        /// else:
-        ///     We are still looking. This happens when I'm testing a comparison
-    }
     
-    if (begin+1 == end) {
-      submission_candidate = *begin;
-      spdlog::debug("✓ Found the only one!");
-      return;
-    } else if (begin != end) { /// We found a bunch
-      /// This is not a acceptable case for now!
-      /// \todo But it should be!
+    auto selection = pchain(spool);
+    
+    if (selection) {
+      submission_candidate = selection.value();
       return;
     } else {
-      spdlog::debug("✗ Found nothing!");
+      /// We didn't find anything
+      return;
     }
     
   }
@@ -160,6 +104,26 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
   spdlog::debug("✗ Found none in the pile!");
 }
+
+
+  /// Create and save all possible submissions from an experiment, if 
+  /// the satisfy all of the given policies in the pchain.
+  ///
+  /// @param      experiment  a reference to the experiment
+  /// @param      pchain      a policy chain, usually stored in
+  ///                         `stashing_policy` in the config file
+ void DecisionStrategy::saveOutcomes(Experiment &experiment, PolicyChain &pchain) {
+    
+    spdlog::debug("Stashing...");
+    
+    auto selections = pchain(experiment);
+    
+    if (selections) {
+      submissions_pool.insert(submissions_pool.end(), selections.value().begin(),
+                              selections.value().end());
+    }
+    
+  }
 
 bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
 
@@ -204,7 +168,7 @@ bool MarjansDecisionMaker::willStartHacking() {
 /// will check if **all** of the rules are passing.
 ///
 /// @todo This probably needs to be replaced by something inside the PolicyChain
-/// 
+///
 /// @param pchain a reference to the given policy chain
 bool MarjansDecisionMaker::willContinueHacking(Experiment *experiment,
                                                PolicyChain &pchain) {

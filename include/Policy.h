@@ -193,38 +193,39 @@ struct Policy {
   ///
   /// @return     Return a tuple containing three variables.
   ///
-  /// @note This is usually being used in a recursive manner to filter out a range of submissions
+  /// @note This can take care of either Group or Submission because the Lua instance is aware of them!
   ///
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
   operator()(const ForwardIt &begin, ForwardIt &end) {
-      switch (type) {
 
+    switch (type) {
+        
       case PolicyType::Min: {
         auto it = std::min_element(begin, end, func);
         spdlog::debug("Min: {}", def);
         spdlog::debug("\t {}", *it);
         return {true, it, it};
       } break;
-
+        
       case PolicyType::Max: {
         auto it = std::max_element(begin, end, func);
         spdlog::debug("Max: {}", def);
         spdlog::debug("\t {}", *it);
         return {true, it, it};
       } break;
-
+        
       case PolicyType::Comp: {
         auto pit = std::partition(begin, end, func);
         spdlog::debug("Comp: {}", def);
         for (auto it{begin}; it != pit; ++it) {
           spdlog::debug("\t {}", *it);
         }
-
+        
         return {false, begin, pit};
-
+        
       } break;
-
+        
       case PolicyType::Random: {
         /// Shuffling the array and setting the end pointer to the first time,
         /// this basically mimic the process of selecting a random element from
@@ -235,36 +236,42 @@ struct Policy {
           spdlog::debug("\t {}", *it);
         }
         return {true, begin, end};
-
+        
       } break;
-
+        
       case PolicyType::First: {
-        /// This strictly returns a pointer to the __first__ element of a
-        /// given container
-
+        
+        // Sorting the groups based on their index
+        //    std::sort(begin, end, func);
+        
         spdlog::debug("First: {}", def);
         spdlog::debug("\t {}", *begin);
-
+        
         return {true, begin, end};
-
+        
       } break;
-          
+        
       case PolicyType::Last: {
-        /// This strictly returns a pointer to the __last__ element of a
-        /// given container
-
-          spdlog::debug("Last: {}", def);
-          spdlog::debug("\t {}", *end);
-
-          return {true, end, end};
-
+        
+        // Sorting the groups based on their index
+        //    std::sort(begin, end, func);
+        
+        spdlog::debug("Last: {}", def);
+        spdlog::debug("\t {}", *(end-1));
+        
+        return {true, end-1, end};
+        
       } break;
-
+        
       case PolicyType::All: {
         return {false, begin, end};
-
+        
       } break;
+        
+      default: {
+        throw std::invalid_argument("Invalid Policy Type.");
       }
+    }
   }
 
   friend std::ostream &operator<<(std::ostream &os, const Policy &policy) {
@@ -405,10 +412,83 @@ struct PolicyChain {
   /// \note this is probably a better implementation but for now, I'll stay with the one above
   /// to get around the stopping condition implementation
   /// @note I'm not sure if I need this one
-  std::optional<Submission> operator()(const Experiment *experiment) {
+  std::optional<std::vector<Submission>> operator()(Experiment &experiment) {
     /// @todo we check the experiment, and return the submission
+    
+    std::vector<Submission> selections;
+    auto found_sth_unique {false};
+    auto begin = experiment.groups_.begin() + experiment.setup.nd();
+    auto end = experiment.groups_.end();
+    
+    for (auto &policy : pchain) {
+      std::tie(found_sth_unique, begin, end) = policy(begin, end);
+      
+      if (found_sth_unique) {
+        selections.emplace_back(experiment, begin->id_);
+        spdlog::debug("✓ Found One!");
+//        return selections;
+      }
+      
+      if (begin == end) {
+        spdlog::debug("✗ Found nothing!");
+        break;
+      }
+      
+    }
+    
+    // This has to be here
+    if (begin+1 == end) {
+      selections.emplace_back(experiment, begin->id_);
+      spdlog::debug("✓ Found the only one!");
+//      return selections;
+    }else if (begin != end) { /// We found a bunch
+      
+      spdlog::debug("✓ Found a bunch: ");
+      for (auto it{begin}; it != end; ++it) {
+        selections.emplace_back(experiment, it->id_);
+        spdlog::debug("\t {}", *it);
+      }
+//      return selections;
+    } else {
+      spdlog::debug("✗ Found nothing! To the next one!");
+    }
 
-    return Submission{};
+    return selections;
+  }
+  
+  std::optional<Submission> operator()(std::vector<Submission> &spool) {
+    
+    auto found_sth_unique {false};
+    auto begin = spool.begin();
+    auto end = spool.end();
+    
+    for (auto &policy : pchain) {
+      
+      std::tie(found_sth_unique, begin, end) =
+      policy(begin, end);
+      
+      if (found_sth_unique) {
+        spdlog::debug("✓ Found something in the pile!");
+        return *begin;
+      }
+      
+      if (begin == end)
+        break;
+      /// else:
+      ///     We are still looking. This happens when I'm testing a comparison
+    }
+    
+    if (begin+1 == end) {
+      return *begin;
+      spdlog::debug("✓ Found the only one!");
+    } else if (begin != end) { /// We found a bunch
+                               /// This is not a acceptable case for now!
+                               /// @todo But it should be!
+      return {};
+    } else {
+      spdlog::debug("✗ Found nothing!");
+    }
+    
   }
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
