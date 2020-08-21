@@ -21,6 +21,15 @@ LogicType,
  {LogicType::AnyOf, "any_of"},
  {LogicType::NoneOf, "none_of"}})
 
+/// @brief Implementation of the Policy.
+///
+/// A policy is a logical rule that it's being applied on an experiment, submission, or a set of submissions.
+///
+/// - In the case of submission, policy checks whether the given submission satisfies the given policy.
+/// - In the case of set of submissions, or an experiment, policy checks whether the any of the items, ie.,
+///   dvs or sub, will satisfy the given policy, if so, it'll return those items, otherwise, the output will be
+///   empty.
+///
 struct Policy {
   PolicyType type;
   sol::function func;
@@ -173,6 +182,19 @@ struct Policy {
     }
   }
   
+  ///
+  /// @brief      Given the forward iterator, it applies `func` on each item,
+  /// and returns a subset of the range where all items satisfy the `func` criteria
+  ///
+  /// @param[in]  begin      The begin
+  /// @param      end        The end
+  ///
+  /// @tparam     ForwardIt  This usually accepts Submission's ForwardIt
+  ///
+  /// @return     Return a tuple containing three variables.
+  ///
+  /// @note This is usually being used in a recursive manner to filter out a range of submissions
+  ///
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
   operator()(const ForwardIt &begin, ForwardIt &end) {
@@ -250,8 +272,25 @@ struct Policy {
     return os;
   }
   
+  std::string operator()() {
+    return def;
+  }
+  
+  /// Returns the result of applying the policy on a submission
   bool operator()(const Submission& sub) {
     return func(sub);
+  }
+  
+  
+  std::optional<std::vector<Submission>> operator()(Experiment *experiment) {
+    return {};
+    /// @todo to be implemented
+  }
+  
+  
+  std::optional<std::vector<Submission>> operator()(std::vector<Submission> &subs) {
+    return {};
+    /// @todo to be implemented
   }
 
 private:
@@ -318,9 +357,18 @@ struct PolicyChain {
   auto end() { return pchain.end(); };
   auto cend() const { return pchain.cend(); };
   
+  
+  ///
+  /// @brief      Checks whether the given Submission satisfies __all__ listed policies.
+  ///
+  /// @param[in]  sub   The submission
+  ///
+  /// @return     The result of applying all policies on the given submission
+  ///
   bool operator()(const Submission &sub) {
-    /// \todo: we check if we comply with the rules
-    return false;
+    return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
+      return policy(sub);
+    });
   }
   
   /// @brief  Determine whether the experiment satisfies any of the given policies
@@ -343,7 +391,7 @@ struct PolicyChain {
          ++i, ++d %= experiment->setup.nd()) {
       
       verdict |= std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
-        return policy.func(Submission{*experiment, i});
+        return policy(Submission{*experiment, i});
       });
       
       if (verdict)
@@ -356,11 +404,12 @@ struct PolicyChain {
   
   /// \note this is probably a better implementation but for now, I'll stay with the one above
   /// to get around the stopping condition implementation
-//  std::optional<Submission> operator()(const Experiment *expr) {
-//    /// \todo: we check the experiment, and return the submission
-//
-//    return Submission{};
-//  }
+  /// @note I'm not sure if I need this one
+  std::optional<Submission> operator()(const Experiment *experiment) {
+    /// @todo we check the experiment, and return the submission
+
+    return Submission{};
+  }
 
   friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
     os << "[";

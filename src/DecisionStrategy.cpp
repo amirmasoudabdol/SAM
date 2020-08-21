@@ -203,6 +203,8 @@ bool MarjansDecisionMaker::willStartHacking() {
 /// @note The important difference between this and `willBeSubmitting` is the fact that, the latter
 /// will check if **all** of the rules are passing.
 ///
+/// @todo This probably needs to be replaced by something inside the PolicyChain
+/// 
 /// @param pchain a reference to the given policy chain
 bool MarjansDecisionMaker::willContinueHacking(Experiment *experiment,
                                                PolicyChain &pchain) {
@@ -211,14 +213,6 @@ bool MarjansDecisionMaker::willContinueHacking(Experiment *experiment,
   
   if (pchain.empty())
     return true;
-  
-//  if (submission_candidate) {
-//    return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
-//        return policy.func(this->submission_candidate.value());
-//        });
-//  }else{
-//    return true;
-//  }
   
   bool verdict {true};
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
