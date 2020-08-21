@@ -152,9 +152,7 @@ protected:
 };
 
 ///
-/// \ingroup    DecisionStrategies
-/// \brief      { item_description }
-///
+/// @ingroup    DecisionStrategies
 class MarjansDecisionMaker final : public DecisionStrategy {
 
 public:

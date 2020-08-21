@@ -490,13 +490,6 @@ struct PolicyChain {
     }
     
   }
-
-  friend std::ostream &operator<<(std::ostream &os, const PolicyChain &chain) {
-    os << "[";
-//    fmt::print(os, "{}", fmt::join(chain.cbegin(), chain.cend(), ", "));
-    os << "]";
-    return os;
-  }
   
   bool empty() const { return pchain.empty(); };
 };
@@ -512,7 +505,12 @@ inline void from_json(const json &j, PolicyChain &p, sol::state &lua) {
   p = PolicyChain(j.at("definitions"), j.at("logic"), lua);
 }
 
-
+/// PolicyChainSet is a collection of PolicyChains
+///
+/// They are mainly being used and interpreted like a list of preferences, and will be
+/// executed chronologically. Most function will go through the list one by one, and will
+/// quit as soon as one of the PolicyChains find at least on outcome from a given list of
+/// options, e.g., SubmissionPool or Experiment.
 struct PolicyChainSet {
   std::vector<PolicyChain> pchains;
 
@@ -537,11 +535,6 @@ struct PolicyChainSet {
     /// \todo: Check and return,
     
     return Submission{};
-  }
-
-  friend std::ostream &operator<<(std::ostream &os, const PolicyChainSet &set) {
-//    fmt::print(os, "[{}]", fmt::join(set.cbegin(), set.cend(), ", "));
-    return os;
   }
 
   PolicyChain &operator[](std::size_t idx) { return pchains[idx]; }
@@ -583,4 +576,5 @@ namespace fmt {
     };
   };
 } // namespace fmt
+
 #endif // SAMPP_POLICY_H

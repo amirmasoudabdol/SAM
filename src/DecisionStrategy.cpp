@@ -51,6 +51,15 @@ DecisionStrategy::build(json &decision_strategy_config) {
 
 
 
+/// Select an unique outcome from an experiment, if at some point, a PolicyChain
+/// finds a group of outcomes instread of a unique outcome, the selection will be
+/// saved and the will await for processing in a different stages.
+///
+/// We check all available PolicyChains in the given chain set, and will stop as soon
+/// as any chain returns __something__!
+///
+/// @param experiment a reference to an experiment
+/// @param pchain_set a reference to a policy chain set
 void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
 
@@ -75,6 +84,15 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 
 }
 
+
+/// Select a unique submission from the given pool of submissions. If none of the submissions
+/// satisfies all the policies, we just return, and submission_candidate will not be rewritten.
+///
+/// @note If submission_candidate is empty to this point, and we cannot find anything here,
+/// we'll continue with nothing, and the current experiment will most likely be discarded.
+///
+/// @param spool a collection of submissions collected in previous stages, e.g., selectOutcome
+/// @param pchain_set a set of policy chains
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   
@@ -83,7 +101,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     spdlog::debug("\t\t{}", s);
   }
   
-  /// \todo Check what this actually means!
+  /// @todo Check what this actually means!
   if (pchain_set.empty())
     return;   // we just don't have anything to work with
 
