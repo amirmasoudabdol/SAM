@@ -22,7 +22,6 @@
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 
-// #include <mlpack/core.hpp>
 #include <mlpack/methods/linear_regression/linear_regression.hpp>
 
 using namespace std;
