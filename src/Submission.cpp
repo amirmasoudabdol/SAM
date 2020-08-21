@@ -8,7 +8,6 @@ namespace sam {
 
 Submission::Submission(Experiment &e, const int &index) {
   
-  /// \todo This can be simplified further
   tnobs = e[index].true_nobs_.value();
 
   group_ = e[index];
@@ -27,8 +26,6 @@ std::vector<std::string> Submission::Columns() {
 }
 
 Submission::operator std::map<std::string, std::string>() {
-
-  /// \todo It's somewhat a bad idea to declare `record` as static
   
   record["simid"] = std::to_string(simid);
   record["exprid"] = std::to_string(exprid);

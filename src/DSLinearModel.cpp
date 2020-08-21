@@ -27,9 +27,7 @@ void LinearModelStrategy::genData(Experiment *experiment) {
     sample += errors;
   }
 
-  // This is ugly but it should work
-  /// \todo: the problem with this is that the oprator[] is not behaving as it should,
-  /// this is the case everywhere, it helps in some places but I think it's confusing
+  /// This is ugly but it should work
   for (int g{0}; g < experiment->setup.ng(); ++g) {
     (*experiment)[g].set_measurements(
         sample.row(g).head(experiment->setup.nobs()[g]));

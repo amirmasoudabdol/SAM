@@ -155,7 +155,7 @@ public:
   ExperimentSetupBuilder &setNumObservations(const int nobs) {
     check_expr_size();
 
-    fill_vector<int>(setup.nobs_, setup.ng_, nobs);
+//    fill_vector<int>(setup.nobs_, setup.ng_, nobs);
 
     return *this;
   }

@@ -400,7 +400,6 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
                           TestStrategy::TestAlternative alternative);
 
 /// Stats Utility
-/// \todo These need to go into arma namespace
 double win_var(const arma::Row<double> &x, const double trim);
 
 std::pair<double, double> win_cor_cov(const arma::Row<double> &x,

@@ -78,7 +78,7 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
     
     spdlog::debug("Chance of hacking: {}", arma::max(probabilities));
     
-    /// \todo Remember that you should consider some option here. At the moment,
+    /// @todo Remember that you should consider some option here. At the moment,
     /// I'm returning the maximum of all probabilities, but that's not neceassirly the
     /// best things to do, also, it works just fine in Frankenbach simulation because
     /// they have only one one outcome anyway

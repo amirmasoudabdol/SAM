@@ -17,6 +17,7 @@ class Group;
 
 class Submission {
 
+  //! Somewhat of a buffer for storing and returning a csv rows
   std::map<std::string, std::string> record;
 
 public:

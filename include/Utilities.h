@@ -83,22 +83,18 @@ make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
 }
 
 ///
-/// \brief      A helper function to fill `val` to a vector. This will also
+/// @brief      A helper function to fill `val` to a vector. This will also
 ///             allocate the necessary space, `size`, for the vector.
 ///
-/// \param      vecc  The reference to the vector
-/// \param[in]  size  The size of the vector
-/// \param[in]  val   The value of the vector
+/// @param      vecc  The reference to the vector
+/// @param[in]  size  The size of the vector
+/// @param[in]  val   The value of the vector
 ///
-/// \tparam     T     The type of the vector and value.
+/// @tparam     T     The type of the vector and value.
 ///
-/// \todo       Just use the return value here, passing by reference is not safe and
-/// necessary, also due to the move sematic, I can just do this easily without
-/// preformance lose.
-///
-template <typename T> void fill_vector(arma::Row<T> &vecc, int size, T val) {
-  vecc = arma::Row<T>(size).fill(val);
-};
+//template <typename T> void fill_vector(arma::Row<T> &vecc, int size, T val) {
+//  vecc = arma::Row<T>(size).fill(val);
+//};
 
 arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
                                      const arma::Row<double> &covs, int n);
