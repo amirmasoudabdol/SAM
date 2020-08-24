@@ -194,9 +194,6 @@ void runSimulation(json &simConfig) {
       indicators::option::ShowElapsedTime{true},
       indicators::option::ShowRemainingTime{true}};
 
-  int n_pubs = simConfig["journal_parameters"]["max_pubs"];
-  int n_total_pubs = n_sims;
-
   auto progress = 0.0f;
   // This loop can be parallelized
   spdlog::info("Starting the simulation...");

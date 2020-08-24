@@ -489,6 +489,8 @@ struct PolicyChain {
       spdlog::debug("✗ Found nothing!");
     }
     
+    return {};
+    
   }
   
   bool empty() const { return pchain.empty(); };
