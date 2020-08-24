@@ -122,7 +122,7 @@ private:
 // JSON Parser for LinearModelStrategy::Parameters
 inline void to_json(json &j, const LinearModelStrategy::Parameters &p) {
   j = json{
-      {"_name", p.name}
+      {"name", p.name}
       //                    {"measurements", p.m_meas_dist}
   };
   /// Issue: For now, I cannot actually write that back to the file. That's
@@ -135,7 +135,7 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   if (j.at("measurements").type() == nlohmann::detail::value_t::object) {
     p.m_meas_dist = make_multivariate_distribution(j.at("measurements"));
@@ -251,7 +251,7 @@ private:
 // JSON Parser for GRMDataStrategy::Parameters
 inline void to_json(json &j, const GRMDataStrategy::Parameters &p) {
   j = json{
-      {"_name", p.name},
+      {"name", p.name},
       {"n_items", p.n_items},
       {"n_categories", p.n_categories},
       //                    {"difficulties", p.diff_dists},
@@ -265,7 +265,7 @@ inline void from_json(const json &j, GRMDataStrategy::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("n_items").get_to(p.n_items);
   j.at("n_categories").get_to(p.n_categories);

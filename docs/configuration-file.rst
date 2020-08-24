@@ -37,7 +37,7 @@ initialization phase.
           "n_dep_vars": 1,
           "n_obs": 25,
           "data_strategy": {
-              "_name": "LinearModel",
+              "name": "LinearModel",
               "covs": 0.5,
               "means": [
                   0,
@@ -46,30 +46,30 @@ initialization phase.
               "stddevs": 1.0
           },
           "test_strategy": {
-              "_name": "TTest",
+              "name": "TTest",
               "alpha": 0.05,
               "side": "TwoSided"
           },
           "effect_strategy": {
-              "_name": "MeanDifference"
+              "name": "MeanDifference"
           }
       },
       "journal_parameters": {
           "max_pubs": 20,
           "selection_strategy": {
-              "_name": "FreeSelection"
+              "name": "FreeSelection"
           }
       },
       "researcher_parameters": {
           "decision_strategy": {
-              "_name": "PatientDecisionMaker",
+              "name": "PatientDecisionMaker",
               "preference": "MarjansHacker",
               "publishing_policy": "Anything"
           },
           "hacking_strategies": [
               [
                   {
-                      "_name": "SubjectiveOutlierRemoval",
+                      "name": "SubjectiveOutlierRemoval",
                       "min_observations": 5,
                       "range": [
                           0.5,
@@ -83,7 +83,7 @@ initialization phase.
           "is_pre_processing": false,
           "pre_processing_methods": [
               {
-                  "_name": "OutliersRemoval",
+                  "name": "OutliersRemoval",
                   "level": "dv",
                   "max_attempts": 1000,
                   "min_observations": 10,

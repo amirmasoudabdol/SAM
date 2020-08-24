@@ -38,33 +38,33 @@ HackingStrategy::HackingStrategy() {
 std::unique_ptr<HackingStrategy>
 HackingStrategy::build(json &hacking_strategy_config) {
 
-  if (hacking_strategy_config["_name"] == "OptionalStopping") {
+  if (hacking_strategy_config["name"] == "OptionalStopping") {
 
     auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
     return std::make_unique<OptionalStopping>(params);
 
-  } else if (hacking_strategy_config["_name"] == "OutliersRemoval") {
+  } else if (hacking_strategy_config["name"] == "OutliersRemoval") {
 
     auto params = hacking_strategy_config.get<OutliersRemoval::Parameters>();
     return std::make_unique<OutliersRemoval>(params);
 
-  } else if (hacking_strategy_config["_name"] == "GroupPooling") {
+  } else if (hacking_strategy_config["name"] == "GroupPooling") {
 
     auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
     return std::make_unique<GroupPooling>(params);
 
-  } else if (hacking_strategy_config["_name"] == "ConditionDropping") {
+  } else if (hacking_strategy_config["name"] == "ConditionDropping") {
 
     auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
     return std::make_unique<ConditionDropping>(params);
 
-  } else if (hacking_strategy_config["_name"] == "SubjectiveOutlierRemoval") {
+  } else if (hacking_strategy_config["name"] == "SubjectiveOutlierRemoval") {
 
     auto params =
         hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
     return std::make_unique<SubjectiveOutlierRemoval>(params);
 
-  } else if (hacking_strategy_config["_name"] == "NoHack") {
+  } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();
 

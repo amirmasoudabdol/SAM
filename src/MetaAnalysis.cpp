@@ -50,26 +50,26 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
 }
 
 std::unique_ptr<MetaAnalysis> MetaAnalysis::build(const json &config) {
-  if (config["_name"] == "FixedEffectEstimator") {
+  if (config["name"] == "FixedEffectEstimator") {
     return std::make_unique<FixedEffectEstimator>();
-  }else if (config["_name"] == "RandomEffectEstimator") {
+  }else if (config["name"] == "RandomEffectEstimator") {
     
     auto p = config.get<RandomEffectEstimator::Parameters>();
     return std::make_unique<RandomEffectEstimator>(p);
     
-  }else if (config["_name"] == "EggersTestEstimator") {
+  }else if (config["name"] == "EggersTestEstimator") {
     auto p = config.get<EggersTestEstimator::Parameters>();
     return std::make_unique<EggersTestEstimator>(p);
     
-  }else if (config["_name"] == "TestOfObsOverExptSig") {
+  }else if (config["name"] == "TestOfObsOverExptSig") {
     auto p = config.get<TestOfObsOverExptSig::Parameters>();
     return std::make_unique<TestOfObsOverExptSig>(p);
     
-  }else if (config["_name"] == "TrimAndFill") {
+  }else if (config["name"] == "TrimAndFill") {
     auto p = config.get<TrimAndFill::Parameters>();
     return std::make_unique<TrimAndFill>(p);
     
-  }else if (config["_name"] == "RankCorrelation") {
+  }else if (config["name"] == "RankCorrelation") {
     auto p = config.get<RankCorrelation::Parameters>();
     return std::make_unique<RankCorrelation>(p);
     

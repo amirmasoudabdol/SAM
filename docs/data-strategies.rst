@@ -50,7 +50,7 @@ populated by :math:`n_o` observations based on the given model, specified in ``d
 	        "n_dep_vars": 1,
 	        "n_obs": 25
 	        "data_strategy": {
-	        	"_name": "Model_Name",
+	        	"name": "Model_Name",
 	            ...
 	        }
 	    }
@@ -101,7 +101,7 @@ diagonal row of the covariance matrix.
 
 		{
 			"data_strategy": {
-				"_name": "LinearModel",
+				"name": "LinearModel",
 				"means": [0, 0.2],
 				"covs": 0.0,
 				"stddevs": 1.0,
@@ -142,7 +142,7 @@ After calculating all responses of person :math:`j` to all items, the sum score 
 	.. code:: json
 
 		{
-		    "_name": "GradedResponseModel"
+		    "name": "GradedResponseModel"
 			"data_strategy": {
 				"n_categories": 4,
 				"n_items": 3,

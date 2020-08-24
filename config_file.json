@@ -1,7 +1,6 @@
 {
     "experiment_parameters": {
         "data_strategy": {
-            "_name": "LinearModel",
             "errors": {
                 "covs": 0.0,
                 "dist": "mvnorm_distribution",
@@ -23,10 +22,11 @@
                     0.25
                 ],
                 "stddevs": 1.0
-            }
+            },
+            "name": "LinearModel"
         },
         "effect_strategy": {
-            "_name": "CohensD"
+            "name": "CohensD"
         },
         "n_conditions": 4,
         "n_dep_vars": 1,
@@ -61,33 +61,32 @@
         },
         "n_reps": 1,
         "test_strategy": {
-            "_name": "TTest",
             "alpha": 0.05,
-            "alternative": "TwoSided"
+            "alternative": "TwoSided",
+            "name": "TTest"
         }
     },
     "journal_parameters": {
         "max_pubs": 72,
         "meta_analysis_metrics": [
             {
-                "_name": "RandomEffectEstimator",
-                "estimator": "DL"
+                "estimator": "DL",
+                "name": "RandomEffectEstimator"
             },
             {
-                "_name": "EggersTestEstimator",
-                "alpha": 0.1
+                "alpha": 0.1,
+                "name": "EggersTestEstimator"
             }
         ],
         "selection_strategy": {
-            "_name": "SignificantSelection",
             "alpha": 0.05,
+            "name": "SignificantSelection",
             "pub_bias": 0.0,
             "side": 0
         }
     },
     "researcher_parameters": {
         "decision_strategy": {
-            "_name": "MarjansDecisionMaker",
             "between_hacks_selection_policies": [
                 [
                     "min(pvalue)"
@@ -103,6 +102,7 @@
                     "id == 1"
                 ]
             ],
+            "name": "MarjansDecisionMaker",
             "stashing_policy": [
                 "all"
             ],
@@ -119,9 +119,9 @@
         "hacking_strategies": [
             [
                 {
-                    "_name": "OptionalStopping",
                     "add_by_fraction": 0.3,
                     "n_attempts": 5,
+                    "name": "OptionalStopping",
                     "num": 0,
                     "stopping_condition": [
                         "sig",
@@ -148,10 +148,10 @@
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "_name": "OptionalStopping",
                 "level": "dv",
                 "max_attempts": 1,
                 "n_attempts": 1,
+                "name": "OptionalStopping",
                 "num": 10
             }
         ],

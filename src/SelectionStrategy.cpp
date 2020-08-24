@@ -15,18 +15,18 @@ SelectionStrategy::~SelectionStrategy() {
 std::unique_ptr<SelectionStrategy>
 SelectionStrategy::build(json &selection_strategy_config) {
 
-  if (selection_strategy_config["_name"] == "SignificantSelection") {
+  if (selection_strategy_config["name"] == "SignificantSelection") {
 
     auto params =
         selection_strategy_config.get<SignificantSelection::Parameters>();
     return std::make_unique<SignificantSelection>(params);
 
-  } else if (selection_strategy_config["_name"] == "RandomSelection") {
+  } else if (selection_strategy_config["name"] == "RandomSelection") {
 
     auto params = selection_strategy_config.get<RandomSelection::Parameters>();
     return std::make_unique<RandomSelection>(params);
 
-  } else if (selection_strategy_config["_name"] == "FreeSelection") {
+  } else if (selection_strategy_config["name"] == "FreeSelection") {
 
     return std::make_unique<FreeSelection>();
     

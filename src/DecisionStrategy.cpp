@@ -38,7 +38,7 @@ DecisionStrategy::DecisionStrategy() {
 std::unique_ptr<DecisionStrategy>
 DecisionStrategy::build(json &decision_strategy_config) {
 
-  if (decision_strategy_config["_name"] == "MarjansDecisionMaker") {
+  if (decision_strategy_config["name"] == "MarjansDecisionMaker") {
 
     auto params =
         decision_strategy_config.get<DefaultDecisionMaker::Parameters>();

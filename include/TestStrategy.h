@@ -81,6 +81,8 @@ public:
     TestMethod name = TestMethod::TTest;
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TTest::Parameters, name, alternative, alpha);
   };
 
   struct ResultType {
@@ -146,21 +148,21 @@ public:
 };
 
 
-inline void to_json(json &j, const TTest::Parameters &p) {
-  j = json{
-      {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
-}
-
-inline void from_json(const json &j, TTest::Parameters &p) {
-
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("_name").get_to(p.name);
-
-  j.at("alternative").get_to(p.alternative);
-
-  j.at("alpha").get_to(p.alpha);
-}
+//inline void to_json(json &j, const TTest::Parameters &p) {
+//  j = json{
+//      {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
+//}
+//
+//inline void from_json(const json &j, TTest::Parameters &p) {
+//
+//  // Using a helper template function to handle the optional and throw if
+//  // necessary.
+//  j.at("name").get_to(p.name);
+//
+//  j.at("alternative").get_to(p.alternative);
+//
+//  j.at("alpha").get_to(p.alpha);
+//}
 
 class FTest final : public TestStrategy {
 
@@ -212,14 +214,14 @@ public:
 
 
 inline void to_json(json &j, const FTest::Parameters &p) {
-  j = json{{"_name", p.name}, {"alpha", p.alpha}};
+  j = json{{"name", p.name}, {"alpha", p.alpha}};
 }
 
 inline void from_json(const json &j, FTest::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("alpha").get_to(p.alpha);
 }
@@ -287,7 +289,7 @@ public:
 
 inline void to_json(json &j, const YuenTest::Parameters &p) {
   j = json{
-      {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
+      {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
       // ,
       // {"trim", p.trim}
   };
@@ -297,7 +299,7 @@ inline void from_json(const json &j, YuenTest::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("alternative").get_to(p.alternative);
 
@@ -360,7 +362,7 @@ public:
 
 inline void to_json(json &j, const WilcoxonTest::Parameters &p) {
   j = json{
-      {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
+      {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
       // , {"use_continuity", p.use_continuity}
   };
 }
@@ -369,7 +371,7 @@ inline void from_json(const json &j, WilcoxonTest::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("alternative").get_to(p.alternative);
 

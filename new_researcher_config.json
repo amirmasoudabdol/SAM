@@ -4,7 +4,7 @@
 		"is_pre_processing": false,
 		"pre_processing_methods": [
 			{
-				"_name": "OutliersRemoval",
+				"name": "OutliersRemoval",
 				"level": "dv",
 				"max_attempts": 1000,
 				"min_observations": 10,
@@ -35,14 +35,14 @@
 		"hacking_strategies": [
 			[
 				{
-					"_name": "OptionalStopping",
+					"name": "OptionalStopping",
 					"level": "dv",
 					"max_attempts": 10,
 					"n_attempts": 3,
 					"num": 100
 				},
 				{
-					"_name": "Method 2"
+					"name": "Method 2"
 				},
 				[
 					[], []

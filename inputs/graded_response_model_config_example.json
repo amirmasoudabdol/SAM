@@ -1,6 +1,6 @@
 {
   "data_strategy": {
-    "_name": "GradedResponseModel",
+    "name": "GradedResponseModel",
     "abilities": {
       "covs": 0.5,
       "dist": "mvnorm_distribution",

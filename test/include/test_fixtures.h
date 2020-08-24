@@ -51,7 +51,7 @@ struct SampleResearch {
     DataStrategy::DataStrategyParameters dsp;
     DataStrategy *ds;
     json d_s_conf = {
-        {"_name", "LinearModel"},
+        {"name", "LinearModel"},
         {"means", {0.0, 0.2}},
         {"covs", 0.0},
         {"vars", 0.1},
@@ -60,14 +60,14 @@ struct SampleResearch {
     
     TestStrategy *ts;
     json t_s_conf = {
-        {"_name", "TTest"},
+        {"name", "TTest"},
         {"alpha", 0.05},
         {"side", "TwoSided"}
     };
 
     EffectStrategy *es;
     json e_s_conf = {
-        {"_name", "CohensD"}
+        {"name", "CohensD"}
     };
 
     ExperimentSetup setup;
@@ -75,11 +75,11 @@ struct SampleResearch {
 
     Journal *journal;
     json j_conf = {
-        {"_name", "PLOS"},
+        {"name", "PLOS"},
         {"max_pubs", 70}
     };
     json s_s_conf = {
-        {"_name", "SignificantSelection"},
+        {"name", "SignificantSelection"},
         {"alpha", 0.05},
         {"pub_bias", 0.95},
         {"side", 1}
@@ -87,7 +87,7 @@ struct SampleResearch {
     
     HackingStrategy *hs;
     json h_s_conf = {
-        {"_name", "OptionalStopping"},
+        {"name", "OptionalStopping"},
         {"level", "dv"},
         {"max_attempts", 10},
         {"n_attempts", 3},
@@ -96,7 +96,7 @@ struct SampleResearch {
 
     DecisionStrategy *des;
     json de_s_conf = {
-        {"_name", "PatientDecisionMaker"},
+        {"name", "PatientDecisionMaker"},
         {"preference", "MinPvalue"}
     };
 

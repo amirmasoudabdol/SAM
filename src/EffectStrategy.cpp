@@ -15,11 +15,11 @@ EffectStrategy::~EffectStrategy(){
 
 std::unique_ptr<EffectStrategy>
 EffectStrategy::build(json &effect_strategy_config) {
-  if (effect_strategy_config["_name"] == "CohensD") {
+  if (effect_strategy_config["name"] == "CohensD") {
     return std::make_unique<CohensD>();
-  } else if (effect_strategy_config["_name"] == "HedgesG") {
+  } else if (effect_strategy_config["name"] == "HedgesG") {
     return std::make_unique<HedgesG>();
-  } else if (effect_strategy_config["_name"] == "MeanDifference") {
+  } else if (effect_strategy_config["name"] == "MeanDifference") {
     return std::make_unique<MeanDifference>();
   } else {
     throw std::invalid_argument("Uknown effect size strategy.\n");

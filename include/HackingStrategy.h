@@ -140,7 +140,7 @@ private:
 };
 
 inline void to_json(json &j, const OptionalStopping::Parameters &p) {
-  j = json{{"_name", p.name},
+  j = json{{"name", p.name},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
            {"add_by_fraction", p.add_by_fraction},
@@ -152,7 +152,7 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
   
@@ -178,7 +178,7 @@ public:
   ///
   ///  ```json
   /// {
-  ///     "_name": "OutliersRemoval",
+  ///     "name": "OutliersRemoval",
   ///     "level": "dv",
   ///     "min_observations": 10,
   ///     "multipliers": [
@@ -238,7 +238,7 @@ private:
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
-  j = json{{"_name", p.name},
+  j = json{{"name", p.name},
            {"level", p.level},
            {"order", p.order},
            {"num", p.num},
@@ -252,7 +252,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("level").get_to(p.level);
   j.at("order").get_to(p.order);
@@ -291,7 +291,7 @@ public:
   ///
   /// ```json
   /// {
-  ///    "_name": "SubjectiveOutlierRemoval",
+  ///    "name": "SubjectiveOutlierRemoval",
   ///    "range": [2, 4],
   ///    "step_size": 0.1,
   ///    "min_observations": 5
@@ -330,7 +330,7 @@ private:
 };
 
 inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
-  j = json{{"_name", p.name},
+  j = json{{"name", p.name},
            {"range", p.range},
            {"step_size", p.step_size},
            {"min_observations", p.min_observations},
@@ -341,7 +341,7 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("range").get_to(p.range);
   j.at("step_size").get_to(p.step_size);
   j.at("min_observations").get_to(p.min_observations);
@@ -374,14 +374,14 @@ private:
 };
 
 inline void to_json(json &j, const GroupPooling::Parameters &p) {
-  j = json{{"_name", p.name}, {"nums", p.nums}};
+  j = json{{"name", p.name}, {"nums", p.nums}};
 }
 
 inline void from_json(const json &j, GroupPooling::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("nums").get_to(p.nums);
 }
@@ -407,14 +407,14 @@ private:
 };
 
 inline void to_json(json &j, const ConditionDropping::Parameters &p) {
-  j = json{{"_name", p.name}};
+  j = json{{"name", p.name}};
 }
 
 inline void from_json(const json &j, ConditionDropping::Parameters &p) {
 
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 }
 
 } // namespace sam

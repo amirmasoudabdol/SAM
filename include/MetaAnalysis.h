@@ -132,14 +132,14 @@ public:
 
 inline void to_json(json &j, const RandomEffectEstimator::Parameters &p) {
   j = json{
-    {"_name", p.name}, {"estimator", p.estimator}};
+    {"name", p.name}, {"estimator", p.estimator}};
 }
 
 inline void from_json(const json &j, RandomEffectEstimator::Parameters &p) {
   
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("estimator").get_to(p.estimator);
 }
 
@@ -284,14 +284,14 @@ public:
 
 inline void to_json(json &j, const EggersTestEstimator::Parameters &p) {
   j = json{
-    {"_name", p.name}, {"alpha", p.alpha}};
+    {"name", p.name}, {"alpha", p.alpha}};
 }
 
 inline void from_json(const json &j, EggersTestEstimator::Parameters &p) {
   
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("alpha").get_to(p.alpha);
 }
 
@@ -349,14 +349,14 @@ public:
 
 inline void to_json(json &j, const TestOfObsOverExptSig::Parameters &p) {
   j = json{
-    {"_name", p.name}, {"alpha", p.alpha}};
+    {"name", p.name}, {"alpha", p.alpha}};
 }
 
 inline void from_json(const json &j, TestOfObsOverExptSig::Parameters &p) {
   
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("alpha").get_to(p.alpha);
 }
 
@@ -421,14 +421,14 @@ public:
 
 inline void to_json(json &j, const TrimAndFill::Parameters &p) {
   j = json{
-    {"_name", p.name}, {"side", p.side}, {"estimator", p.estimator}, {"alpha", p.alpha}};
+    {"name", p.name}, {"side", p.side}, {"estimator", p.estimator}, {"alpha", p.alpha}};
 }
 
 inline void from_json(const json &j, TrimAndFill::Parameters &p) {
   
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("side").get_to(p.side);
   j.at("estimator").get_to(p.estimator);
   j.at("alpha").get_to(p.alpha);
@@ -488,14 +488,14 @@ public:
 
 inline void to_json(json &j, const RankCorrelation::Parameters &p) {
   j = json{
-    {"_name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
+    {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
 }
 
 inline void from_json(const json &j, RankCorrelation::Parameters &p) {
   
   // Using a helper template function to handle the optional and throw if
   // necessary.
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("alternative").get_to(p.alternative);
   j.at("alpha").get_to(p.alpha);
 }

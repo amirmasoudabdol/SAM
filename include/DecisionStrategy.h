@@ -206,7 +206,7 @@ public:
 
 // JSON Parser for DefaultDecisionStrategy::Parameters
 inline void to_json(json &j, const DefaultDecisionMaker::Parameters &p) {
-  j = json{{"_name", p.name},
+  j = json{{"name", p.name},
            {"initial_selection_policies", p.initial_selection_policies_defs},
            {"submission_decision_policies", p.submission_decision_policies_defs},
            {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
@@ -218,7 +218,7 @@ inline void to_json(json &j, const DefaultDecisionMaker::Parameters &p) {
 }
 
 inline void from_json(const json &j, DefaultDecisionMaker::Parameters &p) {
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
   j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
   j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
   j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);

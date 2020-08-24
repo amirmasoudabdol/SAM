@@ -30,9 +30,9 @@ Journal::Journal(json &journal_config) {
   for (auto const &method : journal_config["meta_analysis_metrics"]) {
     meta_analysis_strategies.push_back(MetaAnalysis::build(method));
     
-    auto method_name = method["_name"].get<std::string>();
+    auto method_name = method["name"].get<std::string>();
     //      auto cols = Columns();  // Journal Columns
-    auto cols = MetaAnalysis::Columns(method["_name"]);
+    auto cols = MetaAnalysis::Columns(method["name"]);
     //      cols.insert(cols.end(), method_cols.begin(), method_cols.end());
     
     meta_columns.try_emplace(method_name, cols);

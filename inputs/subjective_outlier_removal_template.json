@@ -1,5 +1,5 @@
 {
-    "_name": "SubjectiveOutlierRemoval",
+    "name": "SubjectiveOutlierRemoval",
     "range": [2, 4],
     "step_size": 0.1,
     "min_observations": 5

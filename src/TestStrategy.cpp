@@ -20,17 +20,17 @@ TestStrategy::~TestStrategy(){
 
 std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config) {
 
-  if (test_strategy_config["_name"] == "TTest") {
+  if (test_strategy_config["name"] == "TTest") {
 
     auto params = test_strategy_config.get<TTest::Parameters>();
     return std::make_unique<TTest>(params);
 
-  } else if (test_strategy_config["_name"] == "YuenTest") {
+  } else if (test_strategy_config["name"] == "YuenTest") {
 
     auto params = test_strategy_config.get<YuenTest::Parameters>();
     return std::make_unique<YuenTest>(params);
 
-  } else if (test_strategy_config["_name"] == "WilcoxonTest") {
+  } else if (test_strategy_config["name"] == "WilcoxonTest") {
     auto params = test_strategy_config.get<WilcoxonTest::Parameters>();
     return std::make_unique<WilcoxonTest>(params);
   } else {

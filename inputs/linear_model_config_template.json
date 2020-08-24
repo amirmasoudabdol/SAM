@@ -1,6 +1,6 @@
 {
     "data_strategy": {
-        "_name": "LinearModel",
+        "name": "LinearModel",
         "means": [
             0,
             0.2

@@ -111,7 +111,7 @@ public:
 };
 
 inline void to_json(json &j, const SignificantSelection::Parameters &p) {
-  j = json{{"_name", p.name},
+  j = json{{"name", p.name},
            {"alpha", p.alpha},
            {"pub_bias", p.pub_bias},
            {"side", p.side}};
@@ -119,7 +119,7 @@ inline void to_json(json &j, const SignificantSelection::Parameters &p) {
 
 inline void from_json(const json &j, SignificantSelection::Parameters &p) {
 
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 
   j.at("alpha").get_to(p.alpha);
   j.at("pub_bias").get_to(p.pub_bias);
@@ -152,12 +152,12 @@ public:
 };
 
 inline void to_json(json &j, const RandomSelection::Parameters &p) {
-  j = json{{"_name", p.name}};
+  j = json{{"name", p.name}};
 }
 
 inline void from_json(const json &j, RandomSelection::Parameters &p) {
 
-  j.at("_name").get_to(p.name);
+  j.at("name").get_to(p.name);
 }
 
 ///

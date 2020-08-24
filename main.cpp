@@ -44,7 +44,7 @@ int main(int argc, const char **argv) {
   desc.add_options()("help", "produce help message")(
       "version", "SAMrun 0.0.1 (Alpha)")("verbose", po::bool_switch(),
                                          "Print more texts.")(
-      "debug", po::bool_switch(), "Print debugging information")(
+      "debug", po::value<string>(), "Print debugging information")(
       "update-config", po::bool_switch()->default_value(true),
       "Update the config file with the drawn seeds")(
       "progress", po::bool_switch()->default_value(false),
@@ -103,17 +103,17 @@ int main(int argc, const char **argv) {
   // Overwriting the logging level if given in CLI
   if (vm.count("debug")) {
     const string debug = vm["debug"].as<string>();
-    if (debug.find("trace") != std::string::npos)
+    if (debug == "trace")
       spdlog::set_level(spdlog::level::trace);
-    else if (debug.find("debug") != std::string::npos)
+    else if (debug == "debug")
       spdlog::set_level(spdlog::level::debug);
-    else if (debug.find("info") != std::string::npos)
+    else if (debug == "info")
       spdlog::set_level(spdlog::level::info);
-    else if (debug.find("warn") != std::string::npos)
+    else if (debug == "warn")
       spdlog::set_level(spdlog::level::warn);
-    else if (debug.find("err") != std::string::npos)
+    else if (debug == "err")
       spdlog::set_level(spdlog::level::err);
-    else if (debug.find("critical") != std::string::npos)
+    else if (debug == "critical")
       spdlog::set_level(spdlog::level::critical);
     else
       spdlog::set_level(spdlog::level::off);
