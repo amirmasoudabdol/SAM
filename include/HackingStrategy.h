@@ -456,6 +456,10 @@ public:
     /// Rounding Method
     /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
     /// - alpha: Setting the rounded p-value to the value of alpha
+    ///
+    /// \todo I cna possibly add more methods here, e.g.,
+    /// - rounding, where I just round the value down
+    /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
     std::string rounding_method = "diff";
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold, alpha, rounding_method);
