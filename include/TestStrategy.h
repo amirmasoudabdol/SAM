@@ -43,25 +43,17 @@ public:
   ///
   enum class TestAlternative { Less, Greater, TwoSided };
 
-  ///
-  /// Contains Test Strategy parameters.
-  ///
-  /// \note       I'm still experimenting with this while I'm trying to simplify
-  ///             the construction process.
-  ///
-  struct TestStrategyParameters {
-    TestMethod name;
-    TestAlternative alternative = TestAlternative::TwoSided;
-    double alpha = 0.05;
-  };
-  //
-  //        TestStrategyParameters params;
-
   static std::unique_ptr<TestStrategy> build(json &test_strategy_config);
 
   virtual void run(Experiment *experiment) = 0;
 
   virtual void run(Group &group_1, Group &group_2) = 0;
+  
+  // A tiny wrapper for accessing test alpha
+  double alpha_;
+  virtual double alpha() {
+    return alpha_;
+  }
 };
 
 ///
@@ -110,11 +102,9 @@ public:
 
   Parameters params;
 
-  TTest(const Parameters &p) : params{p} {};
-
-  // Cleanup
-  TTest(TestStrategyParameters tsp){
-      //            params = tsp;
+  TTest(const Parameters &p) : params{p} {
+    // Setting super class' alpha!
+    alpha_ = p.alpha;
   };
 
   virtual void run(Experiment *experiment) override;
@@ -182,11 +172,9 @@ public:
 
   Parameters params;
 
-  FTest(const Parameters &p) : params{p} {};
-
-  // Cleanup
-  FTest(TestStrategyParameters tsp){
-      //            params = tsp;
+  FTest(const Parameters &p) : params{p} {
+    // Setting super class' alpha!
+    alpha_ = p.alpha;
   };
 
   virtual void run(Experiment *experiment) override;
@@ -234,11 +222,9 @@ public:
 
   Parameters params;
 
-  YuenTest(const Parameters &p) : params{p} {};
-
-  // Cleanup
-  YuenTest(TestStrategyParameters tsp){
-      //            params = tsp;
+  YuenTest(const Parameters &p) : params{p} {
+    // Setting super class' alpha!
+    alpha_ = p.alpha;
   };
 
   virtual void run(Experiment *experiment) override;
@@ -297,11 +283,9 @@ public:
 
   Parameters params;
 
-  WilcoxonTest(const Parameters &p) : params{p} {};
-
-  // Cleanup
-  WilcoxonTest(TestStrategyParameters tsp){
-      //            params = tsp;
+  WilcoxonTest(const Parameters &p) : params{p} {
+    // Setting super class' alpha!
+    alpha_ = p.alpha;
   };
 
   virtual void run(Experiment *experiment) override;
