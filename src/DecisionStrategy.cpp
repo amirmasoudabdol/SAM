@@ -41,8 +41,8 @@ DecisionStrategy::build(json &decision_strategy_config) {
   if (decision_strategy_config["_name"] == "MarjansDecisionMaker") {
 
     auto params =
-        decision_strategy_config.get<MarjansDecisionMaker::Parameters>();
-    return std::make_unique<MarjansDecisionMaker>(params);
+        decision_strategy_config.get<DefaultDecisionMaker::Parameters>();
+    return std::make_unique<DefaultDecisionMaker>(params);
 
   } else {
     throw std::invalid_argument("Unknown DecisionStrategy");
@@ -165,7 +165,7 @@ bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, Po
 /// In this canse, we only check if the `current_submission` complies with
 /// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
 /// if no, then we will not continue to the hacking procedure
-bool MarjansDecisionMaker::willStartHacking() {
+bool DefaultDecisionMaker::willStartHacking() {
     if (will_start_hacking_decision_policies.empty())
       return true;
     
@@ -188,7 +188,7 @@ bool MarjansDecisionMaker::willStartHacking() {
 /// @todo This probably needs to be replaced by something inside the PolicyChain
 ///
 /// @param pchain a reference to the given policy chain
-bool MarjansDecisionMaker::willContinueHacking(Experiment *experiment,
+bool DefaultDecisionMaker::willContinueHacking(Experiment *experiment,
                                                PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
@@ -209,7 +209,7 @@ bool MarjansDecisionMaker::willContinueHacking(Experiment *experiment,
 };
 
 
-bool MarjansDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
+bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
   
@@ -226,7 +226,7 @@ bool MarjansDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
   
 };
 
-DecisionStrategy &MarjansDecisionMaker::selectOutcomeFromExperiment(Experiment *experiment,
+DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
   
@@ -239,7 +239,7 @@ DecisionStrategy &MarjansDecisionMaker::selectOutcomeFromExperiment(Experiment *
   return *this;
 }
   
-DecisionStrategy &MarjansDecisionMaker::selectOutcomeFromPool(SubmissionPool &spool,
+DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromPool(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
   clear();

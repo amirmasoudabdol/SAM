@@ -153,7 +153,7 @@ protected:
 
 ///
 /// @ingroup    DecisionStrategies
-class MarjansDecisionMaker final : public DecisionStrategy {
+class DefaultDecisionMaker final : public DecisionStrategy {
 
 public:
   struct Parameters {
@@ -173,7 +173,7 @@ public:
 
   Parameters params;
 
-  explicit MarjansDecisionMaker(const Parameters &p) : params{p} {
+  explicit DefaultDecisionMaker(const Parameters &p) : params{p} {
 
     initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
 
@@ -204,8 +204,8 @@ public:
   virtual bool willContinueReplicating(PolicyChain &pchain) override;
 };
 
-// JSON Parser for MarjansDecisionStrategy::Parameters
-inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
+// JSON Parser for DefaultDecisionStrategy::Parameters
+inline void to_json(json &j, const DefaultDecisionMaker::Parameters &p) {
   j = json{{"_name", p.name},
            {"initial_selection_policies", p.initial_selection_policies_defs},
            {"submission_decision_policies", p.submission_decision_policies_defs},
@@ -217,7 +217,7 @@ inline void to_json(json &j, const MarjansDecisionMaker::Parameters &p) {
   };
 }
 
-inline void from_json(const json &j, MarjansDecisionMaker::Parameters &p) {
+inline void from_json(const json &j, DefaultDecisionMaker::Parameters &p) {
   j.at("_name").get_to(p.name);
   j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
   j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
