@@ -41,12 +41,6 @@ LogLevel,
   {LogLevel::off, "off"}
 })
 
-struct FLAGS {
-  static bool PROGRESS;
-  static bool DEBUG;
-  static bool UPDATECONFIG;
-  static LogLevel LOG_LEVEL;
-};
 
 template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
 template<class... Ts> overload(Ts...) -> overload<Ts...>;

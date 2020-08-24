@@ -34,11 +34,9 @@ using Random = effolkronium::random_static;
 
 using namespace std;
 
-void runSimulation(json &simConfig);
+bool show_progress_bar {false};
 
-bool FLAGS::PROGRESS = false;
-bool FLAGS::DEBUG = false;
-bool FLAGS::UPDATECONFIG = false;
+void runSimulation(json &simConfig);
 
 int main(int argc, const char **argv) {
 
@@ -94,7 +92,7 @@ int main(int argc, const char **argv) {
   }
   
   if (vm.count("progress")) {
-    FLAGS::PROGRESS = vm["progress"].as<bool>();
+    show_progress_bar = vm["progress"].as<bool>();
   }
 
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
@@ -103,8 +101,24 @@ int main(int argc, const char **argv) {
   spdlog::set_level(log_level);
   
   // Overwriting the logging level if given in CLI
-  if (vm.count("debug"))
-    FLAGS::DEBUG = vm["debug"].as<bool>();
+  if (vm.count("debug")) {
+    const string debug = vm["debug"].as<string>();
+    if (debug.find("trace") != std::string::npos)
+      spdlog::set_level(spdlog::level::trace);
+    else if (debug.find("debug") != std::string::npos)
+      spdlog::set_level(spdlog::level::debug);
+    else if (debug.find("info") != std::string::npos)
+      spdlog::set_level(spdlog::level::info);
+    else if (debug.find("warn") != std::string::npos)
+      spdlog::set_level(spdlog::level::warn);
+    else if (debug.find("err") != std::string::npos)
+      spdlog::set_level(spdlog::level::err);
+    else if (debug.find("critical") != std::string::npos)
+      spdlog::set_level(spdlog::level::critical);
+    else
+      spdlog::set_level(spdlog::level::off);
+  }
+    
   
   
   /// Setting and saving the config file before starting the simulation
@@ -134,8 +148,7 @@ int main(int argc, const char **argv) {
 
 void runSimulation(json &simConfig) {
 
-  FLAGS::PROGRESS |= simConfig["simulation_parameters"]["progress"].get<bool>();
-//  FLAGS::DEBUG |= simConfig["simulation_parameters"]["debug"].get<bool>();
+  show_progress_bar |= simConfig["simulation_parameters"]["progress"].get<bool>();
 
   Researcher researcher =
       Researcher::create("Peter").fromConfigFile(simConfig).build();
@@ -207,7 +220,7 @@ void runSimulation(json &simConfig) {
       spdlog::debug("\n\n==========================================================================\n");
     }
     
-    if (FLAGS::PROGRESS) {
+    if (show_progress_bar) {
       progress += 1. / n_sims;
       sim_progress_bar.set_progress(progress * 100);
     }
