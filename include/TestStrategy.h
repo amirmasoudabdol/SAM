@@ -147,29 +147,14 @@ public:
       unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative);
 };
 
-
-//inline void to_json(json &j, const TTest::Parameters &p) {
-//  j = json{
-//      {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
-//}
-//
-//inline void from_json(const json &j, TTest::Parameters &p) {
-//
-//  // Using a helper template function to handle the optional and throw if
-//  // necessary.
-//  j.at("name").get_to(p.name);
-//
-//  j.at("alternative").get_to(p.alternative);
-//
-//  j.at("alpha").get_to(p.alpha);
-//}
-
 class FTest final : public TestStrategy {
 
 public:
   struct Parameters {
     TestMethod name = TestMethod::FTest;
     double alpha;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(FTest::Parameters, name, alpha);
   };
 
   struct ResultType {
@@ -212,20 +197,6 @@ public:
                     double alpha);
 };
 
-
-inline void to_json(json &j, const FTest::Parameters &p) {
-  j = json{{"name", p.name}, {"alpha", p.alpha}};
-}
-
-inline void from_json(const json &j, FTest::Parameters &p) {
-
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-
-  j.at("alpha").get_to(p.alpha);
-}
-
 class YuenTest final : public TestStrategy {
 
 public:
@@ -234,6 +205,8 @@ public:
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha = 0.95;
     double trim = 0.20;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(YuenTest::Parameters, name, alternative, alpha, trim);
   };
 
   struct ResultType {
@@ -287,26 +260,6 @@ public:
 };
 
 
-inline void to_json(json &j, const YuenTest::Parameters &p) {
-  j = json{
-      {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
-      // ,
-      // {"trim", p.trim}
-  };
-}
-
-inline void from_json(const json &j, YuenTest::Parameters &p) {
-
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-
-  j.at("alternative").get_to(p.alternative);
-
-  j.at("alpha").get_to(p.alpha);
-  // j.at("trim").get_to(p.trim);
-}
-
 class WilcoxonTest final : public TestStrategy {
 
 public:
@@ -315,6 +268,8 @@ public:
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha = 0.95;
     bool use_continuity{true};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(WilcoxonTest::Parameters, name, alternative, alpha, use_continuity);
   };
 
   struct ResultType {
@@ -358,27 +313,6 @@ public:
                 double alpha, double use_continuity,
                 const TestStrategy::TestAlternative alternative);
 };
-
-
-inline void to_json(json &j, const WilcoxonTest::Parameters &p) {
-  j = json{
-      {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}
-      // , {"use_continuity", p.use_continuity}
-  };
-}
-
-inline void from_json(const json &j, WilcoxonTest::Parameters &p) {
-
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-
-  j.at("alternative").get_to(p.alternative);
-
-  j.at("alpha").get_to(p.alpha);
-
-  // j.at("use_continuity").get_to(p.use_continuity);
-}
 
 NLOHMANN_JSON_SERIALIZE_ENUM(TestStrategy::TestMethod,
                              {{TestStrategy::TestMethod::TTest, "TTest"},

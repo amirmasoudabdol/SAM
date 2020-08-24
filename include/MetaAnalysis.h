@@ -114,6 +114,8 @@ public:
   struct Parameters {
     std::string name{"RandomEffectEstimator"};
     std::string estimator{"DL"};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomEffectEstimator::Parameters, name, estimator);
   };
   
   Parameters params;
@@ -129,19 +131,6 @@ public:
   double PM(const arma::Row<double> &yi, const arma::Row<double> &vi, const double tau2);
 };
 
-
-inline void to_json(json &j, const RandomEffectEstimator::Parameters &p) {
-  j = json{
-    {"name", p.name}, {"estimator", p.estimator}};
-}
-
-inline void from_json(const json &j, RandomEffectEstimator::Parameters &p) {
-  
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("estimator").get_to(p.estimator);
-}
 
 class FixedEffectEstimator : public MetaAnalysis {
   
@@ -268,6 +257,8 @@ public:
   struct Parameters {
     std::string name {"EggersTestEstimator"};
     double alpha {0.10};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(EggersTestEstimator::Parameters, name, alpha);
   };
   
   Parameters params;
@@ -282,18 +273,6 @@ public:
   
 };
 
-inline void to_json(json &j, const EggersTestEstimator::Parameters &p) {
-  j = json{
-    {"name", p.name}, {"alpha", p.alpha}};
-}
-
-inline void from_json(const json &j, EggersTestEstimator::Parameters &p) {
-  
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("alpha").get_to(p.alpha);
-}
 
 class TestOfObsOverExptSig : public MetaAnalysis {
 public:
@@ -332,6 +311,8 @@ public:
   struct Parameters {
     std::string name {"TestOfObsOverExptSig"};
     double alpha {0.10};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TestOfObsOverExptSig::Parameters, name, alpha);
   };
   
   Parameters params;
@@ -345,20 +326,6 @@ public:
   static ResultType TES(const arma::Row<double> &sigs, const arma::Row<double> &ni, double beta, double alpha);
   
 };
-
-
-inline void to_json(json &j, const TestOfObsOverExptSig::Parameters &p) {
-  j = json{
-    {"name", p.name}, {"alpha", p.alpha}};
-}
-
-inline void from_json(const json &j, TestOfObsOverExptSig::Parameters &p) {
-  
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("alpha").get_to(p.alpha);
-}
 
 class TrimAndFill : public MetaAnalysis {
 public:
@@ -405,6 +372,8 @@ public:
     std::string side {"auto"};
     std::string estimator {"R0"};
     double alpha {0.10};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TrimAndFill::Parameters, name, side, estimator, alpha);
   };
   
   Parameters params;
@@ -418,21 +387,6 @@ public:
   static ResultType TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni, const Parameters &params);
   
 };
-
-inline void to_json(json &j, const TrimAndFill::Parameters &p) {
-  j = json{
-    {"name", p.name}, {"side", p.side}, {"estimator", p.estimator}, {"alpha", p.alpha}};
-}
-
-inline void from_json(const json &j, TrimAndFill::Parameters &p) {
-  
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("side").get_to(p.side);
-  j.at("estimator").get_to(p.estimator);
-  j.at("alpha").get_to(p.alpha);
-}
 
 
 class RankCorrelation : public MetaAnalysis {
@@ -470,6 +424,8 @@ public:
     std::string name{"RankCorrelation"};
     TestStrategy::TestAlternative alternative = TestStrategy::TestAlternative::TwoSided;
     double alpha {0.10};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(RankCorrelation::Parameters, name, alternative, alpha);
   };
   
   Parameters params;
@@ -485,21 +441,6 @@ public:
   static arma::Row<int> duplicate_count(arma::rowvec x);
   
 };
-
-inline void to_json(json &j, const RankCorrelation::Parameters &p) {
-  j = json{
-    {"name", p.name}, {"alternative", p.alternative}, {"alpha", p.alpha}};
-}
-
-inline void from_json(const json &j, RankCorrelation::Parameters &p) {
-  
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("alternative").get_to(p.alternative);
-  j.at("alpha").get_to(p.alpha);
-}
-
 
 
 double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y);

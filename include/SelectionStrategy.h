@@ -101,6 +101,8 @@ public:
     //! Indicates the _selection stratgy_'s preference toward positive, `1`,
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
     int side = 1;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(SignificantSelection::Parameters, name, alpha, pub_bias, side);
   };
 
   Parameters params;
@@ -109,22 +111,6 @@ public:
 
   virtual bool review(const Submission &s) override;
 };
-
-inline void to_json(json &j, const SignificantSelection::Parameters &p) {
-  j = json{{"name", p.name},
-           {"alpha", p.alpha},
-           {"pub_bias", p.pub_bias},
-           {"side", p.side}};
-}
-
-inline void from_json(const json &j, SignificantSelection::Parameters &p) {
-
-  j.at("name").get_to(p.name);
-
-  j.at("alpha").get_to(p.alpha);
-  j.at("pub_bias").get_to(p.pub_bias);
-  j.at("side").get_to(p.side);
-}
 
 ///
 /// \brief      Random Selection Strategy
@@ -142,6 +128,8 @@ class RandomSelection final : public SelectionStrategy {
 public:
   struct Parameters {
     SelectionMethod name = SelectionMethod::RandomSelection;
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomSelection::Parameters, name);
   };
 
   Parameters params;
@@ -151,14 +139,6 @@ public:
   virtual bool review(const Submission &s) override;
 };
 
-inline void to_json(json &j, const RandomSelection::Parameters &p) {
-  j = json{{"name", p.name}};
-}
-
-inline void from_json(const json &j, RandomSelection::Parameters &p) {
-
-  j.at("name").get_to(p.name);
-}
 
 ///
 /// \brief      FreeSelection doesn't pose any restriction on the submission and

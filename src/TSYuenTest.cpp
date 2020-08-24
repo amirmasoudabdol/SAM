@@ -30,7 +30,7 @@ void YuenTest::run(Experiment *experiment) {
     //        }else{
     res = yuen_t_test_two_samples((*experiment)[d].measurements(),
                                   (*experiment)[i].measurements(), params.alpha,
-                                  params.alternative, 0.2, 0);
+                                  params.alternative, params.trim, 0);
     //        }
 
     (*experiment)[i].stats_ = res.tstat;

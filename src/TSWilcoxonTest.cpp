@@ -16,7 +16,8 @@ void WilcoxonTest::run(Experiment *experiment) {
        ++i, ++d %= experiment->setup.nd()) {
 
     res = wilcoxon_test((*experiment)[d].measurements(),
-                        (*experiment)[i].measurements(), 1, params.alpha,
+                        (*experiment)[i].measurements(),
+                        params.use_continuity, params.alpha,
                         params.alternative);
 
     (*experiment)[i].stats_ = res.wstat;
