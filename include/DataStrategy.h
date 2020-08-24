@@ -148,6 +148,20 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
     }
     p.meas_dists = dists;
   }
+  
+  if (j.contains("errors")) {
+    if (j.at("errors").type() == nlohmann::detail::value_t::object) {
+      p.m_erro_dist = make_multivariate_distribution(j.at("errors"));
+    }
+
+    if (j.at("errors").type() == nlohmann::detail::value_t::array) {
+      std::vector<Distribution> dists;
+      for (const auto &value : j["errors"]) {
+        dists.push_back(make_distribution(value));
+      }
+      p.erro_dists = dists;
+    }
+  }
 }
 
 //=================================================================================//
