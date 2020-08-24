@@ -64,6 +64,12 @@ HackingStrategy::build(json &hacking_strategy_config) {
         hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
     return std::make_unique<SubjectiveOutlierRemoval>(params);
 
+  } else if (hacking_strategy_config["name"] == "QuestionableRounding") {
+    
+    auto params =
+    hacking_strategy_config.get<QuestionableRounding::Parameters>();
+    return std::make_unique<QuestionableRounding>(params);
+    
   } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();

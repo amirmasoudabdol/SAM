@@ -164,16 +164,15 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   
 }
 
-/// \ingroup    HackingStrategies
 ///
-/// \brief      Declaration of Outlier Removal hacking method based on items'
+/// @brief      Declaration of Outlier Removal hacking method based on items'
 ///             distance from their sample mean.
 ///
 ///
+/// @ingroup    HackingStrategies
 class OutliersRemoval final : public HackingStrategy {
 public:
-  /// \ingroup HackingStrategiesParameters
-  ///
+  
   /// Parameters of Outliers Removal Strategy
   ///
   ///  ```json
@@ -190,6 +189,7 @@ public:
   /// }
   /// ```
   ///
+  /// @ingroup HackingStrategiesParameters
   struct Parameters {
     HackingMethod name = HackingMethod::OutliersRemoval;
 
@@ -266,18 +266,18 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
 }
 
 ///
-/// \brief      The subjective outlier removal refers to a type of outliers
+/// @brief      The subjective outlier removal refers to a type of outliers
 /// removal
 ///             where the researcher continiously lowers the threshold of
 ///             identifying an outlier, `k`, until it finds a significant (or
 ///             satisfactory) result.
 ///
-/// \see        DecisionStrategy
-/// \see        DecisionPreference
+/// @ingroup  HackingStrategies
+/// @sa       DecisionStrategy
 ///
 class SubjectiveOutlierRemoval final : public HackingStrategy {
 public:
-  /// \brief SubjectiveOutlierRemoval's parameters.
+  /// @brief SubjectiveOutlierRemoval's parameters.
   ///
   /// These are parameters specific to this hacking strategy. You can set them
   /// either progmatically when you are constructing a new
@@ -297,7 +297,7 @@ public:
   ///    "min_observations": 5
   /// }
   /// ```
-  /// \ingroup HackingStrategiesParameters
+  /// @ingroup HackingStrategiesParameters
   struct Parameters {
     //! A placeholder for the name
     HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
@@ -416,6 +416,62 @@ inline void from_json(const json &j, ConditionDropping::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 }
+
+
+/// QuestionableRounding Hacking Strategy
+///
+/// Questionable rounding strategy mimics the behavior of a researcher who might
+/// hack its way to significace by aggressively rounding the pvalue and ignoring
+/// everything else.
+///
+/// @ingroup HackingStrategies
+class QuestionableRounding final : public HackingStrategy {
+  
+public:
+  
+  /// Questionable Rounding Parameters
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "QuestionableRounding",
+  ///    "alpha": 0.05,
+  ///    "rounding_method": "alpha",
+  ///    "threshold": 0.01
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::QuestionableRounding;
+    
+    //! Indicates the distance between the pvalue and alpha by which the researcher
+    //! considers to round the pvalue to significance
+    double threshold {0.005};
+    
+    //! Alpha of significance
+    double alpha {0.05};
+    
+    /// Rounding Method
+    /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
+    /// - alpha: Setting the rounded p-value to the value of alpha
+    std::string rounding_method = "diff";
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold, alpha, rounding_method);
+  };
+  
+  Parameters params;
+  
+  QuestionableRounding() = default;
+  
+  QuestionableRounding(const Parameters &p) : params{p} { };
+  
+  virtual void perform(Experiment *experiment) override;
+  
+private:
+  void pool(Experiment *experiment, int r);
+};
 
 } // namespace sam
 

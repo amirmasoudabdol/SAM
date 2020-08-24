@@ -18,6 +18,7 @@ enum class HackingMethod {
   GroupPooling,
   ConditionDropping,
   SubjectiveOutlierRemoval,
+  QuestionableRounding,
   NoHack = -1
 };
 
@@ -28,6 +29,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {HackingMethod::GroupPooling, "GroupPooling"},
      {HackingMethod::ConditionDropping, "ConditionDropping"},
      {HackingMethod::SubjectiveOutlierRemoval, "SubjectiveOutlierRemoval"},
+     {HackingMethod::QuestionableRounding, "QuestionableRounding"},
      {HackingMethod::NoHack, "NoHack"}})
 
 ///
