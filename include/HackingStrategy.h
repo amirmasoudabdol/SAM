@@ -472,9 +472,6 @@ public:
   QuestionableRounding(const Parameters &p) : params{p} { };
   
   virtual void perform(Experiment *experiment) override;
-  
-private:
-  void pool(Experiment *experiment, int r);
 };
 
 } // namespace sam
