@@ -82,6 +82,12 @@ HackingStrategy::build(json &hacking_strategy_config) {
     hacking_strategy_config.get<FalsifyingData::Parameters>();
     return std::make_unique<FalsifyingData>(params);
     
+  } else if (hacking_strategy_config["name"] == "FabricatingData") {
+    
+    auto params =
+    hacking_strategy_config.get<FabricatingData::Parameters>();
+    return std::make_unique<FabricatingData>(params);
+    
   } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();

@@ -16,8 +16,10 @@ void FalsifyingData::perform(Experiment *experiment) {
     
     if (params.approach == "perturbation")
       res = this->perturb(experiment, params.nums);
-    else
+    else if (params.approach == "swapping groups")
       res = this->swapGroups(experiment, params.nums);
+    else if (params.approach == "switching groups")
+      res = this->switchGroups(experiment, params.nums);
     
     experiment->recalculateEverything();
     
@@ -66,6 +68,16 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
 
 bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
   
+  std::cout << "TO BE IMPLEMENTED!";
+  
+  // Success Code
+  return true;
+}
+
+
+bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
+  
+  std::cout << "TO BE IMPLEMENTED!";
   
   // Success Code
   return true;

@@ -606,7 +606,7 @@ public:
     //!   - control
     //!   - treatment
     //!   - both
-    std::string target {"treatment"};
+    std::string target {"both"};
     
     //! Indicates a set of rule that is going to be used to select the target group
     //! @todo To be implemented
@@ -618,6 +618,7 @@ public:
     //! Number of observations to be purturbed
     int nums {5};
     
+    //! Distribution of noise
     std::optional<Distribution> noise_dist = make_distribution({
       {"dist", "normal_distribution"},
       {"mean", 0},
@@ -673,6 +674,105 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
 }
+
+
+/// Fabricating Data Hacking Strategy
+///
+/// @ingroup HackingStrategies
+class FabricatingData final : public HackingStrategy {
+  
+public:
+  
+  /// Falsifying Data Parameters
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "FabricatingData",
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::FabricatingData;
+    
+    //! Falsification approach. We've discussed two possible way of doing this
+    //!   - generating, perturbing a value
+    //!   - duplicating, swapping values between groups
+    std::string approach {"generating"};
+    
+    //! Indicates which outcome variables are going to be targeted,
+    //!   - control
+    //!   - treatment
+    //!   - both
+    std::string target {"both"};
+    
+    //! Indicates a set of rule that is going to be used to select the target group
+    //! @todo To be implemented
+    PolicyChain target_policy;
+    
+    //! Number of trials
+    int n_attempts {1};
+    
+    //! Number of observations to be purturbed
+    int nums {5};
+    
+    //! Distribution of fabricated data
+    //! @todo Check if this is even necessary or not, I think in most cases, we
+    //! can probably just use the data_strategy and get over it
+    std::optional<Distribution> dist = make_distribution({
+      {"dist", "normal_distribution"},
+      {"mean", 0},
+      {"stddev", 0.1}
+    });
+    
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs;
+    
+    
+  };
+  
+  Parameters params;
+  PolicyChain stopping_condition;
+  
+  FabricatingData() = default;
+  
+  FabricatingData(const Parameters &p) : params{p} { };
+  
+  virtual void perform(Experiment *experiment) override;
+  
+private:
+  bool generate(Experiment *experiment, const int n);
+  bool duplicate(Experiment *experiment, const int n);
+};
+
+inline void to_json(json &j, const FabricatingData::Parameters &p) {
+  j = json{{"name", p.name},
+    {"approach", p.approach},
+    {"n_attempts", p.n_attempts},
+    {"nums", p.nums},
+    {"target", p.target},
+    //    {"noise", p.noise},
+    {"stopping_condition", p.stopping_cond_defs}};
+}
+
+inline void from_json(const json &j, FabricatingData::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  
+  j.at("approach").get_to(p.approach);
+  j.at("n_attempts").get_to(p.n_attempts);
+  j.at("nums").get_to(p.nums);
+  j.at("target").get_to(p.target);
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+}
+
+
 
 } // namespace sam
 

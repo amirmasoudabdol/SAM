@@ -119,14 +119,9 @@
         "hacking_strategies": [
             [
                 {
-                    "approach": "perturbation",
+                    "approach": "duplicating",
                     "n_attempts": 3,
-                    "name": "FalsifyingData",
-                    "noise": {
-                        "dist": "normal_distribution",
-                        "mean": 0,
-                        "stddev": 1
-                    },
+                    "name": "FabricatingData",
                     "nums": 5,
                     "target": "both"
                 },

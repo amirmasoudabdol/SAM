@@ -21,6 +21,7 @@ enum class HackingMethod {
   QuestionableRounding,
   PeekingOutliersRemoval,
   FalsifyingData,
+  FabricatingData,
   NoHack = -1
 };
 
@@ -34,6 +35,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {HackingMethod::QuestionableRounding, "QuestionableRounding"},
      {HackingMethod::PeekingOutliersRemoval, "PeekingOutliersRemoval"},
      {HackingMethod::FalsifyingData, "FalsifyingData"},
+     {HackingMethod::FabricatingData, "FabricatingData"},
      {HackingMethod::NoHack, "NoHack"}})
 
 ///
