@@ -56,8 +56,18 @@ void OptionalStopping::addObservations(Experiment *experiment, const int n) {
   auto new_observations =
       experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
   
-  for (int g{0}; g < experiment->setup.ng(); ++g) {
-    (*experiment)[g].add_measurements(new_observations[g]);
+  
+  int begin {0}, end {0};
+  if (params.target == "control") {
+    begin = 0; end = experiment->setup.nd();
+  } else if (params.target == "treatment") {
+    begin = experiment->setup.nd(); end = experiment->setup.ng();
+  } else if (params.target == "both") {
+    begin = 0; end = experiment->setup.ng();
+  }
+  
+  for (int i = begin; i < end; ++i) {
+    (*experiment)[i].add_measurements(new_observations[i]);
   }
   
 }
@@ -69,9 +79,18 @@ void OptionalStopping::addObservations(Experiment *experiment, const arma::Row<i
   auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment,
                                                                                     ns.max());
   
+  int begin {0}, end {0};
+  if (params.target == "control") {
+    begin = 0; end = experiment->setup.nd();
+  } else if (params.target == "treatment") {
+    begin = experiment->setup.nd(); end = experiment->setup.ng();
+  } else if (params.target == "both") {
+    begin = 0; end = experiment->setup.ng();
+  }
+  
   // Distributing new items according to the requested size
-  for (int g{0}; g < experiment->setup.ng(); ++g) {
-    (*experiment)[g].add_measurements(new_observations[g].head(ns.at(g)));
+  for (int i = begin; i < end; ++i) {
+    (*experiment)[i].add_measurements(new_observations[i].head(ns.at(i)));
   }
   
 }

@@ -101,6 +101,9 @@ public:
     //! Number of new observations to be added to each group
     int num = 3;
     
+    //! Indicates which groups are going to be targets
+    std::string target {"both"};
+    
     //! If not 0., `add_by_fraction` * n_obs will be added to the experiment.
     double add_by_fraction = 0.;
 
@@ -143,6 +146,7 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
   j = json{{"name", p.name},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
+           {"target", p.target},
            {"add_by_fraction", p.add_by_fraction},
            {"stopping_condition", p.stopping_cond_defs}
   };
@@ -154,6 +158,7 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
   j.at("num").get_to(p.num);
+  j.at("target").get_to(p.target);
   j.at("n_attempts").get_to(p.n_attempts);
   
   if (j.contains("stopping_condition"))
