@@ -88,6 +88,9 @@ public:
 
   auto begin() { return groups_.begin(); };
   auto end() { return groups_.end(); };
+  
+  auto begin() const { return groups_.begin(); };
+  auto end() const { return groups_.end(); };
 
   /// Runs the Test Strategy
   void runTest();
@@ -170,11 +173,11 @@ namespace fmt {
     auto format(const sam::Experiment& e, FormatContext& ctx) {
       // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
       // ctx.out() is an output iterator to write to.
-      return format_to(
-                       ctx.out(),
-                       "{}, {}",
-                       e.repid, e.is_hacked);
+      ctx.out() = format_to(ctx.out(), "Experiment:\n\t\t\t\t");
+      return format_to(ctx.out(),
+                       "{}", join(e.begin(), e.end(), "\n\t\t\t\t"));
     }
+  
   };
 }
 

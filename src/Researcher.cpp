@@ -14,6 +14,7 @@ ResearcherBuilder Researcher::create(std::string name) {
 
 void Researcher::letTheHackBegin() {
   
+  /// @todo Does this copy even make any sense! I don't think so!
   Experiment copy_of_experiment = *experiment;
   
   bool stopped_hacking {false};
