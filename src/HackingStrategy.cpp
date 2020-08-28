@@ -76,6 +76,12 @@ HackingStrategy::build(json &hacking_strategy_config) {
     hacking_strategy_config.get<PeekingOutliersRemoval::Parameters>();
     return std::make_unique<PeekingOutliersRemoval>(params);
     
+  } else if (hacking_strategy_config["name"] == "FalsifyingData") {
+    
+    auto params =
+    hacking_strategy_config.get<FalsifyingData::Parameters>();
+    return std::make_unique<FalsifyingData>(params);
+    
   } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();

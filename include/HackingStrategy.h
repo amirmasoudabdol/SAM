@@ -575,6 +575,105 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
 }
 
 
+/// Falsifying Data Hacking Strategy
+///
+/// @ingroup HackingStrategies
+class FalsifyingData final : public HackingStrategy {
+  
+public:
+  
+  /// Falsifying Data Parameters
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "FalsifyingData",
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::FalsifyingData;
+
+    //! Falsification approach. We've discussed two possible way of doing this
+    //!   - perturbation, perturbing a value
+    //!   - group swapping, swapping values between groups
+    //!   - group switching, moving values between groups
+    std::string approach {"perturbation"};
+    
+    //! Indicates which outcome variables are going to be targeted,
+    //!   - control
+    //!   - treatment
+    //!   - both
+    std::string target {"treatment"};
+    
+    //! Indicates a set of rule that is going to be used to select the target group
+    //! @todo To be implemented
+    PolicyChain target_policy;
+    
+    //! Number of trials
+    int n_attempts {1};
+    
+    //! Number of observations to be purturbed
+    int nums {5};
+    
+    std::optional<Distribution> noise_dist = make_distribution({
+      {"dist", "normal_distribution"},
+      {"mean", 0},
+      {"stddev", 0.1}
+    });
+    
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs;
+    
+    
+  };
+  
+  Parameters params;
+  PolicyChain stopping_condition;
+  
+  FalsifyingData() = default;
+  
+  FalsifyingData(const Parameters &p) : params{p} { };
+  
+  virtual void perform(Experiment *experiment) override;
+  
+private:
+  bool perturb(Experiment *experiment, const int n);
+  bool swapGroups(Experiment *experiment, const int n);
+  bool switchGroups(Experiment *experiment, const int n);
+};
+
+inline void to_json(json &j, const FalsifyingData::Parameters &p) {
+  j = json{{"name", p.name},
+    {"approach", p.approach},
+    {"n_attempts", p.n_attempts},
+    {"nums", p.nums},
+    {"target", p.target},
+//    {"noise", p.noise},
+    {"stopping_condition", p.stopping_cond_defs}};
+}
+
+inline void from_json(const json &j, FalsifyingData::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  
+  j.at("approach").get_to(p.approach);
+  j.at("n_attempts").get_to(p.n_attempts);
+  j.at("nums").get_to(p.nums);
+  j.at("target").get_to(p.target);
+  
+  if (j.contains("noise")) {
+    p.noise_dist = make_distribution(j["noise"]);
+  }
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+}
+
 } // namespace sam
 
 #endif // SAMPP_HACKINGSTRATEGIES_H

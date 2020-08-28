@@ -119,18 +119,16 @@
         "hacking_strategies": [
             [
                 {
-                    "level": "dv",
-                    "min_observations": 10,
-                    "multipliers": [
-                        0.5
-                    ],
-                    "n_attempts": 2,
-                    "name": "PeekingOutliersRemoval",
-                    "num": 5,
-                    "order": "random",
-                    "whether_to_save_condition": [
-                        "sig"
-                    ]
+                    "approach": "perturbation",
+                    "n_attempts": 3,
+                    "name": "FalsifyingData",
+                    "noise": {
+                        "dist": "normal_distribution",
+                        "mean": 0,
+                        "stddev": 1
+                    },
+                    "nums": 5,
+                    "target": "both"
                 },
                 [
                     {
