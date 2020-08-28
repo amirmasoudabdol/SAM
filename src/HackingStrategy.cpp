@@ -70,6 +70,12 @@ HackingStrategy::build(json &hacking_strategy_config) {
     hacking_strategy_config.get<QuestionableRounding::Parameters>();
     return std::make_unique<QuestionableRounding>(params);
     
+  } else if (hacking_strategy_config["name"] == "PeekingOutliersRemoval") {
+    
+    auto params =
+    hacking_strategy_config.get<PeekingOutliersRemoval::Parameters>();
+    return std::make_unique<PeekingOutliersRemoval>(params);
+    
   } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();

@@ -469,29 +469,111 @@ public:
   
   virtual void perform(Experiment *experiment) override;
 };
-    //! Alpha of significance
-    double alpha {0.05};
+
+
+/// PeekingOutliersRemoval Hacking Strategy
+///
+/// @ingroup HackingStrategies
+class PeekingOutliersRemoval final : public HackingStrategy {
+  
+public:
+  
+  /// Peaking Outliers Removal Parameters
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "PeekingOutliersRemoval",
+  ///     "level": "dv",
+  ///     "min_observations": 10,
+  ///     "multipliers": [
+  ///         0.5
+  ///     ],
+  ///     "n_attempts": 1000,
+  ///     "num": 1000,
+  ///     "order": "random"
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::PeekingOutliersRemoval;
     
-    /// Rounding Method
-    /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
-    /// - alpha: Setting the rounded p-value to the value of alpha
-    ///
-    /// \todo I cna possibly add more methods here, e.g.,
-    /// - rounding, where I just round the value down
-    /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
-    std::string rounding_method = "diff";
+    //! TO BE IMPLEMENTED!
+    std::string level = "dv";
     
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold, alpha, rounding_method);
+    //! Indicates the order where outliers are going to be removed from the
+    //! experiment. \li `max first`, removes the biggest outlier first \li
+    //! `random`, removes the first outlier first, this is as a random outlier
+    //! is being removed
+    std::string order = "max first";
+    
+    //! Indicates the number of outliers to be removed in each iteration
+    int num{3};
+    
+    //! Indicates the total number of attempts, i.e., _iterations_, to remove
+    //! outliers
+    int n_attempts{1};
+    
+    //! Indicates the minimum number of observations allowed during the process
+    int min_observations{15};
+    
+    //! A list of standard deviation multipliers for identidying outliers
+    std::vector<double> multipliers = {3};
+    
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs;
+    
+    //! Removing if
+    std::vector<std::string> whether_to_save_cond_defs;
+    
   };
   
   Parameters params;
+  PolicyChain stopping_condition;
+  PolicyChain whether_to_save_condition;
   
-  QuestionableRounding() = default;
+  PeekingOutliersRemoval() = default;
   
-  QuestionableRounding(const Parameters &p) : params{p} { };
+  PeekingOutliersRemoval(const Parameters &p) : params{p} { };
   
   virtual void perform(Experiment *experiment) override;
+  
+private:
+  bool removeOutliers(Experiment *experiment, const int n, const double k);
 };
+
+inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
+  j = json{{"name", p.name},
+    {"level", p.level},
+    {"order", p.order},
+    {"num", p.num},
+    {"n_attempts", p.n_attempts},
+    {"min_observations", p.min_observations},
+    {"multipliers", p.multipliers},
+    {"whether_to_save_condition", p.whether_to_save_cond_defs},
+    {"stopping_condition", p.stopping_cond_defs}};
+}
+
+inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  
+  j.at("level").get_to(p.level);
+  j.at("order").get_to(p.order);
+  j.at("num").get_to(p.num);
+  j.at("n_attempts").get_to(p.n_attempts);
+  j.at("min_observations").get_to(p.min_observations);
+  j.at("multipliers").get_to(p.multipliers);
+  j.at("whether_to_save_condition").get_to(p.whether_to_save_cond_defs);
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+}
+
 
 } // namespace sam
 

@@ -119,13 +119,17 @@
         "hacking_strategies": [
             [
                 {
-                    "add_by_fraction": 0.3,
-                    "n_attempts": 5,
-                    "name": "OptionalStopping",
-                    "num": 0,
-                    "stopping_condition": [
-                        "sig",
-                        "effect > 0.3"
+                    "level": "dv",
+                    "min_observations": 10,
+                    "multipliers": [
+                        0.5
+                    ],
+                    "n_attempts": 2,
+                    "name": "PeekingOutliersRemoval",
+                    "num": 5,
+                    "order": "random",
+                    "whether_to_save_condition": [
+                        "sig"
                     ]
                 },
                 [
