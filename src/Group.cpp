@@ -8,13 +8,16 @@ using namespace sam;
 
 void Group::updateStats() {
 
-  if (not is_stats_up_to_date) {
+  /// @todo Bring this back,
+  /// I'm removing this because group is not being notified with some of the changes, and this leads
+  /// to SAM not updating the statistics, i.e., the type of changes that Falsifying Data will cause
+//  if (not is_stats_up_to_date) {
     nobs_ = measurements_.size();
     mean_ = arma::mean(measurements_);
     var_ = arma::var(measurements_);
     stddev_ = arma::stddev(measurements_);
     sei_ = sqrt(var_ / nobs_);
-  }
+//  }
 
   is_stats_up_to_date = true;
 }
