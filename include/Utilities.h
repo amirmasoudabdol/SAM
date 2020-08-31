@@ -5,9 +5,9 @@
 #ifndef SAMPP_UTILITIES_H
 #define SAMPP_UTILITIES_H
 
-#include "sam.h"
 #include "baaraan.hpp"
 #include "effolkronium/random.hpp"
+#include "sam.h"
 
 using Generator = std::mt19937;
 using Distribution = std::function<double(Generator &)>;
@@ -22,27 +22,24 @@ std::map<std::string, std::string> flatten_json_to_map(const json &j);
 static arma::mat fillMatrix(std::optional<std::vector<Distribution>> &dists,
                             std::optional<MultivariateDistribution> &mdist,
                             int n_rows, int n_cols) {
-  
+
   arma::mat data(n_rows, n_cols);
 
   if (mdist) {
     // Multivariate Distributions
     // Filling by columns because MultiDist returns a column of results
-    data.each_col([&](arma::vec &v) {
-      v = Random::get(mdist.value());
-    });
+    data.each_col([&](arma::vec &v) { v = Random::get(mdist.value()); });
   } else {
     if (dists) {
       // Set of Univariate Distributions
       // Filling by rows because each row has its own distribution now
       data.each_row([&, i = 0](arma::rowvec &v) mutable {
-        v.imbue(
-            [&]() { return Random::get(dists.value()[i]); });
+        v.imbue([&]() { return Random::get(dists.value()[i]); });
         i++;
       });
     }
   }
-  
+
   return data;
 }
 
@@ -82,20 +79,6 @@ make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
   return DistributionType{j.at(parameters)...};
 }
 
-///
-/// @brief      A helper function to fill `val` to a vector. This will also
-///             allocate the necessary space, `size`, for the vector.
-///
-/// @param      vecc  The reference to the vector
-/// @param[in]  size  The size of the vector
-/// @param[in]  val   The value of the vector
-///
-/// @tparam     T     The type of the vector and value.
-///
-//template <typename T> void fill_vector(arma::Row<T> &vecc, int size, T val) {
-//  vecc = arma::Row<T>(size).fill(val);
-//};
-
 arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
                                      const arma::Row<double> &covs, int n);
 
@@ -107,17 +90,15 @@ arma::Mat<double> constructCovMatrix(const double stddev, const double cov,
 
 namespace nlohmann {
 
-
 template <typename T> struct adl_serializer<arma::Row<T>> {
-  
+
   static void to_json(json &j, const arma::Row<T> &row) {
     j = arma::conv_to<std::vector<T>>::from(row);
   }
-  
+
   static void from_json(const json &j, arma::Row<T> &row) {
     row = arma::Row<T>(j.get<std::vector<T>>());
   }
-  
 };
 
 template <typename T> struct adl_serializer<arma::Col<T>> {
@@ -135,31 +116,29 @@ template <typename T> struct adl_serializer<arma::Col<T>> {
       col.at(i) = j[i].get<std::vector<T>>()[0];
     }
   }
-  
 };
 
 template <typename T> struct adl_serializer<arma::Mat<T>> {
-  
+
   static void to_json(json &j, const arma::Mat<T> &mat) {
-    
+
     for (int i{0}; i < mat.n_rows; ++i) {
       j.push_back(arma::conv_to<std::vector<T>>::from(mat.row(i)));
     }
   }
 
   static void from_json(const json &j, arma::Mat<T> &mat) {
-    
+
     auto n_rows = j.size();
     auto n_cols = j[0].size();
     for (int i{0}; i < n_rows; ++i)
       assert(j[i].size() == n_cols);
-    
+
     mat = arma::Mat<T>(n_rows, n_cols);
     for (int i{0}; i < n_rows; ++i) {
       mat.row(i) = j[i].get<arma::Row<T>>();
     }
   }
-  
 };
 
 template <typename T> struct adl_serializer<baaraan::mvnorm_distribution<T>> {
