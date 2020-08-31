@@ -105,56 +105,62 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
 arma::Mat<double> constructCovMatrix(const double stddev, const double cov,
                                      const int n);
 
-namespace arma {
-
-/// Set of serializer for converting arma::row, arma::rowvec, and arma::mat
-/// to JSON objects.
-
-template <typename T> void to_json(json &j, const arma::Row<T> &row) {
-  j = arma::conv_to<std::vector<T>>::from(row);
-}
-
-template <typename T> void from_json(const json &j, arma::Row<T> &row) {
-  row = arma::Row<T>(j.get<std::vector<T>>());
-}
-
-template <typename T> void to_json(json &j, const arma::Col<T> &col) {
-  for (int i{0}; i < col.n_rows; ++i) {
-    j.push_back(arma::conv_to<std::vector<T>>::from(col.row(i)));
-  }
-}
-
-template <typename T> void from_json(const json &j, arma::Col<T> &col) {
-  col = arma::Col<T>(j.size());
-  for (int i{0}; i < j.size(); ++i) {
-    assert(j[i].size() == 1);
-    col.at(i) = j[i].get<std::vector<T>>()[0];
-  }
-}
-
-template <typename T> void to_json(json &j, const arma::Mat<T> &mat) {
-
-  for (int i{0}; i < mat.n_rows; ++i) {
-    j.push_back(arma::conv_to<std::vector<T>>::from(mat.row(i)));
-  }
-}
-
-template <typename T> void from_json(const json &j, arma::Mat<T> &mat) {
-
-  auto n_rows = j.size();
-  auto n_cols = j[0].size();
-  for (int i{0}; i < n_rows; ++i)
-    assert(j[i].size() == n_cols);
-
-  mat = arma::Mat<T>(n_rows, n_cols);
-  for (int i{0}; i < n_rows; ++i) {
-    mat.row(i) = j[i].get<arma::Row<T>>();
-  }
-}
-
-} // namespace arma
-
 namespace nlohmann {
+
+
+template <typename T> struct adl_serializer<arma::Row<T>> {
+  
+  static void to_json(json &j, const arma::Row<T> &row) {
+    j = arma::conv_to<std::vector<T>>::from(row);
+  }
+  
+  static void from_json(const json &j, arma::Row<T> &row) {
+    row = arma::Row<T>(j.get<std::vector<T>>());
+  }
+  
+};
+
+template <typename T> struct adl_serializer<arma::Col<T>> {
+
+  static void to_json(json &j, const arma::Col<T> &col) {
+    for (int i{0}; i < col.n_rows; ++i) {
+      j.push_back(arma::conv_to<std::vector<T>>::from(col.row(i)));
+    }
+  }
+
+  static void from_json(const json &j, arma::Col<T> &col) {
+    col = arma::Col<T>(j.size());
+    for (int i{0}; i < j.size(); ++i) {
+      assert(j[i].size() == 1);
+      col.at(i) = j[i].get<std::vector<T>>()[0];
+    }
+  }
+  
+};
+
+template <typename T> struct adl_serializer<arma::Mat<T>> {
+  
+  static void to_json(json &j, const arma::Mat<T> &mat) {
+    
+    for (int i{0}; i < mat.n_rows; ++i) {
+      j.push_back(arma::conv_to<std::vector<T>>::from(mat.row(i)));
+    }
+  }
+
+  static void from_json(const json &j, arma::Mat<T> &mat) {
+    
+    auto n_rows = j.size();
+    auto n_cols = j[0].size();
+    for (int i{0}; i < n_rows; ++i)
+      assert(j[i].size() == n_cols);
+    
+    mat = arma::Mat<T>(n_rows, n_cols);
+    for (int i{0}; i < n_rows; ++i) {
+      mat.row(i) = j[i].get<arma::Row<T>>();
+    }
+  }
+  
+};
 
 template <typename T> struct adl_serializer<baaraan::mvnorm_distribution<T>> {
 
@@ -167,8 +173,8 @@ template <typename T> struct adl_serializer<baaraan::mvnorm_distribution<T>> {
 
   static baaraan::mvnorm_distribution<T> from_json(const json &j) {
 
-    auto means = j.at("means").get<arma::Row<double>>();
-    arma::Mat<T> sigma;
+    arma::Row<double> means = j.at("means").get<arma::Row<double>>();
+    arma::Mat<double> sigma;
     auto n_dims = means.n_elem;
 
     if (j.find("sigma") != j.end()) {
