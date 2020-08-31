@@ -129,14 +129,14 @@ public:
   ///
   /// @param experiment A pointer to the experiment
   /// @param n number of new observations to be added
-  static void addObservations(Experiment *experiment, const int n);
+  void addObservations(Experiment *experiment, const int n);
   
   
   /// Adds `ns[i]` new items to `i`th group
   ///
   /// @param experiment A pointer to an experiment
   /// @param ns An array indicating how many new items should be added to each group
-  static void addObservations(Experiment *experiment, const arma::Row<int> ns);
+  void addObservations(Experiment *experiment, const arma::Row<int> ns);
 
 private:
   virtual void perform(Experiment *experiment) override;
