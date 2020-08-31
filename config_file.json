@@ -1,5 +1,8 @@
 {
     "experiment_parameters": {
+        "n_reps": 1,
+        "n_conditions": 4,
+        "n_dep_vars": 1,
         "data_strategy": {
             "errors": {
                 "covs": 0.0,
@@ -28,38 +31,7 @@
         "effect_strategy": {
             "name": "CohensD"
         },
-        "n_conditions": 4,
-        "n_dep_vars": 1,
-        "n_obs": {
-            "densities": [
-                0,
-                0,
-                0.0,
-                0,
-                0.75,
-                0.8,
-                1,
-                0.7,
-                0.3,
-                0.1,
-                0
-            ],
-            "dist": "piecewise_linear_distribution",
-            "intervals": [
-                0,
-                19,
-                19,
-                20,
-                20,
-                25,
-                30,
-                40,
-                60,
-                80,
-                100
-            ]
-        },
-        "n_reps": 1,
+        "n_obs": 20,
         "test_strategy": {
             "alpha": 0.05,
             "alternative": "TwoSided",
@@ -87,41 +59,43 @@
     },
     "researcher_parameters": {
         "decision_strategy": {
+            "name": "DefaultDecisionMaker",
+            "initial_selection_policies": [
+                [
+                    "id == 1"
+                ]
+            ],
+            "will_start_hacking_decision_policies": [
+                "!sig"
+            ],
             "between_hacks_selection_policies": [
                 [
                     "min(pvalue)"
                 ]
+            ],
+            "stashing_policy": [
+                "all"
+            ],
+            "will_continue_replicating_decision_policy": [
+                ""
             ],
             "between_replications_selection_policies": [
                 [
                     ""
                 ]
             ],
-            "initial_selection_policies": [
-                [
-                    "id == 1"
-                ]
-            ],
-            "name": "MarjansDecisionMaker",
-            "stashing_policy": [
-                "all"
-            ],
             "submission_decision_policies": [
                 ""
-            ],
-            "will_continue_replicating_decision_policy": [
-                ""
-            ],
-            "will_start_hacking_decision_policies": [
-                "!sig"
             ]
         },
+        "is_phacker": true,
+        "submission_probability": 0.7,
         "hacking_strategies": [
             [
                 {
+                    "name": "FabricatingData",
                     "approach": "duplicating",
                     "n_attempts": 3,
-                    "name": "FabricatingData",
                     "nums": 5,
                     "target": "both"
                 },
@@ -141,7 +115,6 @@
                 ]
             ]
         ],
-        "is_phacker": true,
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
@@ -151,8 +124,7 @@
                 "name": "OptionalStopping",
                 "num": 10
             }
-        ],
-        "submission_probability": 0.7
+        ]
     },
     "simulation_parameters": {
         "log_level": "trace",

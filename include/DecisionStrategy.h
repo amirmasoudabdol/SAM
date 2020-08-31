@@ -24,12 +24,12 @@
 namespace sam {
 
 enum class DecisionMethod {
-  MarjansDecisionMaker
+  DefaultDecisionMaker
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     DecisionMethod,
-    {{DecisionMethod::MarjansDecisionMaker, "MarjansDecisionMaker"}})
+    {{DecisionMethod::DefaultDecisionMaker, "DefaultDecisionMaker"}})
 
 using SubmissionPool = std::vector<Submission>;
 
@@ -157,7 +157,7 @@ class DefaultDecisionMaker final : public DecisionStrategy {
 
 public:
   struct Parameters {
-    DecisionMethod name = DecisionMethod::MarjansDecisionMaker;
+    DecisionMethod name = DecisionMethod::DefaultDecisionMaker;
 
     std::vector<std::vector<std::string>> initial_selection_policies_defs;
     std::vector<std::string> submission_decision_policies_defs;
