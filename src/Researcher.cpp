@@ -18,26 +18,31 @@ void Researcher::letTheHackBegin() {
   Experiment copy_of_experiment = *experiment;
   
   bool stopped_hacking {false};
-  
-  /// This is a temporary flag to know whether I've actually commited the hack or not!
-  /// I need to know this because if I've not commited, then I need to skip the following selection, and decision
-  bool has_commited {false};
+
+  /// This is a handy flag for propogating the information out of the std::visit.
+  bool has_committed;
   
   for (auto &h_set : h_workflow) {
     /// \todo Now that I have a set, I don't really need the has_commited variable!
   
+    has_committed = true;
+    
     for (auto &step : h_set) {
+            
       /// In each step, we either run a hack or a policy
       std::visit(overload {
 
           [&](std::shared_ptr<HackingStrategy>& hacking_strategy) {
             /// Performing a Hack
             
-            spdlog::debug("++++++++++++++++");
-            spdlog::debug("→ Starting a new HackingSet");
+            /// If we are not committed to the method, then, we just leave the entire
+            /// set behind
+            has_committed = isCommittingToTheHack(hacking_strategy.get());
             
-            has_commited = isCommittingToTheHack(hacking_strategy.get());
-            if (has_commited){
+            if (has_committed) {
+              spdlog::debug("++++++++++++++++");
+              spdlog::debug("→ Starting a new HackingSet");
+              
               (*hacking_strategy)(&copy_of_experiment);
               copy_of_experiment.is_hacked = true;
             }
@@ -45,11 +50,9 @@ void Researcher::letTheHackBegin() {
           [&](PolicyChainSet& selection_policies) {
             /// Performing a Selection
             /// With PolicyChainSet we can look for different results
-            if (has_commited)
               decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
           },
           [&](PolicyChain &decision_policy) {
-            if (has_commited) {
               /// Performing a Decision
               /// With PolicyChain, we can only validate if a submission passes all the criteria
               spdlog::debug("Checking whether we are going to continue hacking or not?");
@@ -63,10 +66,15 @@ void Researcher::letTheHackBegin() {
                 decision_strategy->submission_candidate.reset();
                 spdlog::debug("Continue Hacking...");
               }
-            }
           }
         
       }, step);
+      
+      if (not has_committed) {
+        // If we haven't commited to the method, we leave the rest behind too and go for the
+        // next method!
+        break;
+      }
       
       /// We leave the workflow when we have a submission, and it also passes the decision policy
       if (stopped_hacking) {
@@ -115,7 +123,7 @@ void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub)
 /// and keep reporting that one
 bool Researcher::isHacker() {
   
-  std::visit(overload {
+  return std::visit(overload {
     [&](double &p) {
       return Random::get<bool>(p);
     },
@@ -127,7 +135,7 @@ bool Researcher::isHacker() {
 }
 
 bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
-  std::visit(overload {
+  return std::visit(overload {
     [&](double &p) {
       return Random::get<bool>(p);
     },
@@ -193,26 +201,14 @@ void Researcher::research() {
     
     /// ----------------------
     /// WillBeHacking DECISION
-    if (isHacker() and
-        decision_strategy->willStartHacking()) {
-      /// If we are a hacker, and we decide to start hacking — based on the current submission —,
-      /// then, we are going to the hacking procedure!
-      
-      
-      /// I'm checking whether I have a method to determine the hacking probability
-      /// If so, then I'm going to query it, and decide whether I'm going to hack or not
-      if (hacking_probability_strategy){
-        bool is_hacking {false};
-        double hp = hacking_probability_strategy->estimate(experiment.get());
+    if (isHacker()) {
+      if (decision_strategy->willStartHacking()) {
+        /// If we are a hacker, and we decide to start hacking — based on the current submission —,
+        /// then, we are going to the hacking procedure!
         
-        is_hacking = Random::get<bool>(hp);
-        
-        if (is_hacking)
           letTheHackBegin();
-      }else{
-        letTheHackBegin();
+
       }
-      
     }
     
     /// ------------------------------

@@ -53,13 +53,10 @@ public:
   std::shared_ptr<Journal> journal;
   std::unique_ptr<DecisionStrategy> decision_strategy;
   std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
-  
-  std::unique_ptr<HackingProbabilityStrategy> hacking_probability_strategy;
 
   bool is_pre_processing{false};
   std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
 
-  bool is_hacker = false;
   bool isHacker();
   
   bool isCommittingToTheHack(HackingStrategy *hs);
@@ -237,24 +234,20 @@ public:
         break;
     }
     
-    // Parsing Hacking Strategies
-    /// \note If you change this, you need to change the n_hacks calculation
-    if (researcher.is_hacker) {
-      
+    // Parsing Hacking Strategies      
       researcher.h_workflow.resize(config["researcher_parameters"]["hacking_strategies"].size());
         
         for (int h {0}; h < researcher.h_workflow.size(); ++h ) {
-        
-          for (auto &item : config["researcher_parameters"]["hacking_strategies"]) {
+                  
+          auto &item = config["researcher_parameters"]["hacking_strategies"][h];
           
-            researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
+          researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
 
-            researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+          researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
 
-            researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
-        }
+          researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
       }
-    }
+
     
     if (config["researcher_parameters"].contains("n_hacks")) {
       researcher.n_hacks = config["researcher_parameters"]["n_hacks"].get<int>();
@@ -263,8 +256,7 @@ public:
 //      researcher.n_hacks = std::max(researcher.h_workflow.size(), researcher.n_hacks);
       
     } else {
-      /// \todo I need to adjust this if I change the Workflow definition
-      researcher.n_hacks = static_cast<int>(researcher.h_workflow.size() / 3.);
+      researcher.n_hacks = static_cast<int>(researcher.h_workflow.size());
     }
     
     
@@ -288,11 +280,6 @@ public:
     if (config["researcher_parameters"].contains("hacking_probability"))
       researcher.hacking_probability = Parameter<double>(config["researcher_parameters"]["hacking_probability"],
                                                        1);
-    
-    ///
-    if (config["researcher_parameters"].contains("hacking_probability_strategy"))
-      researcher.hacking_probability_strategy = HackingProbabilityStrategy::build(config["researcher_parameters"]["hacking_probability_strategy"]);
-
     
     /// Indicate what percentage of Researcher's work is going to be submitted
     if (config["researcher_parameters"].contains("submission_probability"))
@@ -414,7 +401,7 @@ public:
     }
     //            researcher.hacking_strategies.back().push_back(new_hs);
 
-    researcher.is_hacker = true;
+//    researcher.is_hacker = true;
     return *this;
   }
 
@@ -448,7 +435,7 @@ public:
     //
     //            }
 
-    researcher.is_hacker = true;
+//    researcher.is_hacker = true;
     return *this;
   };
 
@@ -477,7 +464,7 @@ public:
     //      }
     //    }
 
-    researcher.is_hacker = true;
+//    researcher.is_hacker = true;
     return *this;
   };
 

@@ -25,7 +25,7 @@ HackingProbabilityStrategy::build(json &config) {
 double
 FrankenbachStrategy::estimate(Experiment *experiment) {
   
-  if (relative_difference(params.base_hp, 0) < 0.00001) {
+  if ((params.base_hp - 0.) < 0.00001) {
     return 0.;
   }else {
     /// We have something in the middle now, so, we are calculating based on the p-value
@@ -63,7 +63,7 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
           /// Update: I think I had this wrong previously, where I assing the probability to
           /// everything, while it should only be assigned to those studies that are passing
           /// the effect test in the first place
-          if (relative_difference(params.base_hp, 1.) < 0.00001) {
+          if ((params.base_hp - 1.) < 0.00001) {
             return 1.;
           }
           
