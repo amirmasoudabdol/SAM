@@ -197,15 +197,9 @@ public:
         researcher.pre_processing_methods.push_back(
             HackingStrategy::build(item));
       }
-    }
+    }    
     
-    /// \todo I can probably use emplace_back for the vector of variants, and would perform better
-    
-    // Parsing the Probablity of Being a Hacker
-    researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
-    
-    
-    auto prob_of_being_a_hacker = config["researcher_parameters"]["probability_of_being_hacker"];
+    auto prob_of_being_a_hacker = config["researcher_parameters"]["probability_of_being_a_hacker"];
     switch (prob_of_being_a_hacker.type()) {
       case nlohmann::detail::value_t::number_integer:
       case nlohmann::detail::value_t::number_unsigned:

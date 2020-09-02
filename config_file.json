@@ -88,9 +88,8 @@
                 ""
             ]
         },
-        "is_phacker": true,
-        "probablity_of_being_a_hacker": 0.1,
-        "probablity_of_applying_a_hack": 0.3,
+        "probability_of_being_a_hacker": 1,
+        "probability_of_committing_a_hack": 0.4,
         "n_hacks": 1,
         "hacking_selection_priority": "order",
         "hacking_executation_order": "sequential",
@@ -103,6 +102,29 @@
                     "target": "both",
                     "nums": 5,
                     "n_attempts": 3,
+                    "defensibility": 0.1,
+                    "prevelance": 0.7
+                },
+                [
+                    [
+                        "min(pvalue)"
+                    ]
+                ],
+                [
+                    "!sig"
+                ]
+            ],
+            [
+                {
+                    "name": "OutliersRemoval",
+                    "level": "both",
+                    "num": 5,
+                    "n_attempts": 3,
+                    "min_observations": 5,
+                    "order": "random",
+                    "multipliers": [
+                        2
+                    ],
                     "defensibility": 0.1,
                     "prevelance": 0.7
                 },
