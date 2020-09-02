@@ -63,7 +63,7 @@ public:
   
   
   //! Number of hacking strategies to be choosen from the given list of strategies
-  int n_hacks;
+  size_t n_hacks;
   
   //! Indicates order in which hacking strategies are going to be selected
   //! from the list of given hacking strategies if the Researcher decides has
@@ -236,42 +236,76 @@ public:
     }
     
     // Parsing Hacking Strategies      
-      researcher.h_workflow.resize(config["researcher_parameters"]["hacking_strategies"].size());
-        
-        for (int h {0}; h < researcher.h_workflow.size(); ++h ) {
-                  
-          auto &item = config["researcher_parameters"]["hacking_strategies"][h];
-          
-          researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
+    researcher.h_workflow.resize(config["researcher_parameters"]["hacking_strategies"].size());
+      
+    for (int h {0}; h < researcher.h_workflow.size(); ++h ) {
+                
+      auto &item = config["researcher_parameters"]["hacking_strategies"][h];
+      
+      researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
 
-          researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+      researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
 
-          researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
-      }
+      researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
+      
+    }
 
     
+    researcher.n_hacks = researcher.h_workflow.size();
     if (config["researcher_parameters"].contains("n_hacks")) {
-      researcher.n_hacks = config["researcher_parameters"]["n_hacks"].get<int>();
       
-      // clamping the value if it's greater than the number of methods given
-//      researcher.n_hacks = std::max(researcher.h_workflow.size(), researcher.n_hacks);
-      
-    } else {
-      researcher.n_hacks = static_cast<int>(researcher.h_workflow.size());
+      researcher.n_hacks = std::min(researcher.h_workflow.size(),
+                                    config["researcher_parameters"]["n_hacks"].get<size_t>());
     }
     
     
     //! Selecting between hacking
-    if (config["researcher_parameters"].contains("hacking_selection_priority")) {
+    if (researcher.n_hacks < researcher.h_workflow.size() and
+        config["researcher_parameters"].contains("hacking_selection_priority")) {
       researcher.hacking_selection_priority = config["researcher_parameters"]["hacking_selection_priority"].get<std::string>();
-      /// \todo Handle the selection based on n_hacks
+      
+      
+      if (researcher.hacking_selection_priority == "random") {
+        Random::shuffle(researcher.h_workflow);
+      } else if (researcher.hacking_selection_priority == "min(prevelance)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->prevelance() < std::get<0>(h2[0])->prevelance();
+        });
+      } else if (researcher.hacking_selection_priority == "max(prevelance)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->prevelance() > std::get<0>(h2[0])->prevelance();
+        });
+      } else if (researcher.hacking_selection_priority == "min(defensibility)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
+        });
+      } else if (researcher.hacking_selection_priority == "max(defensibility)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
+        });
+      } else /* sequential */ {
+        throw std::invalid_argument("Invalid argument!");
+      }
+      
+      /// @bug! This will explode because it has to deconstruct the `lua` instance and that's not really
+      /// possible since it is a public member of the abstract class, meaning that other hacking strategies
+      /// that are already in the list wants to use it!
+      /// @note The actual reason is related to the stopping_condition. For instance, if a hacking strategy hasn't
+      /// initialized its stopping_condition, then SAM doesn't know how to deconstruct it
+      /// @note I think I can move the stopping_condition to the abstract class, or just make sure that all classes at least
+      /// have some empty PolicyChain. I think the latter is easier as I can just construct an empty one!
+      /// @note even if I leave OutliersRemoval stopping_condition empty, things will be fine! What's special about FabricatingData method
+      /// @note Even if I don't initiate OutliersRemoval stopping condition this will be fine!
+      /// @note Not really sure how this resolved itself, but I think Xcode was struggling with the memory! At
+      /// some point, it crashed, and my problem was solved!
+      researcher.h_workflow.resize(researcher.n_hacks);
+      
     }
     
     
     //! Setting the execution order
     if (config["researcher_parameters"].contains("hacking_execution_order")) {
       researcher.hacking_execution_order = config["researcher_parameters"]["hacking_execution_order"].get<std::string>();
-      /// \todo Handle the ordering
       
       if (researcher.hacking_execution_order == "random") {
         Random::shuffle(researcher.h_workflow);

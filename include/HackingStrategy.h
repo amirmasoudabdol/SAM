@@ -639,7 +639,7 @@ public:
     
     //! Indicates a set of rule that is going to be used to select the target group
     //! @todo To be implemented
-    PolicyChain target_policy;
+//    PolicyChain target_policy;
     
     //! Number of trials
     int n_attempts {1};
@@ -668,6 +668,8 @@ public:
   FalsifyingData() = default;
   
   FalsifyingData(const Parameters &p) : params{p} {
+    stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+    
     prevelance_ = params.prevelance;
     defensibility_ = params.defensibility;
   };
@@ -686,7 +688,7 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
     {"n_attempts", p.n_attempts},
     {"nums", p.nums},
     {"target", p.target},
-//    {"noise", p.noise},
+//    {"noise_dist", p.noise_dist},
     {"prevelance", p.prevelance},
     {"defensibility", p.defensibility},
     {"stopping_condition", p.stopping_cond_defs}};
@@ -721,7 +723,7 @@ class FabricatingData final : public HackingStrategy {
   
 public:
   
-  /// Falsifying Data Parameters
+  /// Fabricating Data Parameters
   ///
   /// Example usage:
   /// ```json
@@ -748,7 +750,7 @@ public:
     
     //! Indicates a set of rule that is going to be used to select the target group
     //! @todo To be implemented
-    PolicyChain target_policy;
+//    PolicyChain target_policy;
     
     //! Number of trials
     int n_attempts {1};
@@ -759,20 +761,14 @@ public:
     //! Distribution of fabricated data
     //! @todo Check if this is even necessary or not, I think in most cases, we
     //! can probably just use the data_strategy and get over it
-    std::optional<Distribution> dist = make_distribution({
-      {"dist", "normal_distribution"},
-      {"mean", 0},
-      {"stddev", 0.1}
-    });
+    std::optional<Distribution> dist;
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    
     double defensibility {0.05};
     
     double prevelance {0.1};
-    
   };
   
   Parameters params;
@@ -781,6 +777,8 @@ public:
   FabricatingData() = default;
   
   FabricatingData(const Parameters &p) : params{p} {
+    stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+    
     prevelance_ = params.prevelance;
     defensibility_ = params.defensibility;
   };
@@ -798,7 +796,7 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
     {"n_attempts", p.n_attempts},
     {"nums", p.nums},
     {"target", p.target},
-    //    {"noise", p.noise},
+    //    {"dist", p.dist},
     {"prevelance", p.prevelance},
     {"defensibility", p.defensibility},
     {"stopping_condition", p.stopping_cond_defs}};
@@ -816,6 +814,10 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   j.at("target").get_to(p.target);
   j.at("prevelance").get_to(p.prevelance);
   j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("dist")) {
+    p.dist = make_distribution(j["dist"]);
+  }
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
