@@ -60,7 +60,27 @@ public:
   std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
 
   bool is_hacker = false;
-  bool isHacker() const { return is_hacker; }
+  bool isHacker();
+  
+  bool isCommittingToTheHack(HackingStrategy *hs);
+  
+  
+  //! Number of hacking strategies to be choosen from the given list of strategies
+  int n_hacks;
+  
+  //! Indicates order in which hacking strategies are going to be selected
+  //! from the list of given hacking strategies if the Researcher decides has
+  //! to apply a fewer number than the given list
+  std::string hacking_selection_priority {"order"};
+  
+  //! Indicates the execution order of selected/given hacking strategies
+  std::string hacking_execution_order {"sequential"};
+  
+  //! Indicates the probablity of a Researcher _deciding_ to go for hacking an Experiment
+  std::variant<double, Distribution> probability_of_being_a_hacker;
+  
+  //! Indicates the probablity of a Researcher _actally applying_ a choosen hacking strategy
+  std::variant<double, std::string, Distribution, std::unique_ptr<HackingProbabilityStrategy>> probability_of_committing_a_hack;
   
   Parameter<double> hacking_probability;
   
@@ -181,8 +201,50 @@ public:
     
     /// \todo I can probably use emplace_back for the vector of variants, and would perform better
     
-    // Parsing Hacking Strategies
+    // Parsing the Probablity of Being a Hacker
     researcher.is_hacker = config["researcher_parameters"]["is_phacker"];
+    
+    
+    auto prob_of_being_a_hacker = config["researcher_parameters"]["probability_of_being_hacker"];
+    switch (prob_of_being_a_hacker.type()) {
+      case nlohmann::detail::value_t::number_integer:
+      case nlohmann::detail::value_t::number_unsigned:
+      case nlohmann::detail::value_t::number_float:
+        researcher.probability_of_being_a_hacker = prob_of_being_a_hacker.get<double>();
+        break;
+      case nlohmann::detail::value_t::object:
+        researcher.probability_of_being_a_hacker = make_distribution(prob_of_being_a_hacker);
+        break;
+      default:
+        researcher.probability_of_being_a_hacker = 0.;
+        break;
+    }
+    
+    
+    auto prob_of_committing_a_hack = config["researcher_parameters"]["probability_of_committing_a_hack"];
+    switch (prob_of_committing_a_hack.type()) {
+      case nlohmann::detail::value_t::number_integer:
+      case nlohmann::detail::value_t::number_unsigned:
+      case nlohmann::detail::value_t::number_float:
+        researcher.probability_of_committing_a_hack = prob_of_committing_a_hack.get<double>();
+        break;
+      case nlohmann::detail::value_t::string:
+        researcher.probability_of_committing_a_hack = prob_of_committing_a_hack.get<std::string>();
+        break;
+      case nlohmann::detail::value_t::object: {
+        if (prob_of_committing_a_hack.contains("dist"))
+          researcher.probability_of_committing_a_hack = make_distribution(prob_of_committing_a_hack);
+        else
+          researcher.probability_of_committing_a_hack = HackingProbabilityStrategy::build(prob_of_committing_a_hack);
+      }
+        break;
+      default:
+        researcher.probability_of_committing_a_hack = 0.;
+        break;
+    }
+    
+    // Parsing Hacking Strategies
+    /// \note If you change this, you need to change the n_hacks calculation
     if (researcher.is_hacker) {
       for (auto &set :
            config["researcher_parameters"]["hacking_strategies"]) {
@@ -206,6 +268,31 @@ public:
         }
 
       }
+    }
+    
+    if (config["researcher_parameters"].contains("n_hacks")) {
+      researcher.n_hacks = config["researcher_parameter"]["n_hacks"].get<int>();
+      
+      // clamping the value if it's greater than the number of methods given
+//      researcher.n_hacks = std::max(researcher.h_workflow.size(), researcher.n_hacks);
+      
+    } else {
+      /// \todo I need to adjust this if I change the Workflow definition
+      researcher.n_hacks = static_cast<int>(researcher.h_workflow.size() / 3.);
+    }
+    
+    
+    //! Selecting between hacking
+    if (config["researcher_parameters"].contains("hacking_selection_priority")) {
+      researcher.hacking_selection_priority = config["researcher_parameters"]["hacking_selection_priority"].get<std::string>();
+      /// \todo Handle the selection based on n_hacks
+    }
+    
+    
+    //! Setting the execution order
+    if (config["researcher_parameters"].contains("hacking_execution_order")) {
+      researcher.hacking_execution_order = config["researcher_parameters"]["hacking_execution_order"].get<std::string>();
+      /// \todo Handle the ordering
     }
     
     

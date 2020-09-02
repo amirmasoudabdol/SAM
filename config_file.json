@@ -89,15 +89,22 @@
             ]
         },
         "is_phacker": true,
+        "probablity_of_being_a_hacker": 0.1,
+        "probablity_of_applying_a_hack": 0.3,
+        "n_hacks": 1,
+        "hacking_selection_priority": "order",
+        "hacking_executation_order": "sequential",
         "submission_probability": 0.7,
         "hacking_strategies": [
             [
                 {
                     "name": "FabricatingData",
                     "approach": "duplicating",
-                    "n_attempts": 3,
+                    "target": "both",
                     "nums": 5,
-                    "target": "both"
+                    "n_attempts": 3,
+                    "defensibility": 0.1,
+                    "prevelance": 0.7
                 },
                 [
                     {

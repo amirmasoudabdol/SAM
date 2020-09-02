@@ -44,6 +44,10 @@ public:
   
   sol::state lua;
   
+  double defensibility_;
+  
+  double prevelance_;
+  
   /// @brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
@@ -65,6 +69,14 @@ public:
   void operator()(Experiment *experiment) {
     perform(experiment);
   };
+  
+  double defensibility() const {
+    return defensibility_;
+  }
+  
+  double prevelance() const {
+    return prevelance_;
+  }
 
 private:
   /// @brief  Applies the hacking method on the Experiment.

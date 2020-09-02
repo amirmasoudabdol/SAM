@@ -19,6 +19,10 @@ void Researcher::letTheHackBegin() {
   
   bool stopped_hacking {false};
   
+  /// This is a temporary flag to know whether I've actually commited the hack or not!
+  /// I need to know this because if I've not commited, then I need to skip the following selection, and decision
+  bool has_commited {false};
+  
   for (auto &step : h_workflow) {
     /// In each step, we either run a hack or a policy
     std::visit(overload {
@@ -28,27 +32,34 @@ void Researcher::letTheHackBegin() {
           
           spdlog::debug("++++++++++++++++");
           spdlog::debug("→ Starting a new HackingSet");
-          (*hacking_strategy)(&copy_of_experiment);
-          copy_of_experiment.is_hacked = true;
+          
+          has_commited = isCommittingToTheHack(hacking_strategy.get());
+          if (has_commited){
+            (*hacking_strategy)(&copy_of_experiment);
+            copy_of_experiment.is_hacked = true;
+          }
         },
         [&](PolicyChainSet& selection_policies) {
           /// Performing a Selection
           /// With PolicyChainSet we can look for different results
-          decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
+          if (has_commited)
+            decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
         },
         [&](PolicyChain &decision_policy) {
-          /// Performing a Decision
-          /// With PolicyChain, we can only validate if a submission passes all the criteria
-          spdlog::debug("Checking whether we are going to continue hacking or not?");
-          if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
-            spdlog::debug("Done Hacking!");
-            stopped_hacking = true;
-          }else{
-            /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
-            /// evaluated again, and I've already performed a selection, I'm going to reset the selected
-            /// submission.
-            decision_strategy->submission_candidate.reset();
-            spdlog::debug("Continue Hacking...");
+          if (has_commited) {
+            /// Performing a Decision
+            /// With PolicyChain, we can only validate if a submission passes all the criteria
+            spdlog::debug("Checking whether we are going to continue hacking or not?");
+            if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
+              spdlog::debug("Done Hacking!");
+              stopped_hacking = true;
+            }else{
+              /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
+              /// evaluated again, and I've already performed a selection, I'm going to reset the selected
+              /// submission.
+              decision_strategy->submission_candidate.reset();
+              spdlog::debug("Continue Hacking...");
+            }
           }
         }
       
@@ -94,6 +105,42 @@ void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub)
       journal->review(decision_strategy->submission_candidate.value());
   }
   
+}
+
+/// \todo this should not draw a new value every time, and should draw once
+/// and keep reporting that one
+bool Researcher::isHacker() {
+  
+  std::visit(overload {
+    [&](double &p) {
+      return Random::get<bool>(p);
+    },
+    [&](Distribution &dist) {
+      return Random::get<bool>(Random::get(dist));
+    }
+  }, probability_of_being_a_hacker);
+  
+}
+
+bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
+  std::visit(overload {
+    [&](double &p) {
+      return Random::get<bool>(p);
+    },
+    [&](std::string &s) {
+      if (s == "prevelance") {
+        return Random::get<bool>(hs->prevelance());
+      } else /* (s == "defensibility") */ {
+        return Random::get<bool>(hs->defensibility());
+      }
+    },
+    [&](Distribution &dist) {
+      return Random::get<bool>(Random::get(dist));
+    },
+    [&](std::unique_ptr<HackingProbabilityStrategy> &hps) {
+      return Random::get<bool>(hps->estimate(experiment.get()));
+    }
+  }, probability_of_committing_a_hack);
 }
 
 /// \brief  Executing the research workflow
