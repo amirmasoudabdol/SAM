@@ -23,53 +23,57 @@ void Researcher::letTheHackBegin() {
   /// I need to know this because if I've not commited, then I need to skip the following selection, and decision
   bool has_commited {false};
   
-  for (auto &step : h_workflow) {
-    /// In each step, we either run a hack or a policy
-    std::visit(overload {
+  for (auto &h_set : h_workflow) {
+    /// \todo Now that I have a set, I don't really need the has_commited variable!
+  
+    for (auto &step : h_set) {
+      /// In each step, we either run a hack or a policy
+      std::visit(overload {
 
-        [&](std::shared_ptr<HackingStrategy>& hacking_strategy) {
-          /// Performing a Hack
-          
-          spdlog::debug("++++++++++++++++");
-          spdlog::debug("→ Starting a new HackingSet");
-          
-          has_commited = isCommittingToTheHack(hacking_strategy.get());
-          if (has_commited){
-            (*hacking_strategy)(&copy_of_experiment);
-            copy_of_experiment.is_hacked = true;
-          }
-        },
-        [&](PolicyChainSet& selection_policies) {
-          /// Performing a Selection
-          /// With PolicyChainSet we can look for different results
-          if (has_commited)
-            decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
-        },
-        [&](PolicyChain &decision_policy) {
-          if (has_commited) {
-            /// Performing a Decision
-            /// With PolicyChain, we can only validate if a submission passes all the criteria
-            spdlog::debug("Checking whether we are going to continue hacking or not?");
-            if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
-              spdlog::debug("Done Hacking!");
-              stopped_hacking = true;
-            }else{
-              /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
-              /// evaluated again, and I've already performed a selection, I'm going to reset the selected
-              /// submission.
-              decision_strategy->submission_candidate.reset();
-              spdlog::debug("Continue Hacking...");
+          [&](std::shared_ptr<HackingStrategy>& hacking_strategy) {
+            /// Performing a Hack
+            
+            spdlog::debug("++++++++++++++++");
+            spdlog::debug("→ Starting a new HackingSet");
+            
+            has_commited = isCommittingToTheHack(hacking_strategy.get());
+            if (has_commited){
+              (*hacking_strategy)(&copy_of_experiment);
+              copy_of_experiment.is_hacked = true;
+            }
+          },
+          [&](PolicyChainSet& selection_policies) {
+            /// Performing a Selection
+            /// With PolicyChainSet we can look for different results
+            if (has_commited)
+              decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
+          },
+          [&](PolicyChain &decision_policy) {
+            if (has_commited) {
+              /// Performing a Decision
+              /// With PolicyChain, we can only validate if a submission passes all the criteria
+              spdlog::debug("Checking whether we are going to continue hacking or not?");
+              if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
+                spdlog::debug("Done Hacking!");
+                stopped_hacking = true;
+              }else{
+                /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
+                /// evaluated again, and I've already performed a selection, I'm going to reset the selected
+                /// submission.
+                decision_strategy->submission_candidate.reset();
+                spdlog::debug("Continue Hacking...");
+              }
             }
           }
-        }
+        
+      }, step);
       
-    }, step);
-    
-    /// We leave the workflow when we have a submission, and it also passes the decision policy
-    if (stopped_hacking) {
-      return;
+      /// We leave the workflow when we have a submission, and it also passes the decision policy
+      if (stopped_hacking) {
+        return;
+      }
+      
     }
-    
   }
   
 }

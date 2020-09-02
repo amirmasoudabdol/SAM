@@ -107,18 +107,12 @@
                     "prevelance": 0.7
                 },
                 [
-                    {
-                        "selection": [
-                            [
-                                "min(pvalue)"
-                            ]
-                        ]
-                    },
-                    {
-                        "will_continue_hacking_decision_policy": [
-                            "!sig"
-                        ]
-                    }
+                    [
+                        "min(pvalue)"
+                    ]
+                ],
+                [
+                    "!sig"
                 ]
             ]
         ],

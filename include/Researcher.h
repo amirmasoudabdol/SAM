@@ -18,7 +18,7 @@ namespace sam {
 
 class ResearcherBuilder;
 
-using HackingWorkflow = std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>;
+using HackingWorkflow = std::vector<std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>>;
 
 class Researcher {
   // Making the ResearcherBuilder a friend class in order to give it access to
@@ -246,32 +246,24 @@ public:
     // Parsing Hacking Strategies
     /// \note If you change this, you need to change the n_hacks calculation
     if (researcher.is_hacker) {
-      for (auto &set :
-           config["researcher_parameters"]["hacking_strategies"]) {
+      
+      researcher.h_workflow.resize(config["researcher_parameters"]["hacking_strategies"].size());
         
-        for (auto &item : set) {
-          if (item.type() == nlohmann::detail::value_t::object) {
-            researcher.h_workflow.push_back(HackingStrategy::build(item));
-          }else if (item.type() == nlohmann::detail::value_t::array) {
-            for (auto &p : item) {
-              if (p.contains("selection")) {
-                if (!p["selection"].empty())
-                  researcher.h_workflow.push_back(PolicyChainSet{p["selection"].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
-              } else {
-                // It's a decision
-                if (!p["will_continue_hacking_decision_policy"].empty())
-                  researcher.h_workflow.push_back(PolicyChain{p["will_continue_hacking_decision_policy"].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
-              }
-            }
-            
-          }
-        }
+        for (int h {0}; h < researcher.h_workflow.size(); ++h ) {
+        
+          for (auto &item : config["researcher_parameters"]["hacking_strategies"]) {
+          
+            researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
 
+            researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+
+            researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
+        }
       }
     }
     
     if (config["researcher_parameters"].contains("n_hacks")) {
-      researcher.n_hacks = config["researcher_parameter"]["n_hacks"].get<int>();
+      researcher.n_hacks = config["researcher_parameters"]["n_hacks"].get<int>();
       
       // clamping the value if it's greater than the number of methods given
 //      researcher.n_hacks = std::max(researcher.h_workflow.size(), researcher.n_hacks);
