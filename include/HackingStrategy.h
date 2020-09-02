@@ -234,6 +234,11 @@ public:
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
+    
+    double defensibility {0.5};
+    
+    double prevelance {0.7};
+    
   };
 
   Parameters params;
@@ -245,6 +250,8 @@ public:
   OutliersRemoval(const Parameters &p)
       : params{p} {
         stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+        prevelance_ = params.prevelance;
+        defensibility_ = params.defensibility;
         };
 
   // Submission hackedSubmission;
@@ -262,6 +269,8 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
+           {"prevelance", p.prevelance},
+           {"defensibility", p.defensibility},
            {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -277,6 +286,9 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
+  
+  j.at("prevelance").get_to(p.prevelance);
+  j.at("defensibility").get_to(p.defensibility);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
@@ -645,7 +657,9 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    
+    double defensibility {0.05};
+
+    double prevelance {0.1};
   };
   
   Parameters params;
@@ -653,7 +667,10 @@ public:
   
   FalsifyingData() = default;
   
-  FalsifyingData(const Parameters &p) : params{p} { };
+  FalsifyingData(const Parameters &p) : params{p} {
+    prevelance_ = params.prevelance;
+    defensibility_ = params.defensibility;
+  };
   
   virtual void perform(Experiment *experiment) override;
   
@@ -670,6 +687,8 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
     {"nums", p.nums},
     {"target", p.target},
 //    {"noise", p.noise},
+    {"prevelance", p.prevelance},
+    {"defensibility", p.defensibility},
     {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -683,6 +702,8 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("nums").get_to(p.nums);
   j.at("target").get_to(p.target);
+  j.at("prevelance").get_to(p.prevelance);
+  j.at("defensibility").get_to(p.defensibility);
   
   if (j.contains("noise")) {
     p.noise_dist = make_distribution(j["noise"]);
@@ -748,6 +769,10 @@ public:
     std::vector<std::string> stopping_cond_defs;
     
     
+    double defensibility {0.05};
+    
+    double prevelance {0.1};
+    
   };
   
   Parameters params;
@@ -755,7 +780,10 @@ public:
   
   FabricatingData() = default;
   
-  FabricatingData(const Parameters &p) : params{p} { };
+  FabricatingData(const Parameters &p) : params{p} {
+    prevelance_ = params.prevelance;
+    defensibility_ = params.defensibility;
+  };
   
   virtual void perform(Experiment *experiment) override;
   
@@ -771,6 +799,8 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
     {"nums", p.nums},
     {"target", p.target},
     //    {"noise", p.noise},
+    {"prevelance", p.prevelance},
+    {"defensibility", p.defensibility},
     {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -784,6 +814,8 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("nums").get_to(p.nums);
   j.at("target").get_to(p.target);
+  j.at("prevelance").get_to(p.prevelance);
+  j.at("defensibility").get_to(p.defensibility);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);

@@ -165,6 +165,7 @@ public:
   /// \param      config  A JSON object
   /// \return     Return an instance of itself
   ///
+  /// @todo This needs to be splitted into different pieces
   ResearcherBuilder &fromConfigFile(json &config) {
 
     this->config = config;
@@ -271,6 +272,28 @@ public:
     if (config["researcher_parameters"].contains("hacking_execution_order")) {
       researcher.hacking_execution_order = config["researcher_parameters"]["hacking_execution_order"].get<std::string>();
       /// \todo Handle the ordering
+      
+      if (researcher.hacking_execution_order == "random") {
+        Random::shuffle(researcher.h_workflow);
+      } else if (researcher.hacking_execution_order == "min(prevelance)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->prevelance() < std::get<0>(h2[0])->prevelance();
+        });
+      } else if (researcher.hacking_execution_order == "max(prevelance)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->prevelance() > std::get<0>(h2[0])->prevelance();
+        });
+      } else if (researcher.hacking_execution_order == "min(defensibility)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
+        });
+      } else if (researcher.hacking_execution_order == "max(defensibility)") {
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+          return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
+        });
+      } else /* sequential */ {
+        throw std::invalid_argument("Invalid argument!");
+      }
     }
     
     

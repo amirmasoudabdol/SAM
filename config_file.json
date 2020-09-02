@@ -92,7 +92,7 @@
         "probability_of_committing_a_hack": 0.4,
         "n_hacks": 1,
         "hacking_selection_priority": "order",
-        "hacking_executation_order": "sequential",
+        "hacking_execution_order": "min(prevelance)",
         "submission_probability": 0.7,
         "hacking_strategies": [
             [
@@ -103,7 +103,7 @@
                     "nums": 5,
                     "n_attempts": 3,
                     "defensibility": 0.1,
-                    "prevelance": 0.7
+                    "prevelance": 0.4
                 },
                 [
                     [
@@ -125,8 +125,8 @@
                     "multipliers": [
                         2
                     ],
-                    "defensibility": 0.1,
-                    "prevelance": 0.7
+                    "defensibility": 0.7,
+                    "prevelance": 0.2
                 },
                 [
                     [
