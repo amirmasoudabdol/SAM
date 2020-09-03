@@ -15,11 +15,11 @@ void FalsifyingData::perform(Experiment *experiment) {
   for (int t = 0; t < params.n_attempts && res; ++t) {
     
     if (params.approach == "perturbation")
-      res = this->perturb(experiment, params.nums);
+      res = this->perturb(experiment, params.num);
     else if (params.approach == "swapping groups")
-      res = this->swapGroups(experiment, params.nums);
+      res = this->swapGroups(experiment, params.num);
     else if (params.approach == "switching groups")
-      res = this->switchGroups(experiment, params.nums);
+      res = this->switchGroups(experiment, params.num);
     
     experiment->recalculateEverything();
     

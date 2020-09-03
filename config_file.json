@@ -100,7 +100,7 @@
                     "name": "FabricatingData",
                     "approach": "duplicating",
                     "target": "both",
-                    "nums": 5,
+                    "num": 5,
                     "n_attempts": 3,
                     "defensibility": 0.1,
                     "prevalence": 0.4

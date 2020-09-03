@@ -15,9 +15,9 @@ void FabricatingData::perform(Experiment *experiment) {
   for (int t = 0; t < params.n_attempts && res; ++t) {
     
     if (params.approach == "generating")
-      res = this->generate(experiment, params.nums);
+      res = this->generate(experiment, params.num);
     else if (params.approach == "duplicating")
-      res = this->duplicate(experiment, params.nums);
+      res = this->duplicate(experiment, params.num);
     
     experiment->recalculateEverything();
     

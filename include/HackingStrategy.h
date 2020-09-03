@@ -384,7 +384,7 @@ class GroupPooling final : public HackingStrategy {
 public:
   struct Parameters {
     HackingMethod name = HackingMethod::GroupPooling;
-    std::vector<int> nums = {2};
+    std::vector<int> num = {2};
   };
 
   Parameters params;
@@ -403,7 +403,7 @@ private:
 };
 
 inline void to_json(json &j, const GroupPooling::Parameters &p) {
-  j = json{{"name", p.name}, {"nums", p.nums}};
+  j = json{{"name", p.name}, {"num", p.num}};
 }
 
 inline void from_json(const json &j, GroupPooling::Parameters &p) {
@@ -412,7 +412,7 @@ inline void from_json(const json &j, GroupPooling::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  j.at("nums").get_to(p.nums);
+  j.at("num").get_to(p.num);
 }
 
 class ConditionDropping : public HackingStrategy {
@@ -645,7 +645,7 @@ public:
     int n_attempts {1};
     
     //! Number of observations to be purturbed
-    int nums {5};
+    int num {5};
     
     //! Distribution of noise
     std::optional<Distribution> noise_dist = make_distribution({
@@ -686,7 +686,7 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
   j = json{{"name", p.name},
     {"approach", p.approach},
     {"n_attempts", p.n_attempts},
-    {"nums", p.nums},
+    {"num", p.num},
     {"target", p.target},
 //    {"noise_dist", p.noise_dist},
     {"prevalence", p.prevalence},
@@ -702,7 +702,7 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
-  j.at("nums").get_to(p.nums);
+  j.at("num").get_to(p.num);
   j.at("target").get_to(p.target);
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
@@ -756,7 +756,7 @@ public:
     int n_attempts {1};
     
     //! Number of observations to be purturbed
-    int nums {5};
+    int num {5};
     
     //! Distribution of fabricated data
     //! @todo Check if this is even necessary or not, I think in most cases, we
@@ -794,7 +794,7 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
   j = json{{"name", p.name},
     {"approach", p.approach},
     {"n_attempts", p.n_attempts},
-    {"nums", p.nums},
+    {"num", p.num},
     {"target", p.target},
     //    {"dist", p.dist},
     {"prevalence", p.prevalence},
@@ -810,7 +810,7 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
-  j.at("nums").get_to(p.nums);
+  j.at("num").get_to(p.num);
   j.at("target").get_to(p.target);
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
