@@ -117,7 +117,7 @@
             [
                 {
                     "name": "OutliersRemoval",
-                    "level": "both",
+                    "target": "both",
                     "num": 5,
                     "n_attempts": 3,
                     "min_observations": 5,
@@ -144,7 +144,7 @@
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "level": "dv",
+                "target": "dv",
                 "max_attempts": 1,
                 "n_attempts": 1,
                 "name": "OptionalStopping",
