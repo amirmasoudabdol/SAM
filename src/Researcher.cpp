@@ -140,8 +140,8 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
       return Random::get<bool>(p);
     },
     [&](std::string &s) {
-      if (s == "prevelance") {
-        return Random::get<bool>(hs->prevelance());
+      if (s == "prevalence") {
+        return Random::get<bool>(hs->prevalence());
       } else /* (s == "defensibility") */ {
         return Random::get<bool>(hs->defensibility());
       }

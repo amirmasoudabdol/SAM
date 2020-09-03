@@ -46,7 +46,7 @@ public:
   
   double defensibility_;
   
-  double prevelance_;
+  double prevalence_;
   
   /// @brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
@@ -74,8 +74,8 @@ public:
     return defensibility_;
   }
   
-  double prevelance() const {
-    return prevelance_;
+  double prevalence() const {
+    return prevalence_;
   }
 
 private:
@@ -237,7 +237,7 @@ public:
     
     double defensibility {0.5};
     
-    double prevelance {0.7};
+    double prevalence {0.7};
     
   };
 
@@ -250,7 +250,7 @@ public:
   OutliersRemoval(const Parameters &p)
       : params{p} {
         stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
-        prevelance_ = params.prevelance;
+        prevalence_ = params.prevalence;
         defensibility_ = params.defensibility;
         };
 
@@ -269,7 +269,7 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
-           {"prevelance", p.prevelance},
+           {"prevalence", p.prevalence},
            {"defensibility", p.defensibility},
            {"stopping_condition", p.stopping_cond_defs}};
 }
@@ -287,7 +287,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
   
-  j.at("prevelance").get_to(p.prevelance);
+  j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
   if (j.contains("stopping_condition"))
@@ -659,7 +659,7 @@ public:
     
     double defensibility {0.05};
 
-    double prevelance {0.1};
+    double prevalence {0.1};
   };
   
   Parameters params;
@@ -670,7 +670,7 @@ public:
   FalsifyingData(const Parameters &p) : params{p} {
     stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
     
-    prevelance_ = params.prevelance;
+    prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
   };
   
@@ -689,7 +689,7 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
     {"nums", p.nums},
     {"target", p.target},
 //    {"noise_dist", p.noise_dist},
-    {"prevelance", p.prevelance},
+    {"prevalence", p.prevalence},
     {"defensibility", p.defensibility},
     {"stopping_condition", p.stopping_cond_defs}};
 }
@@ -704,7 +704,7 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("nums").get_to(p.nums);
   j.at("target").get_to(p.target);
-  j.at("prevelance").get_to(p.prevelance);
+  j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
   if (j.contains("noise")) {
@@ -768,7 +768,7 @@ public:
     
     double defensibility {0.05};
     
-    double prevelance {0.1};
+    double prevalence {0.1};
   };
   
   Parameters params;
@@ -779,7 +779,7 @@ public:
   FabricatingData(const Parameters &p) : params{p} {
     stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
     
-    prevelance_ = params.prevelance;
+    prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
   };
   
@@ -797,7 +797,7 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
     {"nums", p.nums},
     {"target", p.target},
     //    {"dist", p.dist},
-    {"prevelance", p.prevelance},
+    {"prevalence", p.prevalence},
     {"defensibility", p.defensibility},
     {"stopping_condition", p.stopping_cond_defs}};
 }
@@ -812,7 +812,7 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("nums").get_to(p.nums);
   j.at("target").get_to(p.target);
-  j.at("prevelance").get_to(p.prevelance);
+  j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
   if (j.contains("dist")) {

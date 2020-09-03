@@ -267,13 +267,13 @@ public:
       
       if (researcher.hacking_selection_priority == "random") {
         Random::shuffle(researcher.h_workflow);
-      } else if (researcher.hacking_selection_priority == "min(prevelance)") {
+      } else if (researcher.hacking_selection_priority == "min(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
-          return std::get<0>(h1[0])->prevelance() < std::get<0>(h2[0])->prevelance();
+          return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
         });
-      } else if (researcher.hacking_selection_priority == "max(prevelance)") {
+      } else if (researcher.hacking_selection_priority == "max(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
-          return std::get<0>(h1[0])->prevelance() > std::get<0>(h2[0])->prevelance();
+          return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
         });
       } else if (researcher.hacking_selection_priority == "min(defensibility)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
@@ -309,13 +309,13 @@ public:
       
       if (researcher.hacking_execution_order == "random") {
         Random::shuffle(researcher.h_workflow);
-      } else if (researcher.hacking_execution_order == "min(prevelance)") {
+      } else if (researcher.hacking_execution_order == "min(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
-          return std::get<0>(h1[0])->prevelance() < std::get<0>(h2[0])->prevelance();
+          return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
         });
-      } else if (researcher.hacking_execution_order == "max(prevelance)") {
+      } else if (researcher.hacking_execution_order == "max(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
-          return std::get<0>(h1[0])->prevelance() > std::get<0>(h2[0])->prevelance();
+          return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
         });
       } else if (researcher.hacking_execution_order == "min(defensibility)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){

@@ -91,8 +91,8 @@
         "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 0.4,
         "n_hacks": 1,
-        "hacking_selection_priority": "max(prevelance)",
-        "hacking_execution_order": "min(prevelance)",
+        "hacking_selection_priority": "max(prevalence)",
+        "hacking_execution_order": "min(prevalence)",
         "submission_probability": 0.7,
         "hacking_strategies": [
             [
@@ -103,7 +103,7 @@
                     "nums": 5,
                     "n_attempts": 3,
                     "defensibility": 0.1,
-                    "prevelance": 0.4
+                    "prevalence": 0.4
                 },
                 [
                     [
@@ -126,7 +126,7 @@
                         2
                     ],
                     "defensibility": 0.7,
-                    "prevelance": 0.2,
+                    "prevalence": 0.2,
                     "stopping_condition": [
                         "!sig"
                     ]
