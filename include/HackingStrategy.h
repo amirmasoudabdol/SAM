@@ -211,13 +211,13 @@ public:
     HackingMethod name = HackingMethod::OutliersRemoval;
 
     //! TO BE IMPLEMENTED!
-    std::string level = "dv";
+    std::string target {"both"};
 
     //! Indicates the order where outliers are going to be removed from the
     //! experiment. \li `max first`, removes the biggest outlier first \li
     //! `random`, removes the first outlier first, this is as a random outlier
     //! is being removed
-    std::string order = "max first";
+    std::string order {"max first"};
 
     //! Indicates the number of outliers to be removed in each iteration
     int num{3};
@@ -263,7 +263,7 @@ private:
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
   j = json{{"name", p.name},
-           {"level", p.level},
+           {"target", p.target},
            {"order", p.order},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
@@ -280,7 +280,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  j.at("level").get_to(p.level);
+  j.at("target").get_to(p.target);
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
@@ -330,6 +330,9 @@ public:
   struct Parameters {
     //! A placeholder for the name
     HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
+    
+    //! TO BE IMPLEMENTED
+    std::string target {"both"};
 
     //! A vector of `{min, max}`, defining the range of `K`.
     std::vector<int> range{2, 4};
@@ -530,13 +533,13 @@ public:
     HackingMethod name = HackingMethod::PeekingOutliersRemoval;
     
     //! TO BE IMPLEMENTED!
-    std::string level = "dv";
+    std::string target {"both"};
     
     //! Indicates the order where outliers are going to be removed from the
     //! experiment. \li `max first`, removes the biggest outlier first \li
     //! `random`, removes the first outlier first, this is as a random outlier
     //! is being removed
-    std::string order = "max first";
+    std::string order {"max first"};
     
     //! Indicates the number of outliers to be removed in each iteration
     int num{3};
@@ -575,7 +578,7 @@ private:
 
 inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
   j = json{{"name", p.name},
-    {"level", p.level},
+    {"target", p.target},
     {"order", p.order},
     {"num", p.num},
     {"n_attempts", p.n_attempts},
@@ -591,7 +594,7 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
   
-  j.at("level").get_to(p.level);
+  j.at("target").get_to(p.target);
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
