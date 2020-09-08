@@ -90,20 +90,19 @@
         },
         "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 0.4,
-        "n_hacks": 1,
+        "n_hacks": 2,
         "hacking_selection_priority": "max(prevalence)",
         "hacking_execution_order": "min(prevalence)",
         "submission_probability": 0.7,
         "hacking_strategies": [
             [
                 {
-                    "name": "FabricatingData",
-                    "approach": "duplicating",
-                    "target": "both",
-                    "num": 5,
-                    "n_attempts": 3,
+                    "name": "QuestionableRounding",
+                    "rounding_method": "diff",
+                    "threshold": 0.1,
                     "defensibility": 0.1,
-                    "prevalence": 0.4
+                    "prevalence": 0.4,
+                    "stage": "Reporting"
                 },
                 [
                     [

@@ -268,19 +268,19 @@ public:
       if (researcher.hacking_selection_priority == "random") {
         Random::shuffle(researcher.h_workflow);
       } else if (researcher.hacking_selection_priority == "min(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
         });
       } else if (researcher.hacking_selection_priority == "max(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
         });
       } else if (researcher.hacking_selection_priority == "min(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
         });
       } else if (researcher.hacking_selection_priority == "max(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
         });
       } else /* sequential */ {
@@ -310,19 +310,19 @@ public:
       if (researcher.hacking_execution_order == "random") {
         Random::shuffle(researcher.h_workflow);
       } else if (researcher.hacking_execution_order == "min(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
         });
       } else if (researcher.hacking_execution_order == "max(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
         });
       } else if (researcher.hacking_execution_order == "min(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
         });
       } else if (researcher.hacking_execution_order == "max(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto h2){
+        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
         });
       } else /* sequential */ {
@@ -331,12 +331,12 @@ public:
     }
     
     
-    /// \note This is not yet implemented, so, I made it optional for now. I'm thinking to
-    /// implement this together with hacking probability strategy as a variant
-    /// std::variant<Parameter<double>, std::unique_ptr<HackingProbabilityStrategy>>
-    if (config["researcher_parameters"].contains("hacking_probability"))
-      researcher.hacking_probability = Parameter<double>(config["researcher_parameters"]["hacking_probability"],
-                                                       1);
+    /// Sorting the selected hacking strategies based on their stage
+    /// The stable_sort has been used because I'd like to keep the given
+    /// order in previous stages
+    std::stable_sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2) {
+      return std::get<0>(h1[0])->stage() < std::get<0>(h2[0])->stage();
+    });
     
     /// Indicate what percentage of Researcher's work is going to be submitted
     if (config["researcher_parameters"].contains("submission_probability"))

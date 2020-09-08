@@ -48,6 +48,8 @@ public:
   
   double prevalence_;
   
+  HackingStage stage_;
+  
   /// @brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
@@ -76,6 +78,10 @@ public:
   
   double prevalence() const {
     return prevalence_;
+  }
+  
+  HackingStage stage() const {
+    return stage_;
   }
 
 private:
@@ -239,6 +245,8 @@ public:
     
     double prevalence {0.7};
     
+    HackingStage stage {HackingStage::PostProcessing};
+    
   };
 
   Parameters params;
@@ -271,6 +279,7 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"multipliers", p.multipliers},
            {"prevalence", p.prevalence},
            {"defensibility", p.defensibility},
+           {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -289,6 +298,9 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
@@ -345,6 +357,12 @@ public:
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {{"sig"}};
+    
+    double prevalence {0.1};
+    
+    double defensibility {0.1};
+    
+    HackingStage stage {HackingStage::PostProcessing};
   };
 
   Parameters params;
@@ -366,6 +384,9 @@ inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
            {"range", p.range},
            {"step_size", p.step_size},
            {"min_observations", p.min_observations},
+            {"prevalence", p.prevalence},
+            {"defensibility", p.defensibility},
+            {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -377,6 +398,12 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
   j.at("range").get_to(p.range);
   j.at("step_size").get_to(p.step_size);
   j.at("min_observations").get_to(p.min_observations);
+  
+  j.at("prevalence").get_to(p.prevalence);
+  j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
@@ -429,7 +456,8 @@ public:
 
   ConditionDropping(const Parameters &p)
       : params{p} {
-
+        std::cerr << "To Be Implemented!";
+        exit(1);
         };
 
   ConditionDropping() { params.name = HackingMethod::ConditionDropping; };
@@ -468,7 +496,10 @@ public:
   ///  {
   ///    "name": "QuestionableRounding",
   ///    "rounding_method": "alpha",
-  ///    "threshold": 0.01
+  ///    "threshold": 0.01,
+  ///    "prevalence": 0.1,
+  ///    "defensibility": 0.9,
+  ///    "stage": "Reporting"
   ///  }
   /// ```
   ///
@@ -490,14 +521,29 @@ public:
     /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
     std::string rounding_method = "diff";
     
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold,  rounding_method);
+    double prevalence {0.9};
+    
+    double defensibility {0.7};
+    
+    HackingStage stage {HackingStage::Reporting};
+    
+    /// This is a helper macro that generates from/to_json methods for this struct.
+    /// @note While this mostly works fine, there is one drawback that it cannot handle missing
+    /// argument. The change is in nlohmann list and when released, I can use optional and this
+    /// macro will handle everything just fine
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold,  rounding_method,
+                                   prevalence, defensibility, stage);
   };
   
   Parameters params;
   
   QuestionableRounding() = default;
   
-  QuestionableRounding(const Parameters &p) : params{p} { };
+  QuestionableRounding(const Parameters &p) : params{p} {
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
   
   virtual void perform(Experiment *experiment) override;
 };
@@ -560,6 +606,12 @@ public:
     //! Removing if
     std::vector<std::string> whether_to_save_cond_defs;
     
+    double prevalence {0.9};
+    
+    double defensibility {0.7};
+    
+    HackingStage stage {HackingStage::PostProcessing};
+    
   };
   
   Parameters params;
@@ -568,7 +620,11 @@ public:
   
   PeekingOutliersRemoval() = default;
   
-  PeekingOutliersRemoval(const Parameters &p) : params{p} { };
+  PeekingOutliersRemoval(const Parameters &p) : params{p} {
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
   
   virtual void perform(Experiment *experiment) override;
   
@@ -584,6 +640,9 @@ inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
     {"n_attempts", p.n_attempts},
     {"min_observations", p.min_observations},
     {"multipliers", p.multipliers},
+    {"prevalence", p.prevalence},
+    {"defensibility", p.defensibility},
+    {"stage", p.stage},
     {"whether_to_save_condition", p.whether_to_save_cond_defs},
     {"stopping_condition", p.stopping_cond_defs}};
 }
@@ -601,6 +660,12 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
   j.at("whether_to_save_condition").get_to(p.whether_to_save_cond_defs);
+  
+  j.at("prevalence").get_to(p.prevalence);
+  j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
@@ -663,6 +728,8 @@ public:
     double defensibility {0.05};
 
     double prevalence {0.1};
+    
+    HackingStage stage {HackingStage::PostProcessing};
   };
   
   Parameters params;
@@ -675,6 +742,7 @@ public:
     
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
+    stage_ = params.stage;
   };
   
   virtual void perform(Experiment *experiment) override;
@@ -694,6 +762,7 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
 //    {"noise_dist", p.noise_dist},
     {"prevalence", p.prevalence},
     {"defensibility", p.defensibility},
+    {"stage", p.stage},
     {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -709,6 +778,9 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   j.at("target").get_to(p.target);
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
   
   if (j.contains("noise")) {
     p.noise_dist = make_distribution(j["noise"]);
@@ -772,6 +844,8 @@ public:
     double defensibility {0.05};
     
     double prevalence {0.1};
+    
+    HackingStage stage {HackingStage::PostProcessing};
   };
   
   Parameters params;
@@ -784,6 +858,7 @@ public:
     
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
+    stage_ = params.stage;
   };
   
   virtual void perform(Experiment *experiment) override;
@@ -802,6 +877,7 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
     //    {"dist", p.dist},
     {"prevalence", p.prevalence},
     {"defensibility", p.defensibility},
+    {"stage", p.stage},
     {"stopping_condition", p.stopping_cond_defs}};
 }
 
@@ -817,6 +893,9 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   j.at("target").get_to(p.target);
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
   
   if (j.contains("dist")) {
     p.dist = make_distribution(j["dist"]);
