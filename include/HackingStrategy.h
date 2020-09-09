@@ -725,6 +725,12 @@ public:
     //!   - group swapping, swapping values between groups
     //!   - group switching, moving values between groups
     std::string approach {"perturbation"};
+
+
+    //! Switching direction
+    //!   - control-to-treatment
+    //!   - treatment-to-control
+    std::string switching_direction {"control-to-treatment"};
     
     //! Indicates which outcome variables are going to be targeted,
     //!   - control
@@ -786,6 +792,7 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
     {"n_attempts", p.n_attempts},
     {"num", p.num},
     {"target", p.target},
+    {"switching_direction", p.switching_direction},
 //    {"noise_dist", p.noise_dist},
     {"prevalence", p.prevalence},
     {"defensibility", p.defensibility},
@@ -806,6 +813,9 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
+  if (j.contains("switching_direction"))
+    j.at("switching_direction").get_to(p.switching_direction);
+
   if (j.contains("stage"))
     j.at("stage").get_to(p.stage);
   
@@ -867,7 +877,7 @@ public:
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-    
+      
     double defensibility {0.05};
     
     double prevalence {0.1};

@@ -97,17 +97,15 @@
         "hacking_strategies": [
             [
                 {
-                    "name": "OutliersRemoval",
-                    "target": "Treatment",
+                    "name": "FalsifyingData",
+                    "target": "Both",
                     "num": 5,
-                    "n_attempts": 3,
-                    "min_observations": 5,
-                    "order": "random",
-                    "multipliers": [
-                        1
-                    ],
                     "defensibility": 0.7,
                     "prevalence": 0.2,
+                    "n_attempts": 1,
+                    "approach": "switching",
+                    "switching_direction": "treatment-to-control",
+                    "stage": "PostProcessing",
                     "stopping_condition": [
                         "!sig"
                     ]

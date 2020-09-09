@@ -16,9 +16,9 @@ void FalsifyingData::perform(Experiment *experiment) {
     
     if (params.approach == "perturbation")
       res = this->perturb(experiment, params.num);
-    else if (params.approach == "swapping groups")
+    else if (params.approach == "swapping")
       res = this->swapGroups(experiment, params.num);
-    else if (params.approach == "switching groups")
+    else if (params.approach == "switching")
       res = this->switchGroups(experiment, params.num);
     
     experiment->recalculateEverything();
@@ -37,6 +37,8 @@ void FalsifyingData::perform(Experiment *experiment) {
 }
 
 bool FalsifyingData::perturb(Experiment *experiment, const int n) {
+  
+  spdlog::debug("\t Perturbing some data points...");
   
   static arma::Row<double> noise(n, arma::fill::zeros);
   
@@ -66,7 +68,31 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
 
 bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
   
-  std::cout << "TO BE IMPLEMENTED!";
+  spdlog::debug("\t Swapping some data points...");
+  
+  /// @todo This is a rahter expensive implementation, I need to see if I can find
+  /// something in STL to do it better
+  /// @note Maybe I can actually implement something in the Group to do this nicer
+  for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
+       ++i, ++d %= experiment->setup.nd()) {
+    
+    // Shuffling the data because I don't know its status. Better safe than sorry!
+    Random::shuffle(experiment->groups_[d].measurements());
+    Random::shuffle(experiment->groups_[i].measurements());
+        
+    // Candidates from Control group
+    arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(params.num);
+    experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+
+    // Candidates from Treatment group
+    arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(params.num);
+    experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+
+    // --- Actual swapping
+    experiment->groups_[d].add_measurements(T_cand_values);
+    experiment->groups_[i].add_measurements(C_cand_values);
+        
+  }
   
   // Success Code
   return true;
@@ -75,7 +101,28 @@ bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
 
 bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
   
-  std::cout << "TO BE IMPLEMENTED!";
+  spdlog::debug("\t Switching some data points...");
+  
+  for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
+       ++i, ++d %= experiment->setup.nd()) {
+    
+    if (params.switching_direction == "control-to-treatment") {
+      Random::shuffle(experiment->groups_[d].measurements());
+
+      arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(params.num);
+      experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+      experiment->groups_[i].add_measurements(C_cand_values);
+      
+    } else {
+      Random::shuffle(experiment->groups_[i].measurements());
+
+      arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(params.num);
+      experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+      experiment->groups_[d].add_measurements(T_cand_values);
+
+    }
+    
+  }
   
   // Success Code
   return true;
