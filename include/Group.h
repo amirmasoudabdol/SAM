@@ -98,6 +98,7 @@ public: // Public for now
   void del_measurements(const arma::uvec &idxs) {
     measurements_.shed_cols(idxs);
     n_removed_obs += idxs.n_elem;
+    nobs_ -= idxs.n_elem;
     is_stats_up_to_date = false;
   }
 
