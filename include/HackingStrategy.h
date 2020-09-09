@@ -258,8 +258,10 @@ public:
   OutliersRemoval(const Parameters &p)
       : params{p} {
         stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+        
         prevalence_ = params.prevalence;
         defensibility_ = params.defensibility;
+        stage_ = params.stage;
         };
 
   // Submission hackedSubmission;
@@ -373,6 +375,10 @@ public:
   SubjectiveOutlierRemoval(const Parameters &p)
       : params(p) {
           stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+        
+        prevalence_ = params.prevalence;
+        defensibility_ = params.defensibility;
+        stage_ = params.stage;
         };
 
 private:
@@ -905,6 +911,99 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
 }
 
+        
+/// Fabricating Data Hacking Strategy
+///
+/// @ingroup HackingStrategies
+class StoppingDataCollection final : public HackingStrategy {
+  
+public:
+  
+  /// Stopping Data Collection Parameters
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "StoppingDataCollection",
+  ///    "batch_size": 5,
+  ///    "stopping_condition": ["sig"]
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::StoppingDataCollection;
+        
+    //! Indicates which outcome variables are going to be targeted,
+    //!   - control
+    //!   - treatment
+    //!   - both
+    std::string target {"both"};
+    
+    //! Indicates a set of rule that is going to be used to select the target group
+    //! @todo To be implemented
+    //    PolicyChain target_policy;
+        
+    //! Number of observations to be purturbed
+    int batch_size {5};
+    
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs {"sig"};
+    
+    double defensibility {0.05};
+    
+    double prevalence {0.1};
+    
+    HackingStage stage {HackingStage::DataCollection};
+  };
+  
+  Parameters params;
+  PolicyChain stopping_condition;
+  
+  StoppingDataCollection() = default;
+  
+  StoppingDataCollection(const Parameters &p) : params{p} {
+    stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+    
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
+  
+  virtual void perform(Experiment *experiment) override;
+  
+//private:
+//  bool generate(Experiment *experiment, const int n);
+//  bool duplicate(Experiment *experiment, const int n);
+};
+
+inline void to_json(json &j, const StoppingDataCollection::Parameters &p) {
+  j = json{{"name", p.name},
+    {"batch_size", p.batch_size},
+    {"prevalence", p.prevalence},
+    {"defensibility", p.defensibility},
+    {"stage", p.stage},
+    {"stopping_condition", p.stopping_cond_defs}};
+}
+
+inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  
+  j.at("batch_size").get_to(p.batch_size);
+
+  j.at("prevalence").get_to(p.prevalence);
+  j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
+    
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+}
 
 
 } // namespace sam

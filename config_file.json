@@ -31,7 +31,7 @@
         "effect_strategy": {
             "name": "CohensD"
         },
-        "n_obs": 20,
+        "n_obs": 25,
         "test_strategy": {
             "alpha": 0.05,
             "alternative": "TwoSided",
@@ -97,12 +97,12 @@
         "hacking_strategies": [
             [
                 {
-                    "name": "QuestionableRounding",
-                    "rounding_method": "diff",
-                    "threshold": 0.1,
+                    "name": "StoppingDataCollection",
+                    "target": "both",
+                    "batch_size": 5,
                     "defensibility": 0.1,
                     "prevalence": 0.4,
-                    "stage": "Reporting"
+                    "stage": "DataCollection"
                 },
                 [
                     [

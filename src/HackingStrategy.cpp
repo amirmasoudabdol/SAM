@@ -88,6 +88,12 @@ HackingStrategy::build(json &hacking_strategy_config) {
     hacking_strategy_config.get<FabricatingData::Parameters>();
     return std::make_unique<FabricatingData>(params);
     
+  } else if (hacking_strategy_config["name"] == "StoppingDataCollection") {
+    
+    auto params =
+    hacking_strategy_config.get<StoppingDataCollection::Parameters>();
+    return std::make_unique<StoppingDataCollection>(params);
+    
   } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();
