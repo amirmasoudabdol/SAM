@@ -103,8 +103,9 @@
                     "defensibility": 0.7,
                     "prevalence": 0.2,
                     "n_attempts": 1,
-                    "approach": "switching",
+                    "approach": "swapping",
                     "switching_direction": "treatment-to-control",
+                    "selection_method": "smart",
                     "stage": "PostProcessing",
                     "stopping_condition": [
                         "!sig"

@@ -76,9 +76,14 @@ bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
     
-    // Shuffling the data because I don't know its status. Better safe than sorry!
-    Random::shuffle(experiment->groups_[d].measurements());
-    Random::shuffle(experiment->groups_[i].measurements());
+    if (params.selection_method == "random") {
+      // Shuffling the data because I don't know its status. Better safe than sorry!
+      Random::shuffle(experiment->groups_[d].measurements());
+      Random::shuffle(experiment->groups_[i].measurements());
+    } else {
+      experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
+      experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
+    }
         
     // Candidates from Control group
     arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(params.num);
@@ -107,14 +112,24 @@ bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
        ++i, ++d %= experiment->setup.nd()) {
     
     if (params.switching_direction == "control-to-treatment") {
-      Random::shuffle(experiment->groups_[d].measurements());
+      if (params.selection_method == "random") {
+        // Shuffling the data because I don't know its status. Better safe than sorry!
+        Random::shuffle(experiment->groups_[d].measurements());
+      } else {
+        experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
+      }
 
       arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(params.num);
       experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
       experiment->groups_[i].add_measurements(C_cand_values);
       
     } else {
-      Random::shuffle(experiment->groups_[i].measurements());
+      if (params.selection_method == "random") {
+        // Shuffling the data because I don't know its status. Better safe than sorry!
+        Random::shuffle(experiment->groups_[i].measurements());
+      } else {
+        experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
+      }
 
       arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(params.num);
       experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));

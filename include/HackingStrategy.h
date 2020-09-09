@@ -731,6 +731,11 @@ public:
     //!   - control-to-treatment
     //!   - treatment-to-control
     std::string switching_direction {"control-to-treatment"};
+
+    //! Swapping Method
+    //!   - random
+    //!   - smart
+    std::string selection_method {"random"};
     
     //! Indicates which outcome variables are going to be targeted,
     //!   - control
@@ -793,6 +798,7 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
     {"num", p.num},
     {"target", p.target},
     {"switching_direction", p.switching_direction},
+    {"selection_method", p.selection_method},
 //    {"noise_dist", p.noise_dist},
     {"prevalence", p.prevalence},
     {"defensibility", p.defensibility},
@@ -815,6 +821,9 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   
   if (j.contains("switching_direction"))
     j.at("switching_direction").get_to(p.switching_direction);
+
+  if (j.contains("selection_method"))
+    j.at("selection_method").get_to(p.selection_method);
 
   if (j.contains("stage"))
     j.at("stage").get_to(p.stage);
