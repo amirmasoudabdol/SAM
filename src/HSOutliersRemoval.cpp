@@ -28,6 +28,8 @@ void OutliersRemoval::perform(Experiment *experiment) {
       
       experiment->recalculateEverything();
       
+      spdlog::debug("{}", *experiment);
+      
       if(!params.stopping_cond_defs.empty()) {
         if (stopping_condition(experiment)) {
           spdlog::trace("⚠️ Stopping the hacking procedure, stopping condition has been met!");
@@ -37,20 +39,19 @@ void OutliersRemoval::perform(Experiment *experiment) {
 
     }
   }
-  
-  for (int g{0}; g < experiment->setup.ng(); ++g) {
-    spdlog::debug("\t {}", (*experiment)[g]);
-  }
 }
 
 bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const double k) {
 
   arma::rowvec standaraized;
+  
+  int begin {0}, end {0};
+  std::tie(begin, end) = getTargetBounds(experiment, params.target);
 
   /// Removing outliers only from the original groups, see #104
   /// This is addressing the GroupPooling, and it doesn't have to do anything
   /// with outlier removal outlier removal is still being done in all groups
-  for (int i = 0; i < experiment->setup.ng(); ++i) {
+  for (int i = begin; i < end; ++i) {
 
     auto &row = (*experiment)[i].measurements();
 

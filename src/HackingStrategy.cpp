@@ -101,5 +101,5 @@ HackingStrategy::build(json &hacking_strategy_config) {
   } else {
     throw std::invalid_argument("Unknown Hacking Strategies.");
   }
+  
 }
-

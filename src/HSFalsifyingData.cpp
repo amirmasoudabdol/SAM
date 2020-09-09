@@ -41,13 +41,7 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
   static arma::Row<double> noise(n, arma::fill::zeros);
   
   int begin {0}, end {0};
-  if (params.target == "control") {
-    begin = 0; end = experiment->setup.nd();
-  } else if (params.target == "treatment") {
-    begin = experiment->setup.nd(); end = experiment->setup.ng();
-  } else if (params.target == "both") {
-    begin = 0; end = experiment->setup.ng();
-  }
+  std::tie(begin, end) = getTargetBounds(experiment, params.target);
   
   for (int i = begin; i < end; ++i) {
     

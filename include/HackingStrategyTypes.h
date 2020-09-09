@@ -61,6 +61,18 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {HackingStage::PostProcessing, "PostProcessing"},
     {HackingStage::Reporting, "Reporting"}})
 
+
+enum class HackingTarget : int {
+  Control = 0,
+  Treatment,
+  Both
+};
+
+NLOHMANN_JSON_SERIALIZE_ENUM( HackingTarget,
+                             {{HackingTarget::Control, "Control"},
+                              {HackingTarget::Treatment, "Treatment"},
+                              {HackingTarget::Both, "Both"}})
+
 } // namespace sam
 
 #endif // SAMPP_HACKINGSTRATEGYTYPES_H

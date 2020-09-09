@@ -50,6 +50,8 @@ public:
   
   HackingStage stage_;
   
+  HackingTarget target_;
+  
   /// @brief      Pure deconstuctor of the Base calss. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
@@ -83,6 +85,8 @@ public:
   HackingStage stage() const {
     return stage_;
   }
+  
+  HackingTarget target() const { return target_; }
 
 private:
   /// @brief  Applies the hacking method on the Experiment.
@@ -120,7 +124,7 @@ public:
     int num = 3;
     
     //! Indicates which groups are going to be targets
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
     
     //! If not 0., `add_by_fraction` * n_obs will be added to the experiment.
     double add_by_fraction = 0.;
@@ -187,6 +191,23 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   
 }
 
+
+
+
+
+static std::pair<int, int> getTargetBounds(Experiment *experiment, HackingTarget &target) {
+  switch (target) {
+    case HackingTarget::Control:
+      return std::make_pair(0, experiment->setup.nd());
+    case HackingTarget::Treatment:
+      return std::make_pair(experiment->setup.nd(), experiment->setup.ng());
+    case HackingTarget::Both:
+      return std::make_pair(0, experiment->setup.ng());
+  }
+}
+
+
+
 ///
 /// @brief      Declaration of Outlier Removal hacking method based on items'
 ///             distance from their sample mean.
@@ -217,7 +238,7 @@ public:
     HackingMethod name = HackingMethod::OutliersRemoval;
 
     //! TO BE IMPLEMENTED!
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
 
     //! Indicates the order where outliers are going to be removed from the
     //! experiment. \li `max first`, removes the biggest outlier first \li
@@ -346,7 +367,7 @@ public:
     HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
     
     //! TO BE IMPLEMENTED
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
 
     //! A vector of `{min, max}`, defining the range of `K`.
     std::vector<int> range{2, 4};
@@ -585,7 +606,7 @@ public:
     HackingMethod name = HackingMethod::PeekingOutliersRemoval;
     
     //! TO BE IMPLEMENTED!
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
     
     //! Indicates the order where outliers are going to be removed from the
     //! experiment. \li `max first`, removes the biggest outlier first \li
@@ -709,7 +730,7 @@ public:
     //!   - control
     //!   - treatment
     //!   - both
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
     
     //! Indicates a set of rule that is going to be used to select the target group
     //! @todo To be implemented
@@ -827,7 +848,7 @@ public:
     //!   - control
     //!   - treatment
     //!   - both
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
     
     //! Indicates a set of rule that is going to be used to select the target group
     //! @todo To be implemented
@@ -939,7 +960,7 @@ public:
     //!   - control
     //!   - treatment
     //!   - both
-    std::string target {"both"};
+    HackingTarget target {HackingTarget::Both};
     
     //! Indicates a set of rule that is going to be used to select the target group
     //! @todo To be implemented

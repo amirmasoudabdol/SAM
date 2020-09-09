@@ -14,7 +14,7 @@ class TestStrategy;
 class EffectStrategy;
 enum class HackingMethod;
 
-enum class GroupType {
+enum class GroupType : int {
   Control,
   Treatment,
 
