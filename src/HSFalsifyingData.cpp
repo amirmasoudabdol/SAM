@@ -23,14 +23,14 @@ void FalsifyingData::perform(Experiment *experiment) {
     
     experiment->recalculateEverything();
     
+    spdlog::trace("{}", *experiment);
+    
     if(!params.stopping_cond_defs.empty()) {
       if (stopping_condition(experiment)) {
         spdlog::trace("⚠️ Stopping the hacking procedure, stopping condition has been met!");
         return;
       }
     }
-    
-    spdlog::trace("{}", *experiment);
     
   }
 
