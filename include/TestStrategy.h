@@ -73,8 +73,9 @@ public:
     TestMethod name = TestMethod::TTest;
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha;
+    bool var_equal {true};
     
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TTest::Parameters, name, alternative, alpha);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(TTest::Parameters, name, alternative, alpha, var_equal);
   };
 
   struct ResultType {
@@ -193,8 +194,9 @@ public:
     TestAlternative alternative = TestAlternative::TwoSided;
     double alpha = 0.95;
     double trim = 0.20;
+    bool paired {false};
     
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(YuenTest::Parameters, name, alternative, alpha, trim);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(YuenTest::Parameters, name, alternative, alpha, trim, paired);
   };
 
   struct ResultType {

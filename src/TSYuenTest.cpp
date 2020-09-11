@@ -18,20 +18,19 @@ void YuenTest::run(Experiment *experiment) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
 
-    //        if (experiment->measurements[d].size() ==
-    //        experiment->measurements[i].size()) {
-    //
-    //            res = yuen_t_test_paired(experiment->measurements[d],
-    //                                       experiment->measurements[i],
-    //                                       params.alpha,
-    //                                       params.alternative,
-    //                                       params.trim,
-    //                                       0);
-    //        }else{
-    res = yuen_t_test_two_samples((*experiment)[d].measurements(),
-                                  (*experiment)[i].measurements(), params.alpha,
-                                  params.alternative, params.trim, 0);
-    //        }
+    if (params.paired) {
+      res = yuen_t_test_paired((*experiment)[d].measurements(),
+                               (*experiment)[i].measurements(),
+                               params.alpha,
+                               params.alternative,
+                               params.trim,
+                               0);
+    }else{
+      res = yuen_t_test_two_samples((*experiment)[d].measurements(),
+                                    (*experiment)[i].measurements(),
+                                    params.alpha,
+                                    params.alternative, params.trim, 0);
+    }
 
     (*experiment)[i].stats_ = res.tstat;
     (*experiment)[i].pvalue_ = res.pvalue;
@@ -99,7 +98,7 @@ YuenTest::ResultType YuenTest::yuen_t_test_one_sample(
   return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
 }
 
-[[maybe_unused]] YuenTest::ResultType
+YuenTest::ResultType
 YuenTest::yuen_t_test_paired(const arma::Row<double> &x,
                              const arma::Row<double> &y, double alpha,
                              const TestStrategy::TestAlternative alternative,

@@ -11,33 +11,25 @@ using boost::math::students_t;
 
 void TTest::run(Experiment *experiment) {
 
+  /// @todo This could be declared static
   ResultType res;
 
   // The first group is always the control group
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
 
-    // This is not perfect, basically I need to check the population `vars`
-    //        if ((isgreater(experiment->stddev[d], experiment->stddev[i]) or
-    //        isless(experiment->stddev[d], experiment->stddev[i]))) {
-    //
-    //            res = two_samples_t_test_unequal_sd(experiment->means[d],
-    //                                               experiment->stddev[d],
-    //                                               experiment->measurements[d].size(),
-    //                                               experiment->means[i],
-    //                                               experiment->stddev[i],
-    //                                               experiment->measurements[i].size(),
-    //                                               params.alpha,
-    //                                               params.alternative);
-    //        }else {
-    // EQUAL SD
-    res = two_samples_t_test_equal_sd(
-        (*experiment)[d].mean_, (*experiment)[d].stddev_,
-        (*experiment)[d].nobs_, (*experiment)[i].mean_,
-        (*experiment)[i].stddev_, (*experiment)[i].nobs_, params.alpha,
-        params.alternative);
-
-    //        }
+    if (params.var_equal) {
+      res = two_samples_t_test_equal_sd((*experiment)[d].mean_, (*experiment)[d].stddev_,
+                                        (*experiment)[d].nobs_, (*experiment)[i].mean_,
+                                        (*experiment)[i].stddev_, (*experiment)[i].nobs_,
+                                        params.alpha, params.alternative);
+    } else {
+      res = two_samples_t_test_unequal_sd((*experiment)[d].mean_, (*experiment)[d].stddev_,
+                                          (*experiment)[d].nobs_, (*experiment)[i].mean_,
+                                          (*experiment)[i].stddev_, (*experiment)[i].nobs_,
+                                          params.alpha,
+                                          params.alternative);
+    }
 
     (*experiment)[i].stats_ = res.tstat;
     (*experiment)[i].pvalue_ = res.pvalue;
