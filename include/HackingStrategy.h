@@ -135,6 +135,12 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
+    double defensibility {0.1};
+    
+    double prevalence {0.7};
+    
+    HackingStage stage {HackingStage::PostProcessing};
+    
   };
 
   Parameters params;
@@ -145,6 +151,10 @@ public:
   OptionalStopping(const Parameters &p)
       : params{p} {
         stopping_condition = PolicyChain{p.stopping_cond_defs, lua};
+        
+        prevalence_ = params.prevalence;
+        defensibility_ = params.defensibility;
+        stage_ = params.stage;
   };
   
   /// Adds `n` observations to all groups
@@ -170,6 +180,9 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"target", p.target},
            {"add_by_fraction", p.add_by_fraction},
+           {"defensibility", p.defensibility},
+           {"prevalence", p.prevalence},
+           {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}
   };
 }
@@ -182,6 +195,12 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("num").get_to(p.num);
   j.at("target").get_to(p.target);
   j.at("n_attempts").get_to(p.n_attempts);
+  
+  j.at("prevalence").get_to(p.prevalence);
+  j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
