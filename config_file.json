@@ -20,9 +20,9 @@
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.25,
-                    0.25,
-                    0.25
+                    2.5,
+                    2.5,
+                    2.5
                 ],
                 "stddevs": 1.0
             },
@@ -52,6 +52,11 @@
             {
                 "alpha": 0.1,
                 "name": "TestOfObsOverExptSig"
+            },
+            {
+                "alpha": 0.1,
+                "name": "RankCorrelation",
+                "alternative": "TwoSided"
             }
         ],
         "selection_strategy": {
@@ -144,8 +149,8 @@
         "progress": false,
         "save_all_pubs": true,
         "save_meta": true,
-        "save_overall_summaries": true,
-        "save_pubs_per_sim_summaries": true,
-        "save_rejected": true
+        "save_overall_summaries": false,
+        "save_pubs_per_sim_summaries": false,
+        "save_rejected": false
     }
 }

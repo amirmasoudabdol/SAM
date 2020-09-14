@@ -601,11 +601,12 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
   
   auto q = round((r + 1.) * n * (n - 1.) / 4.);
   
-//  size_t x_n_uqniues = arma::size(arma::unique(x));
-//  size_t y_n_uqniues = arma::size(arma::unique(y));
-//  bool ties = (min(x_n_uqniues, y_n_uqniues) < n);
-  bool ties = false;
-  
+  arma::rowvec x_uqniues = arma::unique(x);
+  size_t x_n_uqniues = x_uqniues.n_elem;
+  arma::rowvec y_uqniues = arma::unique(y);
+  size_t y_n_uqniues = y_uqniues.n_elem;
+  bool ties = (min(x_n_uqniues, y_n_uqniues) < n);
+
   double p{0};
   double statistic;
   
@@ -631,22 +632,46 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
     }
     
   }else{
-    /// \todo compute these
-    //      auto xties = table(x[duplicated(x)]) + 1;
-    //      auto yties = table(y[duplicated(y)]) + 1;
-    arma::rowvec xties;
-    arma::rowvec yties;
-    auto T0 = n * (n - 1)/2;
-    auto T1 = arma::accu(xties % (xties - 1))/2;
-    auto T2 = arma::accu(yties % (yties - 1))/2;
-    auto S = r * sqrt((T0 - T1) * (T0 - T2));
-    auto v0 = n * (n - 1) * (2 * n + 5);
-    auto vt = arma::accu(xties % (xties - 1) * (2 * xties + 5));
-    auto vu = arma::accu(yties % (yties - 1) * (2 * yties + 5));
-    auto v1 = arma::accu(xties % (xties - 1)) * arma::accu(yties % (yties - 1));
-    auto v2 = arma::accu(xties % (xties - 1) % (xties - 2)) * arma::accu(yties % (yties - 1) % (yties - 2));
+    /// @note I'm not 100% sure if this is a good replacement for `table` but it seems to
+    /// be working!
     
-    auto var_S = (v0 - vt - vu) / 18 + v1 / (2 * n * (n - 1)) + v2 / (9 * n * (n - 1) * (n - 2));
+    spdlog::warn("Cannot compute exact p-value with ties!");
+    
+    /// xties <- table(x[duplicated(x)]) + 1;
+    arma::urowvec xties;
+    if (x_n_uqniues > 0) {
+      xties = arma::hist(x, arma::sort(arma::unique(x))) - 1;
+      xties = arma::nonzeros(xties).as_row() + 1;
+    }else
+      xties = arma::urowvec({0});
+    
+    /// yties <- table(y[duplicated(y)]) + 1;
+    arma::urowvec yties;
+    if (y_n_uqniues) {
+      yties = arma::hist(y, arma::sort(arma::unique(y))) - 1;
+      yties = arma::nonzeros(yties).as_row() + 1;
+    }else
+      yties = arma::urowvec({0});
+    
+    double T0 = n * (n - 1)/2;
+    
+    double T1 = arma::accu(xties % (xties - 1))/2;
+    
+    double T2 = arma::accu(yties % (yties - 1))/2;
+    
+    double S = r * sqrt((T0 - T1) * (T0 - T2));
+    
+    double v0 = n * (n - 1) * (2 * n + 5);
+    
+    double vt = arma::accu(xties % (xties - 1) % (2 * xties + 5));
+    
+    double vu = arma::accu(yties % (yties - 1) % (2 * yties + 5));
+    
+    double v1 = arma::accu((xties % (xties - 1))) * arma::accu(yties % (yties - 1));
+    
+    double v2 = arma::accu((xties % (xties - 1)) % (xties - 2)) * arma::accu(yties % (yties - 1) % (yties - 2));
+    
+    double var_S = (v0 - vt - vu) / 18. + v1 / (2. * n * (n - 1.)) + v2 / (9. * n * (n - 1.) * (n - 2.));
     
     statistic = S / sqrt(var_S);
     
@@ -680,7 +705,7 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   
   auto res  = FixedEffectEstimator::FixedEffect(yi, vi);
   auto beta = res.est;
-  
+    
   auto k = yi.n_elem;
   arma::vec X = yi.as_col();
   arma::vec wi = 1./vi.as_col();
@@ -695,6 +720,7 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   
   auto tau  = ken_res.first;
   auto pval = ken_res.second;
+  spdlog::trace("Kendal Correlation: T: {}, P: {}", tau, pval);
   
   
   return {.est = tau, .pval = pval, .sig = pval < params.alpha};
