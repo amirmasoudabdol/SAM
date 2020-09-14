@@ -250,26 +250,33 @@ TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double>
   
   double k = sigs.n_elem;
   
-  students_t tdist(k - 1);
-  
   double O = arma::accu(sigs);
-  
-  double tcv = quantile(tdist, 0.95);
-  
-  arma::rowvec p_ncts(k);
-  p_ncts.imbue([&, i = 0]() mutable {
-    non_central_t nct(ni[i] - 1, beta * sqrt(ni[i])); i++;
-    return cdf(nct, tcv);
+
+  arma::rowvec tcvs(k);
+  tcvs.imbue([&, i = 0]() mutable {
+    students_t tdist(ni[i] - 1); i++;
+    return quantile(tdist, 0.95);
   });
   
-  arma::rowvec power = 1. - p_ncts;
+  // non-central t-statistics
+  arma::rowvec powers(k);
+  powers.imbue([&, i = 0]() mutable {
+    non_central_t nct(ni[i] - 1, beta * sqrt(ni[i]));
+    return cdf(complement(nct, tcvs[i++]));
+  });
   
-  double E = arma::accu(power);
+  double E = arma::accu(powers);
   
-  double A = pow(O - E, 2) / E + pow(O - E, 2)/(k - E);
+  // A is most likely different from what R spit out, due to brutal rounding that's happening in R.
+  double A = pow(O - E, 2.) / E + pow(O - E, 2.) / (k - E);
   
   chi_squared chisq(1);
-  double pval = 1. - cdf(chisq, A);   /// \bug ok, the bug is here, I need to investigate this method anyway
+  double pval = cdf(complement(chisq, A));
+  /// @bug Sometimes, this happens, but I'm not exactly sure when and why
+  ///  libc++abi.dylib: terminating with uncaught exception of type boost::wrapexcept<std::domain_error>: Error in function boost::math::cdf(const chi_squared_distribution<double>&, double): Chi Square parameter was nan, but must be > 0
+  ///
+  /// I've modified the implementation a bit and that might resolve this too, but I'll leave the flag for now
+  
   
   return TestOfObsOverExptSig::ResultType{E, A, pval, pval < alpha};
 }

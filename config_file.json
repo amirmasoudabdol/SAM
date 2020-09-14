@@ -31,7 +31,11 @@
         "effect_strategy": {
             "name": "CohensD"
         },
-        "n_obs": 25,
+        "n_obs": {
+            "dist": "normal_distribution",
+            "mean": 10,
+            "stddev": 2
+        },
         "test_strategy": {
             "alpha": 0.05,
             "alternative": "TwoSided",
@@ -40,15 +44,14 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 72,
+        "max_pubs": 24,
         "meta_analysis_metrics": [
             {
-                "estimator": "DL",
-                "name": "RandomEffectEstimator"
+                "name": "FixedEffectEstimator"
             },
             {
                 "alpha": 0.1,
-                "name": "EggersTestEstimator"
+                "name": "TestOfObsOverExptSig"
             }
         ],
         "selection_strategy": {
