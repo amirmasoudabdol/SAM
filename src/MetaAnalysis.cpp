@@ -267,16 +267,17 @@ TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double>
   
   double E = arma::accu(powers);
   
-  // A is most likely different from what R spit out, due to brutal rounding that's happening in R.
-  double A = pow(O - E, 2.) / E + pow(O - E, 2.) / (k - E);
+  /// A is most likely different from what R spit out, due to brutal rounding that's happening in R.
+  double A {std::nan("1")};
+  double pval {std::nan("1")};
+  if (k != E) {
+    A = pow(O - E, 2.) / E + pow(O - E, 2.) / (k - E);
   
-  chi_squared chisq(1);
-  double pval = cdf(complement(chisq, A));
-  /// @bug Sometimes, this happens, but I'm not exactly sure when and why
-  ///  libc++abi.dylib: terminating with uncaught exception of type boost::wrapexcept<std::domain_error>: Error in function boost::math::cdf(const chi_squared_distribution<double>&, double): Chi Square parameter was nan, but must be > 0
-  ///
-  /// I've modified the implementation a bit and that might resolve this too, but I'll leave the flag for now
-  
+    if (!isnan(A) or !isinf(A)) {
+      chi_squared chisq(1);
+      pval = cdf(complement(chisq, A));
+    }
+  }
   
   return TestOfObsOverExptSig::ResultType{E, A, pval, pval < alpha};
 }
