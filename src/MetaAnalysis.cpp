@@ -268,8 +268,8 @@ TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double>
   double E = arma::accu(powers);
   
   /// A is most likely different from what R spit out, due to brutal rounding that's happening in R.
-  double A {std::nan("1")};
-  double pval {std::nan("1")};
+  double A {100000};
+  double pval {0.0};
   if (k != E) {
     A = pow(O - E, 2.) / E + pow(O - E, 2.) / (k - E);
   
