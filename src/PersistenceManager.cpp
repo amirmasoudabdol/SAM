@@ -30,7 +30,10 @@ PersistenceManager::Writer::Writer(const string &filename, const std::vector<std
       is_header_set = true;
 }
 
-PersistenceManager::Writer::~Writer() { writer->close(); }
+PersistenceManager::Writer::~Writer() {
+  spdlog::info("Saved {}", file_name_);
+  writer->close();
+}
 
 void PersistenceManager::Writer::write(const std::map<std::string, std::string> &row) {
   writer->write_row(row);
