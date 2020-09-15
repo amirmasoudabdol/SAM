@@ -20,9 +20,9 @@
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    2.5,
-                    2.5,
-                    2.5
+                    0.75,
+                    0.75,
+                    0.75
                 ],
                 "stddevs": 1.0
             },
@@ -142,15 +142,15 @@
     },
     "simulation_parameters": {
         "log_level": "trace",
-        "master_seed": 1596102769,
-        "n_sims": 1,
+        "master_seed": 1600163854,
+        "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "0153aac7-b6c7-4e21-8fbf-74ce75d14040",
         "progress": false,
         "save_all_pubs": true,
         "save_meta": true,
-        "save_overall_summaries": false,
-        "save_pubs_per_sim_summaries": false,
+        "save_overall_summaries": true,
+        "save_pubs_per_sim_summaries": true,
         "save_rejected": false
     }
 }

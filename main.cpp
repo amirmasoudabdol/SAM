@@ -39,12 +39,14 @@ bool show_progress_bar {false};
 void runSimulation(json &simConfig);
 
 int main(int argc, const char **argv) {
+  
+  spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
   po::options_description desc("SAMrun Options");
   desc.add_options()("help", "produce help message")(
       "version", "SAMrun 0.0.1 (Alpha)")("verbose", po::bool_switch(),
                                          "Print more texts.")(
-      "debug", po::value<string>(), "Print debugging information")(
+      "debug", po::value<string>()->default_value("info"), "Print debugging information")(
       "update-config", po::bool_switch()->default_value(true),
       "Update the config file with the drawn seeds")(
       "progress", po::bool_switch()->default_value(false),
@@ -76,6 +78,7 @@ int main(int argc, const char **argv) {
     configfilename = "/Users/amabdol/Projects/SAMpp/config_file.json";
   }
 
+  spdlog::info("Reading the configuration file...");
   std::ifstream configFile(configfilename);
   configFile >> configs;
 
@@ -94,8 +97,6 @@ int main(int argc, const char **argv) {
   if (vm.count("progress")) {
     show_progress_bar = vm["progress"].as<bool>();
   }
-
-  spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
   auto log_level = static_cast<spdlog::level::level_enum>(configs["simulation_parameters"]["log_level"].get<LogLevel>());
   spdlog::set_level(log_level);
@@ -150,6 +151,7 @@ void runSimulation(json &simConfig) {
 
   show_progress_bar |= simConfig["simulation_parameters"]["progress"].get<bool>();
 
+  spdlog::info("Initializing the Researcher...");
   Researcher researcher =
       Researcher::create("Peter").fromConfigFile(simConfig).build();
 
