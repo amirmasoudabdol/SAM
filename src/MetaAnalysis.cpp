@@ -267,13 +267,17 @@ TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double>
   
   double E = arma::accu(powers);
   
+  /// @note If E is absolute zero, I'm adding some noise that I don't have to deal with the explosion
+  if (E < 0.0000001)
+    E = 1e-10;
+  
   /// A is most likely different from what R spit out, due to brutal rounding that's happening in R.
   double A {100000};
   double pval {0.0};
   if (k != E) {
     A = pow(O - E, 2.) / E + pow(O - E, 2.) / (k - E);
   
-    if (!isnan(A) or !isinf(A)) {
+    if (!isnan(A) and !isinf(A)) {
       chi_squared chisq(1);
       pval = cdf(complement(chisq, A));
     }
