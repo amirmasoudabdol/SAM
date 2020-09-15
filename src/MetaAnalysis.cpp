@@ -565,7 +565,7 @@ double ckendall(int k, int n, arma::mat &w) {
 
 double pkendall(int len, int n) {
   
-  spdlog::debug(" → Computing pKendall...");
+  spdlog::debug(" → Computing Kendall Probability...");
   
   int i, j;
   double p, q;
@@ -587,8 +587,7 @@ double pkendall(int len, int n) {
       p = p / boost::math::tgamma(n + 1);
     }
   
-  spdlog::debug(" → Done!");
-  spdlog::debug(" → → p = {:f}", p);
+  spdlog::trace(" → → p = {:f}\n", p);
   return p;
 }
 
@@ -605,6 +604,7 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
   size_t x_n_uqniues = x_uqniues.n_elem;
   arma::rowvec y_uqniues = arma::unique(y);
   size_t y_n_uqniues = y_uqniues.n_elem;
+  
   bool ties = (min(x_n_uqniues, y_n_uqniues) < n);
 
   double p{0};
@@ -613,6 +613,7 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
   if (!ties) {
     
     statistic = q;
+    spdlog::trace(" → → Statistic: {}", q);
     
     switch (alternative) {
       case TestStrategy::TestAlternative::TwoSided: {
@@ -634,7 +635,7 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
   }else{
     /// @note I'm not 100% sure if this is a good replacement for `table` but it seems to
     /// be working!
-    
+    spdlog::debug("Found ties...");
     spdlog::warn("Cannot compute exact p-value with ties!");
     
     /// xties <- table(x[duplicated(x)]) + 1;
@@ -720,7 +721,7 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   
   auto tau  = ken_res.first;
   auto pval = ken_res.second;
-  spdlog::trace("Kendal Correlation: T: {}, P: {}", tau, pval);
+  spdlog::trace("Kendal Correlation Test: tau: {}, p: {}", tau, pval);
   
   
   return {.est = tau, .pval = pval, .sig = pval < params.alpha};
