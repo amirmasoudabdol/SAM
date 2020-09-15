@@ -770,7 +770,7 @@ public:
     int n_attempts {1};
     
     //! Number of observations to be purturbed
-    int num {5};
+    size_t num {5};
     
     //! Distribution of noise
     std::optional<Distribution> noise_dist = make_distribution({

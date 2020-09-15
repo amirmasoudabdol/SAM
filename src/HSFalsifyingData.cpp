@@ -49,9 +49,12 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
     
     auto &row = (*experiment)[i].measurements();
     
+    // Making sure that there is enough elements to select
+    size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[i].measurements().n_elem));
+    
     // Selecting n indices randomly
     arma::uvec shuffled_indices = arma::shuffle(arma::regspace<arma::uvec>(0, 1, row.n_elem - 1));
-    arma::uvec candicate_indices = shuffled_indices.head(n);
+    arma::uvec candicate_indices = shuffled_indices.head(num);
     
     noise.imbue([&](){
       return Random::get(params.noise_dist.value());
@@ -84,14 +87,19 @@ bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
       experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
       experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
     }
+    
+    // Making sure that there is enough elements to select. There should be equal number in each group
+    size_t num = std::min(params.num,
+                          static_cast<size_t>(std::min(experiment->groups_[d].measurements().n_elem,
+                                                       experiment->groups_[i].measurements().n_elem)));
         
     // Candidates from Control group
-    arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(params.num);
-    experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+    arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(num);
+    experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
 
     // Candidates from Treatment group
-    arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(params.num);
-    experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+    arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(num);
+    experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
 
     // --- Actual swapping
     experiment->groups_[d].add_measurements(T_cand_values);
@@ -118,9 +126,12 @@ bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
       } else {
         experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
       }
+      
+      // Making sure that there is enough elements to select. Only concered about one group
+      size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[d].measurements().n_elem));
 
-      arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(params.num);
-      experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+      arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(num);
+      experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
       experiment->groups_[i].add_measurements(C_cand_values);
       
     } else {
@@ -130,9 +141,12 @@ bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
       } else {
         experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
       }
+      
+      // Making sure that there is enough elements to select. Only concered about one group
+      size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[i].measurements().n_elem));
 
-      arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(params.num);
-      experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, params.num - 1));
+      arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(num);
+      experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
       experiment->groups_[d].add_measurements(T_cand_values);
 
     }
