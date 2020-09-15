@@ -8,6 +8,7 @@
 #include <memory>
 #include <sstream>
 #include <vector>
+#include <chrono>
 //#include <filesystem>
 
 #include "sam.h"
@@ -46,7 +47,7 @@ int main(int argc, const char **argv) {
   desc.add_options()("help", "produce help message")(
       "version", "SAMrun 0.0.1 (Alpha)")("verbose", po::bool_switch(),
                                          "Print more texts.")(
-      "debug", po::value<string>()->default_value("info"), "Print debugging information")(
+      "debug", po::value<string>(), "Print debugging information")(
       "update-config", po::bool_switch(),
       "Update the config file with the drawn seeds")(
       "progress", po::bool_switch()->default_value(false),
@@ -125,7 +126,15 @@ int main(int argc, const char **argv) {
   /// Setting and saving the config file before starting the simulation
   int masterseed{0};
   if (configs["simulation_parameters"]["master_seed"] == "random") {
-    masterseed = static_cast<int>(time(NULL));
+    
+    /// Generating a seed for Random
+    /// @link https://stackoverflow.com/a/13446015/1141307
+    std::random_device rd;
+    std::mt19937::result_type masterseed = rd() ^ (
+       (std::mt19937::result_type)
+       std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count() +
+       (std::mt19937::result_type)
+       std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() );
     configs["simulation_parameters"]["master_seed"] = masterseed;
   } else {
     masterseed = configs["simulation_parameters"]["master_seed"].get<int>();
