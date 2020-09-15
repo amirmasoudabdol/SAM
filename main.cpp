@@ -47,7 +47,7 @@ int main(int argc, const char **argv) {
       "version", "SAMrun 0.0.1 (Alpha)")("verbose", po::bool_switch(),
                                          "Print more texts.")(
       "debug", po::value<string>()->default_value("info"), "Print debugging information")(
-      "update-config", po::bool_switch()->default_value(true),
+      "update-config", po::bool_switch(),
       "Update the config file with the drawn seeds")(
       "progress", po::bool_switch()->default_value(false),
       "Shows the progress bar")(
@@ -135,6 +135,7 @@ int main(int argc, const char **argv) {
   /// Saving the updated config file if necessary
   if (vm.count("update-config")) {
     const bool update_config = vm["update-config"].as<bool>();
+    configs["simulation_parameters"]["update_config"] = update_config;
     if (update_config) {
       std::ofstream o(configfilename);
       o << std::setw(4) << configs << std::endl;
