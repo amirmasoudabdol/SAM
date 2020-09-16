@@ -14,6 +14,8 @@ ResearcherBuilder Researcher::create(std::string name) {
 
 void Researcher::letTheHackBegin() {
   
+  spdlog::debug("Initiate the Hacking Procedure...");
+  
   /// @todo Does this copy even make any sense! I don't think so!
   Experiment copy_of_experiment = *experiment;
   
@@ -40,8 +42,8 @@ void Researcher::letTheHackBegin() {
             has_committed = isCommittingToTheHack(hacking_strategy.get());
             
             if (has_committed) {
-              spdlog::debug("++++++++++++++++");
-              spdlog::debug("→ Starting a new HackingSet");
+              spdlog::trace("++++++++++++++++");
+              spdlog::trace("→ Starting a new HackingSet");
               
               (*hacking_strategy)(&copy_of_experiment);
               copy_of_experiment.is_hacked = true;
@@ -55,16 +57,16 @@ void Researcher::letTheHackBegin() {
           [&](PolicyChain &decision_policy) {
               /// Performing a Decision
               /// With PolicyChain, we can only validate if a submission passes all the criteria
-              spdlog::debug("Checking whether we are going to continue hacking or not?");
+              spdlog::trace("Checking whether we are going to continue hacking or not?");
               if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
-                spdlog::debug("Done Hacking!");
+                spdlog::trace("Done Hacking!");
                 stopped_hacking = true;
               }else{
                 /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
                 /// evaluated again, and I've already performed a selection, I'm going to reset the selected
                 /// submission.
                 decision_strategy->submission_candidate.reset();
-                spdlog::debug("Continue Hacking...");
+                spdlog::trace("Continue Hacking...");
               }
           }
         
@@ -108,10 +110,12 @@ void Researcher::preProcessData() {
 /// reading it from the `decision_strategy`
 void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub) {
   
+  spdlog::debug("Checking whether the Final Submission is going to be submited to Journal...");
+  
   if (sub and
       decision_strategy->willBeSubmitting(sub, decision_strategy->submission_decision_policies)) {
-    spdlog::debug("To be submitted submission: ");
-    spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
+    spdlog::trace("To be submitted submission: ");
+    spdlog::trace("\t{}", decision_strategy->submission_candidate.value());
     
     if (Random::get<bool>(submission_probability))
       journal->review(decision_strategy->submission_candidate.value());
@@ -178,14 +182,14 @@ void Researcher::research() {
     experiment->repid = rep;
     
     {
-      spdlog::debug("–––––––––––––––––––");
-      spdlog::debug("Replication #{} ↓", rep);
+      spdlog::trace("–––––––––––––––––––");
+      spdlog::trace("Replication #{} ↓", rep);
     }
   
     experiment->generateData();
     
     if (is_pre_processing) {
-      spdlog::debug("Pre-processing");
+      spdlog::debug("Initiating the Pre-processing Procedure...");
 
       preProcessData();
     }
@@ -195,7 +199,7 @@ void Researcher::research() {
     
     /// -----------------
     /// Initial SELECTION
-    spdlog::debug("→ Checking the INITIAL policies");
+    spdlog::trace("→ Checking the INITIAL policies");
     decision_strategy->selectOutcomeFromExperiment(experiment.get(),
                                   decision_strategy->initial_selection_policies);
     
@@ -219,10 +223,10 @@ void Researcher::research() {
       /// Otherwise, we don't have to look into the pile!
       
       {
-        spdlog::debug("→ Selecting between Hacked and Stashed Outcome!");
+        spdlog::trace("→ Selecting between Hacked and Stashed Outcome!");
         for (auto &sub : decision_strategy->submissions_pool)
-          spdlog::debug("\t{}", sub);
-        spdlog::debug("-----^");
+          spdlog::trace("\t{}", sub);
+        spdlog::trace("-----^");
         // assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
       } // Logging
       
@@ -237,8 +241,8 @@ void Researcher::research() {
       /// If we have a submittable candidate, then we collect it
       
       {
-        spdlog::debug("Final Submission Candidate: ");
-        spdlog::debug("\t{}", decision_strategy->submission_candidate.value());
+        spdlog::trace("Final Submission Candidate: ");
+        spdlog::trace("\t{}", decision_strategy->submission_candidate.value());
       } // Logging
       
       submissions_from_reps.push_back(decision_strategy->submission_candidate.value());
@@ -260,8 +264,8 @@ void Researcher::research() {
   if (submissions_from_reps.size() > 1) {
     /// If we have done more than one replication, then we have to select between them
     {
-      spdlog::debug("__________");
-      spdlog::debug("→ Choosing Between Replications");
+      spdlog::trace("__________");
+      spdlog::trace("→ Choosing Between Replications");
       assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
     }
     decision_strategy->selectOutcomeFromPool(submissions_from_reps, decision_strategy->between_reps_policies);

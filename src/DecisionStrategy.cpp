@@ -96,9 +96,11 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   
-  spdlog::debug("→ Current Submission Pool...");
+  spdlog::debug("→ Selecting from Submissions Pool...");
+  
+  spdlog::trace("→ Current Submission Pool...");
   for (auto &s : spool) {
-    spdlog::debug("\t\t{}", s);
+    spdlog::trace("\t\t{}", s);
   }
   
   /// @todo Check what this actually means!
@@ -120,7 +122,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
   }
 
 
-  spdlog::debug("✗ Found none in the pile!");
+  spdlog::trace("✗ Found none in the pile!");
 }
 
 
@@ -232,9 +234,9 @@ DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *
   
   saveOutcomes(*experiment, stashing_policy);
   
-  spdlog::debug("Collected pile of every submission: ");
+  spdlog::trace("Collected pile of every submission: ");
   for (auto &s : submissions_pool) {
-    spdlog::debug("\t{}", s);
+    spdlog::trace("\t{}", s);
   }
   return *this;
 }

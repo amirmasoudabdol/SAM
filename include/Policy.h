@@ -203,23 +203,23 @@ struct Policy {
         
       case PolicyType::Min: {
         auto it = std::min_element(begin, end, func);
-        spdlog::debug("Min: {}", def);
-        spdlog::debug("\t {}", *it);
+        spdlog::trace("Min: {}", def);
+        spdlog::trace("\t {}", *it);
         return {true, it, it};
       } break;
         
       case PolicyType::Max: {
         auto it = std::max_element(begin, end, func);
-        spdlog::debug("Max: {}", def);
-        spdlog::debug("\t {}", *it);
+        spdlog::trace("Max: {}", def);
+        spdlog::trace("\t {}", *it);
         return {true, it, it};
       } break;
         
       case PolicyType::Comp: {
         auto pit = std::partition(begin, end, func);
-        spdlog::debug("Comp: {}", def);
+        spdlog::trace("Comp: {}", def);
         for (auto it{begin}; it != pit; ++it) {
-          spdlog::debug("\t {}", *it);
+          spdlog::trace("\t {}", *it);
         }
         
         return {false, begin, pit};
@@ -231,9 +231,9 @@ struct Policy {
         /// this basically mimic the process of selecting a random element from
         /// the list.
         Random::shuffle(begin, end);
-        spdlog::debug("Shuffled: {}", def);
+        spdlog::trace("Shuffled: {}", def);
         for (auto it{begin}; it != end; ++it) {
-          spdlog::debug("\t {}", *it);
+          spdlog::trace("\t {}", *it);
         }
         return {true, begin, end};
         
@@ -244,8 +244,8 @@ struct Policy {
         // Sorting the groups based on their index
         //    std::sort(begin, end, func);
         
-        spdlog::debug("First: {}", def);
-        spdlog::debug("\t {}", *begin);
+        spdlog::trace("First: {}", def);
+        spdlog::trace("\t {}", *begin);
         
         return {true, begin, end};
         
@@ -256,8 +256,8 @@ struct Policy {
         // Sorting the groups based on their index
         //    std::sort(begin, end, func);
         
-        spdlog::debug("Last: {}", def);
-        spdlog::debug("\t {}", *(end-1));
+        spdlog::trace("Last: {}", def);
+        spdlog::trace("\t {}", *(end-1));
         
         return {true, end-1, end};
         
@@ -425,12 +425,12 @@ struct PolicyChain {
       
       if (found_sth_unique) {
         selections.emplace_back(experiment, begin->id_);
-        spdlog::debug("✓ Found One!");
+        spdlog::trace("✓ Found One!");
 //        return selections;
       }
       
       if (begin == end) {
-        spdlog::debug("✗ Found nothing!");
+        spdlog::trace("✗ Found nothing!");
         break;
       }
       
@@ -439,18 +439,18 @@ struct PolicyChain {
     // This has to be here
     if (begin+1 == end) {
       selections.emplace_back(experiment, begin->id_);
-      spdlog::debug("✓ Found the only one!");
+      spdlog::trace("✓ Found the only one!");
 //      return selections;
     }else if (begin != end) { /// We found a bunch
       
-      spdlog::debug("✓ Found a bunch: ");
+      spdlog::trace("✓ Found a bunch: ");
       for (auto it{begin}; it != end; ++it) {
         selections.emplace_back(experiment, it->id_);
-        spdlog::debug("\t {}", *it);
+        spdlog::trace("\t {}", *it);
       }
 //      return selections;
     } else {
-      spdlog::debug("✗ Found nothing! To the next one!");
+      spdlog::trace("✗ Found nothing! To the next one!");
     }
 
     return selections;
@@ -468,7 +468,7 @@ struct PolicyChain {
       policy(begin, end);
       
       if (found_sth_unique) {
-        spdlog::debug("✓ Found something in the pile!");
+        spdlog::trace("✓ Found something in the pile!");
         return *begin;
       }
       
@@ -480,13 +480,13 @@ struct PolicyChain {
     
     if (begin+1 == end) {
       return *begin;
-      spdlog::debug("✓ Found the only one!");
+      spdlog::trace("✓ Found the only one!");
     } else if (begin != end) { /// We found a bunch
                                /// This is not a acceptable case for now!
                                /// @todo But it should be!
       return {};
     } else {
-      spdlog::debug("✗ Found nothing!");
+      spdlog::trace("✗ Found nothing!");
     }
     
     return {};

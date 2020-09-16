@@ -106,7 +106,7 @@ public:
     experiment->runTest();
     
     for (int g{0}; g < experiment->setup.ng(); ++g)
-      spdlog::debug("{}: ", (*experiment)[g]);
+      spdlog::trace("{}: ", (*experiment)[g]);
   }
 
   ///

@@ -22,7 +22,7 @@ void StoppingDataCollection::perform(Experiment *experiment) {
   /// to a group
   for (size_t t {0}; t < n_trials; ++t) {
     
-    spdlog::debug("Adding {} new items.", (t + 1) * params.batch_size);
+    spdlog::trace("Adding {} new items.", (t + 1) * params.batch_size);
     for (int g{0}; g < experiment->setup.ng(); ++g) {
 
       (*experiment)[g].set_measurements(groups[g].measurements().head((t + 1) * params.batch_size));

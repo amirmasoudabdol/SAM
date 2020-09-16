@@ -49,7 +49,7 @@ void PeekingOutliersRemoval::perform(Experiment *experiment) {
     
   }
   
-  spdlog::debug("Experiment after hacking:");
+  spdlog::trace("Experiment after hacking:");
   for (int g{0}; g < experiment->setup.ng(); ++g) {
     spdlog::trace("\t {}", (*experiment)[g]);
   }

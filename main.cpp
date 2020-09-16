@@ -209,7 +209,7 @@ void runSimulation(json &simConfig) {
   spdlog::info("Starting the simulation...");
   for (int i = 0; i < n_sims; ++i) {
 
-    spdlog::debug("---> Sim {}", i);
+    spdlog::trace("---> Sim {}", i);
 
     float j{0};
     
@@ -220,11 +220,11 @@ void runSimulation(json &simConfig) {
     // Doning research until Journal doesn't accept anything
     while (researcher.journal->isStillAccepting()) {
 
-      spdlog::debug("---> Experiment #{}", j++);
+      spdlog::trace("---> Experiment #{}", j++);
 
       researcher.research();
 
-      spdlog::debug("\n\n==========================================================================\n");
+      spdlog::trace("\n\n==========================================================================\n");
     }
     
     if (show_progress_bar) {

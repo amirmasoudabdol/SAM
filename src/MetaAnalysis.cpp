@@ -169,7 +169,7 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
 // General method-of-moments estimate (Eq. 6 in DerSimonian and Kacker, 2007)
 double RandomEffectEstimator::DL(const arma::Row<double> &yi, const arma::Row<double> &vi, const arma::Row<double> &ai) {
   
-  spdlog::debug("→ Estimating the tau2 using DL ...");
+  spdlog::trace("→ Estimating the tau2 using DL ...");
   
   auto yw = arma::accu(ai % yi) / arma::accu(ai);
   auto est_tau2 = (arma::accu(ai % arma::pow(yi-yw, 2))-(arma::accu(ai % vi)-arma::accu(arma::pow(ai, 2) % vi)/arma::accu(ai)))/(arma::accu(ai)-arma::accu(arma::pow(ai, 2))/arma::accu(ai));
@@ -640,7 +640,7 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
   }else{
     /// @note I'm not 100% sure if this is a good replacement for `table` but it seems to
     /// be working!
-    spdlog::debug("Found ties...");
+    spdlog::trace("Found ties...");
     spdlog::warn("Cannot compute exact p-value with ties!");
     
     /// xties <- table(x[duplicated(x)]) + 1;

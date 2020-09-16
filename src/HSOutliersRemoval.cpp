@@ -28,7 +28,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
       
       experiment->recalculateEverything();
       
-      spdlog::debug("{}", *experiment);
+      spdlog::trace("{}", *experiment);
       
       if(!params.stopping_cond_defs.empty()) {
         if (stopping_condition(experiment)) {

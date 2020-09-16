@@ -22,7 +22,7 @@ void OptionalStopping::perform(Experiment *experiment) {
   double n_new_items = params.num;
   
   for (int t = 0; t < params.n_attempts; ++t) {
-    spdlog::debug("\t #{} attempt(s)", t+1);
+    spdlog::trace("\t #{} attempt(s)", t+1);
     
     if (params.num == 0) {
       arma::Row<int> ns(experiment->setup.ng());
@@ -46,7 +46,7 @@ void OptionalStopping::perform(Experiment *experiment) {
   }
   
   for (int g{0}; g < experiment->setup.ng(); ++g) {
-    spdlog::debug("\t {}", (*experiment)[g]);
+    spdlog::trace("\t {}", (*experiment)[g]);
   }
 }
 

@@ -38,7 +38,7 @@ void FalsifyingData::perform(Experiment *experiment) {
 
 bool FalsifyingData::perturb(Experiment *experiment, const int n) {
   
-  spdlog::debug("\t Perturbing some data points...");
+  spdlog::debug(" → Perturbing some data points...");
   
   static arma::Row<double> noise(n, arma::fill::zeros);
   
@@ -71,7 +71,7 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
 
 bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
   
-  spdlog::debug("\t Swapping some data points...");
+  spdlog::debug(" → Swapping some data points...");
   
   /// @todo This is a rahter expensive implementation, I need to see if I can find
   /// something in STL to do it better
@@ -114,7 +114,7 @@ bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
 
 bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
   
-  spdlog::debug("\t Switching some data points...");
+  spdlog::debug(" → Switching some data points...");
   
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {

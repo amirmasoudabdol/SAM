@@ -61,7 +61,7 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid)
   }
 
   for (const auto &s : subs) {
-    spdlog::debug("{}", s);
+    spdlog::trace("{}", s);
   }
 }
 
