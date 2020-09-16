@@ -32,18 +32,18 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/../baaraan ${PROJECT_SOURCE_DIR}/../baara
 
 find_package(Threads REQUIRED)
 
-find_package(Boost COMPONENTS unit_test_framework program_options REQUIRED)
-find_package(nlohmann_json REQUIRED)
+find_package(Boost 1.73 COMPONENTS unit_test_framework program_options REQUIRED)
+find_package(nlohmann_json 3.9 REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(mlpack)
 find_package(OpenMP)
 find_package(ensmallen)
 find_package(LAPACK)
 find_package(BLAS)
-find_package(spdlog REQUIRED)
-find_package(sol2 REQUIRED)
-find_package(Lua REQUIRED)
-find_package(fmt REQUIRED)
+find_package(spdlog 1.7 REQUIRED)
+find_package(sol2 3.0 REQUIRED)
+find_package(Lua 5.2 REQUIRED)
+find_package(fmt 7.0 REQUIRED)
 
 
 set(NLOHMANN_JSON_LIBRARIES "nlohmann_json::nlohmann_json")

@@ -44,19 +44,17 @@ int main(int argc, const char **argv) {
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
   po::options_description desc("SAMrun Options");
-  desc.add_options()("help", "produce help message")(
-      "version", "SAMrun 0.0.1 (Alpha)")("verbose", po::bool_switch(),
-                                         "Print more texts.")(
-      "debug", po::value<string>(), "Print debugging information")(
-      "update-config", po::bool_switch(),
-      "Update the config file with the drawn seeds")(
-      "progress", po::bool_switch()->default_value(false),
-      "Shows the progress bar")(
-      "master-seed", po::value<int>()->default_value(42),
-      "Set the master seed")("output-prefix", po::value<string>(),
-                             "Output prefix used for saving files")(
-      "output-path", po::value<string>(),
-      "Output path")("config", po::value<string>(), "JSON config file");
+  desc.add_options()
+      ("help", "produce help message")
+      ("version", "SAMrun 0.0.1 (Alpha)")
+      ("verbose", po::bool_switch(), "Print more texts.")
+      ("debug", po::value<std::string>(), "Print debugging information")
+      ("update-config", po::bool_switch(), "Update the config file with the drawn seeds")
+      ("progress", po::bool_switch()->default_value(false), "Shows the progress bar")
+      ("master-seed", po::value<int>()->default_value(42), "Set the master seed")
+      ("output-prefix", po::value<std::string>(), "Output prefix used for saving files")
+      ("output-path", po::value<std::string>(), "Output path")
+      ("config", po::value<std::string>(), "JSON config file");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);

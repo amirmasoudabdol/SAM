@@ -142,10 +142,11 @@
     },
     "simulation_parameters": {
         "log_level": "trace",
-        "master_seed": 1600163854,
+        "master_seed": 4118845237,
         "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "0153aac7-b6c7-4e21-8fbf-74ce75d14040",
+        "update_config": true,
         "progress": false,
         "save_all_pubs": true,
         "save_meta": true,
