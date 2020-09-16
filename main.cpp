@@ -76,27 +76,11 @@ int main(int argc, const char **argv) {
   } else {
     configfilename = "/Users/amabdol/Projects/SAMpp/config_file.json";
   }
-
-  spdlog::info("Reading the configuration file...");
+  
   std::ifstream configFile(configfilename);
   configFile >> configs;
-
-  if (vm.count("output-path")) {
-    configs["simulation_parameters"]["output_path"] =
-        vm["output-path"].as<string>();
-  } else {
-    configs["simulation_parameters"]["output_path"] = "../outputs/";
-  }
-
-  if (vm.count("output-prefix")) {
-    const string output_prefix = vm["output-prefix"].as<string>();
-    configs["simulation_parameters"]["output_prefix"] = output_prefix;
-  }
   
-  if (vm.count("progress")) {
-    show_progress_bar = vm["progress"].as<bool>();
-  }
-
+  
   auto log_level = static_cast<spdlog::level::level_enum>(configs["simulation_parameters"]["log_level"].get<LogLevel>());
   spdlog::set_level(log_level);
   
@@ -118,9 +102,25 @@ int main(int argc, const char **argv) {
     else
       spdlog::set_level(spdlog::level::off);
   }
+  
+  spdlog::info("Processing the configuration file...");
+
+  if (vm.count("output-path")) {
+    configs["simulation_parameters"]["output_path"] =
+        vm["output-path"].as<string>();
+  } else {
+    configs["simulation_parameters"]["output_path"] = "../outputs/";
+  }
+
+  if (vm.count("output-prefix")) {
+    const string output_prefix = vm["output-prefix"].as<string>();
+    configs["simulation_parameters"]["output_prefix"] = output_prefix;
+  }
+  
+  if (vm.count("progress")) {
+    show_progress_bar = vm["progress"].as<bool>();
+  }
     
-  
-  
   /// Setting and saving the config file before starting the simulation
   int masterseed{0};
   if (configs["simulation_parameters"]["master_seed"] == "random") {

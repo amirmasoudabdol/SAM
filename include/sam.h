@@ -18,7 +18,7 @@ using json = nlohmann::ordered_json;
 
 namespace sam {
 
-enum class LogLevel
+enum class LogLevel : int
 {
   trace = 0,
   debug,
@@ -26,7 +26,8 @@ enum class LogLevel
   warn,
   err,
   critical,
-  off
+  off,
+  n_levels
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
