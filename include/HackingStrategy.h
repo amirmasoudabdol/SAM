@@ -214,15 +214,21 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
 
 
 
-static std::pair<int, int> getTargetBounds(Experiment *experiment, HackingTarget &target) {
+static std::pair<int, int>
+getTargetBounds(Experiment *experiment, HackingTarget &target) {
+  static int s, e;
   switch (target) {
-    case HackingTarget::Control:
-      return std::make_pair(0, experiment->setup.nd());
-    case HackingTarget::Treatment:
-      return std::make_pair(experiment->setup.nd(), experiment->setup.ng());
-    case HackingTarget::Both:
-      return std::make_pair(0, experiment->setup.ng());
+    case HackingTarget::Control: {
+      s = 0; e = experiment->setup.nd();
+    } break;
+    case HackingTarget::Treatment: {
+      s = experiment->setup.nd(); e = experiment->setup.ng();
+    } break;
+    case HackingTarget::Both: {
+      s = 0; e = experiment->setup.ng();
+    } break;
   }
+  return std::make_pair(s, e);
 }
 
 
