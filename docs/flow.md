@@ -1,4 +1,9 @@
-Flow {#chap-flow}
+---
+title: Flow
+layout: default
+---
+
+Flow
 ====
 
 SAM simulates the scientific process through several subprocesses as
@@ -10,7 +15,7 @@ details.
 ![Overall execution flowchart of
 SAM](figures/main-routine.png){.align-center}
 
-Initialization {#flow-initialization}
+Initialization
 --------------
 
 During the initialization phase, SAMs loads a configuration file and
@@ -25,7 +30,7 @@ specifications of each compartment. At the end of initialization stage,
 `Researcher` is aware of all parameters and is ready to conduct the ---
 already defined --- `Experiment`.
 
-Prepareing the Research {#flow-prepare-research}
+Prepareing the Research
 -----------------------
 
 The preparation of the research is the first step of the simulation.
@@ -37,7 +42,7 @@ group/condition/dv using the `DataStrategy` module.
 ![Steps involving preparing the
 research](figures/prepare-research.png){.align-center}
 
-Performing the Research {#flow-perform-research}
+Performing the Research
 -----------------------
 
 At this stage, the `Researcher` uses `TestStrategy` (of the
@@ -60,7 +65,7 @@ whether the outcome is satisfactory or not.
 ![Steps involving performing the
 research](figures/perform-research.png){.align-center}
 
-Publishing the Research {#flow-publish-research}
+Publishing the Research
 -----------------------
 
 Process of publishing the research resembles the preparation of final

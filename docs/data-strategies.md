@@ -1,4 +1,9 @@
-Data Strategies {#chap-data-strategies}
+---
+title: Data Strategies
+layout: default
+---
+
+Data Strategies
 ===============
 
 > *Data Strategy is the source of data, i.e., population. It knows the
@@ -55,7 +60,7 @@ specified in `data_strategy`.
 
   : General `ExperimentSetup` parameters
 
-Linear Model {#data-strategies-linear}
+Linear Model
 ------------
 
 In the case of Linear Model, SAM uses multi-variate normal distribution
@@ -101,7 +106,7 @@ Example
 ```
 :::
 
-Graded Response Model {#data-strategies-grm}
+Graded Response Model
 ---------------------
 
 Current implementation of Graded Response Model is based on the

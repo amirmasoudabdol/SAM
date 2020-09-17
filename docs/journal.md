@@ -1,4 +1,9 @@
-Journal {#chap-journal}
+---
+title: Journal
+layout: default
+---
+
+Journal
 =======
 
 Selection Strategies

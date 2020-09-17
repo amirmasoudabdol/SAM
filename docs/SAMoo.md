@@ -1,2 +1,7 @@
-SAMoo {#chap-samoo}
+---
+title: SAMoo
+layout: default
+---
+
+SAMoo
 =====

@@ -1,9 +1,9 @@
 ---
-title: Decision Strategy
+title: Decision Strategies
 layout: default
 ---
 
-Decision Strategies {#chap-decision-strategies}
+Decision Strategies
 ===================
 
 > *Decision Strategy executes researcher's logic behind starting and
@@ -73,7 +73,7 @@ choose from. For instnace, in the case of a \"*p*-hacker\", the
 researcher has to have an strategy on how he is going to choose between
 various results from various *p*-hacking paths that s/he took.
 
-### Honest Decision Maker {#decision-strategies-honest}
+### Honest Decision Maker
 
 A "honest researcher" always reports the pre-registered result and will
 not apply any *p*-hacking methods on the Experiment.
@@ -86,7 +86,7 @@ Note
 This is the default *decision making* method.
 :::
 
-### Impatient Decision Maker {#decision-strategies-impatient}
+### Impatient Decision Maker
 
 An "impatient researcher" stops his effort as soon as s/he finds a
 significant result. This could be before, during or after applying
@@ -100,7 +100,7 @@ setting the `decision_strategy` value, as follow:
 }
 ```
 
-### Patient Decision Maker {#decision-strategies-patient}
+### Patient Decision Maker
 
 A "patient researcher" behaves differently from the impatient
 researcher. While he checks the progress of his effort, he does not make

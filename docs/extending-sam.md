@@ -1,2 +1,7 @@
-Extending SAM {#chap-extending-sam}
+---
+title: Extending SAM
+layout: default
+---
+
+Extending SAM
 =============

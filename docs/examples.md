@@ -1,2 +1,7 @@
-Examples {#chap-examples}
+---
+title: Examples
+layout: default
+---
+
+Examples
 ========

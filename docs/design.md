@@ -1,4 +1,9 @@
-Design {#chap-design}
+---
+title: Design
+layout: default
+---
+
+Design
 ======
 
 In the [previous section](introduction.html#intro-research-process), I
@@ -23,7 +28,7 @@ process, as possible.
 ![SAM's components and their
 interactions](figures/components.png){.align-center}
 
-SAM's Main Components {#design-components}
+SAM's Main Components
 ---------------------
 
 SAM consists of 3 main components, *Experiment, Researcher* and
@@ -95,7 +100,7 @@ objects, e.g., Experiment object, and they will appear in monospace
 font.
 :::
 
-### Experiment {#design-experiment}
+### Experiment
 
 ![](figures/experiment-stack.png){.align-right width="50.0%"}
 
@@ -128,7 +133,7 @@ A full list of available parameters are listed in the
 `config-file-experiment-parameters`{.interpreted-text role="ref"}
 section of the configuration file.
 
-#### Experiment Setup {#design-experiment-setup}
+#### Experiment Setup
 
 SAM treats the `ExperimentSetup` object as a read-only object after the
 initialization phase. During the initialization phase, SAM initializes
@@ -149,7 +154,7 @@ Below is a list of variables and methods of `ExperimentSetup`, read more
 -   `effectStrategy`, a pointer to the selected
     `effect-strategies`{.interpreted-text role="doc"}.
 
-#### Data Strategy {#design-data-strategy}
+#### Data Strategy
 
 `DataStrategy` acts as the population for the study, i.e., *data
 source*. This could be a simple link to a certain distribution \[or it
@@ -168,7 +173,7 @@ as requested by the optional stopping.
 Data strategies will be discussed in more details in
 `design-strategies`{.interpreted-text role="doc"} chapter.
 
-#### Test Strategy {#design-test-strategy}
+#### Test Strategy
 
 `TestStrategy` provides a routine for testing the hypothesis.
 TestStrategy can access the entire `Experiment` object but often it is
@@ -185,7 +190,7 @@ There are several test strategies already implemented:
 More details about will be discussed in
 `test-strategies`{.interpreted-text role="doc"} chapter.
 
-#### Effect Strategy {#design-effect-strategy}
+#### Effect Strategy
 
 `EffectStrategy` defines a method of calculating the magnitude of effect
 between two experimental group. Like most other strategies, users are
@@ -199,7 +204,7 @@ List of available effect strategies:
 > -   Odd Ratio
 > -   Mean Difference
 
-### Journal {#design-journal}
+### Journal
 
 ![](figures/journal-stack.png){.align-right width="50.0%"}
 
@@ -228,7 +233,7 @@ You can set these parameters using
 [journal_parameters](configuration-file.rst#config-file-journal-parameters)
 section of the configuration file.
 
-#### Selection Strategy {#design-selection-strategy}
+#### Selection Strategy
 
 `SelectionStrategy` implements the logic behind accepting or rejecting a
 submission. The simplest algorithms are mainly working with *p*-values
@@ -239,7 +244,7 @@ their final decision. For instance, if appropriate, a journal can have
 an updated estimation of the effect size from its current publications
 pool and use that information to accept or reject submissions.
 
-#### Submission {#design-submission}
+#### Submission
 
 A `Submission` is a small container, created by the `Researcher` and
 provided to the `Journal`. It provides a simple interface between
@@ -275,7 +280,7 @@ Note
 not try to closely resembles a full publication.
 :::
 
-### Researcher {#design-researcher}
+### Researcher
 
 ![](figures/researcher-stack.png){.align-right width="50.0%"}
 
@@ -315,7 +320,7 @@ Below is a list of main methods and variables of `Researcher`.
 :   `submission`{.interpreted-text role="ref"} and submit it to the
     `journal`{.interpreted-text role="ref"} for review.
 
-#### Decision Strategy {#design-decision-strategy}
+#### Decision Strategy
 
 As the name suggests, `DecisionStrategy` describes how the `Researcher`
 chooses between different outcome variables during the research. The
@@ -367,7 +372,7 @@ different hacking strategies. This process will be clarified in
 `decision-strategies`{.interpreted-text role="doc"} chapters.
 :::
 
-#### Hacking Strategy-(ies) {#design-hacking-strategy}
+#### Hacking Strategy-(ies)
 
 `HackingStrategy` is an abstract representation of different *p*-hacking
 and QRP methods. A `HackingStrategy` object is a simple object with one

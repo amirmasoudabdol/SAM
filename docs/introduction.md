@@ -1,4 +1,9 @@
-Introduction {#chap-intro}
+---
+title: Introduction
+layout: default
+---
+
+Introduction
 ============
 
 Before I discuss SAM's implementation and design, let's review the
@@ -9,7 +14,7 @@ components and entities that are typically involved in each stage.
 Later, in the `design`{.interpreted-text role="doc"} chapter, I will
 explain how each compartments is going to be represented in SAM.
 
-Scientific Research Process {#intro-research-process}
+Scientific Research Process
 ---------------------------
 
 The *process* of producing a scientific research/study is often a
@@ -37,7 +42,7 @@ form of a [Manuscript](design.rst#design-submission), to be reviewed
 according to the journal's criteria. Finally, the Journal will decide if
 the submitted manuscript worth publishing or not. .. \--
 
-### Meta-analysis {#intro-meta-analysis}
+### Meta-analysis
 
 As it has been shown and discussed \[cite, cite\], the aforementioned
 process is often long and prune to errors in every different stage.
@@ -74,7 +79,7 @@ agree on) the propagative impacts of these practices on our collective
 knowledge \[cite, papers supporting some of the qrps\], a.k.a, *true
 effect size*.
 
-SAM {#intro-sam}
+SAM
 ---
 
 \[Say something about SAM\]

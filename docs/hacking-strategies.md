@@ -1,4 +1,9 @@
-Hacking Strategies {#chap-hacking-strategies}
+---
+title: Hacking Strategies
+layout: default
+---
+
+Hacking Strategies
 ==================
 
 > *Hacking Strategy encapsulates the processes or procedures of
@@ -72,7 +77,7 @@ The rest of this section lists all hacking strategies implemented in
 SAM. If you are interested in developing your own methods, head to
 `chap-extending-sam`{.interpreted-text role="doc"} chapter.
 
-Optional Stopping {#hacking-strategies-optional-stopping}
+Optional Stopping
 -----------------
 
 Optional stopping is the practice of adding new observations to
@@ -137,7 +142,7 @@ section, optional stopping utilizes the `DataStrategy` for generating
 new data points.
 :::
 
-Outliers Removal {#hacking-strategies-outliers-removal}
+Outliers Removal
 ----------------
 
 Removing outliers is another popular researcher's degrees of freedom.
@@ -207,7 +212,7 @@ large values for `n_attempts` will remove the outliers one-by-one from
 `Experiment`. You can control this process by specifying a list of
 `multipliers`.
 
-Group Pooling {#hacking-strategies-group-pooling}
+Group Pooling
 -------------
 
 Group pooling is the act of pooling data from two or more groups into
@@ -237,7 +242,7 @@ Y{0.2}
   ---------------- ---------- ------------------------------------------------------
   `num`            `int`      Indicates the number of groups to be pooled together
 
-Pre-processing {#hacking-pre-processing}
+Pre-processing
 --------------
 
 > Almost all hacking strategies mentioned in this chapter can be used as

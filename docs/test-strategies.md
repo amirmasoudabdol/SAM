@@ -1,2 +1,7 @@
-Test Strategies {#chap-test-strategies}
+---
+title: Test Strategies
+layout: default
+---
+
+Test Strategies
 ===============

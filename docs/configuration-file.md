@@ -3,7 +3,7 @@ title: Configuration File
 layout: default
 ---
 
-Configuration File {#chap-config-file}
+Configuration File
 ==================
 
 SAM uses a [JSON](https://www.json.org) file to load and save all
@@ -102,7 +102,7 @@ initialization phase.
 }
 ```
 
-Simulation Parameters {#config-file-simulation-params}
+Simulation Parameters
 ---------------------
 
 This section specifies general parameters of the simulation. These
@@ -144,7 +144,7 @@ Y{0.2}
                                files ends with `_meta.csv`
   ------------------------------------------------------------------------
 
-Experiment Parameters {#config-file-experiment-params}
+Experiment Parameters
 ---------------------
 
 This section lists necessary parameters of the [Experiment
@@ -203,7 +203,7 @@ conditions, dependant variables, and items, otherwise an error will
 occur.
 :::
 
-Researcher Parameters {#config-file-researcher-params}
+Researcher Parameters
 ---------------------
 
 This section defines the behavior of the `Researcher`.
@@ -232,7 +232,7 @@ Y{0.2}
                                         `decision-strategies`{.interpreted-text role="doc"}.
   -------------------------------------------------------------------------------------------------------
 
-Journal Parameters {#config-file-journal-params}
+Journal Parameters
 ------------------
 
 This section specifies the properties of the `Journal`.
@@ -260,7 +260,7 @@ Parameters like `pub_bias`, `alpha` or `side` can be set based on the
 `selection-strategy`{.interpreted-text role="doc"} for more info.
 :::
 
-### Crash Course on JSON {#config-file-json}
+### Crash Course on JSON
 
 > A JSON object is an *unordered* set of name/value pairs inserted
 > between two curly brackets, `{"name": "S.A.M"}`. A JSON list/array is

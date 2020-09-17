@@ -1,2 +1,7 @@
-Effect Strategies {#chap-effect-strategies}
+---
+title: Effect Strategies
+layout: default
+---
+
+Effect Strategies
 =================
