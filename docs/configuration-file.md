@@ -20,7 +20,7 @@ While most parameters are self-explanatory, this section goes into more
 details on how SAM will process and interpret them during the
 initialization phase.
 
-``` {.json}
+```json
 {
     "simulation_parameters": {
         "debug": false,
