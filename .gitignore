@@ -8,6 +8,8 @@ docs/man
 docs/api
 docs/_build
 docs/m.math.cache
+_site
+.jekyll-cache
 
 # Excluding input/output
 # inputs/
