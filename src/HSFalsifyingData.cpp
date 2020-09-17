@@ -15,11 +15,11 @@ void FalsifyingData::perform(Experiment *experiment) {
   for (int t = 0; t < params.n_attempts && res; ++t) {
     
     if (params.approach == "perturbation")
-      res = this->perturb(experiment, params.num);
+      res = this->perturb(experiment);
     else if (params.approach == "swapping")
-      res = this->swapGroups(experiment, params.num);
+      res = this->swapGroups(experiment);
     else if (params.approach == "switching")
-      res = this->switchGroups(experiment, params.num);
+      res = this->switchGroups(experiment);
     
     experiment->recalculateEverything();
     
@@ -36,11 +36,9 @@ void FalsifyingData::perform(Experiment *experiment) {
 
 }
 
-bool FalsifyingData::perturb(Experiment *experiment, const int n) {
+bool FalsifyingData::perturb(Experiment *experiment) {
   
   spdlog::debug(" → Perturbing some data points...");
-  
-  static arma::Row<double> noise(n, arma::fill::zeros);
   
   int begin {0}, end {0};
   std::tie(begin, end) = getTargetBounds(experiment, params.target);
@@ -56,6 +54,7 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
     arma::uvec shuffled_indices = arma::shuffle(arma::regspace<arma::uvec>(0, 1, row.n_elem - 1));
     arma::uvec candicate_indices = shuffled_indices.head(num);
     
+    static arma::Row<double> noise(num, arma::fill::zeros);
     noise.imbue([&](){
       return Random::get(params.noise_dist.value());
     });
@@ -69,7 +68,7 @@ bool FalsifyingData::perturb(Experiment *experiment, const int n) {
 }
 
 
-bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
+bool FalsifyingData::swapGroups(Experiment *experiment) {
   
   spdlog::debug(" → Swapping some data points...");
   
@@ -112,7 +111,7 @@ bool FalsifyingData::swapGroups(Experiment *experiment, const int n) {
 }
 
 
-bool FalsifyingData::switchGroups(Experiment *experiment, const int n) {
+bool FalsifyingData::switchGroups(Experiment *experiment) {
   
   spdlog::debug(" → Switching some data points...");
   

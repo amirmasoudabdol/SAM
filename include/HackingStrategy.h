@@ -811,9 +811,9 @@ public:
   virtual void perform(Experiment *experiment) override;
   
 private:
-  bool perturb(Experiment *experiment, const int n);
-  bool swapGroups(Experiment *experiment, const int n);
-  bool switchGroups(Experiment *experiment, const int n);
+  bool perturb(Experiment *experiment);
+  bool swapGroups(Experiment *experiment);
+  bool switchGroups(Experiment *experiment);
 };
 
 inline void to_json(json &j, const FalsifyingData::Parameters &p) {
