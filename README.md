@@ -1,8 +1,3 @@
----
-title: About
-layout: default
-nav_order: 1
----
 
    **SAM is under development and testing!**
 
