@@ -391,7 +391,11 @@ struct PolicyChain {
   /// @todo I'm planning to implement the `logic` variable by which one can control which logic
   /// is going to be used
   ///
+  /// @note This is horrible, there are two methods, one gets the pointer and another one the ref.
+  /// This is very confusing!
   bool operator()(Experiment *experiment) {
+    
+    spdlog::trace("Looking for {}", *this);
     
     bool verdict {false};
     for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
@@ -415,7 +419,9 @@ struct PolicyChain {
   std::optional<std::vector<Submission>> operator()(Experiment &experiment) {
     /// @todo we check the experiment, and return the submission
     
-    std::vector<Submission> selections;
+    spdlog::trace("Looking for {}", *this);
+    
+    std::vector<Submission> selections {};
     auto found_sth_unique {false};
     auto begin = experiment.groups_.begin() + experiment.setup.nd();
     auto end = experiment.groups_.end();
@@ -441,7 +447,7 @@ struct PolicyChain {
       selections.emplace_back(experiment, begin->id_);
       spdlog::trace("✓ Found the only one!");
 //      return selections;
-    }else if (begin != end) { /// We found a bunch
+    } else if (begin != end) { /// We found a bunch
       
       spdlog::trace("✓ Found a bunch: ");
       for (auto it{begin}; it != end; ++it) {
@@ -449,9 +455,11 @@ struct PolicyChain {
         spdlog::trace("\t {}", *it);
       }
 //      return selections;
-    } else {
-      spdlog::trace("✗ Found nothing! To the next one!");
     }
+    /// @note I don't think I actually need this 
+//    else {
+//      spdlog::trace("✗ Found nothing! To the next one!");
+//    }
 
     return selections;
   }

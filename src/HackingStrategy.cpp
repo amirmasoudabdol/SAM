@@ -37,6 +37,8 @@ HackingStrategy::HackingStrategy() {
 ///
 std::unique_ptr<HackingStrategy>
 HackingStrategy::build(json &hacking_strategy_config) {
+  
+  spdlog::debug("Building a Hacking Strategy");
 
   if (hacking_strategy_config["name"] == "OptionalStopping") {
 

@@ -32,6 +32,9 @@ MetaAnalysis::~MetaAnalysis(){
 };
 
 std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
+  
+  spdlog::debug("Building a Meta Analysis Method");
+  
   if (name == "FixedEffectEstimator") {
     return std::make_unique<FixedEffectEstimator>();
   }else if (name == "RandomEffectEstimator") {
@@ -722,6 +725,9 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   
   arma::rowvec vi_star = vi - vb;
   arma::rowvec yi_star = (yi - beta) / arma::sqrt(vi_star);
+  
+  vi_star.replace(arma::datum::nan, 0.);
+  yi_star.replace(arma::datum::nan, 0.);
   auto ken_res = kendall_cor_test(yi_star, vi, params.alternative);
   
   auto tau  = ken_res.first;

@@ -64,6 +64,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
 
 //  spdlog::debug("---");
+  /// @todo I probably should check this somewhere else, and don't throw here!
   assert(!pchain_set.empty() && "PolicyChainSet is empty!");
   
   for (auto &pchain : pchain_set) {
@@ -74,11 +75,15 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
       if (selections.value().size() == 1) {
         submission_candidate = selections.value().back();
         return;
-      } else {
-        /// If we find many, we just collect them, and quit
-        submissions_pool.insert(submissions_pool.end(), selections.value().begin(), selections.value().end());
-        return;
       }
+//       else {
+        /// If we find many, we just collect them, and quit
+        /// @note update: I think this is actually an incorrect behavior. I think I was confusing this
+        /// with stashing! I think I designed pchain operator to be able to return more than one outcome
+        /// but didn't test for it
+//        submissions_pool.insert(submissions_pool.end(), selections.value().begin(), selections.value().end());
+//        return;
+//      }
     }
   }
 
@@ -114,10 +119,13 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     if (selection) {
       submission_candidate = selection.value();
       return;
-    } else {
-      /// We didn't find anything
-      return;
     }
+      /// @todo This is the same issue as it was in selectOutcome, if I return here, I'll not go through
+      /// the rest of then chain
+//    else {
+//      /// We didn't find anything
+//      return;
+//    }
     
   }
 

@@ -239,6 +239,10 @@ public:
     researcher.h_workflow.resize(config["researcher_parameters"]["hacking_strategies"].size());
       
     for (int h {0}; h < researcher.h_workflow.size(); ++h ) {
+      
+      // Basically there are no hacking strategies defined
+      if (config["researcher_parameters"]["hacking_strategies"][0] == "")
+        break;
                 
       auto &item = config["researcher_parameters"]["hacking_strategies"][h];
       

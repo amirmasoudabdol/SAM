@@ -16,6 +16,8 @@ Journal::Columns() {
 
 
 Journal::Journal(json &journal_config) {
+  
+  spdlog::debug("Initializing the Journal.");
 
   max_pubs = journal_config["max_pubs"];
 

@@ -14,6 +14,8 @@ DataStrategy::~DataStrategy() {
 }
 
 std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
+  
+  spdlog::debug("Building a Data Strategy");
 
   if (data_strategy_config["name"] == "LinearModel") {
     auto params = data_strategy_config.get<LinearModelStrategy::Parameters>();

@@ -45,9 +45,8 @@ void OptionalStopping::perform(Experiment *experiment) {
 
   }
   
-  for (int g{0}; g < experiment->setup.ng(); ++g) {
-    spdlog::trace("\t {}", (*experiment)[g]);
-  }
+  spdlog::trace("{}", *experiment);
+
 }
 
 void OptionalStopping::addObservations(Experiment *experiment, const int n) {

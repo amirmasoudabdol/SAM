@@ -1,131 +1,164 @@
 {
     "experiment_parameters": {
-        "n_reps": 1,
         "n_conditions": 2,
         "n_dep_vars": 2,
+        "n_obs": 10,
+        "n_reps": 5,
         "data_strategy": {
-            "errors": {
-                "covs": 0.0,
-                "dist": "mvnorm_distribution",
-                "means": [
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "stddevs": 0.1
-            },
+            "name": "LinearModel",
             "measurements": {
-                "covs": 0.0,
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.75,
-                    0.75,
-                    0.75
+                    0.0,
+                    0.1,
+                    0.1
                 ],
-                "stddevs": 1.0
-            },
-            "name": "LinearModel"
+                "sigma": [
+                    [
+                        1.0,
+                        0.5,
+                        0.0,
+                        0.0
+                    ],
+                    [
+                        0.5,
+                        1.0,
+                        0.0,
+                        0.0
+                    ],
+                    [
+                        0.0,
+                        0.0,
+                        1.0,
+                        0.5
+                    ],
+                    [
+                        0.0,
+                        0.0,
+                        0.5,
+                        1.0
+                    ]
+                ]
+            }
         },
         "effect_strategy": {
-            "name": "CohensD"
-        },
-        "n_obs": {
-            "dist": "normal_distribution",
-            "mean": 10,
-            "stddev": 2
+            "name": "MeanDifference"
         },
         "test_strategy": {
+            "name": "TTest",
             "alpha": 0.05,
             "alternative": "TwoSided",
-            "name": "TTest",
             "var_equal": true
         }
     },
     "journal_parameters": {
-        "max_pubs": 24,
-        "meta_analysis_metrics": [
-            {
-                "name": "FixedEffectEstimator"
-            },
-            {
-                "alpha": 0.1,
-                "name": "TestOfObsOverExptSig"
-            },
-            {
-                "alpha": 0.1,
-                "name": "RankCorrelation",
-                "alternative": "TwoSided"
-            }
-        ],
+        "max_pubs": 25,
         "selection_strategy": {
-            "alpha": 0.05,
-            "name": "SignificantSelection",
-            "pub_bias": 0.0,
-            "side": 0
+            "name": "FreeSelection"
         }
     },
     "researcher_parameters": {
         "decision_strategy": {
             "name": "DefaultDecisionMaker",
-            "initial_selection_policies": [
-                [
-                    "id == 1"
-                ]
-            ],
-            "will_start_hacking_decision_policies": [
-                "!sig"
-            ],
             "between_hacks_selection_policies": [
                 [
+                    "effect > 0",
                     "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
+                ]
+            ],
+            "between_replications_selection_policies": [
+                [
+                    "effect > 0",
+                    "sig",
+                    "first"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
+                ]
+            ],
+            "initial_selection_policies": [
+                [
+                    "id == 2",
+                    "sig",
+                    "effect > 0"
+                ],
+                [
+                    "id == 3",
+                    "sig",
+                    "effect > 0"
                 ]
             ],
             "stashing_policy": [
                 "all"
             ],
+            "submission_decision_policies": [
+                ""
+            ],
             "will_continue_replicating_decision_policy": [
                 ""
             ],
-            "between_replications_selection_policies": [
-                [
-                    ""
-                ]
-            ],
-            "submission_decision_policies": [
-                ""
+            "will_start_hacking_decision_policies": [
+                "effect < 0",
+                "!sig"
             ]
         },
-        "probability_of_being_a_hacker": 1,
-        "probability_of_committing_a_hack": 0.4,
-        "n_hacks": 2,
-        "hacking_selection_priority": "max(prevalence)",
-        "hacking_execution_order": "min(prevalence)",
-        "submission_probability": 0.7,
+        "probability_of_being_a_hacker": 0,
+        "probability_of_committing_a_hack": 1,
         "hacking_strategies": [
             [
                 {
-                    "name": "FalsifyingData",
-                    "target": "Both",
-                    "num": 5,
-                    "defensibility": 0.7,
-                    "prevalence": 0.2,
+                    "name": "OptionalStopping",
+                    "max_attempts": 1,
                     "n_attempts": 1,
-                    "approach": "swapping",
-                    "switching_direction": "treatment-to-control",
-                    "selection_method": "smart",
-                    "stage": "PostProcessing",
-                    "stopping_condition": [
-                        "!sig"
-                    ]
+                    "target": "Both",
+                    "prevalence": 0.1,
+                    "defensibility": 0.1,
+                    "num": 10
                 },
                 [
                     [
+                        "effect > 0",
                         "min(pvalue)"
                     ]
                 ],
                 [
+                    "effect < 0",
+                    "!sig"
+                ]
+            ],
+            [
+                {
+                    "name": "OutliersRemoval",
+                    "max_attempts": 1,
+                    "min_observations": 1,
+                    "multipliers": [
+                        2
+                    ],
+                    "n_attempts": 1,
+                    "target": "Both",
+                    "prevalence": 0.1,
+                    "defensibility": 0.1,
+                    "num": 10,
+                    "order": "random"
+                },
+                [
+                    [
+                        "effect > 0",
+                        "min(pvalue)"
+                    ]
+                ],
+                [
+                    "effect < 0",
                     "!sig"
                 ]
             ]
@@ -133,19 +166,33 @@
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "max_attempts": 1,
-                "n_attempts": 1,
                 "name": "OptionalStopping",
-                "num": 10
+                "level": "dv",
+                "num": 10,
+                "n_attempts": 1,
+                "max_attempts": 1
+            },
+            {
+                "name": "OutliersRemoval",
+                "level": "dv",
+                "max_attempts": 1,
+                "min_observations": 1,
+                "mode": "Recursive",
+                "multipliers": [
+                    2
+                ],
+                "n_attempts": 1,
+                "num": 10,
+                "order": "random"
             }
         ]
     },
     "simulation_parameters": {
         "log_level": "trace",
-        "master_seed": 4118845237,
-        "n_sims": 5,
-        "output_path": "../outputs/",
-        "output_prefix": "0153aac7-b6c7-4e21-8fbf-74ce75d14040",
+        "master_seed": 950176560,
+        "n_sims": 1,
+        "output_path": "/Users/amabdol/Projects/SAMoo/projects/marjan_2012_qrp/outputs/",
+        "output_prefix": "35a6e9e0-9c78-4dd2-a84e-7fa3f402ffea",
         "update_config": true,
         "progress": false,
         "save_all_pubs": true,
