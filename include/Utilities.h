@@ -5,9 +5,9 @@
 #ifndef SAMPP_UTILITIES_H
 #define SAMPP_UTILITIES_H
 
-#include "baaraan.hpp"
 #include "effolkronium/random.hpp"
 #include "sam.h"
+#include "baaraan.hpp"
 
 using Generator = std::mt19937;
 using Distribution = std::function<double(Generator &)>;
