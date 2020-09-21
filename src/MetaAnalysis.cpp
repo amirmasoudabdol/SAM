@@ -714,20 +714,13 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
   
   auto res  = FixedEffectEstimator::FixedEffect(yi, vi);
   auto beta = res.est;
-    
-  auto k = yi.n_elem;
-  arma::vec X = yi.as_col();
-  arma::vec wi = 1./vi.as_col();
-  arma::mat W = arma::diagmat(wi);
-  arma::mat sWX = arma::sqrt(W) * X;
-  arma::mat res_qrs = arma::solve(sWX, arma::diagmat(arma::vec(k, arma::fill::ones)));
-  double vb = arma::as_scalar(res_qrs * res_qrs.t());
+  auto vb = pow(res.se, 2);
   
   arma::rowvec vi_star = vi - vb;
   arma::rowvec yi_star = (yi - beta) / arma::sqrt(vi_star);
   
-  vi_star.replace(arma::datum::nan, 0.);
-  yi_star.replace(arma::datum::nan, 0.);
+//  vi_star.replace(arma::datum::nan, 0.);
+//  yi_star.replace(arma::datum::nan, 0.);
   auto ken_res = kendall_cor_test(yi_star, vi, params.alternative);
   
   auto tau  = ken_res.first;

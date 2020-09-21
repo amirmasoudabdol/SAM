@@ -1,45 +1,51 @@
 {
     "experiment_parameters": {
+        "n_reps": 1,
         "n_conditions": 2,
-        "n_dep_vars": 2,
-        "n_obs": 10,
-        "n_reps": 5,
+        "n_dep_vars": 1,
+        "n_obs": {
+            "dist": "piecewise_linear_distribution",
+            "intervals": [
+                0,
+                3,
+                5.9,
+                6,
+                20,
+                24,
+                25,
+                30,
+                40,
+                50,
+                100,
+                200,
+                300
+            ],
+            "densities": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1,
+                0.75,
+                0.25,
+                0.1,
+                0.1,
+                0.05,
+                0.05,
+                0.05
+            ]
+        },
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.0,
-                    0.1,
-                    0.1
+                    0.30000000000000004
                 ],
-                "sigma": [
-                    [
-                        1.0,
-                        0.5,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        0.5,
-                        1.0,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        0.0,
-                        0.0,
-                        1.0,
-                        0.5
-                    ],
-                    [
-                        0.0,
-                        0.0,
-                        0.5,
-                        1.0
-                    ]
-                ]
+                "covs": 0.0,
+                "stddevs": 1.0
             }
         },
         "effect_strategy": {
@@ -53,63 +59,71 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 25,
+        "max_pubs": 8,
         "selection_strategy": {
-            "name": "FreeSelection"
-        }
+            "name": "SignificantSelection",
+            "alpha": 0.05,
+            "pub_bias": 0.30000000000000004,
+            "side": 0
+        },
+        "meta_analysis_metrics": [
+            {
+                "name": "FixedEffectEstimator"
+            },
+            {
+                "name": "RandomEffectEstimator",
+                "estimator": "DL"
+            },
+            {
+                "name": "EggersTestEstimator",
+                "alpha": 0.1
+            },
+            {
+                "name": "TrimAndFill",
+                "alpha": 0.05,
+                "estimator": "R0",
+                "side": "auto"
+            },
+            {
+                "name": "RankCorrelation",
+                "alpha": 0.05,
+                "alternative": "TwoSided"
+            },
+            {
+                "name": "TestOfObsOverExptSig",
+                "alpha": 0.1
+            }
+        ]
     },
     "researcher_parameters": {
         "decision_strategy": {
             "name": "DefaultDecisionMaker",
+            "initial_selection_policies": [
+                [
+                    "id == 1"
+                ]
+            ],
+            "will_start_hacking_decision_policies": [
+                "!sig"
+            ],
+            "stashing_policy": [
+                "min(pvalue)"
+            ],
             "between_hacks_selection_policies": [
                 [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
+                    "last"
                 ]
             ],
             "between_replications_selection_policies": [
                 [
-                    "effect > 0",
-                    "sig",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
+                    ""
                 ]
-            ],
-            "initial_selection_policies": [
-                [
-                    "id == 2",
-                    "sig",
-                    "effect > 0"
-                ],
-                [
-                    "id == 3",
-                    "sig",
-                    "effect > 0"
-                ]
-            ],
-            "stashing_policy": [
-                "all"
-            ],
-            "submission_decision_policies": [
-                ""
             ],
             "will_continue_replicating_decision_policy": [
                 ""
             ],
-            "will_start_hacking_decision_policies": [
-                "effect < 0",
-                "!sig"
+            "submission_decision_policies": [
+                ""
             ]
         },
         "probability_of_being_a_hacker": 0,
@@ -118,86 +132,80 @@
             [
                 {
                     "name": "OptionalStopping",
+                    "target": "Both",
+                    "prevalence": 1,
+                    "defensibility": 1,
                     "max_attempts": 1,
                     "n_attempts": 1,
-                    "target": "Both",
-                    "prevalence": 0.1,
-                    "defensibility": 0.1,
-                    "num": 10
+                    "num": 0,
+                    "add_by_fraction": 0.3
                 },
                 [
                     [
-                        "effect > 0",
                         "min(pvalue)"
                     ]
                 ],
                 [
-                    "effect < 0",
                     "!sig"
                 ]
             ],
             [
                 {
-                    "name": "OutliersRemoval",
-                    "max_attempts": 1,
-                    "min_observations": 1,
-                    "multipliers": [
-                        2
-                    ],
-                    "n_attempts": 1,
+                    "name": "OptionalStopping",
                     "target": "Both",
-                    "prevalence": 0.1,
-                    "defensibility": 0.1,
-                    "num": 10,
-                    "order": "random"
+                    "prevalence": 1,
+                    "defensibility": 1,
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 0,
+                    "add_by_fraction": 0.3
                 },
                 [
                     [
-                        "effect > 0",
                         "min(pvalue)"
                     ]
                 ],
                 [
-                    "effect < 0",
+                    "!sig"
+                ]
+            ],
+            [
+                {
+                    "name": "OptionalStopping",
+                    "target": "Both",
+                    "prevalence": 1,
+                    "defensibility": 1,
+                    "max_attempts": 1,
+                    "n_attempts": 1,
+                    "num": 0,
+                    "add_by_fraction": 0.3
+                },
+                [
+                    [
+                        "min(pvalue)"
+                    ]
+                ],
+                [
                     "!sig"
                 ]
             ]
         ],
         "is_pre_processing": false,
         "pre_processing_methods": [
-            {
-                "name": "OptionalStopping",
-                "level": "dv",
-                "num": 10,
-                "n_attempts": 1,
-                "max_attempts": 1
-            },
-            {
-                "name": "OutliersRemoval",
-                "level": "dv",
-                "max_attempts": 1,
-                "min_observations": 1,
-                "mode": "Recursive",
-                "multipliers": [
-                    2
-                ],
-                "n_attempts": 1,
-                "num": 10,
-                "order": "random"
-            }
+            ""
         ]
     },
     "simulation_parameters": {
         "log_level": "trace",
-        "master_seed": 950176560,
+        "master_seed": 1600699252727,
         "n_sims": 1,
-        "output_path": "/Users/amabdol/Projects/SAMoo/projects/marjan_2012_qrp/outputs/",
-        "output_prefix": "35a6e9e0-9c78-4dd2-a84e-7fa3f402ffea",
+        "output_path": "../outputs/",
+        "output_prefix": "00836220-c50f-490d-b141-2b7b5eeb8bcd",
         "update_config": true,
         "progress": false,
         "save_all_pubs": true,
         "save_meta": true,
-        "save_overall_summaries": true,
+        "save_overall_summaries": false,
         "save_pubs_per_sim_summaries": true,
         "save_rejected": false
     }
