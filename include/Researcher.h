@@ -271,19 +271,19 @@ public:
       
       if (researcher.hacking_selection_priority == "random") {
         Random::shuffle(researcher.h_workflow);
-      } else if (researcher.hacking_selection_priority == "min(prevalence)") {
+      } else if (researcher.hacking_selection_priority == "asc(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
         });
-      } else if (researcher.hacking_selection_priority == "max(prevalence)") {
+      } else if (researcher.hacking_selection_priority == "desc(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
         });
-      } else if (researcher.hacking_selection_priority == "min(defensibility)") {
+      } else if (researcher.hacking_selection_priority == "asc(defensibility)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
         });
-      } else if (researcher.hacking_selection_priority == "max(defensibility)") {
+      } else if (researcher.hacking_selection_priority == "desc(defensibility)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
         });
@@ -313,19 +313,19 @@ public:
       
       if (researcher.hacking_execution_order == "random") {
         Random::shuffle(researcher.h_workflow);
-      } else if (researcher.hacking_execution_order == "min(prevalence)") {
+      } else if (researcher.hacking_execution_order == "asc(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
         });
-      } else if (researcher.hacking_execution_order == "max(prevalence)") {
+      } else if (researcher.hacking_execution_order == "desc(prevalence)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
         });
-      } else if (researcher.hacking_execution_order == "min(defensibility)") {
+      } else if (researcher.hacking_execution_order == "asc(defensibility)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
         });
-      } else if (researcher.hacking_execution_order == "max(defensibility)") {
+      } else if (researcher.hacking_execution_order == "desc(defensibility)") {
         std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
           return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
         });
