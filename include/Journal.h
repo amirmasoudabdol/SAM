@@ -178,6 +178,17 @@ public:
     }
     
     wi = 1./vi;
+    
+    // This makes sure that no study with zero variance passes to meta-analysis
+    if (!wi.is_finite()) {
+      arma::uvec nans = arma::find_nonfinite(wi);
+      yi.shed_cols(nans);
+      vi.shed_cols(nans);
+      wi.shed_cols(nans);
+      n -= nans.n_elem;
+      spdlog::warn("{} study(-ies) have been removed from meta-anlaysis pool due to unavailability of variance", nans.n_elem);
+    }
+    
   }
   
   void runMetaAnalysis();

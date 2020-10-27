@@ -45,7 +45,7 @@ void GRMDataStrategy::genData(Experiment *experiment) {
       });
 
       // This makes sure that I don't have a totally unanswered test
-    } while (!arma::any(data));
+    } while (data.is_zero());
 
     (*experiment)[g].set_measurements(data);
   }
