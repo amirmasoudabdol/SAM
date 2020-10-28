@@ -137,7 +137,8 @@ void Journal::reject(const Submission &s) {
 
 void Journal::runMetaAnalysis() {
   
-  prepareForMetaAnalysis();
+  if (!meta_analysis_strategies.empty())
+    prepareForMetaAnalysis();
   
   for (auto &method : meta_analysis_strategies) {
     method->estimate(this);
