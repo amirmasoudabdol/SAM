@@ -122,13 +122,13 @@ int main(int argc, const char **argv) {
   }
     
   /// Setting and saving the config file before starting the simulation
-  int masterseed{0};
+  std::mt19937::result_type masterseed{0};
   if (configs["simulation_parameters"]["master_seed"] == "random") {
     
     /// Generating a seed for Random
     /// @link https://stackoverflow.com/a/13446015/1141307
     std::random_device rd;
-    std::mt19937::result_type masterseed = rd() ^ (
+    masterseed = rd() ^ (
        (std::mt19937::result_type)
        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count() +
        (std::mt19937::result_type)
