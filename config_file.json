@@ -23,7 +23,7 @@
             "name": "GradedResponseModel"
         },
         "effect_strategy": {
-            "name": "StandardizedMeanDifference"
+            "name": "MeanDifference"
         },
         "n_conditions": 2,
         "n_dep_vars": 1,

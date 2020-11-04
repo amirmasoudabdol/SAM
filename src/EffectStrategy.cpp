@@ -19,6 +19,8 @@ EffectStrategy::build(json &effect_strategy_config) {
     return std::make_unique<CohensD>();
   } else if (effect_strategy_config["name"] == "HedgesG") {
     return std::make_unique<HedgesG>();
+  } else if (effect_strategy_config["name"] == "MeanDifference") {
+    return std::make_unique<MeanDifference>();
   } else if (effect_strategy_config["name"] == "StandardizedMeanDifference") {
     return std::make_unique<StandardizedMeanDifference>();
   } else {
@@ -52,6 +54,14 @@ void HedgesG::computeEffects(Experiment *experiment) {
   }
 }
 
+void MeanDifference::computeEffects(Experiment *experiment) {
+  for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
+       ++i, ++d %= experiment->setup.nd()) {
+    (*experiment)[i].effect_ =
+    mean_difference((*experiment)[i].mean_, (*experiment)[d].mean_);
+  }
+}
+
 void StandardizedMeanDifference::computeEffects(Experiment *experiment) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
@@ -62,6 +72,10 @@ void StandardizedMeanDifference::computeEffects(Experiment *experiment) {
 }
 
 namespace sam {
+
+double mean_difference(double Sm1, double Sm2) {
+  return (Sm1 - Sm2);
+}
 
 double standardized_mean_difference(double Sm1, double Sd1, double Sm2, double Sd2) {
   return (Sm1 - Sm2) / sqrt(0.5 * (pow(Sd1, 2) + pow(Sd2, 2)));

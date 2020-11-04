@@ -35,6 +35,20 @@ public:
   // std::string name = "";
 };
 
+class MeanDifference final : public EffectStrategy {
+  
+public:
+  //        std::string name = "MeanDifference";
+  
+  explicit MeanDifference(){
+    // name = "MeanDifference";
+  };
+  
+  explicit MeanDifference(EffectStrategyParameters esp) { params = esp; };
+  
+  void computeEffects(Experiment *experiment);
+};
+
 class StandardizedMeanDifference final : public EffectStrategy {
 
 public:
@@ -114,6 +128,8 @@ public:
 // private:
 //    const std::string name = "EtaSquared";
 //};
+
+double mean_difference(double Sm1, double Sm2);
 
 double standardized_mean_difference(double Sm1, double Sd1, double Sm2, double Sd2);
 
