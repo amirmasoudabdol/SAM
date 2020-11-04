@@ -18,7 +18,7 @@ class ExperimentSetup;
 class EffectStrategy {
 
 public:
-  enum class EffectEstimator { CohensD, HedgesG, OddRatio, MeanDifference };
+  enum class EffectEstimator { CohensD, HedgesG, OddRatio, StandardizedMeanDifference };
 
   struct EffectStrategyParameters {
     EffectEstimator name;
@@ -35,16 +35,16 @@ public:
   // std::string name = "";
 };
 
-class MeanDifference final : public EffectStrategy {
+class StandardizedMeanDifference final : public EffectStrategy {
 
 public:
-  //        std::string name = "MeanDifference";
+  //        std::string name = "StandardizedMeanDifference";
 
-  explicit MeanDifference(){
-      // name = "MeanDifference";
+  explicit StandardizedMeanDifference(){
+      // name = "StandardizedMeanDifference";
   };
 
-  explicit MeanDifference(EffectStrategyParameters esp) { params = esp; };
+  explicit StandardizedMeanDifference(EffectStrategyParameters esp) { params = esp; };
 
   void computeEffects(Experiment *experiment);
 };
@@ -115,7 +115,7 @@ public:
 //    const std::string name = "EtaSquared";
 //};
 
-double mean_difference(double Sm1, double Sd1, double Sm2, double Sd2);
+double standardized_mean_difference(double Sm1, double Sd1, double Sm2, double Sd2);
 
 void cohens_d(Experiment *expr);
 

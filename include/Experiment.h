@@ -146,6 +146,8 @@ public:
 
   void recalculateEverything();
   
+  void recalculateEverythingForGroup(size_t inx);
+  
   /// Clear contents of the experiment
   void clear();
 

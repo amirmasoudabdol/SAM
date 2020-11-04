@@ -88,6 +88,15 @@ void Experiment::recalculateEverything() {
   this->runTest();
 }
 
+void Experiment::recalculateEverythingForGroup(size_t inx) {
+  
+  this->groups_[inx].updateStats();
+  
+//  this->calculateEffects();
+//  
+//  this->runTest();
+}
+
 void Experiment::clear() {
 
   for (auto &group : groups_) {

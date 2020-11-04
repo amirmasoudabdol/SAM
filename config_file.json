@@ -15,19 +15,19 @@
                     "dist": "normal_distribution",
                     "mean": 3,
                     "stddev": 1.0
-                }              
+                }
             ],
             "n_categories": 2,
-            "n_items": 10,
+            "n_items": 2,
             "response_function": "Rasch",
             "name": "GradedResponseModel"
         },
         "effect_strategy": {
-            "name": "MeanDifference"
+            "name": "StandardizedMeanDifference"
         },
         "n_conditions": 2,
         "n_dep_vars": 1,
-        "n_obs": 15,
+        "n_obs": 100,
         "n_reps": 1,
         "test_strategy": {
             "name": "TTest",
@@ -37,7 +37,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 24,
+        "max_pubs": 8,
         "selection_strategy": {
             "name": "FreeSelection"
         }
@@ -70,7 +70,7 @@
                 ""
             ],
             "will_start_hacking_decision_policies": [
-                ""
+                "!sig"
             ]
         },
         "hacking_strategies": [
@@ -98,16 +98,16 @@
         ]
     },
     "simulation_parameters": {
-        "log_level": "info",
-        "master_seed": "random",
-        "n_sims": 5000,
-        "output_path": "../outputs/",
-        "output_prefix": "20896c34-b1b8-4122-b46a-5e72b8ae3988",
+        "log_level": "trace",
+        "master_seed": 3072974270,
+        "n_sims": 100,
+        "output_path": "/Users/amabdol/Projects/SAMoo/projects/marjan_2014_subjective/outputs/",
+        "output_prefix": "00f4c26a-79d7-4411-a425-b04f230963db",
         "update_config": true,
         "progress": false,
         "save_all_pubs": true,
-        "save_meta": false,
-        "save_overall_summaries": false,
+        "save_meta": true,
+        "save_overall_summaries": true,
         "save_pubs_per_sim_summaries": false,
         "save_rejected": false
     }

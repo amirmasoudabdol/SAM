@@ -51,7 +51,7 @@ initialization phase.
               "side": "TwoSided"
           },
           "effect_strategy": {
-              "name": "MeanDifference"
+              "name": "StandardizedMeanDifference"
           }
       },
       "journal_parameters": {
