@@ -13,39 +13,36 @@ using namespace sam;
 
 GRMDataStrategy::GRMDataStrategy(const Parameters &p) : params(p) {
   /// Some initialization
-  betas.resize(params.n_items, params.n_categories);
-  poa.resize(params.n_items, params.n_categories);
-  responses.resize(params.n_items, params.n_categories);
-  urand.resize(params.n_items, params.n_categories);
+  betas.resize(params.n_items, params.n_categories - 1);
+  poa.resize(params.n_items, params.n_categories - 1);
+  responses.resize(params.n_items, params.n_categories - 1);
+  urand.resize(params.n_items, params.n_categories - 1);
+  scores.resize(params.n_items);
 }
 
 void GRMDataStrategy::genData(Experiment *experiment) {
   
   betas = fillMatrix(params.diff_dists, params.m_diff_dist,
-                     params.n_categories,
+                     params.n_categories - 1,
                      params.n_items);
+  
+  // Sorting β's
+  betas = arma::sort(betas, "ascend", 0);
   
   // This is a strange hack, I should redo the GRM totally
   arma::inplace_trans(betas);
-
+  
+  auto thetas = fillMatrix(params.abil_dists, params.m_abil_dist,
+                           experiment->setup.ng(),
+                           experiment->setup.nobs().max());
+  
   for (int g{0}; g < experiment->setup.ng(); ++g) {
 
     arma::Row<double> data(experiment->setup.nobs()[g]);
-    
-    do {
-      
-      /// This is somewhat better, but it's still not perfect
-      /// TODO: I should find a way to move this out of the for-loop
-      auto thetas = fillMatrix(params.abil_dists, params.m_abil_dist,
-                               experiment->setup.ng(),
-                               experiment->setup.nobs().max());
 
-      data.imbue([&, i = 0]() mutable {
-        return generate_sum_of_scores(thetas.at(i++, g));
-      });
-
-      // This makes sure that I don't have a totally unanswered test
-    } while (data.is_zero());
+    data.imbue([&, i = 0]() mutable {
+      return generate_sum_of_scores(thetas.at(i++, g));
+    });
 
     (*experiment)[g].set_measurements(data);
   }
@@ -56,11 +53,18 @@ double GRMDataStrategy::generate_sum_of_scores(const double theta) {
 
   poa = (arma::exp(theta - betas)) / (1 + arma::exp(theta - betas));
 
-  urand.imbue([&]() { return Random::get(uniform_dist); });
+  urand.imbue([&]() { return Random::get<double>(0., 1.); });
 
-  responses = poa > urand;
-
-  return arma::accu(responses);
+  responses = urand < poa;
+  responses.insert_cols(params.n_categories - 1, arma::uvec(params.n_items, arma::fill::zeros));
+  
+  scores.imbue([&, i = 0]() mutable {
+    arma::uvec zeros = arma::find((responses.row(i++)) == 0);
+    return zeros.empty() ? params.n_categories : zeros.at(0);
+  });
+  scores += 1;
+  
+  return arma::accu(scores);
 }
 
 std::vector<arma::Row<double>>

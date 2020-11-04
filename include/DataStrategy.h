@@ -215,6 +215,7 @@ public:
 
     int n_items;
     int n_categories;
+    std::string response_function {"Rasch"};
 
     std::optional<MultivariateDistribution> m_diff_dist;
     std::optional<MultivariateDistribution> m_abil_dist;
@@ -247,7 +248,7 @@ private:
 
   arma::mat poa;        //! probablity of answering
   arma::umat responses; //! responses to items, binary
-  arma::mat sumofscores;
+  arma::vec scores;
 
   arma::mat urand;
 
@@ -256,9 +257,8 @@ private:
 
   //! Participants abilities
   arma::mat thetas;
-
-  // This can be implemented again if I need a direct access to item scores
-  //        arma::umat generate_binary_scores(const double theta);
+  
+  /// @todo this should probably be renamed to "RaschScore" or something like that
   double generate_sum_of_scores(const double theta);
 };
 
@@ -268,6 +268,7 @@ inline void to_json(json &j, const GRMDataStrategy::Parameters &p) {
       {"name", p.name},
       {"n_items", p.n_items},
       {"n_categories", p.n_categories},
+      {"response_function", p.response_function},
       //                    {"difficulties", p.diff_dists},
       //                    {"abilities", p.abil_dists}
   };
@@ -283,11 +284,12 @@ inline void from_json(const json &j, GRMDataStrategy::Parameters &p) {
 
   j.at("n_items").get_to(p.n_items);
   j.at("n_categories").get_to(p.n_categories);
+  j.at("response_function").get_to(p.response_function);
 
   // Collecting difficulties
-  if (j.at("difficulties").type() == nlohmann::detail::value_t::object)
+  if (j.at("difficulties").type() == nlohmann::detail::value_t::object) {
     p.m_diff_dist = make_multivariate_distribution(j.at("difficulties"));
-  else {
+  } else {
     if (j.at("difficulties").type() == nlohmann::detail::value_t::array) {
       std::vector<Distribution> dists;
       for (const auto &value : j["difficulties"])
