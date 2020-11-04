@@ -53,7 +53,13 @@ double GRMDataStrategy::generate_sum_of_scores(const double theta) {
 
   poa = (arma::exp(theta - betas)) / (1 + arma::exp(theta - betas));
 
-  urand.imbue([&]() { return Random::get<double>(0., 1.); });
+  // this is a super slow process
+  /// @todo check if I can improve this imbue
+//  urand.imbue([&]() { return Random::get<double>(0., 1.); });
+  
+  // this is much better but then I'm out of my RNG chain, which should kind of be fine,
+  // because they are just some random values for evaluation,
+  urand.randu();
 
   responses = urand < poa;
   responses.insert_cols(params.n_categories - 1, arma::uvec(params.n_items, arma::fill::zeros));
