@@ -138,6 +138,7 @@ int main(int argc, const char **argv) {
     masterseed = configs["simulation_parameters"]["master_seed"].get<int>();
   }
   Random::seed(masterseed);
+  arma::arma_rng::set_seed(masterseed);
   
   /// Saving the updated config file if necessary
   if (vm.count("update-config")) {

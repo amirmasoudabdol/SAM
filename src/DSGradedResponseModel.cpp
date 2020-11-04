@@ -51,7 +51,8 @@ void GRMDataStrategy::genData(Experiment *experiment) {
 // Generate persons j answer to all items
 double GRMDataStrategy::generate_sum_of_scores(const double theta) {
 
-  poa = (arma::exp(theta - betas)) / (1 + arma::exp(theta - betas));
+  poa = arma::exp(theta - betas);
+  poa = poa / (1 + poa);
 
   // this is a super slow process
   /// @todo check if I can improve this imbue
@@ -59,6 +60,7 @@ double GRMDataStrategy::generate_sum_of_scores(const double theta) {
   
   // this is much better but then I'm out of my RNG chain, which should kind of be fine,
   // because they are just some random values for evaluation,
+  /// @note this requires arma::arma_rng::set_seed(); to work
   urand.randu();
 
   responses = urand < poa;
