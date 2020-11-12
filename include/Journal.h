@@ -34,6 +34,13 @@ public:
   std::vector<Submission> publications_list;
   int n_accepted{0};
   
+  //! Rejected Submissions
+  std::vector<Submission> rejection_list;
+  int n_rejected{0};
+  
+  //! Number of significant submissions
+  int n_sig{0};
+  
   //! Caching variables
   arma::Row<double> yi;
   arma::Row<double> vi;
@@ -53,13 +60,10 @@ public:
   operator std::vector<std::string>() {
     return {
       std::to_string(n_accepted),
-      std::to_string(n_rejected)
+      std::to_string(n_rejected),
+      std::to_string(n_sig)
     };
   }
-
-  //! Rejected Submissions
-  std::vector<Submission> rejection_list;
-  int n_rejected{0};
 
   //! Journal's Selection Model/Strategy
   std::unique_ptr<SelectionStrategy> selection_strategy;
@@ -165,6 +169,7 @@ public:
     
     n_accepted = 0;
     n_rejected = 0;
+    n_sig = 0;
   }
   
   void prepareForMetaAnalysis() {

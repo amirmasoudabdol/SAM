@@ -10,7 +10,8 @@ std::vector<std::string>
 Journal::Columns() {
   return {
     "n_accepted",
-    "n_rejected"
+    "n_rejected",
+    "n_sig"
   };
 }
 
@@ -119,6 +120,9 @@ void Journal::accept(const Submission &s) {
 
   publications_list.push_back(s);
   n_accepted++;
+  
+  if (s.isSig())
+    n_sig++;
 
   /// \todo Maybe I should calculate the publications stats here
   

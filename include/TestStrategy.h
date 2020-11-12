@@ -192,8 +192,8 @@ public:
   struct Parameters {
     TestMethod name = TestMethod::YuenTest;
     TestAlternative alternative = TestAlternative::TwoSided;
-    double alpha = 0.95;
-    double trim = 0.20;
+    double alpha {0.05};
+    double trim {0.20};
     bool paired {false};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(YuenTest::Parameters, name, alternative, alpha, trim, paired);

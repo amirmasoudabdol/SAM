@@ -7,12 +7,15 @@
 
 #include "Submission.h"
 #include "Utilities.h"
+#include <sol/sol.hpp>
+#include "Policy.h"
 
 namespace sam {
 
 class Journal;
 
 enum class SelectionMethod {
+  PolicyBasedSelection,
   SignificantSelection,
   RandomSelection,
   FreeSelection
@@ -20,7 +23,8 @@ enum class SelectionMethod {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     SelectionMethod,
-    {{SelectionMethod::SignificantSelection, "SignificantSelection"},
+    {{SelectionMethod::PolicyBasedSelection, "PolicyBasedSelection"},
+     {SelectionMethod::SignificantSelection, "SignificantSelection"},
      {SelectionMethod::RandomSelection, "RandomSelection"},
      {SelectionMethod::FreeSelection, "FreeSelection"}
 })
@@ -43,8 +47,11 @@ public:
   /// \brief      Pure deconstructor of the base class
   ///
   virtual ~SelectionStrategy() = 0;
+  
+  sol::state lua;
 
   SelectionMethod name;
+  SelectionStrategy();
 
   ///
   /// \brief      Factory method for building a SelectionStrategy
@@ -71,6 +78,43 @@ public:
   virtual bool review(const Submission &s) = 0;
 };
 
+
+///
+/// \brief Policy-based Selection Strategy
+///
+/// Policy-based selection strategy accepts a submission if it passes
+/// a criteria specified in `selection_policy_defs`. In addition to the
+/// output of selection policy, a submission might get rejected based on
+/// journal's acceptance rate, and publication bias rate.
+///
+class PolicyBasedSelection final : public SelectionStrategy {
+  
+public:
+  struct Parameters {
+    SelectionMethod name = SelectionMethod::PolicyBasedSelection;
+    
+    //! Publication Bias Rate
+    double pub_bias {0.5};
+    
+    //! Acceptance Rate
+    double pub_chance {0.5};
+    
+    //! Definition of the selection policy used by Journal to evaluate a given submission
+    std::vector<std::string> selection_policy_defs {"sig"};
+    
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name, pub_bias, pub_chance, selection_policy_defs);
+  };
+  
+  Parameters params;
+  PolicyChain selection_policy;
+  
+  PolicyBasedSelection(Parameters &p) : params{p} {
+    selection_policy = PolicyChain(params.selection_policy_defs, lua);
+  }
+  
+  virtual bool review(const Submission &s) override;
+};
+
 ///
 /// \brief      Significant-based Selection Strategy
 ///
@@ -93,14 +137,14 @@ public:
 
     //! The \alpha at which the _selection strategy_ decides the significance
     //! of a publication
-    double alpha = 0.05;
+    double alpha {0.05};
 
     //! Publication bias rate
-    double pub_bias = 0.5;
+    double pub_bias {0.5};
 
     //! Indicates the _selection stratgy_'s preference toward positive, `1`,
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
-    int side = 1;
+    int side {1};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(SignificantSelection::Parameters, name, alpha, pub_bias, side);
   };

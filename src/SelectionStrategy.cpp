@@ -12,15 +12,39 @@ SelectionStrategy::~SelectionStrategy() {
   // Pure deconstructor
 }
 
+SelectionStrategy::SelectionStrategy() {
+  lua.open_libraries();
+  
+  lua.new_usertype<Group>("GroupData", "id", &Group::id_, "nobs",
+                          &Group::nobs_, "pvalue", &Group::pvalue_,
+                          "effect", &Group::effect_, "sig",
+                          &Group::sig_);
+  
+  lua.new_usertype<Submission>(
+                               "Submission", "id",
+                               sol::property([](Submission &s) { return s.group_.id_; }), "nobs",
+                               sol::property([](Submission &s) { return s.group_.nobs_; }), "mean",
+                               sol::property([](Submission &s) { return s.group_.mean_; }), "pvalue",
+                               sol::property([](Submission &s) { return s.group_.pvalue_; }), "effect",
+                               sol::property([](Submission &s) { return s.group_.effect_; }), "sig",
+                               sol::property([](Submission &s) { return s.group_.sig_; }));
+}
+
 std::unique_ptr<SelectionStrategy>
 SelectionStrategy::build(json &selection_strategy_config) {
 
-  if (selection_strategy_config["name"] == "SignificantSelection") {
+  if (selection_strategy_config["name"] == "PolicyBasedSelection") {
 
     auto params =
-        selection_strategy_config.get<SignificantSelection::Parameters>();
-    return std::make_unique<SignificantSelection>(params);
+        selection_strategy_config.get<PolicyBasedSelection::Parameters>();
+    return std::make_unique<PolicyBasedSelection>(params);
 
+  } else if (selection_strategy_config["name"] == "SignificantSelection") {
+    
+    auto params =
+    selection_strategy_config.get<SignificantSelection::Parameters>();
+    return std::make_unique<SignificantSelection>(params);
+    
   } else if (selection_strategy_config["name"] == "RandomSelection") {
 
     auto params = selection_strategy_config.get<RandomSelection::Parameters>();
@@ -33,6 +57,22 @@ SelectionStrategy::build(json &selection_strategy_config) {
   } else {
     throw std::invalid_argument("Unknown Selection Strategy.");
   }
+}
+
+
+///
+/// Check wheter the selection_policy passes, if so, and a
+/// random draw from U(0, 1) is true, then the submission will
+/// be accepted; otherwise, it will be rejected
+///
+bool PolicyBasedSelection::review(const Submission &s) {
+  
+  if (selection_policy(s) and
+        Random::get<bool>(params.pub_chance) and
+          Random::get<bool>(1 - params.pub_bias))
+    return true;
+  
+  return false;
 }
 
 ///

@@ -1,45 +1,41 @@
 {
     "experiment_parameters": {
-        "data_strategy": {
-            "abilities": {
-                "dist": "mvnorm_distribution",
-                "means": [
-                    0,
-                    0
-                ],
-                "stddevs": 1.0,
-                "covs": 0.0
-            },
-            "difficulties": [
-                {
-                    "dist": "normal_distribution",
-                    "mean": 3,
-                    "stddev": 1.0
-                }
-            ],
-            "n_categories": 2,
-            "n_items": 2,
-            "response_function": "Rasch",
-            "name": "GradedResponseModel"
-        },
-        "effect_strategy": {
-            "name": "MeanDifference"
-        },
         "n_conditions": 2,
         "n_dep_vars": 1,
-        "n_obs": 100,
+        "n_obs": 25,
         "n_reps": 1,
+        "data_strategy": {
+            "name": "LinearModel",
+            "measurements": {
+                "dist": "mvnorm_distribution",
+                "means": [0, 0.4],
+                "covs": 0.0,
+                "stddevs": 1.0
+            },
+            "errors": {
+                "dist": "mvnorm_distribution",
+                "means": [0, 0],
+                "covs": 0.0,
+                "stddevs": 1.0
+            }
+        },
         "test_strategy": {
-            "name": "TTest",
+            "name": "WilcoxonTest",
             "alpha": 0.05,
             "alternative": "TwoSided",
-            "var_equal": true
+            "use_continuity": true
+        },
+        "effect_strategy": {
+            "name": "StandardizedMeanDifference"
         }
     },
     "journal_parameters": {
         "max_pubs": 8,
         "selection_strategy": {
-            "name": "FreeSelection"
+            "name": "PolicyBasedSelection",
+            "pub_chance": 1,
+            "pub_bias": 0,
+            "selection_policy_defs": ["sig", "effect < 0.25", "effect > 0.1"]
         }
     },
     "researcher_parameters": {
@@ -100,15 +96,15 @@
     "simulation_parameters": {
         "log_level": "trace",
         "master_seed": 3072974270,
-        "n_sims": 100,
-        "output_path": "/Users/amabdol/Projects/SAMoo/projects/marjan_2014_subjective/outputs/",
+        "n_sims": 5,
+        "output_path": "../outputs/",
         "output_prefix": "00f4c26a-79d7-4411-a425-b04f230963db",
         "update_config": true,
         "progress": false,
         "save_all_pubs": true,
         "save_meta": true,
         "save_overall_summaries": true,
-        "save_pubs_per_sim_summaries": false,
+        "save_pubs_per_sim_summaries": true,
         "save_rejected": false
     }
 }
