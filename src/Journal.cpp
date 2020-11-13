@@ -228,9 +228,9 @@ void Journal::saveMetaAnalysis() {
 
 void Journal::saveSummaries() {
   
+  static std::map<std::string, std::string> record;
+  
   for (auto &item : meta_stat_runners) {
-    
-    std::map<std::string, std::string> record;
     
     for (int c{0}; c < meta_columns[item.first].size(); ++c) {
       record["mean_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].mean()[c]);
@@ -248,7 +248,8 @@ void Journal::saveSummaries() {
     
   }
   
-  std::map<std::string, std::string> record;
+  // Clearning record since I'd need a new set of key-values
+  record.clear();
   
   for (int c{0}; c < submission_columns.size(); ++c) {
     record["mean_" + submission_columns[c]] = std::to_string(pubs_stat_runner.mean()[c]);
