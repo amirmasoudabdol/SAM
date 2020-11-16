@@ -20,10 +20,10 @@
             }
         },
         "test_strategy": {
-            "name": "WilcoxonTest",
+            "name": "TTest",
             "alpha": 0.05,
             "alternative": "TwoSided",
-            "use_continuity": true
+            "var_equal": true
         },
         "effect_strategy": {
             "name": "StandardizedMeanDifference"
@@ -32,10 +32,10 @@
     "journal_parameters": {
         "max_pubs": 8,
         "selection_strategy": {
-            "name": "PolicyBasedSelection",
-            "pub_chance": 1,
+            "name": "SignificantSelection",
             "pub_bias": 0,
-            "selection_policy_defs": ["sig", "effect < 0.25", "effect > 0.1"]
+            "alpha": 0.05,
+            "side": 1
         }
     },
     "researcher_parameters": {
@@ -95,7 +95,7 @@
     },
     "simulation_parameters": {
         "log_level": "trace",
-        "master_seed": 3072974270,
+        "master_seed": 30974270,
         "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "00f4c26a-79d7-4411-a425-b04f230963db",

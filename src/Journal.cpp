@@ -11,7 +11,9 @@ Journal::Columns() {
   return {
     "n_accepted",
     "n_rejected",
-    "n_sig"
+    "n_sig",
+    "mean_sig_pvalue",
+    "mean_sig_effect"
   };
 }
 
@@ -30,6 +32,9 @@ Journal::Journal(json &journal_config) {
   is_saving_summaries = journal_config["save_overall_summaries"];
   is_saving_pubs_per_sim_summaries = journal_config["save_pubs_per_sim_summaries"];
   
+  /// For each given method, we prepare their output columns names, and an output file.
+  /// If we are saving summaries, we initialize a stats runner, as well as appropriate
+  /// column names, and output file.
   for (auto const &method : journal_config["meta_analysis_metrics"]) {
     meta_analysis_strategies.push_back(MetaAnalysis::build(method));
     
@@ -79,16 +84,34 @@ Journal::Journal(json &journal_config) {
     stats_columns.push_back("stddev_" + col);
   }
   
-  if (is_saving_pubs_per_sim_summaries) {
-    pubs_per_sim_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
-                                                                   journal_config["output_prefix"].get<std::string>() +
-                                                                   "_Publications_Per_Sim_Summaries.csv", stats_columns);
-  }
+  auto journal_columns = Columns();
+  
+  // Extending the columns list by adding Journal specfic information
+  
   
   if (is_saving_summaries){
+    
+    auto tjcols = stats_columns;
+    for (auto &col : journal_columns) {
+      tjcols.push_back("mean_" + col);
+      tjcols.push_back("min_" + col);
+      tjcols.push_back("max_" + col);
+      tjcols.push_back("var_" + col);
+      tjcols.push_back("stddev_" + col);
+    }
+    
     pubs_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
                                                                      journal_config["output_prefix"].get<std::string>() +
-                                                                     "_Publications_Summaries.csv", stats_columns);
+                                                                     "_Publications_Summaries.csv", tjcols);
+  }
+  
+  if (is_saving_pubs_per_sim_summaries) {
+    
+    stats_columns.insert(stats_columns.end(), journal_columns.begin(), journal_columns.end());
+    
+    pubs_per_sim_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
+                                                                             journal_config["output_prefix"].get<std::string>() +
+                                                                             "_Publications_Per_Sim_Summaries.csv", stats_columns);
   }
     
   
@@ -106,13 +129,20 @@ bool Journal::review(Submission &s) {
   if (decision) {
     accept(s);
     
+    /// Stats runner over all publications of this journal
+    if (is_saving_pubs_per_sim_summaries) {
+      pubs_per_sim_stat_runner(static_cast<arma::rowvec>(s));
+    }
+    
+    /// Stat runner over all simulations
     if (is_saving_summaries) {
-        pubs_stat_runner(static_cast<arma::rowvec>(s));
+      pubs_stat_runner(static_cast<arma::rowvec>(s));
     }
     
   } else {
     reject(s);
   }
+  
   return decision;
 }
 
@@ -121,8 +151,11 @@ void Journal::accept(const Submission &s) {
   publications_list.push_back(s);
   n_accepted++;
   
-  if (s.isSig())
-    n_sig++;
+  if (s.isSig()) {
+    n_sigs++;
+    sum_sig_pvalue += s.group_.pvalue_;
+    sum_sig_effect += s.group_.effect_;
+  }
 
   /// \todo Maybe I should calculate the publications stats here
   
@@ -181,45 +214,33 @@ void Journal::updateTheOverallRunner() {
 
 void Journal::saveMetaAnalysis() {
   
-  
-//  static std::vector<std::string> row;
   static std::vector<std::string> mrow;
   
   for (auto &res : meta_analysis_submissions) {
     
-    // This uses the conversion operator to cast the Journal to vector of strings
-//    row = *this;
-    
     std::visit(overload{
       [&](FixedEffectEstimator::ResultType &res) {
-        
         mrow = res;
-//        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["FixedEffectEstimator"].write(mrow);
       },
       [&](RandomEffectEstimator::ResultType &res) {
         mrow = res;
-//        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["RandomEffectEstimator"].write(mrow);
       },
       [&](EggersTestEstimator::ResultType &res) {
         mrow = res;
-//        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["EggersTestEstimator"].write(mrow);
       },
       [&](TestOfObsOverExptSig::ResultType &res) {
         mrow = res;
-//        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["TestOfObsOverExptSig"].write(mrow);
       },
       [&](TrimAndFill::ResultType &res) {
         mrow = res;
-//        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["TrimAndFill"].write(mrow);
       },
       [&](RankCorrelation::ResultType &res) {
         mrow = res;
-//        row.insert(row.end(), mrow.begin(), mrow.end());
         meta_writers["RankCorrelation"].write(mrow);
       }
     }, res);
@@ -230,6 +251,7 @@ void Journal::saveSummaries() {
   
   static std::map<std::string, std::string> record;
   
+  /// Preparing and writting the summary of every meta-analysis method
   for (auto &item : meta_stat_runners) {
     
     for (int c{0}; c < meta_columns[item.first].size(); ++c) {
@@ -251,6 +273,7 @@ void Journal::saveSummaries() {
   // Clearning record since I'd need a new set of key-values
   record.clear();
   
+  /// Preparing the summary of all publications
   for (int c{0}; c < submission_columns.size(); ++c) {
     record["mean_" + submission_columns[c]] = std::to_string(pubs_stat_runner.mean()[c]);
     record["min_" + submission_columns[c]] = std::to_string(pubs_stat_runner.min()[c]);
@@ -259,21 +282,26 @@ void Journal::saveSummaries() {
     record["stddev_" + submission_columns[c]] = std::to_string(pubs_stat_runner.stddev()[c]);
   }
   
+  /// Preparing the summary of journal's info by
+  /// adding it to the end of publication's record
+  for (int c{0}; c < Columns().size(); ++c) {
+    record["mean_" + Columns()[c]] = std::to_string(journal_stat_runner.mean()[c]);
+    record["min_" + Columns()[c]] = std::to_string(journal_stat_runner.min()[c]);
+    record["max_" + Columns()[c]] = std::to_string(journal_stat_runner.max()[c]);
+    record["var_" + Columns()[c]] = std::to_string(journal_stat_runner.var()[c]);
+    record["stddev_" + Columns()[c]] = std::to_string(journal_stat_runner.stddev()[c]);
+  }
+  
   pubs_stats_writer->write(record);
   
 }
 
-
+///
+/// @brief Saving the runner statistics of each batch of publications in Journal
+///
 void Journal::savePulicationsPerSimSummaries() {
   
   static std::map<std::string, std::string> record;
-  
-  /// Calculating the statistics
-  pubs_per_sim_stat_runner.reset();
-  for (auto &s : publications_list) {
-    arma::rowvec row = s;
-    pubs_per_sim_stat_runner(row);
-  }
   
   for (int c{0}; c < submission_columns.size(); ++c) {
     record["mean_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.mean()[c]);
@@ -283,6 +311,22 @@ void Journal::savePulicationsPerSimSummaries() {
     record["stddev_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.stddev()[c]);
   }
   
+  // Adding Journal's Info
+  record["n_accepted"] = std::to_string(n_accepted);
+  record["n_rejected"] = std::to_string(n_rejected);
+  record["n_sigs"] = std::to_string(n_sigs);
+  
+  mean_sig_pvalue = sum_sig_pvalue / n_sigs;
+  record["mean_sig_pvalue"] = std::to_string(mean_sig_pvalue);
+  mean_sig_effect = sum_sig_effect / n_sigs;
+  record["mean_sig_effect"] = std::to_string(mean_sig_effect);
+  
+  // Tracking Journal's Stats
+  journal_stat_runner(static_cast<arma::rowvec>(*this));
+  
   pubs_per_sim_stats_writer->write(record);
+  
+  /// Reseting the runner statistics
+  pubs_per_sim_stat_runner.reset();
   
 }
