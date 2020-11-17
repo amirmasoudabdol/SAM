@@ -1,4 +1,0 @@
-.. _chap-samoo:
-
-SAMoo
-=====
