@@ -162,6 +162,10 @@ void Journal::accept(const Submission &s) {
   if (publications_list.size() == max_pubs) {
     still_accepting = false;
     
+    /// Updating journal's info
+    mean_sig_pvalue = sum_sig_pvalue / n_sigs;
+    mean_sig_effect = sum_sig_effect / n_sigs;
+    
     /// Adding current info to the stat runner
     journal_stat_runner(static_cast<arma::rowvec>(*this));
   }
@@ -332,10 +336,7 @@ void Journal::savePulicationsPerSimSummaries() {
   record["n_accepted"] = std::to_string(n_accepted);
   record["n_rejected"] = std::to_string(n_rejected);
   record["n_sigs"] = std::to_string(n_sigs);
-  
-  mean_sig_pvalue = sum_sig_pvalue / n_sigs;
   record["mean_sig_pvalue"] = std::to_string(mean_sig_pvalue);
-  mean_sig_effect = sum_sig_effect / n_sigs;
   record["mean_sig_effect"] = std::to_string(mean_sig_effect);
   
   
