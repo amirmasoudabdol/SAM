@@ -61,7 +61,7 @@ Journal::Journal(json &journal_config) {
         meta_stats_cols.push_back("min_" + col);
         meta_stats_cols.push_back("max_" + col);
         meta_stats_cols.push_back("var_" + col);
-        meta_stats_cols.push_back("stddev_" + col);
+//        meta_stats_cols.push_back("stddev_" + col);
       }
       
       meta_stats_columns[method_name] = meta_stats_cols;
@@ -81,7 +81,7 @@ Journal::Journal(json &journal_config) {
     stats_columns.push_back("min_" + col);
     stats_columns.push_back("max_" + col);
     stats_columns.push_back("var_" + col);
-    stats_columns.push_back("stddev_" + col);
+//    stats_columns.push_back("stddev_" + col);
   }
   
   auto journal_columns = Columns();
@@ -97,7 +97,7 @@ Journal::Journal(json &journal_config) {
       tjcols.push_back("min_" + col);
       tjcols.push_back("max_" + col);
       tjcols.push_back("var_" + col);
-      tjcols.push_back("stddev_" + col);
+//      tjcols.push_back("stddev_" + col);
     }
     
     pubs_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
@@ -252,6 +252,8 @@ void Journal::saveMetaAnalysis() {
 
 void Journal::saveSummaries() {
   
+  spdlog::info("Saving Overall Statistics Summaries...");
+  
   static std::map<std::string, std::string> record;
   
   /// Preparing and writting the summary of every meta-analysis method
@@ -263,10 +265,10 @@ void Journal::saveSummaries() {
       record["max_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].max()[c]);
       record["var_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].var()[c]);
       
-      if (meta_stat_runners.size() > 2)
-        record["stddev_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].stddev()[c]);
-      else
-        record["stddev_" + meta_columns[item.first][c]] = "0";
+//      if (meta_stat_runners[item.first].stddev().empty())
+//        record["stddev_" + meta_columns[item.first][c]] = "0";
+//      else
+//        record["stddev_" + meta_columns[item.first][c]] = std::to_string(meta_stat_runners[item.first].stddev()[c]);
     }
     
     meta_stats_writers[item.first].write(record);
@@ -282,17 +284,30 @@ void Journal::saveSummaries() {
     record["min_" + submission_columns[c]] = std::to_string(pubs_stat_runner.min()[c]);
     record["max_" + submission_columns[c]] = std::to_string(pubs_stat_runner.max()[c]);
     record["var_" + submission_columns[c]] = std::to_string(pubs_stat_runner.var()[c]);
-    record["stddev_" + submission_columns[c]] = std::to_string(pubs_stat_runner.stddev()[c]);
+    
+//    if (pubs_stat_runner.stddev().empty())
+//      record["stddev_" + submission_columns[c]] = "0";
+//    else
+//      record["stddev_" + submission_columns[c]] = std::to_string(pubs_stat_runner.stddev()[c]);
   }
   
   /// Preparing the summary of journal's info by
   /// adding it to the end of publication's record
+  std::cout << journal_stat_runner.mean();
+  std::cout << journal_stat_runner.min();
+  std::cout << journal_stat_runner.max();
+  std::cout << journal_stat_runner.var();
+  std::cout << journal_stat_runner.stddev();
   for (int c{0}; c < Columns().size(); ++c) {
     record["mean_" + Columns()[c]] = std::to_string(journal_stat_runner.mean()[c]);
     record["min_" + Columns()[c]] = std::to_string(journal_stat_runner.min()[c]);
     record["max_" + Columns()[c]] = std::to_string(journal_stat_runner.max()[c]);
     record["var_" + Columns()[c]] = std::to_string(journal_stat_runner.var()[c]);
-    record["stddev_" + Columns()[c]] = std::to_string(journal_stat_runner.stddev()[c]);
+    
+//    if (journal_stat_runner.stddev().empty())
+//      record["stddev_" + Columns()[c]] = "0";
+//    else
+//      record["stddev_" + Columns()[c]] = std::to_string(journal_stat_runner.stddev()[c]);
   }
   
   pubs_stats_writer->write(record);
@@ -311,7 +326,11 @@ void Journal::savePulicationsPerSimSummaries() {
     record["min_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.min()[c]);
     record["max_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.max()[c]);
     record["var_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.var()[c]);
-    record["stddev_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.stddev()[c]);
+    
+//    if (pubs_per_sim_stat_runner.stddev().empty())
+//      record["stddev_" + submission_columns[c]] = "0";
+//    else
+//      record["stddev_" + submission_columns[c]] = std::to_string(pubs_per_sim_stat_runner.stddev()[c]);
   }
   
   // Adding Journal's Info
