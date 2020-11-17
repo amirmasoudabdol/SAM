@@ -161,6 +161,9 @@ void Journal::accept(const Submission &s) {
   
   if (publications_list.size() == max_pubs) {
     still_accepting = false;
+    
+    /// Adding current info to the stat runner
+    journal_stat_runner(static_cast<arma::rowvec>(*this));
   }
 }
 
@@ -321,8 +324,7 @@ void Journal::savePulicationsPerSimSummaries() {
   mean_sig_effect = sum_sig_effect / n_sigs;
   record["mean_sig_effect"] = std::to_string(mean_sig_effect);
   
-  // Tracking Journal's Stats
-  journal_stat_runner(static_cast<arma::rowvec>(*this));
+  
   
   pubs_per_sim_stats_writer->write(record);
   
