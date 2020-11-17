@@ -293,11 +293,6 @@ void Journal::saveSummaries() {
   
   /// Preparing the summary of journal's info by
   /// adding it to the end of publication's record
-  std::cout << journal_stat_runner.mean();
-  std::cout << journal_stat_runner.min();
-  std::cout << journal_stat_runner.max();
-  std::cout << journal_stat_runner.var();
-  std::cout << journal_stat_runner.stddev();
   for (int c{0}; c < Columns().size(); ++c) {
     record["mean_" + Columns()[c]] = std::to_string(journal_stat_runner.mean()[c]);
     record["min_" + Columns()[c]] = std::to_string(journal_stat_runner.min()[c]);
