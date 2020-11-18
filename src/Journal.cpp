@@ -91,23 +91,23 @@ Journal::Journal(json &journal_config) {
   
   if (is_saving_summaries){
     
-    auto tjcols = stats_columns;
-    for (auto &col : journal_columns) {
-      tjcols.push_back("mean_" + col);
-      tjcols.push_back("min_" + col);
-      tjcols.push_back("max_" + col);
-      tjcols.push_back("var_" + col);
-//      tjcols.push_back("stddev_" + col);
-    }
+//    auto tjcols = stats_columns;
+//    for (auto &col : journal_columns) {
+//      tjcols.push_back("mean_" + col);
+//      tjcols.push_back("min_" + col);
+//      tjcols.push_back("max_" + col);
+//      tjcols.push_back("var_" + col);
+////      tjcols.push_back("stddev_" + col);
+//    }
     
     pubs_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
                                                                      journal_config["output_prefix"].get<std::string>() +
-                                                                     "_Publications_Summaries.csv", tjcols);
+                                                                     "_Publications_Summaries.csv", stats_columns);
   }
   
   if (is_saving_pubs_per_sim_summaries) {
     
-    stats_columns.insert(stats_columns.end(), journal_columns.begin(), journal_columns.end());
+//    stats_columns.insert(stats_columns.end(), journal_columns.begin(), journal_columns.end());
     
     pubs_per_sim_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
                                                                              journal_config["output_prefix"].get<std::string>() +
@@ -153,8 +153,8 @@ void Journal::accept(const Submission &s) {
   
   if (s.isSig()) {
     n_sigs++;
-    sum_sig_pvalue += s.group_.pvalue_;
-    sum_sig_effect += s.group_.effect_;
+//    sum_sig_pvalue += s.group_.pvalue_;
+//    sum_sig_effect += s.group_.effect_;
   }
 
   /// \todo Maybe I should calculate the publications stats here
@@ -163,11 +163,11 @@ void Journal::accept(const Submission &s) {
     still_accepting = false;
     
     /// Updating journal's info
-    mean_sig_pvalue = sum_sig_pvalue / n_sigs;
-    mean_sig_effect = sum_sig_effect / n_sigs;
+//    mean_sig_pvalue = sum_sig_pvalue / n_sigs;
+//    mean_sig_effect = sum_sig_effect / n_sigs;
     
     /// Adding current info to the stat runner
-    journal_stat_runner(static_cast<arma::rowvec>(*this));
+//    journal_stat_runner(static_cast<arma::rowvec>(*this));
   }
 }
 
@@ -297,17 +297,17 @@ void Journal::saveSummaries() {
   
   /// Preparing the summary of journal's info by
   /// adding it to the end of publication's record
-  for (int c{0}; c < Columns().size(); ++c) {
-    record["mean_" + Columns()[c]] = std::to_string(journal_stat_runner.mean()[c]);
-    record["min_" + Columns()[c]] = std::to_string(journal_stat_runner.min()[c]);
-    record["max_" + Columns()[c]] = std::to_string(journal_stat_runner.max()[c]);
-    record["var_" + Columns()[c]] = std::to_string(journal_stat_runner.var()[c]);
-    
-//    if (journal_stat_runner.stddev().empty())
-//      record["stddev_" + Columns()[c]] = "0";
-//    else
-//      record["stddev_" + Columns()[c]] = std::to_string(journal_stat_runner.stddev()[c]);
-  }
+//  for (int c{0}; c < Columns().size(); ++c) {
+//    record["mean_" + Columns()[c]] = std::to_string(journal_stat_runner.mean()[c]);
+//    record["min_" + Columns()[c]] = std::to_string(journal_stat_runner.min()[c]);
+//    record["max_" + Columns()[c]] = std::to_string(journal_stat_runner.max()[c]);
+//    record["var_" + Columns()[c]] = std::to_string(journal_stat_runner.var()[c]);
+//
+////    if (journal_stat_runner.stddev().empty())
+////      record["stddev_" + Columns()[c]] = "0";
+////    else
+////      record["stddev_" + Columns()[c]] = std::to_string(journal_stat_runner.stddev()[c]);
+//  }
   
   pubs_stats_writer->write(record);
   
@@ -333,11 +333,11 @@ void Journal::savePulicationsPerSimSummaries() {
   }
   
   // Adding Journal's Info
-  record["n_accepted"] = std::to_string(n_accepted);
-  record["n_rejected"] = std::to_string(n_rejected);
-  record["n_sigs"] = std::to_string(n_sigs);
-  record["mean_sig_pvalue"] = std::to_string(mean_sig_pvalue);
-  record["mean_sig_effect"] = std::to_string(mean_sig_effect);
+//  record["n_accepted"] = std::to_string(n_accepted);
+//  record["n_rejected"] = std::to_string(n_rejected);
+//  record["n_sigs"] = std::to_string(n_sigs);
+//  record["mean_sig_pvalue"] = std::to_string(mean_sig_pvalue);
+//  record["mean_sig_effect"] = std::to_string(mean_sig_effect);
   
   
   

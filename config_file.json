@@ -31,7 +31,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 10,
+        "max_pubs": 100,
         "selection_strategy": {
             "name": "SignificantSelection",
             "alpha": 0.05,
@@ -93,7 +93,7 @@
     "simulation_parameters": {
         "log_level": "info",
         "master_seed": 3271751385,
-        "n_sims": 1,
+        "n_sims": 5,
         "output_path": "../outputs/",
         "output_prefix": "000d20f0-9275-4169-8636-6f46d0185258",
         "update_config": true,
@@ -101,7 +101,7 @@
         "save_all_pubs": false,
         "save_meta": false,
         "save_overall_summaries": true,
-        "save_pubs_per_sim_summaries": false,
+        "save_pubs_per_sim_summaries": true,
         "save_rejected": false
     }
 }

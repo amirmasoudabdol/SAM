@@ -96,7 +96,7 @@ public:
   std::map<std::string, PersistenceManager::Writer> meta_writers;
   std::map<std::string, PersistenceManager::Writer> meta_stats_writers;
   
-  arma::running_stat_vec<arma::Row<double>> journal_stat_runner;
+//  arma::running_stat_vec<arma::Row<double>> journal_stat_runner;
   
   // I don't think I really need this
 //  arma::running_stat_vec<arma::Row<double>> journal_per_sim_stat_runner;
