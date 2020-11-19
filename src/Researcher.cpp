@@ -319,6 +319,9 @@ void Researcher::research() {
 
 /// Re-order the hacking strategies according the priority
 void Researcher::reorderHackingStrategies(HackingWorkflow &hw, std::string priority) {
+  if (priority.empty())
+    return;
+  
   if (priority == "random") {
     Random::shuffle(hw);
   } else if (priority == "asc(prevalence)") {

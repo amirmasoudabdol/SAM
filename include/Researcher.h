@@ -70,10 +70,10 @@ public:
   //! Indicates order in which hacking strategies are going to be selected
   //! from the list of given hacking strategies if the Researcher decides has
   //! to apply a fewer number than the given list
-  std::string hacking_selection_priority {"order"};
+  std::string hacking_selection_priority;
   
   //! Indicates the execution order of selected/given hacking strategies
-  std::string hacking_execution_order {"sequential"};
+  std::string hacking_execution_order;
   
   //! Indicates the probablity of a Researcher _deciding_ to go for hacking an Experiment
 //  std::variant<double, Distribution> probability_of_being_a_hacker;
