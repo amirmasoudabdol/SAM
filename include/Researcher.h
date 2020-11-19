@@ -65,6 +65,8 @@ public:
   //! Number of hacking strategies to be choosen from the given list of strategies
   size_t n_hacks;
   
+  bool reselect_hacking_strategies_after_every_simulation {false};
+  
   //! Indicates order in which hacking strategies are going to be selected
   //! from the list of given hacking strategies if the Researcher decides has
   //! to apply a fewer number than the given list
@@ -74,13 +76,12 @@ public:
   std::string hacking_execution_order {"sequential"};
   
   //! Indicates the probablity of a Researcher _deciding_ to go for hacking an Experiment
-  std::variant<double, Distribution> probability_of_being_a_hacker;
+//  std::variant<double, Distribution> probability_of_being_a_hacker;
+  Parameter<double> probability_of_being_a_hacker;
   
   //! Indicates the probablity of a Researcher _actally applying_ a choosen hacking strategy
   std::variant<double, std::string, Distribution, std::unique_ptr<HackingProbabilityStrategy>> probability_of_committing_a_hack;
-  
-  Parameter<double> hacking_probability;
-  
+    
   double submission_probability {1};
 
   //! A Submission record that Researcher is going to submit to the Journal
@@ -88,11 +89,14 @@ public:
 
   void preProcessData();
   
+  HackingWorkflow original_workflow;
   HackingWorkflow h_workflow;
   
   void research();
   void letTheHackBegin();
   
+  void randomizeParameters();
+  void reorderHackingStrategies(HackingWorkflow &hw, std::string priority);
   
   void checkAndsubmitTheResearch(const std::optional<Submission> &sub);
 
@@ -195,22 +199,10 @@ public:
         researcher.pre_processing_methods.push_back(
             HackingStrategy::build(item));
       }
-    }    
-    
-    auto prob_of_being_a_hacker = config["researcher_parameters"]["probability_of_being_a_hacker"];
-    switch (prob_of_being_a_hacker.type()) {
-      case nlohmann::detail::value_t::number_integer:
-      case nlohmann::detail::value_t::number_unsigned:
-      case nlohmann::detail::value_t::number_float:
-        researcher.probability_of_being_a_hacker = prob_of_being_a_hacker.get<double>();
-        break;
-      case nlohmann::detail::value_t::object:
-        researcher.probability_of_being_a_hacker = make_distribution(prob_of_being_a_hacker);
-        break;
-      default:
-        researcher.probability_of_being_a_hacker = 0.;
-        break;
     }
+    
+    std::cout << config["researcher_parameters"]["probability_of_being_a_hacker"];
+    researcher.probability_of_being_a_hacker = Parameter<double>(config["researcher_parameters"]["probability_of_being_a_hacker"], 1);
     
     
     auto prob_of_committing_a_hack = config["researcher_parameters"]["probability_of_committing_a_hack"];
@@ -253,11 +245,16 @@ public:
       researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
       
     }
-
+    
+    /// Copying the original list for later shuffling!
+    researcher.original_workflow = researcher.h_workflow;
+    
+    if (config["researcher_parameters"].contains("randomize_strategies")) {
+      researcher.reselect_hacking_strategies_after_every_simulation = config["researcher_parameters"]["randomize_strategies"].get<bool>();
+    }
     
     researcher.n_hacks = researcher.h_workflow.size();
     if (config["researcher_parameters"].contains("n_hacks")) {
-      
       researcher.n_hacks = std::min(researcher.h_workflow.size(),
                                     config["researcher_parameters"]["n_hacks"].get<size_t>());
     }
@@ -268,28 +265,8 @@ public:
         config["researcher_parameters"].contains("hacking_selection_priority")) {
       researcher.hacking_selection_priority = config["researcher_parameters"]["hacking_selection_priority"].get<std::string>();
       
-      
-      if (researcher.hacking_selection_priority == "random") {
-        Random::shuffle(researcher.h_workflow);
-      } else if (researcher.hacking_selection_priority == "asc(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
-        });
-      } else if (researcher.hacking_selection_priority == "desc(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
-        });
-      } else if (researcher.hacking_selection_priority == "asc(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
-        });
-      } else if (researcher.hacking_selection_priority == "desc(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
-        });
-      } else /* sequential */ {
-        throw std::invalid_argument("Invalid argument!");
-      }
+      /// Reordering hacking strategies based on selection priority
+      researcher.reorderHackingStrategies(researcher.h_workflow, researcher.hacking_selection_priority);
       
       /// @bug! This will explode because it has to deconstruct the `lua` instance and that's not really
       /// possible since it is a public member of the abstract class, meaning that other hacking strategies
@@ -302,6 +279,8 @@ public:
       /// @note Even if I don't initiate OutliersRemoval stopping condition this will be fine!
       /// @note Not really sure how this resolved itself, but I think Xcode was struggling with the memory! At
       /// some point, it crashed, and my problem was solved!
+      
+      /// Selecting only n_hacks of those
       researcher.h_workflow.resize(researcher.n_hacks);
       
     }
@@ -311,27 +290,9 @@ public:
     if (config["researcher_parameters"].contains("hacking_execution_order")) {
       researcher.hacking_execution_order = config["researcher_parameters"]["hacking_execution_order"].get<std::string>();
       
-      if (researcher.hacking_execution_order == "random") {
-        Random::shuffle(researcher.h_workflow);
-      } else if (researcher.hacking_execution_order == "asc(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
-        });
-      } else if (researcher.hacking_execution_order == "desc(prevalence)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
-        });
-      } else if (researcher.hacking_execution_order == "asc(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
-        });
-      } else if (researcher.hacking_execution_order == "desc(defensibility)") {
-        std::sort(researcher.h_workflow.begin(), researcher.h_workflow.end(), [&](auto &h1, auto &h2){
-          return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
-        });
-      } else /* sequential */ {
-        throw std::invalid_argument("Invalid argument!");
-      }
+      /// Reorder hacking strategies based on the prefered execution order
+      researcher.reorderHackingStrategies(researcher.h_workflow, researcher.hacking_execution_order);
+      
     }
     
     

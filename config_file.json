@@ -2,8 +2,8 @@
     "experiment_parameters": {
         "n_reps": 1,
         "n_conditions": 2,
-        "n_dep_vars": 3,
-        "n_obs": 5,
+        "n_dep_vars": 2,
+        "n_obs": 10,
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
@@ -11,10 +11,8 @@
                 "means": [
                     0.0,
                     0.0,
-                    0.0,
-                    0.2,
-                    0.2,
-                    0.2
+                    0.1,
+                    0.1
                 ],
                 "covs": 0.5,
                 "stddevs": 1.0
@@ -31,10 +29,10 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 100,
+        "max_pubs": 10,
         "selection_strategy": {
             "name": "SignificantSelection",
-            "alpha": 0.05,
+            "alpha": 0.0005,
             "pub_bias": 0.25,
             "side": 0
         }
@@ -46,15 +44,7 @@
                 [
                     "sig",
                     "effect > 0",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
+                    "random"
                 ]
             ],
             "will_start_hacking_decision_policies": [
@@ -80,10 +70,79 @@
                 ""
             ]
         },
-        "probability_of_being_a_hacker": 0,
+        "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 1,
+        "n_hacks": 2,
+        "randomize_strategies": true,
         "hacking_strategies": [
-            ""
+            [
+                {
+                    "name": "OptionalStopping",
+                    "target": "Both",
+                    "prevalence": 1,
+                    "defensibility": 1,
+                    "max_attempts": 1,
+                    "n_attempts": 3,
+                    "num": 10,
+                    "add_by_fraction": 0.2,
+                    "stopping_condition": [
+                        "sig"
+                    ]
+                },
+                [
+                    [
+                        "sig",
+                        "effect > 0",
+                        "random"
+                    ],
+                    [
+                        "effect > 0",
+                        "min(pvalue)"
+                    ],
+                    [
+                        "effect < 0",
+                        "max(pvalue)"
+                    ]
+                ],
+                [
+                    "id < 0"
+                ]
+            ],
+            [
+                {
+                    "name": "OutliersRemoval",
+                    "max_attempts": 1,
+                    "min_observations": 1,
+                    "multipliers": [
+                        2
+                    ],
+                    "n_attempts": 1,
+                    "target": "Both",
+                    "prevalence": 0.1,
+                    "defensibility": 0.1,                           
+                    "num": 80,
+                    "order": "random",
+                    "stopping_condition": ["sig"]
+                },
+                [
+                    [
+                        "sig",
+                        "effect > 0",
+                        "random"
+                    ],
+                    [
+                        "effect > 0",
+                        "min(pvalue)"
+                    ],
+                    [
+                        "effect < 0",
+                        "max(pvalue)"
+                    ]
+                ],
+                [
+                    "!sig"
+                ]
+            ]
         ],
         "is_pre_processing": false,
         "pre_processing_methods": [
@@ -91,17 +150,17 @@
         ]
     },
     "simulation_parameters": {
-        "log_level": "info",
-        "master_seed": 3271751385,
+        "log_level": "trace",
+        "master_seed": "random",
         "n_sims": 5,
         "output_path": "../outputs/",
-        "output_prefix": "000d20f0-9275-4169-8636-6f46d0185258",
+        "output_prefix": "005ce748-11c5-45a0-993b-ea25b00d0f19",
         "update_config": true,
         "progress": false,
         "save_all_pubs": false,
         "save_meta": false,
         "save_overall_summaries": true,
-        "save_pubs_per_sim_summaries": true,
+        "save_pubs_per_sim_summaries": false,
         "save_rejected": false
     }
 }

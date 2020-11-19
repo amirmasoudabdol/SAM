@@ -65,6 +65,9 @@ void Researcher::letTheHackBegin() {
                 /// Since I'm going to continue hacking, I'm going to reset the candidate because it should be
                 /// evaluated again, and I've already performed a selection, I'm going to reset the selected
                 /// submission.
+                /// @bug, this could possibly cause some confusion! In cases where I only have one strategy and
+                /// wants to be done after it, this role discard the last selection.
+                /// @workaround, the current workaround is to select from the stash using between_hacking_selection
                 decision_strategy->submission_candidate.reset();
                 spdlog::trace("Continue Hacking...");
               }
@@ -84,6 +87,31 @@ void Researcher::letTheHackBegin() {
       }
       
     }
+  }
+  
+}
+
+void Researcher::randomizeParameters() {
+  
+  if (reselect_hacking_strategies_after_every_simulation) {
+    
+    /// Clearing the list
+    h_workflow.clear();
+    
+    /// Shuffling the original list
+    Random::shuffle(original_workflow.begin(), original_workflow.end());
+    h_workflow = original_workflow;
+    
+    /// Sorting based on the given selection criteria
+    reorderHackingStrategies(h_workflow, hacking_selection_priority);
+    h_workflow.resize(n_hacks);
+
+    /// Reordering based on the given execution order
+    reorderHackingStrategies(h_workflow, hacking_execution_order);
+    
+    /// @note Then I need a for-loop to randomize each strategy
+    ///      - I think this might not be necessary as Parameter handles the randomization
+    ///         automatically
   }
   
 }
@@ -124,17 +152,20 @@ void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub)
 }
 
 /// \todo this should not draw a new value every time, and should draw once
-/// and keep reporting that one
+/// and keep reporting that one.
+/// \updated Should it thought?
 bool Researcher::isHacker() {
   
-  return std::visit(overload {
-    [&](double &p) {
-      return Random::get<bool>(p);
-    },
-    [&](Distribution &dist) {
-      return Random::get<bool>(Random::get(dist));
-    }
-  }, probability_of_being_a_hacker);
+//  return std::visit(overload {
+//    [&](double &p) {
+//      return Random::get<bool>(p);
+//    },
+//    [&](Distribution &dist) {
+//      return Random::get<bool>(Random::get(dist));
+//    }
+//  }, probability_of_being_a_hacker);
+//
+  return Random::get<bool>(static_cast<double>(probability_of_being_a_hacker));
   
 }
 
@@ -283,4 +314,30 @@ void Researcher::research() {
   
   submissions_from_reps.clear();
   
+}
+
+
+/// Re-order the hacking strategies according the priority
+void Researcher::reorderHackingStrategies(HackingWorkflow &hw, std::string priority) {
+  if (priority == "random") {
+    Random::shuffle(hw);
+  } else if (priority == "asc(prevalence)") {
+    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2){
+      return std::get<0>(h1[0])->prevalence() < std::get<0>(h2[0])->prevalence();
+    });
+  } else if (priority == "desc(prevalence)") {
+    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2){
+      return std::get<0>(h1[0])->prevalence() > std::get<0>(h2[0])->prevalence();
+    });
+  } else if (priority == "asc(defensibility)") {
+    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2){
+      return std::get<0>(h1[0])->defensibility() < std::get<0>(h2[0])->defensibility();
+    });
+  } else if (priority == "desc(defensibility)") {
+    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2){
+      return std::get<0>(h1[0])->defensibility() > std::get<0>(h2[0])->defensibility();
+    });
+  } else /* sequential */ {
+    throw std::invalid_argument("Invalid argument!");
+  }
 }

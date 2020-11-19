@@ -74,6 +74,8 @@ public:
     perform(experiment);
   };
   
+//  virtual void randomizeParameters();
+  
   double defensibility() const {
     return defensibility_;
   }
@@ -121,7 +123,8 @@ public:
     HackingMethod name = HackingMethod::OptionalStopping;
 
     //! Number of new observations to be added to each group
-    int num = 3;
+//    int num = 3;
+    Parameter<int> num {3};
     
     //! Indicates which groups are going to be targets
     HackingTarget target {HackingTarget::Both};
@@ -140,6 +143,8 @@ public:
     double prevalence {0.7};
     
     HackingStage stage {HackingStage::PostProcessing};
+    
+    void randomize();
     
   };
 
@@ -192,7 +197,10 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-  j.at("num").get_to(p.num);
+
+  //  j.at("num").get_to(p.num);
+  p.num = Parameter<int>(j.at("num"), 1);
+  
   j.at("target").get_to(p.target);
   j.at("n_attempts").get_to(p.n_attempts);
   

@@ -65,7 +65,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 
 //  spdlog::debug("---");
   /// @todo I probably should check this somewhere else, and don't throw here!
-  assert(!pchain_set.empty() && "PolicyChainSet is empty!");
+//  assert(!pchain_set.empty() && "PolicyChainSet is empty!");
   
   for (auto &pchain : pchain_set) {
     
@@ -180,6 +180,7 @@ bool DefaultDecisionMaker::willStartHacking() {
       return true;
     
     if (submission_candidate) {
+      /// @todo this can be replaced by Policy->oprator()
       return std::any_of(will_start_hacking_decision_policies.begin(), will_start_hacking_decision_policies.end(), [this](auto &policy) -> bool {
           return policy.func(this->submission_candidate.value());
           });

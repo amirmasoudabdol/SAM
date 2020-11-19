@@ -218,6 +218,8 @@ void runSimulation(json &simConfig) {
     // before collecting `k` publications...
     researcher.experiment->exprid = 0;
     
+    researcher.randomizeParameters();
+    
     // Doning research until Journal doesn't accept anything
     while (researcher.journal->isStillAccepting()) {
 
