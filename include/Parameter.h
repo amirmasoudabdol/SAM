@@ -25,11 +25,23 @@ class Parameter : public arma::Row<T> {
   std::variant<std::monostate, Distribution, MultivariateDistribution> dist;
   
 public:
+  
   Parameter() : arma::Row<T>() {};
+  
+  Parameter(std::initializer_list<T> l) : arma::Row<T>(l) {};
   
   Parameter(const json &j, size_t size);
   
   void randomize();
+  
+  operator T() {
+    this->randomize();
+    return this->at(0);
+  };
+  
+  bool isDist() {
+    return not std::holds_alternative<std::monostate>(dist);
+  };
   
 };
 

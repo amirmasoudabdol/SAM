@@ -79,3 +79,22 @@ namespace sam {
   template class Parameter<int>;
   template class Parameter<double>;
 }
+
+
+/// I'm not so sure if this is online, in a sense that it's being used
+/// by nlohmann::json
+namespace nlohmann {
+
+template <typename T>
+struct adl_serializer<sam::Parameter<T>> {
+  
+  static void to_json(json &j, const sam::Parameter<T> &p) {
+    j = static_cast<T>(p);
+  }
+  
+  static void from_json(const json &j, sam::Parameter<T> &p) {
+    p = Parameter<T>(j, 1);
+  }
+};
+
+}
