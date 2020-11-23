@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 
+///
+/// \defgroup   SelectionStrategies Selection Strategies
+/// \brief      List of available Selection Strategies
+///
+/// Description to come!
+///
+
 #ifndef SAMPP_SELECTIONSTRATEGIES_H
 #define SAMPP_SELECTIONSTRATEGIES_H
 

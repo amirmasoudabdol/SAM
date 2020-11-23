@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
+///
+/// \defgroup   TestStrategies Test Strategies
+/// \brief      List of available Test Strategies
+///
+/// Description to come!
+///
+
 #ifndef SAMPP_TESTSTRATEGIES_H
 #define SAMPP_TESTSTRATEGIES_H
 

@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
 
+///
+/// \defgroup   DataStartegies Data Strategies
+/// \brief      List of available Data Strategies
+///
+/// Description to come!
+///
+
 #ifndef SAMPP_DATAGENSTRATEGY_H
 #define SAMPP_DATAGENSTRATEGY_H
 

@@ -1,6 +1,13 @@
 //
 // Created by Amir Masoud Abdol on 2019-04-25.
 //
+//
+
+/// \defgroup   MetaAnalysis Meta Analysis Methods
+/// \brief      List of available Meta Analysis
+///
+/// Description to come!
+///
 
 #ifndef SAMPP_METAANALYSIS_H
 #define SAMPP_METAANALYSIS_H

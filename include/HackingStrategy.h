@@ -3,14 +3,14 @@
 //
 
 ///
-/// \defgroup   HackingStrategies (group_title)
+/// \defgroup   HackingStrategies Hacking Strategies
 /// \brief      List of available hacking strategies
 ///
 /// Description to come!
 ///
 
 ///
-/// \defgroup   HackingStrategiesParameters (group_title)
+/// \defgroup   HackingStrategiesParameters Hacking Strategies Parameters
 /// \brief      Description of hacking strategies parameters
 ///
 /// Description to come!
@@ -130,10 +130,12 @@ public:
     HackingTarget target {HackingTarget::Both};
     
     //! If not 0., `add_by_fraction` * n_obs will be added to the experiment.
-    double add_by_fraction = 0.;
+//    double add_by_fraction = 0.;
+    Parameter<double> add_by_fraction {0};
 
     //! Number of times that Researcher add `num` observations to each group
-    int n_attempts = 1;
+//    int n_attempts = 1;
+    Parameter<int> n_attempts {1};
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
@@ -199,10 +201,18 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("name").get_to(p.name);
 
   //  j.at("num").get_to(p.num);
-  p.num = Parameter<int>(j.at("num"), 1);
+  if (j.contains("num"))
+    p.num = Parameter<int>(j.at("num"), 1);
+  else if (j.contains("add_by_fraction"))
+    p.add_by_fraction = Parameter<double>(j.at("add_by_fraction"), 1);
+  else
+    throw std::invalid_argument("Either `num` or `add_by_fraction` should be given as input.");
+//    j.at("add_by_fraction").get_to(p.add_by_fraction);
   
   j.at("target").get_to(p.target);
-  j.at("n_attempts").get_to(p.n_attempts);
+  
+//  j.at("n_attempts").get_to(p.n_attempts);
+  p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
   
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
@@ -212,9 +222,6 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   
   if (j.contains("stopping_condition"))
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
-  
-  if (j.contains("add_by_fraction"))
-    j.at("add_by_fraction").get_to(p.add_by_fraction);
   
 }
 

@@ -3,7 +3,7 @@
         "n_reps": 1,
         "n_conditions": 2,
         "n_dep_vars": 2,
-        "n_obs": 10,
+        "n_obs": 20,
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
@@ -81,47 +81,12 @@
                     "target": "Both",
                     "prevalence": 1,
                     "defensibility": 1,
-                    "max_attempts": 1,
                     "n_attempts": 3,
-                    "num": 10,
-                    "add_by_fraction": 0.2,
-                    "stopping_condition": [
-                        "sig"
-                    ]
-                },
-                [
-                    [
-                        "sig",
-                        "effect > 0",
-                        "random"
-                    ],
-                    [
-                        "effect > 0",
-                        "min(pvalue)"
-                    ],
-                    [
-                        "effect < 0",
-                        "max(pvalue)"
-                    ]
-                ],
-                [
-                    "id < 0"
-                ]
-            ],
-            [
-                {
-                    "name": "OutliersRemoval",
-                    "max_attempts": 1,
-                    "min_observations": 1,
-                    "multipliers": [
-                        2
-                    ],
-                    "n_attempts": 1,
-                    "target": "Both",
-                    "prevalence": 0.1,
-                    "defensibility": 0.1,                           
-                    "num": 80,
-                    "order": "random",
+                    "add_by_fraction": {
+                        "dist": "piecewise_constant_distribution",
+                        "intervals": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+                        "densities": [0.5, 0.2, 0.15, 0.1, 0.0]
+                    },
                     "stopping_condition": ["sig"]
                 },
                 [
@@ -140,7 +105,7 @@
                     ]
                 ],
                 [
-                    "!sig"
+                    "id < 0"
                 ]
             ]
         ],
