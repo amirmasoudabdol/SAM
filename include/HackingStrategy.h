@@ -200,18 +200,15 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  //  j.at("num").get_to(p.num);
   if (j.contains("num"))
     p.num = Parameter<int>(j.at("num"), 1);
   else if (j.contains("ratio"))
     p.ratio = Parameter<double>(j.at("ratio"), 1);
   else
     throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
-//    j.at("ratio").get_to(p.ratio);
   
   j.at("target").get_to(p.target);
   
-//  j.at("n_attempts").get_to(p.n_attempts);
   p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
   
   j.at("prevalence").get_to(p.prevalence);

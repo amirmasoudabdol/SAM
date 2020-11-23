@@ -201,7 +201,6 @@ public:
       }
     }
     
-    std::cout << config["researcher_parameters"]["probability_of_being_a_hacker"];
     researcher.probability_of_being_a_hacker = Parameter<double>(config["researcher_parameters"]["probability_of_being_a_hacker"], 1);
     
     
