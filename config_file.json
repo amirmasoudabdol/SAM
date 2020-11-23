@@ -82,7 +82,7 @@
                     "prevalence": 1,
                     "defensibility": 1,
                     "n_attempts": 3,
-                    "add_by_fraction": {
+                    "ratio": {
                         "dist": "piecewise_constant_distribution",
                         "intervals": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
                         "densities": [0.5, 0.2, 0.15, 0.1, 0.0]

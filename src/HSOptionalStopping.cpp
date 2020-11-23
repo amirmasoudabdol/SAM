@@ -11,7 +11,7 @@ using namespace sam;
 /// Iterates for maximum `n_attemps` and add new obversations to experiment's
 /// gourps. The number of new observations to be added to each group is deducted
 /// either a fixed number indicated by `params.num` or a variable number for each
-/// group, calculated as a fraction of already existing observations, `params.add_by_fraction`.
+/// group, calculated as a fraction of already existing observations, `params.ratio`.
 ///
 /// After each optional stopping step, all statistics will be recalculated and experiment will
 /// be passed to the `research` method.
@@ -25,7 +25,7 @@ void OptionalStopping::perform(Experiment *experiment) {
   if (params.num == 0) {
     
     /// Getting one random number since I want each group to have the same number of observations
-    double fraction = params.add_by_fraction;
+    double fraction = params.ratio;
     
     ns.imbue([&, i = 0]() mutable {
       return fraction * experiment->groups_[i++].nobs_;

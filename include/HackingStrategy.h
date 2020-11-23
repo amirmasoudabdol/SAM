@@ -129,9 +129,9 @@ public:
     //! Indicates which groups are going to be targets
     HackingTarget target {HackingTarget::Both};
     
-    //! If not 0., `add_by_fraction` * n_obs will be added to the experiment.
-//    double add_by_fraction = 0.;
-    Parameter<double> add_by_fraction {0};
+    //! If not 0., `ratio` * n_obs will be added to the experiment.
+//    double ratio = 0.;
+    Parameter<double> ratio {0};
 
     //! Number of times that Researcher add `num` observations to each group
 //    int n_attempts = 1;
@@ -186,7 +186,7 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
            {"num", p.num},
            {"n_attempts", p.n_attempts},
            {"target", p.target},
-           {"add_by_fraction", p.add_by_fraction},
+           {"ratio", p.ratio},
            {"defensibility", p.defensibility},
            {"prevalence", p.prevalence},
            {"stage", p.stage},
@@ -203,11 +203,11 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   //  j.at("num").get_to(p.num);
   if (j.contains("num"))
     p.num = Parameter<int>(j.at("num"), 1);
-  else if (j.contains("add_by_fraction"))
-    p.add_by_fraction = Parameter<double>(j.at("add_by_fraction"), 1);
+  else if (j.contains("ratio"))
+    p.ratio = Parameter<double>(j.at("ratio"), 1);
   else
-    throw std::invalid_argument("Either `num` or `add_by_fraction` should be given as input.");
-//    j.at("add_by_fraction").get_to(p.add_by_fraction);
+    throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
+//    j.at("ratio").get_to(p.ratio);
   
   j.at("target").get_to(p.target);
   
