@@ -22,13 +22,13 @@ void OptionalStopping::perform(Experiment *experiment) {
   
   /// Determining the number of new observations to be added to each group
   arma::Row<int> ns(experiment->setup.ng());
-  if (params.num == 0) {
+  if (params.num.is_empty()) {
     
     /// Getting one random number since I want each group to have the same number of observations
     double fraction = params.ratio;
     
     ns.imbue([&, i = 0]() mutable {
-      return fraction * experiment->groups_[i++].nobs_;
+      return std::floor(fraction * experiment->groups_[i++].nobs_);
     });
   }else{
     ns.fill(params.num);
@@ -36,14 +36,9 @@ void OptionalStopping::perform(Experiment *experiment) {
   
   int n_at = params.n_attempts;
   for (int t = 0; t < n_at; ++t) {
-    spdlog::trace("\t #{} attempt(s)", t+1);
+    spdlog::trace("\t #{} attempt(s)", t + 1);
     
-    /// @todo this condition shouldn't be performed on `num`.
-    if (params.num == 0) {
-      addObservations(experiment, ns);
-    }else{
-      addObservations(experiment, ns);
-    }
+    addObservations(experiment, ns);
     
     experiment->recalculateEverything();
 

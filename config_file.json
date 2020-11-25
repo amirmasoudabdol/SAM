@@ -23,19 +23,34 @@
         },
         "test_strategy": {
             "name": "TTest",
-            "alpha": 0.05,
+            "alpha": 0.0005,
             "alternative": "TwoSided",
             "var_equal": true
         }
     },
     "journal_parameters": {
-        "max_pubs": 10,
+        "max_pubs": 24,
         "selection_strategy": {
             "name": "SignificantSelection",
             "alpha": 0.0005,
             "pub_bias": 0.25,
             "side": 0
-        }
+        },
+        "meta_analysis_metrics": [
+            {
+                "name": "RandomEffectEstimator",
+                "estimator": "DL"
+            },
+            {
+                "name": "EggersTestEstimator",
+                "alpha": 0.1
+            },
+            {
+                "name": "RankCorrelation",
+                "alpha": 0.05,
+                "alternative": "TwoSided"
+            }
+        ]
     },
     "researcher_parameters": {
         "decision_strategy": {
@@ -45,6 +60,14 @@
                     "sig",
                     "effect > 0",
                     "random"
+                ],
+                [
+                    "effect > 0",
+                    "min(pvalue)"
+                ],
+                [
+                    "effect < 0",
+                    "max(pvalue)"
                 ]
             ],
             "will_start_hacking_decision_policies": [
@@ -72,8 +95,6 @@
         },
         "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 1,
-        "n_hacks": 2,
-        "randomize_strategies": true,
         "hacking_strategies": [
             [
                 {
@@ -81,12 +102,9 @@
                     "target": "Both",
                     "prevalence": 1,
                     "defensibility": 1,
+                    "max_attempts": 1,
                     "n_attempts": 3,
-                    "ratio": {
-                        "dist": "piecewise_constant_distribution",
-                        "intervals": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
-                        "densities": [0.5, 0.2, 0.15, 0.1, 0.0]
-                    },
+                    "ratio": 0.1,
                     "stopping_condition": ["sig"]
                 },
                 [
@@ -116,14 +134,14 @@
     },
     "simulation_parameters": {
         "log_level": "trace",
-        "master_seed": "random",
+        "master_seed": 1606135426481127,
         "n_sims": 5,
         "output_path": "../outputs/",
-        "output_prefix": "005ce748-11c5-45a0-993b-ea25b00d0f19",
+        "output_prefix": "0025f8f7-271b-4799-9495-60b53f0020fd",
         "update_config": true,
         "progress": false,
-        "save_all_pubs": false,
-        "save_meta": false,
+        "save_all_pubs": true,
+        "save_meta": true,
         "save_overall_summaries": true,
         "save_pubs_per_sim_summaries": false,
         "save_rejected": false

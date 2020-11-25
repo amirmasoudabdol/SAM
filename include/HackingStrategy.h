@@ -123,18 +123,15 @@ public:
     HackingMethod name = HackingMethod::OptionalStopping;
 
     //! Number of new observations to be added to each group
-//    int num = 3;
-    Parameter<int> num {3};
+    Parameter<int> num;
     
     //! Indicates which groups are going to be targets
     HackingTarget target {HackingTarget::Both};
     
     //! If not 0., `ratio` * n_obs will be added to the experiment.
-//    double ratio = 0.;
-    Parameter<double> ratio {0};
+    Parameter<double> ratio;
 
     //! Number of times that Researcher add `num` observations to each group
-//    int n_attempts = 1;
     Parameter<int> n_attempts {1};
     
     //! Stopping condition PolicyChain definitions
