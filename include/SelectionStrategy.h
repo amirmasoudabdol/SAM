@@ -79,8 +79,7 @@ public:
   ///
   /// \param[in]  s     A reference to a Submission
   ///
-  /// \return     A boolean indicating whether the Submission should be accepted
-  ///             or not.
+  /// \return     A boolean indicating whether the Submission should be accepted.
   ///
   virtual bool review(const Submission &s) = 0;
 };

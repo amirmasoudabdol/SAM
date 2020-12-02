@@ -81,7 +81,7 @@ public:
   virtual bool willStartHacking() { return false; };
   
   /// @brief  This will be used by `letTheHackBegin` and uses the decision policy to decide
-  /// whether the next hacking strategy is going to be executed or not!
+  /// whether the next hacking strategy is going to be executed !
   ///
   /// @param  experiment A reference to the experiment
   virtual bool willContinueHacking(Experiment *experiment,

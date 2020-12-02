@@ -914,7 +914,7 @@ public:
     int num {5};
     
     //! Distribution of fabricated data
-    //! @todo Check if this is even necessary or not, I think in most cases, we
+    //! @todo Check if this is even necessary, I think in most cases, we
     //! can probably just use the data_strategy and get over it
     std::optional<Distribution> dist;
     

@@ -171,7 +171,7 @@ bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, Po
 }
 
 
-/// @brief  Decides whether we are going to start hacking or not.
+/// @brief  Decides whether we are going to start hacking.
 /// In this canse, we only check if the `current_submission` complies with
 /// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
 /// if no, then we will not continue to the hacking procedure

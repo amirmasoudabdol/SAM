@@ -377,13 +377,13 @@ public:
 //    return *this;
 //  };
 
-  // I'm not sure if I should leave these here or not
+  // I'm not sure if I should leave these here 
   ResearcherBuilder &setDataStrategy(std::shared_ptr<DataStrategy> ds) {
     researcher.experiment->data_strategy = ds;
     return *this;
   }
 
-  // I'm not sure if I should leave these here or not
+  // I'm not sure if I should leave these here 
   ResearcherBuilder &setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
     researcher.experiment->test_strategy = ts;
     return *this;
