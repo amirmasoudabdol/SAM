@@ -2,6 +2,11 @@
 // Created by Amir Masoud Abdol on 2019-01-24.
 //
 
+///
+/// \defgroup   EffectStrategies Effect Strategies
+/// \brief      List of available effect strategies
+///
+
 #ifndef SAMPP_EFFECTSTRATEGY_H
 #define SAMPP_EFFECTSTRATEGY_H
 
@@ -35,6 +40,9 @@ public:
   // std::string name = "";
 };
 
+///
+/// @ingroup  EffectStrategies
+///
 class MeanDifference final : public EffectStrategy {
   
 public:
@@ -49,6 +57,9 @@ public:
   void computeEffects(Experiment *experiment);
 };
 
+///
+/// @ingroup  EffectStrategies
+///
 class StandardizedMeanDifference final : public EffectStrategy {
 
 public:
@@ -63,6 +74,9 @@ public:
   void computeEffects(Experiment *experiment);
 };
 
+///
+/// @ingroup  EffectStrategies
+///
 class CohensD final : public EffectStrategy {
 
 public:
@@ -77,6 +91,9 @@ public:
   void computeEffects(Experiment *experiment);
 };
 
+///
+/// @ingroup  EffectStrategies
+///
 class HedgesG final : public EffectStrategy {
 
 public:

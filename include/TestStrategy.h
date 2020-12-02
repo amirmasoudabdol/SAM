@@ -73,6 +73,8 @@ public:
 /// be sufficient. This is technically an implementation of [one sample
 /// t-test](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test).
 ///
+/// @ingroup  TestStrategies
+///
 class TTest final : public TestStrategy {
 
 public:
@@ -145,6 +147,9 @@ public:
       unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative);
 };
 
+///
+/// @ingroup  TestStrategies
+///
 class FTest final : public TestStrategy {
 
 public:
@@ -193,6 +198,9 @@ public:
                     double alpha);
 };
 
+///
+/// @ingroup  TestStrategies
+///
 class YuenTest final : public TestStrategy {
 
 public:
@@ -254,7 +262,9 @@ public:
       const TestStrategy::TestAlternative alternative, double trim, double mu);
 };
 
-
+///
+/// @ingroup  TestStrategies
+///
 class WilcoxonTest final : public TestStrategy {
 
 public:

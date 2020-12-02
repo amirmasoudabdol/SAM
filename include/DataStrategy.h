@@ -89,6 +89,9 @@ public:
 };
 
 ///
+///
+/// @ingroup  DataStrategies
+///
 /// The fixed-effect data strategy will produce data from a fixed-effect model with
 /// the given  \f$\mu\f$ and  \f$\sigma\f$.
 class LinearModelStrategy final : public DataStrategy {
@@ -177,6 +180,10 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 /// A Data Strategy for constructing a general [Structural Equaiton
 /// Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).
 ///
+/// @ingroup  DataStrategies
+///
+/// \warning    To be implemented!
+///
 /// \note       LatentDataStrategy will generate individual items, therefore it
 ///             might be slower than other models.
 ///
@@ -204,6 +211,10 @@ private:
 
 ///
 /// \brief      Simulate data from Graded Response Model.
+///
+///
+/// @ingroup  DataStrategies
+///
 ///
 /// \note:
 /// - DVs in GRM are distinguished by their participant abilities to answer tests.

@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 03/04/2020.
 //
 
+///
+/// \defgroup   Policies Policy-related Modules
+/// \brief      List of available policy-related modules
+///
+/// Description to come!
+///
+
 #ifndef SAMPP_POLICY_H
 #define SAMPP_POLICY_H
 
@@ -29,6 +36,9 @@ LogicType,
 /// - In the case of set of submissions, or an experiment, policy checks whether the any of the items, ie.,
 ///   dvs or sub, will satisfy the given policy, if so, it'll return those items, otherwise, the output will be
 ///   empty.
+///
+///
+/// @ingroup  Policies
 ///
 struct Policy {
   PolicyType type;
@@ -329,6 +339,8 @@ inline void from_json(const json &j, Policy &p, sol::state &lua) {
 /// often being used to check whether an Experiment or a Submission can satisfy
 /// the set of given rules.
 ///
+/// @ingroup  Policies
+///
 struct PolicyChain {
   LogicType ltype = LogicType::AllOf;
   std::vector<std::string> defs;
@@ -521,6 +533,9 @@ inline void from_json(const json &j, PolicyChain &p, sol::state &lua) {
 /// executed chronologically. Most function will go through the list one by one, and will
 /// quit as soon as one of the PolicyChains find at least on outcome from a given list of
 /// options, e.g., SubmissionPool or Experiment.
+///
+/// @ingroup  Policies
+///
 struct PolicyChainSet {
   std::vector<PolicyChain> pchains;
 

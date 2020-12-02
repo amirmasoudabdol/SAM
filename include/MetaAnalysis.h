@@ -42,6 +42,9 @@ public:
   virtual void estimate(Journal *journal) = 0;
 };
 
+///
+/// @ingroup  MetaAnalysis
+///
 class RandomEffectEstimator : public MetaAnalysis {
 
 public:
@@ -139,6 +142,9 @@ public:
 };
 
 
+///
+/// @ingroup  MetaAnalysis
+///
 class FixedEffectEstimator : public MetaAnalysis {
   
 public:
@@ -221,6 +227,9 @@ public:
   }
 };
 
+///
+/// @ingroup  MetaAnalysis
+///
 class EggersTestEstimator : public MetaAnalysis {
 public:
   
@@ -281,6 +290,9 @@ public:
 };
 
 
+///
+/// @ingroup  MetaAnalysis
+///
 class TestOfObsOverExptSig : public MetaAnalysis {
 public:
   
@@ -334,6 +346,9 @@ public:
   
 };
 
+///
+/// @ingroup  MetaAnalysis
+///
 class TrimAndFill : public MetaAnalysis {
 public:
   
@@ -395,7 +410,9 @@ public:
   
 };
 
-
+///
+/// @ingroup  MetaAnalysis
+///
 class RankCorrelation : public MetaAnalysis {
 public:
   

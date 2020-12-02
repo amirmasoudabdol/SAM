@@ -93,6 +93,10 @@ public:
 /// output of selection policy, a submission might get rejected based on
 /// journal's acceptance rate, and publication bias rate.
 ///
+///
+/// @ingroup  SelectionStrategies
+///
+///
 class PolicyBasedSelection final : public SelectionStrategy {
   
 public:
@@ -130,6 +134,8 @@ public:
 /// if the statistics is not significant. Moreover, the SignificantSelection can
 /// be tailored toward either positive or negative effect. In this case, the
 /// Journal will only accept Submissions with larger or smaller effects.
+///
+/// @ingroup  SelectionStrategies
 ///
 class SignificantSelection final : public SelectionStrategy {
 
@@ -170,8 +176,9 @@ public:
 /// not.
 ///
 /// \note       This is technically the SignificantSelection with pub_bias set
-/// to
-///             0.
+/// to 0.
+///
+/// @ingroup  SelectionStrategies
 ///
 class RandomSelection final : public SelectionStrategy {
 
@@ -193,6 +200,9 @@ public:
 ///
 /// \brief      FreeSelection doesn't pose any restriction on the submission and
 ///             all submissions will be accepted.
+///
+///
+/// @ingroup  SelectionStrategies
 ///
 class FreeSelection final : public SelectionStrategy {
 
