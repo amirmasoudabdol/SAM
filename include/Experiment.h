@@ -18,13 +18,17 @@
 namespace sam {
 
 ///
-/// \brief      Experiment class declaration
+/// \brief      Experiment encapsulates data and methods needed by the Researcher to
+/// conduct its research.
 ///
-/// \note       This could be an abstract class. The abstract will define the body
-///             an experiment while subclasses customize it for different type of
-///             experiments. This can be used to save space because I can only
-///             define relevant variables for each type of experiment
+/// Experiment has access to all data-related
+/// strategies, e.g., DataStrategy, TestStraregy, and EffectStrategy. Moreover,
+/// it stores the actual research data in a vector of Group objects. Researcher's
+/// access to actual data, and other data-related strategies always goes
+/// through an Experiment object.
 ///
+/// Moreover, the Experiment stores a copy of the ExperimentSetup where most study parameters
+/// are stored in.
 class Experiment {
 
 public:
@@ -48,8 +52,19 @@ public:
 
   Experiment() = default;
 
+  /// @brief  Constructing an Experiment object using the given JSON configuration.
+  ///
+  /// Starting by the initialization of an ExperimentSetup, followed by Data, Test, and
+  /// Effect stratgies initialization; and finally, all necessary resources will be initialized.
   Experiment(json &experiment_config);
 
+  /// @brief Constructing an Experiment using an already initialized ExperimentSetup
+  ///
+  /// Since ExperimenSetup already contains the definition of Data, Test, and Effect strategies,
+  /// this method accept the ExperimentSetup as it is, and only initialize those strategies.
+  ///
+  /// \note This can be used in cases where the underlying strategies should be preserved while
+  /// some experiment parameters needs to be modified. 
   Experiment(ExperimentSetup &e);
 
   Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
