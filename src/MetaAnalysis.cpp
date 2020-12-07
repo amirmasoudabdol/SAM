@@ -386,7 +386,7 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     beta = FixedEffectEstimator::FixedEffect(yi_t, vi_t).est;
     
     yi_c     = yi_s - beta;                             ///  centered values;
-    yi_c_r   = rankdata(abs(yi_c), "average").as_row(); /// \todo ties_method="first"); //  ranked absolute centered values;
+    yi_c_r   = rankdata(abs(yi_c), "average").as_row(); /// @todo ties_method="first"); //  ranked absolute centered values;
     yi_c_r_s = arma::sign(yi_c) % yi_c_r;               ///  signed ranked centered values;
     
     //  estimate the number of missing studies with the R0 estimator
@@ -446,7 +446,7 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     yi_fill.insert_cols(yi_f.n_elem, -1. * yi_c.elem(arma::regspace<arma::uvec>(k - k0, 1, k - 1)).as_row());
     
     /// apply limits if specified
-    /// \todo: to be implemented
+    /// @todo: to be implemented
     //    if (!missing(ilim)) {
     //      ilim = sort(ilim)
     //      if (length(ilim) != 2L)
@@ -470,14 +470,14 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     
   }
     
-  /// \todo need to be integrated!
+  /// @todo need to be integrated!
   std::optional<double> p_k0;
   
   /// Adjustment for p_k0
   if (params.estimator.find("R0") != std::string::npos) {
     arma::rowvec m {arma::regspace<arma::rowvec>(-1, 1, (k0-1))};
     arma::rowvec bin_coefs(m.n_elem);
-    /// \todo This imbue can be improved
+    /// @todo This imbue can be improved
     bin_coefs.imbue([&, i = 0]() mutable {
       auto x = boost::math::binomial_coefficient<double>(0+m.at(i)+1, m.at(i)+1);
       i++;
@@ -491,7 +491,7 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
   } //else
     // p_k0 = NA
   
-  /// \todo Still need to report the p_k0
+  /// @todo Still need to report the p_k0
   return ResultType{.k0 = k0, .se_k0 = se_k0, .k_all = k + k0, .side = side, .imputed_est = imputed_est, .imputed_pval = imputed_pval};
   
 }
@@ -687,7 +687,7 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
     using boost::math::normal;
     normal norm;
     
-    /// \todo check if these are what I want
+    /// @todo check if these are what I want
     switch (alternative) {
       case TestStrategy::TestAlternative::TwoSided: {
         p = 2 * min(cdf(norm, statistic), cdf(complement(norm, statistic)));

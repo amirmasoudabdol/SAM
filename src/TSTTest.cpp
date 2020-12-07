@@ -108,15 +108,15 @@ TTest::compute_pvalue(double t_stat, double df, double alpha, TestStrategy::Test
 /// down to chance.  We can also test the alternative hypothesis that any
 /// difference is not down to chance
 ///
-/// \note       Obtained from [Boost Library
+/// @note       Obtained from [Boost Library
 ///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
 ///
-/// \param      M      True Mean.
-/// \param      Sm     Sample Mean.
-/// \param      Sd     Sample Standard Deviation.
-/// \param      Sn     Sample Size.
-/// \param      alpha  Significance Level.
-/// \return     TTest::ResultType
+/// @param      M      True Mean.
+/// @param      Sm     Sample Mean.
+/// @param      Sd     Sample Standard Deviation.
+/// @param      Sn     Sample Size.
+/// @param      alpha  Significance Level.
+/// @return     TTest::ResultType
 ///
 TTest::ResultType
 TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
@@ -181,17 +181,17 @@ TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
 /// hypothesis that the two samples have the same mean and that any difference
 /// if due to chance.
 ///
-/// \note       Obtained from [Boost Library
+/// @note       Obtained from [Boost Library
 ///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
 ///
-/// \param      Sm1    Sample Mean 1.
-/// \param      Sd1    Sample Standard Deviation 1.
-/// \param      Sn1    Sample Size 1.
-/// \param      Sm2    Sample Mean 2.
-/// \param      Sd2    Sample Standard Deviation 2.
-/// \param      Sn2    Sample Size 2.
-/// \param      alpha  Significance Level.
-/// \return     TTest::ResultType
+/// @param      Sm1    Sample Mean 1.
+/// @param      Sd1    Sample Standard Deviation 1.
+/// @param      Sn1    Sample Size 1.
+/// @param      Sm2    Sample Mean 2.
+/// @param      Sd2    Sample Standard Deviation 2.
+/// @param      Sn2    Sample Size 2.
+/// @param      alpha  Significance Level.
+/// @return     TTest::ResultType
 ///
 TTest::ResultType TTest::two_samples_t_test_equal_sd(
     double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2,
@@ -264,17 +264,17 @@ TTest::ResultType TTest::two_samples_t_test_equal_sd(
 /// are testing the null hypothesis that the two samples have the same mean and
 /// that any difference is due to chance.
 ///
-/// \note       Obtained from [Boost Library
+/// @note       Obtained from [Boost Library
 ///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
 ///
-/// \param      Sm1    Sample Mean 1.
-/// \param      Sd1    Sample Standard Deviation 1.
-/// \param      Sn1    Sample Size 1.
-/// \param      Sm2    Sample Mean 2.
-/// \param      Sd2    Sample Standard Deviation 2.
-/// \param      Sn2    Sample Size 2.
-/// \param      alpha  Significance Level.
-/// \return     TTest::ResultType
+/// @param      Sm1    Sample Mean 1.
+/// @param      Sd1    Sample Standard Deviation 1.
+/// @param      Sn1    Sample Size 1.
+/// @param      Sm2    Sample Mean 2.
+/// @param      Sd2    Sample Standard Deviation 2.
+/// @param      Sn2    Sample Size 2.
+/// @param      alpha  Significance Level.
+/// @return     TTest::ResultType
 ///
 TTest::ResultType TTest::two_samples_t_test_unequal_sd(
     double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2,

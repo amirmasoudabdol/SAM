@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   EffectStrategies Effect Strategies
-/// \brief      List of available effect strategies
+/// @defgroup   EffectStrategies Effect Strategies
+/// @brief      List of available effect strategies
 ///
 
 #ifndef SAMPP_EFFECTSTRATEGY_H
@@ -18,7 +18,7 @@ class Experiment;
 class ExperimentSetup;
 
 ///
-/// \brief      Abstract class for Effect Size Strategy
+/// @brief      Abstract class for Effect Size Strategy
 ///
 class EffectStrategy {
 

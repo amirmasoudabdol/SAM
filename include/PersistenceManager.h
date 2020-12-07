@@ -39,7 +39,7 @@ class PersistenceManager::Writer {
   int counter{0};
 
   //! A unique pointer to a new writer object,
-  //! \todo: Check if there is a better way of implementing this
+  //! @todo: Check if there is a better way of implementing this
   std::unique_ptr<csv::Writer> writer;
   
   std::vector<std::string> column_names;
@@ -63,15 +63,15 @@ public:
   void write(const Submission &sub);
 
   /// Write a list of submission records to a file, or a database
-  /// \param subs A reference to Submission container
+  /// @param subs A reference to Submission container
   void write(std::vector<Submission> &subs, int sid = 0);
 
   /// Write each groups' data to a file, or a database
-  /// \param data A reference to the Experiment->measurements
+  /// @param data A reference to the Experiment->measurements
   void write(std::vector<arma::Row<double>> &data, int sid = 0);
 
   /// Write part of the Experiment to a file, or a database
-  /// \param A constance reference to the Experiment
+  /// @param A constance reference to the Experiment
   void write(Experiment *experiment, string_view mode, int sid);
   
   void setColumnNames(const std::vector<std::string> &colnames);

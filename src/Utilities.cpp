@@ -140,11 +140,11 @@ Distribution make_distribution(json const &j) {
 /// A macro generating different functions calls based on the given
 /// distribution.
 ///
-/// \param      name_  The distribution name
-/// \param      type_  The distribution type
-/// \param      ...    Parameters of the distribution, according to their
+/// @param      name_  The distribution name
+/// @param      type_  The distribution type
+/// @param      ...    Parameters of the distribution, according to their
 ///                    representation in the standard library
-/// \return     A function call to the make_distribution_impl that returns a
+/// @return     A function call to the make_distribution_impl that returns a
 ///             distribution class.
 ///
 #define generate_distribution_factory(name_, type_, ...)                       \
@@ -195,11 +195,11 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
 /// distribution. The main difference here is the fact that the `std::function`
 /// has the form of `std::function<arma::mat<double>(Generator &)>`.
 ///
-/// \param      name_  The distribution name
-/// \param      type_  The distribution type
-/// \param      ...    Paramters of the distribution, according to their
+/// @param      name_  The distribution name
+/// @param      type_  The distribution type
+/// @param      ...    Paramters of the distribution, according to their
 ///                    representation in the standard library
-/// \return     A function call to the make_distribution_impl that returns a
+/// @return     A function call to the make_distribution_impl that returns a
 ///             distribution class.
 ///
 #define generate_multivariate_distribution_factory(name_, type_, ...)          \

@@ -3,14 +3,14 @@
 //
 //
 
-/// \defgroup   MetaAnalysis Meta Analysis Methods
-/// \brief      List of available Meta Analysis
+/// @defgroup   MetaAnalysis Meta Analysis Methods
+/// @brief      List of available Meta Analysis
 ///
 /// Description to come!
 ///
 
-/// \defgroup   MetaAnalysisParameters Parameters of Meta Anlaysis Methods
-/// \brief      List of available Parameters
+/// @defgroup   MetaAnalysisParameters Parameters of Meta Anlaysis Methods
+/// @brief      List of available Parameters
 ///
 /// Description to come!
 ///

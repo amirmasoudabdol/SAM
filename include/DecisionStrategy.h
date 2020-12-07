@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   DecisionStrategies Decision Strategies
-/// \brief      List of available Decision Strategies
+/// @defgroup   DecisionStrategies Decision Strategies
+/// @brief      List of available Decision Strategies
 ///
 /// Description to come!
 ///
@@ -35,7 +35,7 @@ using SubmissionPool = std::vector<Submission>;
 
 
 ///
-/// \brief      Abstract class for different decision strategies.
+/// @brief      Abstract class for different decision strategies.
 ///
 class DecisionStrategy {
 
@@ -52,7 +52,7 @@ public:
   
   /// DecisionStrategy factory method.
   ///
-  /// \param decision_strategy_config    A JSON object containing information
+  /// @param decision_strategy_config    A JSON object containing information
   /// about each decision strategy.
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
@@ -62,7 +62,7 @@ public:
   //! List of selected Submission by the researcher, during the hacking procedure
   SubmissionPool submissions_pool;
 
-  /// \todo: These guys should move to their own class, I don't have to keep everything here!
+  /// @todo: These guys should move to their own class, I don't have to keep everything here!
   PolicyChainSet initial_selection_policies;
   PolicyChain submission_decision_policies;
   PolicyChainSet between_hacks_selection_policies;
@@ -100,7 +100,7 @@ public:
     submissions_pool.clear();
   }
   
-  /// \todo: This needs to be private but currently, I don't have a good place to put it.
+  /// @todo: This needs to be private but currently, I don't have a good place to put it.
   /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
   /// and I cannot just call it in any other methods because then it's hidden
   /// 
@@ -110,7 +110,7 @@ public:
     clear();
   }
   
-  /// \brief      Implementation of decision-making procedure.
+  /// @brief      Implementation of decision-making procedure.
   virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) = 0;
   

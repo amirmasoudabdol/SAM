@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   DataStrategies Data Strategies
-/// \brief      List of available Data Strategies
+/// @defgroup   DataStrategies Data Strategies
+/// @brief      List of available Data Strategies
 ///
 /// Description to come!
 ///
@@ -24,7 +24,7 @@ class Experiment;
 class ExperimentSetup;
 
 ///
-/// \brief      Abstract class for Data Strategies
+/// @brief      Abstract class for Data Strategies
 ///
 /// A DataGenStrategy should at least two methods, `genData` and
 /// `genNewObservationForAllGroups`. The former is mainly used to populate a new
@@ -38,8 +38,8 @@ public:
 
   /// Factory method for DataStrategy.
   /// 
-  /// \param setup An instance of ExperimentSetup
-  /// \return a new DataStrategy
+  /// @param setup An instance of ExperimentSetup
+  /// @return a new DataStrategy
   static std::unique_ptr<DataStrategy> build(json &data_strategy_config);
 
   /// Pure deconstructor of the DataStrategy abstract class.
@@ -49,25 +49,25 @@ public:
   /// is considered to be one group, based on the information already
   /// provided in the `experiment.setup`.
   /// 
-  /// \param expr A pointer to the experiment
-  /// \param filename The CSV filename
+  /// @param expr A pointer to the experiment
+  /// @param filename The CSV filename
   void loadRawData(Experiment *expr, const std::string &filename);
 
   /// Populates the `experiment->measurements` with data based on the parameters
   /// specified in `setup`.
   /// 
-  /// \param experiment A pointer to an Experiment object
+  /// @param experiment A pointer to an Experiment object
   virtual void genData(Experiment *experiment) = 0;
 
   /// Generates `n_new_obs` new observations to each group.
   /// 
-  /// \note This routine uses the secondary random number stream to avoid
+  /// @note This routine uses the secondary random number stream to avoid
   /// conflicting with the main random engine.
   /// 
-  /// \param experiment The pointer to the current experiment
-  /// \param n_new_obs The number of new observations to be added
+  /// @param experiment The pointer to the current experiment
+  /// @param n_new_obs The number of new observations to be added
   /// 
-  /// \return An array of new observations
+  /// @return An array of new observations
 
   virtual std::vector<arma::Row<double>>
   genNewObservationsForAllGroups(Experiment *experiment, int n_new_obs) = 0;
@@ -75,32 +75,39 @@ public:
   ///
   /// Generate `n_new_obs` new observations for `g` group.
 
-  /// \param experiment The pointer to the experiment
-  /// \param g The target group
-  /// \param n_new_obs The number of new observations
+  /// @param experiment The pointer to the experiment
+  /// @param g The target group
+  /// @param n_new_obs The number of new observations
   /// 
-  /// \return An array of new observations
+  /// @return An array of new observations
   virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
                                                   int n_new_obs) = 0;
 };
 
-///
+/// @brief Linear Model Data Strategy
 ///
 /// @ingroup  DataStrategies
 ///
-/// The fixed-effect data strategy will produce data from a fixed-effect model with
-/// the given  \f$\mu\f$ and  \f$\sigma\f$.
 class LinearModelStrategy final : public DataStrategy {
 
 public:
+  
+  /// @brief Parameters of LinearModelStrategy
+  ///
   struct Parameters {
     DataModel name{DataModel::LinearModel};
 
+    ///@{
+    /// Distributions of main effects
     std::optional<std::vector<Distribution>> meas_dists;
-    std::optional<std::vector<Distribution>> erro_dists;
-
     std::optional<MultivariateDistribution> m_meas_dist;
+    ///@}
+
+    ///@{
+    /// Distributions of error.
+    std::optional<std::vector<Distribution>> erro_dists;
     std::optional<MultivariateDistribution> m_erro_dist;
+    ///@}
 
     Parameters() = default;
   };
@@ -180,9 +187,9 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 ///
 /// @ingroup  DataStrategies
 ///
-/// \warning    To be implemented!
+/// @warning    To be implemented!
 ///
-/// \note       LatentDataStrategy will generate individual items, therefore it
+/// @note       LatentDataStrategy will generate individual items, therefore it
 ///             might be slower than other models.
 ///
 class LatentDataStrategy final : public DataStrategy {
@@ -208,13 +215,13 @@ private:
 };
 
 ///
-/// \brief      Simulate data from Graded Response Model.
+/// @brief      Simulate data based on General Graded Response Model.
 ///
 ///
 /// @ingroup  DataStrategies
 ///
 ///
-/// \note:
+/// @note:
 /// - DVs in GRM are distinguished by their participant abilities to answer tests.
 ///   Therefore, we'll have `ng_` number of `abilities`. This value is being used
 ///   to, in each group, to initialize a normal distribution of `\theta ~
@@ -229,8 +236,13 @@ public:
 
     int n_dims;
 
+    //! Number of items
     int n_items;
+    
+    //! Number of categories
     int n_categories;
+    
+    //! Inidicates the Response Function
     std::string response_function {"Rasch"};
 
     std::optional<MultivariateDistribution> m_diff_dist;
@@ -264,7 +276,7 @@ private:
 
   arma::mat poa;        //! probablity of answering
   arma::umat responses; //! responses to items, binary
-  arma::vec scores;
+  arma::vec scores;     //! scores of each item
 
   arma::mat urand;
 
@@ -274,8 +286,14 @@ private:
   //! Participants abilities
   arma::mat thetas;
   
-  /// @todo this should probably be renamed to "RaschScore" or something like that
-  double generate_sum_of_scores(const double theta);
+  ///
+  /// @brief      [Rasch Response Function](https://en.wikipedia.org/wiki/Rasch_model)
+  ///
+  /// @param[in]  theta  Indicates the participant's ability, θ
+  ///
+  /// @return     Sum score of `j`th participart over all items
+  ///
+  double rasch_score(const double theta);
 };
 
 // JSON Parser for GRMDataStrategy::Parameters

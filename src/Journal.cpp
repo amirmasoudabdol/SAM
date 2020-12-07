@@ -157,7 +157,7 @@ void Journal::accept(const Submission &s) {
 //    sum_sig_effect += s.group_.effect_;
   }
 
-  /// \todo Maybe I should calculate the publications stats here
+  /// @todo Maybe I should calculate the publications stats here
   
   if (publications_list.size() == max_pubs) {
     still_accepting = false;

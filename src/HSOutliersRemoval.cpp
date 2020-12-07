@@ -7,7 +7,7 @@
 using namespace sam;
 
 ///
-/// \brief      Implementation of Outliers Removal based on an item's distance
+/// @brief      Implementation of Outliers Removal based on an item's distance
 /// from
 ///             the \mu.
 ///

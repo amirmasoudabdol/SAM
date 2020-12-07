@@ -81,8 +81,8 @@ bool PolicyBasedSelection::review(const Submission &s) {
 /// number decide wheather the submission is going to be accepted. The
 /// drawn random number, \f$r\f$ will be compared to `pub_bias` of the journal.
 ///
-/// \param      s     A reference to the Submission
-/// \return     a boolean indicating whether the Submission is accepted.
+/// @param      s     A reference to the Submission
+/// @return     a boolean indicating whether the Submission is accepted.
 ///
 bool SignificantSelection::review(const Submission &s) {
 
@@ -104,8 +104,8 @@ bool SignificantSelection::review(const Submission &s) {
 /// Draw a random number between \f$ r \in [0, 1] \f$, reject the submission if
 /// \f$ r < 0.5 \f$.
 ///
-/// \param      s     corresponding submission
-/// \return     a boolean indicating whether the Submission is accpeted.
+/// @param      s     corresponding submission
+/// @return     a boolean indicating whether the Submission is accpeted.
 ///
 bool RandomSelection::review(const Submission &s) {
   if (Random::get<bool>(0.5)) {

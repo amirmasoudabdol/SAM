@@ -31,9 +31,9 @@ HackingStrategy::HackingStrategy() {
 ///
 /// A Factory method for building hacking strategies
 ///
-/// \param      config  A JSON object defining a hacking strategy, and its
+/// @param      config  A JSON object defining a hacking strategy, and its
 ///                     parameters
-/// \return     Pointer to a HackingStrategy
+/// @return     Pointer to a HackingStrategy
 ///
 std::unique_ptr<HackingStrategy>
 HackingStrategy::build(json &hacking_strategy_config) {

@@ -11,8 +11,8 @@ using namespace sam;
 ///
 /// Perform Group Pooling on the given Experiment.
 ///
-/// \param      experiment        A pointer to researcher's experiment
-/// \param      decisionStrategy  A pointer to researcher's decision strategy
+/// @param      experiment        A pointer to researcher's experiment
+/// @param      decisionStrategy  A pointer to researcher's decision strategy
 ///
 void GroupPooling::perform(Experiment *experiment) {
 
@@ -50,9 +50,9 @@ void GroupPooling::perform(Experiment *experiment) {
 /// This literally appends the data of selected groups to each other to create a
 /// new group.
 ///
-/// \param experiment a pointer to the given experiment. Note: This can be a
+/// @param experiment a pointer to the given experiment. Note: This can be a
 /// copy of the experiment, based on the preferences of the researcher.
-/// \param r Lenght of each permutation
+/// @param r Lenght of each permutation
 void GroupPooling::pool(Experiment *experiment, int r) {
   // Length of each permutation
   //    const int r = _num;

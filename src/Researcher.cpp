@@ -25,7 +25,7 @@ void Researcher::letTheHackBegin() {
   bool has_committed;
   
   for (auto &h_set : h_workflow) {
-    /// \todo Now that I have a set, I don't really need the has_commited variable!
+    /// @todo Now that I have a set, I don't really need the has_commited variable!
   
     has_committed = true;
     
@@ -120,7 +120,7 @@ void Researcher::randomizeParameters() {
 /// Iterating over the registrated methods and run them on the current
 /// experiment.
 ///
-/// \note This has a very similar implemention to the `hack()` but it
+/// @note This has a very similar implemention to the `hack()` but it
 /// doesn't perform any of the secondary checks.
 void Researcher::preProcessData() {
 
@@ -131,10 +131,10 @@ void Researcher::preProcessData() {
   }
 }
 
-/// \brief Checking the final submission and submitting it to
+/// @brief Checking the final submission and submitting it to
 /// the Journal.
 ///
-/// \todo Maybe I should pass the `final_submission` to this, and don't rely on it
+/// @todo Maybe I should pass the `final_submission` to this, and don't rely on it
 /// reading it from the `decision_strategy`
 void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub) {
   
@@ -151,7 +151,7 @@ void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub)
   
 }
 
-/// \todo this should not draw a new value every time, and should draw once
+/// @todo this should not draw a new value every time, and should draw once
 /// and keep reporting that one.
 /// \updated Should it thought?
 bool Researcher::isHacker() {
@@ -190,7 +190,7 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
   }, probability_of_committing_a_hack);
 }
 
-/// \brief  Executing the research workflow
+/// @brief  Executing the research workflow
 ///
 /// This is the main routine that the Researcher execute.
 void Researcher::research() {

@@ -18,12 +18,12 @@ namespace sam {
 class ExperimentSetupBuilder;
 
 ///
-/// \brief      Define a class for ExperimentSetup.
+/// @brief      Define a class for ExperimentSetup.
 ///
 /// ExperimentSetup contains the necessary parameters for initiating and
 /// generating the data needed for the Experiment.
 ///
-/// \ingroup    Experiment
+/// @ingroup    Experiment
 class ExperimentSetup {
 
   friend class ExperimentSetupBuilder;
@@ -49,7 +49,7 @@ public:
   ///
   /// Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
   ///
-  /// \return     An instance of the builder.
+  /// @return     An instance of the builder.
   ///
   static ExperimentSetupBuilder create();
 
@@ -79,7 +79,7 @@ public:
   void randomizeTheParameters();
 };
 
-/// \ingroup AbstractBuilders
+/// @ingroup AbstractBuilders
 class ExperimentSetupBuilder {
 
   //! Experiment Setup instance that it's going to be build
@@ -118,15 +118,15 @@ class ExperimentSetupBuilder {
 public:
   ExperimentSetupBuilder() = default;
 
-  /// \brief Create and configure a new experiment setup based on the given
+  /// @brief Create and configure a new experiment setup based on the given
   /// configuration.
   ExperimentSetupBuilder &fromConfigFile(json &config);
 
-  /// \brief      Sets the seed for randomizing setup parameters
+  /// @brief      Sets the seed for randomizing setup parameters
   ///
-  /// \param[in]  s     seed
+  /// @param[in]  s     seed
   ///
-  /// \return     A reference to the builder
+  /// @return     A reference to the builder
   ExperimentSetupBuilder &setSeed(const int s) {
     seed = s;
     return *this;
@@ -171,7 +171,7 @@ public:
     }
 
     // If everything ok, replace the vector with the given vector
-    /// \todo: Recover this, it's been removed during the Parameter transition
+    /// @todo: Recover this, it's been removed during the Parameter transition
 //    setup.nobs_ = nobs;
 
     return *this;

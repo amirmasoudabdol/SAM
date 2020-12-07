@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   SelectionStrategies Selection Strategies
-/// \brief      List of available Selection Strategies
+/// @defgroup   SelectionStrategies Selection Strategies
+/// @brief      List of available Selection Strategies
 ///
 /// Description to come!
 ///
@@ -37,7 +37,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 })
 
 ///
-/// \brief      Abstract class for Journal's selection strategies.
+/// @brief      Abstract class for Journal's selection strategies.
 ///
 /// A Journal will decide if a Submission is going to be accepted or rejected.
 /// This decision can be made based on different criteria or formula. A
@@ -51,7 +51,7 @@ protected:
 
 public:
   ///
-  /// \brief      Pure deconstructor of the base class
+  /// @brief      Pure deconstructor of the base class
   ///
   virtual ~SelectionStrategy() = 0;
   
@@ -61,32 +61,32 @@ public:
   SelectionStrategy();
 
   ///
-  /// \brief      Factory method for building a SelectionStrategy
+  /// @brief      Factory method for building a SelectionStrategy
   ///
-  /// \param      config  A reference to `json['Journal Parameters']. Usually
+  /// @param      config  A reference to `json['Journal Parameters']. Usually
   ///                     Researcher::Builder is responsible for passing the
   ///                     object correctly.
   ///
-  /// \return     A new SelectionStrategy
+  /// @return     A new SelectionStrategy
   ///
   static std::unique_ptr<SelectionStrategy>
   build(json &selection_straregy_config);
 
   ///
-  /// \brief      Review the Submission and decides if it's going to be accepted
+  /// @brief      Review the Submission and decides if it's going to be accepted
   ///             or rejected. When deriving from SelectionStrategy, `review` is
   ///             the main interface and `Journal` relies on its output
   ///
-  /// \param[in]  s     A reference to a Submission
+  /// @param[in]  s     A reference to a Submission
   ///
-  /// \return     A boolean indicating whether the Submission should be accepted.
+  /// @return     A boolean indicating whether the Submission should be accepted.
   ///
   virtual bool review(const Submission &s) = 0;
 };
 
 
 ///
-/// \brief Policy-based Selection Strategy
+/// @brief Policy-based Selection Strategy
 ///
 /// Policy-based selection strategy accepts a submission if it passes
 /// a criteria specified in `selection_policy_defs`. In addition to the
@@ -126,7 +126,7 @@ public:
 };
 
 ///
-/// \brief      Significant-based Selection Strategy
+/// @brief      Significant-based Selection Strategy
 ///
 /// Significant-based selection strategy accepts a publication if the given
 /// *p*-value is significant. Certain degree of *publication bias*, can be
@@ -169,13 +169,13 @@ public:
 };
 
 ///
-/// \brief      Random Selection Strategy
+/// @brief      Random Selection Strategy
 ///
 /// In this method, Journal does not check any criteria for accepting or
 /// rejecting a submission. Each submission has 50% chance of being accepted or
 /// not.
 ///
-/// \note       This is technically the SignificantSelection with pub_bias set
+/// @note       This is technically the SignificantSelection with pub_bias set
 /// to 0.
 ///
 /// @ingroup  SelectionStrategies
@@ -198,7 +198,7 @@ public:
 
 
 ///
-/// \brief      FreeSelection doesn't pose any restriction on the submission and
+/// @brief      FreeSelection doesn't pose any restriction on the submission and
 ///             all submissions will be accepted.
 ///
 ///

@@ -129,35 +129,35 @@ public:
   ///
   /// Point Journal's selection strategy to the given strategy
   ///
-  /// \param      s     The pointer to the given selection strategy
+  /// @param      s     The pointer to the given selection strategy
   ///
   void setSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
     selection_strategy = std::move(ss);
   }
 
   ///
-  /// \brief      Review the Submission by calling
+  /// @brief      Review the Submission by calling
   /// `SelectionStrategy::review()`.
   ///
-  /// \param[in]  s     A reference to the Submission
+  /// @param[in]  s     A reference to the Submission
   ///
-  /// \return     A boolean indicating whether the Submission should be accpeted
+  /// @return     A boolean indicating whether the Submission should be accpeted
   /// or
   ///             not.
   ///
   bool review(Submission &s);
 
   ///
-  /// \brief      Accept the Submission by adding it to the `publicationList`.
+  /// @brief      Accept the Submission by adding it to the `publicationList`.
   ///
-  /// \param[in]  s     A copy of the Submission
+  /// @param[in]  s     A copy of the Submission
   ///
   void accept(const Submission &s);
 
   ///
-  /// \brief      Rejecting the Submission!
+  /// @brief      Rejecting the Submission!
   ///
-  /// \param[in]  s     A reference to the Submission
+  /// @param[in]  s     A reference to the Submission
   ///
   void reject(const Submission &s);
 
@@ -166,8 +166,8 @@ public:
   ///
   /// Save enteries of publications_list to a CSV file.
   ///
-  /// \param      simid   The index to be used for the given set.
-  /// \param      writer  The output file.
+  /// @param      simid   The index to be used for the given set.
+  /// @param      writer  The output file.
   ///
   void saveSubmissions(int simid, std::ofstream &writer);
   

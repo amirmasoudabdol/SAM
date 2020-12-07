@@ -49,12 +49,12 @@ namespace sam {
 /// is a 95% probability that the interval contains the true mean. The interval
 /// computed from a given sample either contains the true mean or it does not.
 ///
-/// \note       Obtained from [Boost Library
+/// @note       Obtained from [Boost Library
 ///             Example](https://www.boost.org/doc/libs/1_69_0/libs/math/doc/html/math_toolkit/stat_tut/weg/st_eg/paired_st.html).
 ///
-/// \param      Sm    Sample Mean.
-/// \param      Sd    Sample Standard Deviation.
-/// \param      Sn    Sample Size.
+/// @param      Sm    Sample Mean.
+/// @param      Sd    Sample Standard Deviation.
+/// @param      Sn    Sample Size.
 ///
 std::pair<double, double>
 confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
@@ -79,9 +79,9 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
 /// Caculate the degress of freedom to achieve a significance result with the given
 /// alpha
 ///
-/// \param      M     True Mean.
-/// \param      Sm    Sample Mean.
-/// \param      Sd    Sample Standard Deviation.
+/// @param      M     True Mean.
+/// @param      Sm    Sample Mean.
+/// @param      Sd    Sample Standard Deviation.
 ///
 double single_sample_find_df(double M, double Sm, double Sd, double alpha,
                              TestStrategy::TestAlternative alternative) {

@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   TestStrategies Test Strategies
-/// \brief      List of available Test Strategies
+/// @defgroup   TestStrategies Test Strategies
+/// @brief      List of available Test Strategies
 ///
 /// Description to come!
 ///
@@ -23,7 +23,7 @@ class ExperimentSetup;
 class Experiment;
 
 ///
-/// \brief      Abstract class for defining test strategies.
+/// @brief      Abstract class for defining test strategies.
 ///
 /// Statistical test strategies will investigate if there is a meaningful
 /// difference between means of two samples. Every test strategy should provide
@@ -64,7 +64,7 @@ public:
 };
 
 ///
-/// \brief      Declration of t-test.
+/// @brief      Declration of t-test.
 ///
 /// The `run()` method will check the significance of the difference between two
 /// groups. In the current setup, every `experiment->means` is considered an

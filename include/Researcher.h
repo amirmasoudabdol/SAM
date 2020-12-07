@@ -2,8 +2,8 @@
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
 ///
-/// \defgroup   AbstractBuilders Abstract Factory Builders
-/// \brief      List of Abstract Factory Builder classes
+/// @defgroup   AbstractBuilders Abstract Factory Builders
+/// @brief      List of Abstract Factory Builder classes
 ///
 /// Description to come!
 ///
@@ -22,7 +22,7 @@ using Random = effolkronium::random_static;
 
 namespace sam {
 
-/// \ingroup AbstractBuilders
+/// @ingroup AbstractBuilders
 class ResearcherBuilder;
 
 using HackingWorkflow = std::vector<std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>>;
@@ -40,7 +40,7 @@ public:
   ///
   /// Default constructor of the Researcher.
   ///
-  /// \note       This is defined `private` because I want force the user to use
+  /// @note       This is defined `private` because I want force the user to use
   /// the
   ///             `create(name)` method and therefore delegate the construction
   ///             to the ResearcherBuilder.
@@ -51,8 +51,8 @@ public:
   /// Starts the Researcher build process. Use this to build a new instance of
   /// the Researcher.
   ///
-  /// \param      name  The researcher name
-  /// \return     An instance of ResearcherBuilder.
+  /// @param      name  The researcher name
+  /// @return     An instance of ResearcherBuilder.
   ///
   static ResearcherBuilder create(std::string name);
 
@@ -123,12 +123,12 @@ public:
   ///
   /// Set the decisionStrategy of the researcher.
   ///
-  /// \param      d     The pointer to a Decision Strategy
+  /// @param      d     The pointer to a Decision Strategy
   ///
-  /// \note       Researcher owns its decision strategy that's why I move the
+  /// @note       Researcher owns its decision strategy that's why I move the
   ///             pointer.
   ///
-  /// \todo       I think I need to do the `std::move` when I'm calling the
+  /// @todo       I think I need to do the `std::move` when I'm calling the
   /// function
   ///             not inside it
   ///
@@ -140,14 +140,14 @@ public:
   /// Set the experiment. This can be used to setup several researchers with one
   /// experiment.
   ///
-  /// \param      e     The pointer to an Experiment
+  /// @param      e     The pointer to an Experiment
   ///
 //  void setExperiment(Experiment *e) { experiment = e; };
 
   ///
-  /// \brief      Set the Jouranl
+  /// @brief      Set the Jouranl
   ///
-  /// \param      j     The pointer to a Journal instance
+  /// @param      j     The pointer to a Journal instance
   ///
 //  void setJournal(Journal *j) { journal = j; };
 };
@@ -173,15 +173,15 @@ public:
   /// the best implementation still but I think it's more readable and
   /// reasonable for some usecases.
   ///
-  /// \param      config  A JSON object
-  /// \return     Return an instance of itself
+  /// @param      config  A JSON object
+  /// @return     Return an instance of itself
   ///
   /// @todo This needs to be splitted into different pieces
   ResearcherBuilder &fromConfigFile(json &config) {
 
     this->config = config;
 
-    /// \todo I can technically replace all these direct calls with calls
+    /// @todo I can technically replace all these direct calls with calls
     /// to their counterpart in the Builder!
 
     researcher.experiment = std::make_unique<Experiment>(config["experiment_parameters"]);
@@ -323,7 +323,7 @@ public:
   ////////////////////////////
 
   ///
-  /// \brief      Create a new DecisionStrategy for the researcher based on the
+  /// @brief      Create a new DecisionStrategy for the researcher based on the
   /// given configuration.
   ///
   ResearcherBuilder &createDecisionStrategy(json &ds) {
@@ -332,10 +332,10 @@ public:
   }
 
   ///
-  /// \brief      Create a new Journal for the researcher based on the given
+  /// @brief      Create a new Journal for the researcher based on the given
   ///             configuration.
   ///
-  /// \note       The configuration needs to include information about the
+  /// @note       The configuration needs to include information about the
   ///             SelectionStrategy as well.
   ///
 //  ResearcherBuilder &createJournal(json &journal_config) {
@@ -344,9 +344,9 @@ public:
 //  }
 
   ///
-  /// \brief      Create a new Experiment based on the given ExperimentSetup.
+  /// @brief      Create a new Experiment based on the given ExperimentSetup.
   ///
-  /// \note       : This assumes that the experiment setup is correctly
+  /// @note       : This assumes that the experiment setup is correctly
   /// initiated.
   ///
 //  ResearcherBuilder &createExperiment(ExperimentSetup es) {
@@ -437,11 +437,11 @@ public:
    Prepare a set of hacking strategies groups by populating each group from
    the given `hacking_strategies_pool`
 
-   \param hacking_strategies_pool A set of hacking strategy methods use to
+   @param hacking_strategies_pool A set of hacking strategy methods use to
    prepare researcher's hacking startegies
-   \param n_group The number of hacking strategies groups
-   \param m_strategies The number of hacking startegies in each group
-   \return Return an instance of itself where hacking_strategies has been
+   @param n_group The number of hacking strategies groups
+   @param m_strategies The number of hacking startegies in each group
+   @return Return an instance of itself where hacking_strategies has been
    initialized accordingly.
    */
   ResearcherBuilder &
@@ -472,9 +472,9 @@ public:
   /// `m_strategies`'s or steps. Each startegy is being selected randomly
   /// between all available strategies.
   ///
-  /// \param      n_group       Number of groups of hacking strategies
-  /// \param      m_strategies  Number of hacking strategies in each group
-  /// \return     Return an instance of itself where hacking_strategies has been
+  /// @param      n_group       Number of groups of hacking strategies
+  /// @param      m_strategies  Number of hacking strategies in each group
+  /// @return     Return an instance of itself where hacking_strategies has been
   ///             initialized accordingly.
   ///
   ResearcherBuilder &pickRandomHackingStrategies(int n_group, int m_method) {
@@ -499,11 +499,11 @@ public:
   ///
   /// Build and return a new Researcher.
   ///
-  /// \note       Be aware that this needs to be called after you set all
+  /// @note       Be aware that this needs to be called after you set all
   /// aspects of
   ///             the Researcher
   ///
-  /// \return     A new Researcher
+  /// @return     A new Researcher
   ///
   Researcher build() {
 

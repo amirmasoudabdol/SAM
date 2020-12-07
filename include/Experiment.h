@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   Experiment Experiment Modules
-/// \brief      Experiment-related Modules
+/// @defgroup   Experiment Experiment Modules
+/// @brief      Experiment-related Modules
 ///
 /// Description to come!
 ///
@@ -25,7 +25,7 @@
 namespace sam {
 
 ///
-/// \brief      Experiment encapsulates data and methods needed by the Researcher to
+/// @brief      Experiment encapsulates data and methods needed by the Researcher to
 /// conduct its research.
 ///
 /// Experiment has access to all data-related
@@ -72,7 +72,7 @@ public:
   /// Since ExperimenSetup already contains the definition of Data, Test, and Effect strategies,
   /// this method accept the ExperimentSetup as it is, and only initialize those strategies.
   ///
-  /// \note This can be used in cases where the underlying strategies should be preserved while
+  /// @note This can be used in cases where the underlying strategies should be preserved while
   /// some experiment parameters needs to be modified. 
   Experiment(ExperimentSetup &e);
 
@@ -83,13 +83,13 @@ public:
   /// These operators are returning the correct group, even if the group list is
   /// not sorted
   ///
-  /// \todo: I think these guys are a bit strange, they work and I'm not sure
+  /// @todo: I think these guys are a bit strange, they work and I'm not sure
   /// why I have them like this but I think I can do better, for now I put some
   /// guard
-  /// \note I think these are bad ideas, I think they should just return the index
+  /// @note I think these are bad ideas, I think they should just return the index
   /// that are being asked to, and then some other method, actually returns the group
   /// like `get_group`, and `set_group` or even a `Group operator()` why not.
-  /// \note This means I need to change the DataStrategy too, and make sure that
+  /// @note This means I need to change the DataStrategy too, and make sure that
   /// in each iteration, I start with a fresh Experiment rather than a half cleanup one.
   Group &operator[](std::size_t idx) {
     if (idx > groups_.size())
@@ -121,7 +121,7 @@ public:
 
   /// Set or re-set the Test Strategy
   ///
-  /// \param t A reference to a Test Strategy instance
+  /// @param t A reference to a Test Strategy instance
   ///
   void setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
     test_strategy = ts;
@@ -129,7 +129,7 @@ public:
 
   /// Set or re-set the Data Strategy
   ///
-  /// \param d A reference to a Data Strategy instance
+  /// @param d A reference to a Data Strategy instance
   ///
   void setDataStrategy(std::shared_ptr<DataStrategy> &ds) {
     data_strategy = ds;
@@ -137,7 +137,7 @@ public:
 
   /// Set or re-set the Effect Strategy
   ///
-  /// \param es A reference to an Effect Strategy instance.
+  /// @param es A reference to an Effect Strategy instance.
   ///
   void setEffectSizeEstimator(std::shared_ptr<EffectStrategy> &es) {
     effect_strategy = es;
@@ -150,14 +150,14 @@ public:
 
   /// Use the `data_strategy` to generate the data.
 
-  /// \note The `data_strategy` takes over the entire experiment and
+  /// @note The `data_strategy` takes over the entire experiment and
   /// populate the `measurements` based on `setup`'s parameters.
   void generateData();
 
   /// Run different pre-processing steps before passing the data to the
   /// Researcher.
 
-  /// \note `pre_processing_steps` lists the available steps and their order.
+  /// @note `pre_processing_steps` lists the available steps and their order.
   void preProcessData();
 
   /// Calculate the statistics by sending the `experiment` to the

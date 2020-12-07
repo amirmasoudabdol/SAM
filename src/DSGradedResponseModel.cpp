@@ -41,7 +41,7 @@ void GRMDataStrategy::genData(Experiment *experiment) {
     arma::Row<double> data(experiment->setup.nobs()[g]);
 
     data.imbue([&, i = 0]() mutable {
-      return generate_sum_of_scores(thetas.at(i++, g));
+      return rasch_score(thetas.at(i++, g));
     });
 
     (*experiment)[g].set_measurements(data);
@@ -49,7 +49,7 @@ void GRMDataStrategy::genData(Experiment *experiment) {
 }
 
 // Generate persons j answer to all items
-double GRMDataStrategy::generate_sum_of_scores(const double theta) {
+double GRMDataStrategy::rasch_score(const double theta) {
 
   poa = arma::exp(theta - betas);
   poa = poa / (1 + poa);
@@ -89,7 +89,7 @@ GRMDataStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                        n_new_obs);
     
     new_values[g].imbue([&, i = 0]() mutable {
-      return generate_sum_of_scores(thetas.at(i++, g));
+      return rasch_score(thetas.at(i++, g));
     });
   }
 

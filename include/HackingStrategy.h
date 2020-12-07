@@ -3,15 +3,15 @@
 //
 
 ///
-/// \defgroup   HackingStrategies Hacking Strategies
-/// \brief      List of available hacking strategies
+/// @defgroup   HackingStrategies Hacking Strategies
+/// @brief      List of available hacking strategies
 ///
 /// Description to come!
 ///
 
 ///
-/// \defgroup   HackingStrategiesParameters Parameters of Hacking Strategies
-/// \brief      Description of hacking strategies parameters
+/// @defgroup   HackingStrategiesParameters Parameters of Hacking Strategies
+/// @brief      Description of hacking strategies parameters
 ///
 /// Description to come!
 ///
@@ -577,7 +577,7 @@ public:
     /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
     /// - alpha: Setting the rounded p-value to the value of alpha
     ///
-    /// \todo I cna possibly add more methods here, e.g.,
+    /// @todo I cna possibly add more methods here, e.g.,
     /// - rounding, where I just round the value down
     /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
     std::string rounding_method = "diff";

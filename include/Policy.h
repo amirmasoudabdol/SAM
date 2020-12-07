@@ -3,8 +3,8 @@
 //
 
 ///
-/// \defgroup   Policies Policy-related Modules
-/// \brief      List of available policy-related modules
+/// @defgroup   Policies Policy-related Modules
+/// @brief      List of available policy-related modules
 ///
 /// Description to come!
 ///
@@ -312,7 +312,7 @@ struct Policy {
 
 private:
   std::map<std::string, std::string> lua_temp_scripts{
-    /// \todo these should be joined, they're technically the same!
+    /// @todo these should be joined, they're technically the same!
       {"min_script", "function {} (l, r) return l.{} < r.{} end"},
 
       {"max_script", "function {} (l, r) return l.{} < r.{} end"},
@@ -425,7 +425,7 @@ struct PolicyChain {
     return verdict;
   }
   
-  /// \note this is probably a better implementation but for now, I'll stay with the one above
+  /// @note this is probably a better implementation but for now, I'll stay with the one above
   /// to get around the stopping condition implementation
   /// @note I'm not sure if I need this one
   std::optional<std::vector<Submission>> operator()(Experiment &experiment) {
@@ -557,7 +557,7 @@ struct PolicyChainSet {
   auto cend() const { return pchains.cend(); };
   
   std::optional<Submission> operator()(const Experiment *expr) {
-    /// \todo: Check and return,
+    /// @todo: Check and return,
     
     return Submission{};
   }
