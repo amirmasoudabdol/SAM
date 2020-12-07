@@ -1,6 +1,12 @@
 //
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
+///
+/// \defgroup   AbstractBuilders Abstract Factory Builders
+/// \brief      List of Abstract Factory Builder classes
+///
+/// Description to come!
+///
 
 #ifndef SAMPP_RESEARCHER_H
 #define SAMPP_RESEARCHER_H
@@ -16,6 +22,7 @@ using Random = effolkronium::random_static;
 
 namespace sam {
 
+/// \ingroup AbstractBuilders
 class ResearcherBuilder;
 
 using HackingWorkflow = std::vector<std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>>;

@@ -3,7 +3,7 @@
 //
 
 ///
-/// \defgroup   DataStartegies Data Strategies
+/// \defgroup   DataStrategies Data Strategies
 /// \brief      List of available Data Strategies
 ///
 /// Description to come!
@@ -30,10 +30,6 @@ class ExperimentSetup;
 /// `genNewObservationForAllGroups`. The former is mainly used to populate a new
 /// Experiment while the latter is being used by some hacking strategies, e.g.
 /// OptionalStopping, where new data — from the same population — is needed.
-///
-/// \note       Each Data Strategy should have access to an instance of
-///             RandomNumberGenerator. This is usually done by creating a desired
-///             _random engine_ and passing the pointer to the DataGenStrategy.
 ///
 class DataStrategy {
 
@@ -176,6 +172,8 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 
 //=================================================================================//
 
+///
+/// @brief ⚠️ TO BE IMPLEMENTED!
 ///
 /// A Data Strategy for constructing a general [Structural Equaiton
 /// Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).

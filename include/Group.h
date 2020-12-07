@@ -22,6 +22,10 @@ enum class GroupType : int {
   Pooled
 };
 
+
+/// @brief Declartiong of Group class
+///
+/// The Group class is an abstract representation of a dependant variable
 class Group {
 
   //! Measurements

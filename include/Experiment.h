@@ -2,6 +2,13 @@
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
 
+///
+/// \defgroup   Experiment Experiment Modules
+/// \brief      Experiment-related Modules
+///
+/// Description to come!
+///
+
 #ifndef SAMPP_EXPERIMENT_H
 #define SAMPP_EXPERIMENT_H
 
@@ -29,6 +36,8 @@ namespace sam {
 ///
 /// Moreover, the Experiment stores a copy of the ExperimentSetup where most study parameters
 /// are stored in.
+///
+/// @ingroup    Experiment
 class Experiment {
 
 public:

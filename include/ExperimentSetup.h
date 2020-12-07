@@ -23,6 +23,7 @@ class ExperimentSetupBuilder;
 /// ExperimentSetup contains the necessary parameters for initiating and
 /// generating the data needed for the Experiment.
 ///
+/// \ingroup    Experiment
 class ExperimentSetup {
 
   friend class ExperimentSetupBuilder;
@@ -78,6 +79,7 @@ public:
   void randomizeTheParameters();
 };
 
+/// \ingroup AbstractBuilders
 class ExperimentSetupBuilder {
 
   //! Experiment Setup instance that it's going to be build

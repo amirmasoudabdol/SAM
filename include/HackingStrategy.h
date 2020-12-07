@@ -10,7 +10,7 @@
 ///
 
 ///
-/// \defgroup   HackingStrategiesParameters Hacking Strategies Parameters
+/// \defgroup   HackingStrategiesParameters Parameters of Hacking Strategies
 /// \brief      Description of hacking strategies parameters
 ///
 /// Description to come!
@@ -31,7 +31,7 @@ namespace sam {
 
 /// @ingroup    HackingStrategies
 ///
-/// @brief      Abstract class for hacking strategies.
+/// @brief      Abstract Class of Hacking Strategies.
 ///
 /// Each HackingStrategy should provide a `perform()` method. The `perform()`
 /// method will take over a pointer to an Experiment and apply the implemented

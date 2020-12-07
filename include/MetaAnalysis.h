@@ -9,6 +9,12 @@
 /// Description to come!
 ///
 
+/// \defgroup   MetaAnalysisParameters Parameters of Meta Anlaysis Methods
+/// \brief      List of available Parameters
+///
+/// Description to come!
+///
+
 #ifndef SAMPP_METAANALYSIS_H
 #define SAMPP_METAANALYSIS_H
 
@@ -42,6 +48,7 @@ public:
   virtual void estimate(Journal *journal) = 0;
 };
 
+/// @brief  Random Effect Estimator
 ///
 /// @ingroup  MetaAnalysis
 ///
@@ -120,9 +127,13 @@ public:
     
   };
   
-  // \todo: To be implemented
+  /// @brief Parameters of the RandomEffectEstimator
+  ///
+  /// @ingroup MetaAnalysisParameters
   struct Parameters {
     std::string name{"RandomEffectEstimator"};
+    
+    //! The random effect estimator
     std::string estimator{"DL"};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomEffectEstimator::Parameters, name, estimator);
@@ -142,6 +153,7 @@ public:
 };
 
 
+/// @brief Fixed Effect Estimator
 ///
 /// @ingroup  MetaAnalysis
 ///
@@ -228,17 +240,35 @@ public:
 };
 
 ///
+/// @brief Egger's Test of Funnel Plot Symmetry
+///
+/// A strategy performing Egger's Test on the available list of Journal's publications.
+/// List of available parameters and the format of output can be found in Parameters, and ResultType.
+///
 /// @ingroup  MetaAnalysis
 ///
 class EggersTestEstimator : public MetaAnalysis {
 public:
   
+  /// Egger's Test Output
+  ///
   struct ResultType {
+    //! The slope of the fitted line
     double slope;
+    
+    //! The standard error of the slope
     double se;
+    
+    //! The t-statistic of the test
     double tstat;
+    
+    //! The p-value of the test
     double pval;
+    
+    //! The significance of the test
     bool sig;
+    
+    //! The degree-of-freedom of the test
     double df;
     
     static std::vector<std::string> Columns() {
@@ -269,9 +299,16 @@ public:
     
   };
   
-  /// \todo: to be extended! and be properly implemented
+  /// @brief Parameters of the EggersTestEstimator
+  ///
+  /// While Egger's test is often performed with ɑ = 0.1, it's possible to
+  /// change the ɑ using the #alpha parameter.
+  ///
+  /// @ingroup MetaAnalysisParameters
   struct Parameters {
     std::string name {"EggersTestEstimator"};
+    
+    //! The ɑ of the test
     double alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(EggersTestEstimator::Parameters, name, alpha);
@@ -290,6 +327,7 @@ public:
 };
 
 
+/// @brief Test of Excess of Significant Findings
 ///
 /// @ingroup  MetaAnalysis
 ///
@@ -297,9 +335,16 @@ class TestOfObsOverExptSig : public MetaAnalysis {
 public:
   
   struct ResultType {
+    //! Sum of the expected probabilities
     double E;
+    
+    //! The chi-square statistic of the test
     double A;
+    
+    //! The p-value of the test
     double pval;
+    
+    //! The significance of the test
     bool sig;
     
     static std::vector<std::string> Columns() {
@@ -326,7 +371,9 @@ public:
     
   };
   
-  /// \todo: to be extended! and be properly implemented
+  /// Parameters of TestOfObsOverExptSig
+  ///
+  /// @ingroup MetaAnalysisParameters
   struct Parameters {
     std::string name {"TestOfObsOverExptSig"};
     double alpha {0.10};
@@ -346,6 +393,7 @@ public:
   
 };
 
+/// @brief Trim and Fill Publication Bias Test
 ///
 /// @ingroup  MetaAnalysis
 ///
@@ -388,11 +436,17 @@ public:
     }
   };
   
-  /// \todo: to be extended! and be properly implemented
+  /// @brief Parameters of the TrimAndFill
   struct Parameters {
     std::string name {"TrimAndFill"};
+    
+    //! Indicates the side of the funnel plot where missing values should be imputed
     std::string side {"auto"};
+    
+    //! The symmetry estimator
     std::string estimator {"R0"};
+    
+    //! The ɑ of the test
     double alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(TrimAndFill::Parameters, name, side, estimator, alpha);
@@ -410,6 +464,7 @@ public:
   
 };
 
+/// @brief Begg's Rank Correlation Test
 ///
 /// @ingroup  MetaAnalysis
 ///
@@ -417,8 +472,13 @@ class RankCorrelation : public MetaAnalysis {
 public:
   
   struct ResultType {
+    //! Kendall's tau estimate
     double est;
+    
+    //! The p-value of the test
     double pval;
+    
+    //! The significance of the test
     bool sig;
     
     static std::vector<std::string> Columns() {
@@ -443,10 +503,15 @@ public:
     
   };
   
-  /// \todo: to be extended! and be properly implemented
+  /// @brief Parameters of RankCorrelation
+  ///
+  /// @ingroup MetaAnalysisParameters
   struct Parameters {
     std::string name{"RankCorrelation"};
+    
     TestStrategy::TestAlternative alternative = TestStrategy::TestAlternative::TwoSided;
+    
+    //! The ɑ of the test
     double alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(RankCorrelation::Parameters, name, alternative, alpha);
