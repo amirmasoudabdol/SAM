@@ -54,14 +54,12 @@ double GRMDataStrategy::rasch_score(const double theta) {
   poa = arma::exp(theta - betas);
   poa = poa / (1 + poa);
 
-  // this is a super slow process
-  /// @todo check if I can improve this imbue
-//  urand.imbue([&]() { return Random::get<double>(0., 1.); });
+  // This is a super slow process, and it's been replaced by `arma::randu()`.
+  // urand.imbue([&]() { return Random::get<double>(0., 1.); });
   
   // this is much better but then I'm out of my RNG chain, which should kind of be fine,
   // because they are just some random values for evaluation,
-  /// @note this requires arma::arma_rng::set_seed(); to work
-  urand.randu();
+  urand.randu();    /// @note this requires arma::arma_rng::set_seed(); to work
 
   responses = urand < poa;
   responses.insert_cols(params.n_categories - 1, arma::uvec(params.n_items, arma::fill::zeros));

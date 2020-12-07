@@ -14,11 +14,13 @@ using namespace sam;
 
 void LinearModelStrategy::genData(Experiment *experiment) {
   
+  /// Generates the samples
   arma::mat sample = fillMatrix(params.meas_dists,
                                 params.m_meas_dist,
                                 experiment->setup.ng(),
                                 experiment->setup.nobs().max());
 
+  /// Generate the error terms if specified
   if (params.m_erro_dist or params.erro_dists) {
     arma::mat errors = fillMatrix(params.erro_dists,
                                   params.m_erro_dist,

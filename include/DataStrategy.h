@@ -31,54 +31,47 @@ class ExperimentSetup;
 /// Experiment while the latter is being used by some hacking strategies, e.g.
 /// OptionalStopping, where new data — from the same population — is needed.
 ///
+/// @ingroup DataStrategies
 class DataStrategy {
 
 public:
   enum class DataModel { LinearModel, LatentModel, GradedResponseModel };
 
-  /// Factory method for DataStrategy.
-  /// 
-  /// @param setup An instance of ExperimentSetup
-  /// @return a new DataStrategy
+  /// @brief      DataStrategy Factory Method
+  ///
+  /// @param      data_strategy_config  The data strategy configuration
+  ///
+  /// @return     A unique_ptr to a new DataStrategy
   static std::unique_ptr<DataStrategy> build(json &data_strategy_config);
 
-  /// Pure deconstructor of the DataStrategy abstract class.
+  /// @brief Pure deconstructor of the DataStrategy abstract class.
   virtual ~DataStrategy() = 0;
 
-  /// Read a CSV file and load the data into the measurement. Each column
-  /// is considered to be one group, based on the information already
-  /// provided in the `experiment.setup`.
-  /// 
-  /// @param expr A pointer to the experiment
-  /// @param filename The CSV filename
-  void loadRawData(Experiment *expr, const std::string &filename);
-
-  /// Populates the `experiment->measurements` with data based on the parameters
+  ///
+  /// @brief Generates data based on the selected DataModel
+  ///
+  /// Populates the `experiment->groups_->measurements` with data based on the parameters
   /// specified in `setup`.
-  /// 
+  ///
   /// @param experiment A pointer to an Experiment object
   virtual void genData(Experiment *experiment) = 0;
 
-  /// Generates `n_new_obs` new observations to each group.
-  /// 
-  /// @note This routine uses the secondary random number stream to avoid
-  /// conflicting with the main random engine.
-  /// 
+  /// @brief Generates `n_new_obs` new observations for each group
+  ///
   /// @param experiment The pointer to the current experiment
-  /// @param n_new_obs The number of new observations to be added
-  /// 
+  /// @param n_new_obs The number of new observations to be generated
+  ///
   /// @return An array of new observations
-
   virtual std::vector<arma::Row<double>>
   genNewObservationsForAllGroups(Experiment *experiment, int n_new_obs) = 0;
 
   ///
-  /// Generate `n_new_obs` new observations for `g` group.
-
+  /// @brief Generate `n_new_obs` new observations for `g` group.
+  ///
   /// @param experiment The pointer to the experiment
   /// @param g The target group
   /// @param n_new_obs The number of new observations
-  /// 
+  ///
   /// @return An array of new observations
   virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
                                                   int n_new_obs) = 0;
@@ -233,8 +226,6 @@ public:
   struct Parameters {
 
     DataModel name{DataModel::GradedResponseModel};
-
-    int n_dims;
 
     //! Number of items
     int n_items;
