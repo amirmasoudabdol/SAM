@@ -11,14 +11,13 @@
 
 namespace sam {
 
-/// @brief An abstract class for a random variable parameter.
+/// @brief An abstract representation of a  class for a random variable parameter.
 ///
 /// This is designed to capture the encapsulate a distribution and therefore
 /// mimic the behavior or a random variable.
 ///
 /// @todo Implement a copy constructor that can handle the copy
 /// from arma::Row<T>
-/// @todo Implement a double operator()()
 template <typename T>
 class Parameter : public arma::Row<T> {
   

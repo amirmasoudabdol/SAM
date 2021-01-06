@@ -72,7 +72,7 @@ public:
   /// @param g The target group
   /// @param n_new_obs The number of new observations
   ///
-  /// @return An array of new observations
+  /// @return An array of new observations for group `g`
   virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
                                                   int n_new_obs) = 0;
 };

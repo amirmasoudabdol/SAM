@@ -9,6 +9,8 @@ string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAP)
 option(ENABLE_TESTS "Enable tests" OFF)
 option(BUILD_SAM_EXEC "Build SAMrun executable" ON)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 #set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
