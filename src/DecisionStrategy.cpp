@@ -265,9 +265,7 @@ DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *
   
   /// @todo this is confusing and I need to change it
   saveOutcomes(*experiment, stashing_policy);
-  
-//  spdlog::trace("Collected pile of every hacked/submission: {}", stashed_submissions);
-  
+
   return *this;
 }
 

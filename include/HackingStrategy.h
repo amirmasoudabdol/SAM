@@ -52,7 +52,7 @@ public:
   
   HackingTarget target_;
   
-  /// @brief      Pure deconstuctor of the Base calss. This is important
+  /// @brief      Pure destructor of the Base class. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
   
@@ -67,28 +67,23 @@ public:
   /// @return     A new HackingStrategy
   static std::unique_ptr<HackingStrategy> build(json &hacking_strategy_config);
 
-  static std::unique_ptr<HackingStrategy> build(HackingMethod method);
-
-  
   void operator()(Experiment *experiment) {
     perform(experiment);
   };
   
-//  virtual void randomizeParameters();
-  
-  double defensibility() const {
+  [[nodiscard]] double defensibility() const {
     return defensibility_;
   }
-  
-  double prevalence() const {
+
+  [[nodiscard]] double prevalence() const {
     return prevalence_;
   }
-  
-  HackingStage stage() const {
+
+  [[nodiscard]] HackingStage stage() const {
     return stage_;
   }
-  
-  HackingTarget target() const { return target_; }
+
+  [[nodiscard]] HackingTarget target() const { return target_; }
 
 private:
   /// @brief  Applies the hacking method on the Experiment.
@@ -104,10 +99,10 @@ public:
   };
 
 private:
-  virtual void perform(Experiment *experiment) override{};
+  void perform(Experiment *experiment) override{};
 };
 
-/// Declartion of OptionalStopping hacking strategy
+/// Declaration of OptionalStopping hacking strategy
 ///
 /// @ingroup  HackingStrategies
 ///
@@ -143,8 +138,6 @@ public:
     
     HackingStage stage {HackingStage::PostProcessing};
     
-    void randomize();
-    
   };
 
   Parameters params;
@@ -175,7 +168,7 @@ public:
   void addObservations(Experiment *experiment, const arma::Row<int> ns);
 
 private:
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
 };
 
 inline void to_json(json &j, const OptionalStopping::Parameters &p) {
@@ -290,7 +283,7 @@ public:
     //! Indicates the minimum number of observations allowed during the process
     int min_observations{15};
 
-    //! A list of standard deviation multipliers for identidying outliers
+    //! A list of standard deviation multipliers for identifying outliers
     std::vector<double> multipliers = {3};
     
     //! Stopping condition PolicyChain definitions
@@ -366,7 +359,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
 ///
 /// @brief      The subjective outlier removal refers to a type of outliers
 /// removal
-///             where the researcher continiously lowers the threshold of
+///             where the researcher continuously lowers the threshold of
 ///             identifying an outlier, `k`, until it finds a significant (or
 ///             satisfactory) result.
 ///
@@ -378,12 +371,12 @@ public:
   /// @brief SubjectiveOutlierRemoval's parameters.
   ///
   /// These are parameters specific to this hacking strategy. You can set them
-  /// either progmatically when you are constructing a new
+  /// either pragmatically when you are constructing a new
   /// SubjectiveOutlierRemoval, e.g., `SubjectiveOutlierRemoval sor{<name>,
   /// {min, max}, ssize};`.
   ///
   /// Or, when you are using `SAMrun` to run your simulation. In this case,
-  /// your JSON variable must comply with the name and type of paramters here.
+  /// your JSON variable must comply with the name and type of parameters here.
   /// For example, the following JSON defines the default subjective outliers
   /// removal.
   ///
@@ -400,7 +393,7 @@ public:
     //! A placeholder for the name
     HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
     
-    //! TO BE IMPLEMENTED
+    //! @todo TO BE IMPLEMENTED
     HackingTarget target {HackingTarget::Both};
 
     //! A vector of `{min, max}`, defining the range of `K`.
@@ -437,7 +430,7 @@ public:
         };
 
 private:
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
 };
 
 inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
@@ -542,7 +535,7 @@ inline void from_json(const json &j, ConditionDropping::Parameters &p) {
 /// QuestionableRounding Hacking Strategy
 ///
 /// Questionable rounding strategy mimics the behavior of a researcher who might
-/// hack its way to significace by aggressively rounding the pvalue and ignoring
+/// hack its way to significance by aggressively rounding the pvalue and ignoring
 /// everything else.
 ///
 /// @ingroup HackingStrategies
@@ -658,7 +651,7 @@ public:
     //! Indicates the minimum number of observations allowed during the process
     int min_observations{15};
     
-    //! A list of standard deviation multipliers for identidying outliers
+    //! A list of standard deviation multipliers for identifying outliers
     std::vector<double> multipliers = {3};
     
     //! Stopping condition PolicyChain definitions
@@ -784,7 +777,7 @@ public:
     //! Number of trials
     int n_attempts {1};
     
-    //! Number of observations to be purturbed
+    //! Number of observations to be perturbed
     size_t num {5};
     
     //! Distribution of noise
@@ -910,7 +903,7 @@ public:
     //! Number of trials
     int n_attempts {1};
     
-    //! Number of observations to be purturbed
+    //! Number of observations to be perturbed
     int num {5};
     
     //! Distribution of fabricated data
@@ -1019,7 +1012,7 @@ public:
     //! @todo To be implemented
     //    PolicyChain target_policy;
         
-    //! Number of observations to be purturbed
+    //! Number of observations to be perturbed
     int batch_size {5};
     
     //! Stopping condition PolicyChain definitions

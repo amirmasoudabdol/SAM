@@ -62,7 +62,7 @@ SelectionStrategy::build(json &selection_strategy_config) {
 
 /// @brief  Reviewing the list of submissions based on the user-defined policy
 ///
-/// Check wheter the selection_policy passes, if so, and a
+/// Check whether the selection_policy passes, if so, and a
 /// random draw from U(0, 1) is true, then the submission will
 /// be accepted; otherwise, it will be rejected
 ///
@@ -85,7 +85,7 @@ bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
 ///
 /// Check if `p-value` of the Submission is less than the specified
 /// \f$\alpha\f$. If true, it will accept the submission, if not, a random
-/// number decide wheather the submission is going to be accepted. The
+/// number decide whether the submission is going to be accepted. The
 /// drawn random number, \f$r\f$ will be compared to `pub_bias` of the journal.
 ///
 /// @param      s     A reference to the Submission
