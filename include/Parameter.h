@@ -33,7 +33,7 @@ public:
   
   void randomize();
   
-  operator T() {
+  explicit operator T() {
     this->randomize();
     return this->at(0);
   };

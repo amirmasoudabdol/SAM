@@ -25,9 +25,9 @@ Parameter<T>::Parameter(const json &j, size_t size) {
       break;
       
     case nlohmann::detail::value_t::object: {
-      std::string name = j.at("dist").get<std::string>();
+      auto name = j.at("dist").get<std::string>();
       if (name.find("mv") != std::string::npos) {
-        /// Multivariante Distribution
+        /// Multivariate Distribution
         dist = make_multivariate_distribution(j);
         auto v = Random::get(std::get<2>(dist));
         val.imbue([&, i = 0]() mutable {
@@ -44,7 +44,6 @@ Parameter<T>::Parameter(const json &j, size_t size) {
     case nlohmann::detail::value_t::null:
     default:
       throw std::invalid_argument("Missing parameter.\n");
-      break;
   }
   
   this->imbue([&, i = 0]() mutable {
@@ -59,18 +58,14 @@ void Parameter<T>::randomize() {
       [&](Distribution &d) {
         auto v = static_cast<T>(Random::get(d));
         this->fill(v);
-        return;
       },
       [&](MultivariateDistribution &md) {
         auto v = Random::get(md);
         this->imbue([&, i = 0]() mutable {
           return static_cast<T>(v[i++]);
         });
-        return;
       },
-      [&](auto &monostate) {
-        return;
-      }
+      [&](std::monostate &m) { }
     }, dist);
   }
 }
