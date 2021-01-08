@@ -2,7 +2,6 @@
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
 
-#include <iostream>
 #include <string>
 
 #include <spdlog/spdlog.h>
@@ -61,10 +60,3 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment *experiment,
   return new_values;
 }
 
-arma::Row<double>
-LinearModelStrategy::genNewObservationsFor(Experiment *experiment, int g,
-                                           int n_new_obs) {
-
-  // To be implemented still...
-  return arma::Row<double>();
-}

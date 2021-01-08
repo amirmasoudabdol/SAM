@@ -46,17 +46,19 @@ void PersistenceManager::Writer::write(const std::vector<std::string> &row_entri
 void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid) {
 
   int i = 0;
-  // This initiates a copy and it's not very efficient.
-  // TODO: Optimize me!
-  for (std::map<std::string, std::string> &&s : subs) {
+
+  /// @todo This looks strange, and it's also very inefficient! Optimize it!
+  /// It's somewhat better than &&s, but not great yet!
+  for (auto &s : subs) {
     if (!is_header_set) {
       writer->configure_dialect().column_names(Submission::Columns());
       is_header_set = true;
     }
 
-    s["pubid"] = std::to_string(i++);
+    std::map<std::string, std::string> record{s};
+    record["pubid"] = std::to_string(i++);
 
-    writer->write_row(s);
+    writer->write_row(record);
   }
 
   spdlog::trace("Publications: {}", subs);

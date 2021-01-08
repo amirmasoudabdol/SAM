@@ -169,9 +169,3 @@ LatentDataStrategy::genNewObservationsForAllGroups(Experiment *experiment,
   return std::vector<arma::Row<double>>();
 }
 
-arma::Row<double>
-LatentDataStrategy::genNewObservationsFor(Experiment *experiment, int g,
-                                          int n_new_obs) {
-
-  return arma::Row<double>();
-}

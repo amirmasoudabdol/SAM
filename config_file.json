@@ -183,7 +183,7 @@
         "log_level": "trace",
         "master_seed": 3919712220,
         "n_sims": 1,
-        "output_path": "/Users/amabdol/Projects/SAMoo/projects/marjan_2012_all_test/outputs/",
+        "output_path": "../outputs/",
         "output_prefix": "0c16a9b8-b1a2-446f-81c8-0a6879220268",
         "update_config": true,
         "progress": false,

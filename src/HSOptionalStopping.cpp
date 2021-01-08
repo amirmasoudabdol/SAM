@@ -25,16 +25,16 @@ void OptionalStopping::perform(Experiment *experiment) {
   if (params.num.is_empty()) {
     
     /// Getting one random number since I want each group to have the same number of observations
-    double fraction = params.ratio;
+    double fraction {params.ratio};
     
     ns.imbue([&, i = 0]() mutable {
       return std::floor(fraction * experiment->groups_[i++].nobs_);
     });
   }else{
-    ns.fill(params.num);
+    ns.fill(static_cast<int>(params.num));
   }
   
-  int n_at = params.n_attempts;
+  int n_at {params.n_attempts};
   for (int t = 0; t < n_at; ++t) {
     spdlog::trace("\t #{} attempt(s)", t + 1);
     

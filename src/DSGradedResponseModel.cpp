@@ -94,7 +94,3 @@ GRMDataStrategy::genNewObservationsForAllGroups(Experiment *experiment,
   return new_values;
 }
 
-arma::Row<double> GRMDataStrategy::genNewObservationsFor(Experiment *experiment,
-                                                         int g, int n_new_obs) {
-  return arma::Row<double>();
-}

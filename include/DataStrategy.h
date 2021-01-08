@@ -73,8 +73,8 @@ public:
   /// @param n_new_obs The number of new observations
   ///
   /// @return An array of new observations for group `g`
-  virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
-                                                  int n_new_obs) = 0;
+//  virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
+//                                                  int n_new_obs) = 0;
 };
 
 /// @brief Linear Model Data Strategy
@@ -117,9 +117,6 @@ public:
   virtual std::vector<arma::Row<double>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
-
-  virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
-                                                  int n_new_obs) override;
 
 private:
   Parameters params;
@@ -196,8 +193,6 @@ public:
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
-  virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
-                                                  int n_new_obs) override;
 
 private:
   //! A function for computing the latent variable
@@ -255,8 +250,6 @@ public:
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
-  virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
-                                                  int n_new_obs) override;
 
 private:
   Parameters params;

@@ -35,7 +35,7 @@ Submission::operator std::map<std::string, std::string>() {
 
   record["tnobs"] = std::to_string(tnobs);
 
-  std::map<std::string, std::string> g_record = group_;
+  std::map<std::string, std::string> g_record {group_};
   record.insert(g_record.begin(), g_record.end());
 
   return record;
