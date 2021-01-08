@@ -60,9 +60,11 @@ public:
 //  std::optional<Submission> submission_candidate;
   std::optional<SubmissionPool> submission_candidates;
   
-  //! List of selected Submission by the researcher, during the hacking procedure
+  //! List of selected submissions colelcted by the researcher
+  //! using the stashing_policy
   SubmissionPool stashed_submissions;
   
+  //! List of submissions selecting during the hacking procedure
   SubmissionPool hacked_submissions;
 
   /// @todo: These guys should move to their own class, I don't have to keep everything here!
@@ -110,7 +112,7 @@ public:
   ///
   /// Reset the internal state of the decision strategy
   void reset() {
-//    submission_candidate.reset();
+    stashed_submissions.clear();
     submission_candidates.reset();
     clear();
   }

@@ -277,8 +277,5 @@ DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromPool(SubmissionPool &sp
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
   
-  /// @todo This looks terrible! A random clear() inside a function!
-  /// @bug I need change this!
-  clear();
   return *this;
 }

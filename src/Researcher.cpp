@@ -297,7 +297,7 @@ void Researcher::research() {
       break;
     }
     
-    // Reset also clear the decision strategy
+    // Reset the decision_strategy before starting a new replication
     decision_strategy->reset();
     
   }

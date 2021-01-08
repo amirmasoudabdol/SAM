@@ -273,19 +273,7 @@ public:
       
       /// Reordering hacking strategies based on selection priority
       researcher.reorderHackingStrategies(researcher.h_workflow, researcher.hacking_selection_priority);
-      
-      /// @bug! This will explode because it has to deconstruct the `lua` instance and that's not really
-      /// possible since it is a public member of the abstract class, meaning that other hacking strategies
-      /// that are already in the list wants to use it!
-      /// @note The actual reason is related to the stopping_condition. For instance, if a hacking strategy hasn't
-      /// initialized its stopping_condition, then SAM doesn't know how to deconstruct it
-      /// @note I think I can move the stopping_condition to the abstract class, or just make sure that all classes at least
-      /// have some empty PolicyChain. I think the latter is easier as I can just construct an empty one!
-      /// @note even if I leave OutliersRemoval stopping_condition empty, things will be fine! What's special about FabricatingData method
-      /// @note Even if I don't initiate OutliersRemoval stopping condition this will be fine!
-      /// @note Not really sure how this resolved itself, but I think Xcode was struggling with the memory! At
-      /// some point, it crashed, and my problem was solved!
-      
+            
       /// Selecting only n_hacks of those
       researcher.h_workflow.resize(researcher.n_hacks);
       
