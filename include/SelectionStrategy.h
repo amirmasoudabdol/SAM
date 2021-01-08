@@ -107,12 +107,12 @@ public:
     double pub_bias {0.5};
     
     //! Acceptance Rate
-    double pub_chance {0.5};
+    double acceptance_rate {0.5};
     
     //! Definition of the selection policy used by Journal to evaluate a given submission
     std::vector<std::string> selection_policy_defs {"sig"};
     
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name, pub_bias, pub_chance, selection_policy_defs);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name, pub_bias, acceptance_rate, selection_policy_defs);
   };
   
   Parameters params;

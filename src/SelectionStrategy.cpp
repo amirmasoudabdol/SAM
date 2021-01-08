@@ -73,7 +73,7 @@ bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
   /// remove it!
   auto check = selection_policy(const_cast<std::vector<Submission>&>(subs));
   if (check and
-        Random::get<bool>(params.pub_chance) and
+        Random::get<bool>(params.acceptance_rate) and
           Random::get<bool>(1 - params.pub_bias))
     return true;
 
