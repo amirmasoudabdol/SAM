@@ -102,14 +102,11 @@ bool SignificantSelection::review(const std::vector<Submission> &subs) {
   }
 
   /// Checking whether any of the outcomes are significant
-  if (std::any_of(subs.begin(), subs.end(),
-                  [&](auto &s){return s.group_.pvalue_ < params.alpha; })) {
-    return true;
-  } else if (Random::get<bool>(1 - params.pub_bias)) {
-    return true;
-  } else {
-    return false;
-  }
+  return std::any_of(subs.begin(), subs.end(),
+                     [&](auto &s) -> bool {
+                       return s.group_.pvalue_ < params.alpha;
+                     }) or
+         Random::get<bool>(1 - params.pub_bias);
 }
 
 ///
@@ -117,7 +114,7 @@ bool SignificantSelection::review(const std::vector<Submission> &subs) {
 /// \f$ r < 0.5 \f$.
 ///
 /// @param      s     corresponding submission
-/// @return     a boolean indicating whether the Submission is accpeted.
+/// @return     a boolean indicating whether the Submission is accepted.
 ///
 bool RandomSelection::review(const std::vector<Submission> &subs) {
   return Random::get<bool>(0.5);
