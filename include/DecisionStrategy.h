@@ -58,7 +58,7 @@ public:
   build(json &decision_strategy_config);
   
 //  std::optional<Submission> submission_candidate;
-  std::optional<std::vector<Submission>> submission_candidates;
+  std::optional<SubmissionPool> submission_candidates;
   
   //! List of selected Submission by the researcher, during the hacking procedure
   SubmissionPool stashed_submissions;
@@ -92,9 +92,7 @@ public:
   
   
   /// Submission
-  // bool willBeSubmitting(const std::optional<Submission>& sub,
-  //                       PolicyChain &pchain);
-  bool willBeSubmitting(const std::optional<std::vector<Submission>>& sub,
+  bool willBeSubmitting(const std::optional<SubmissionPool>& sub,
                         PolicyChain &pchain);
   
   virtual bool willContinueReplicating(PolicyChain &pchain) {return false; };

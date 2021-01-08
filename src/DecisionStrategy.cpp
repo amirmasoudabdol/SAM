@@ -154,23 +154,18 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
    
 }
 
-//bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
-//
-//  if (pchain.empty() and sub)
-//    return true;
-//  else
-//    return false;
-//  
-//  // Checking whether all policies are returning `true`
-//  if (sub)
-//      return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
-//        return policy.func(sub.value());
-//      });
-//  else
-//      return false;
-//
-//}
-
+///
+/// @brief      Indicates whether the Researcher is going to submit the given
+/// set of submissions or not.
+/// 
+/// Usually `submission_decision_policies` will be used to evaluate the quality
+/// of the submission pool
+///
+/// @param[in]  subs    A list of Submission(s)
+/// @param      pchain  A policy chain 
+///
+/// @return     returns `true` if submission will undergo
+///
 bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submission>>& subs, PolicyChain &pchain) {
   
   if (pchain.empty() and subs)

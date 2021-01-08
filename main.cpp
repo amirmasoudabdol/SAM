@@ -226,6 +226,8 @@ void runSimulation(json &simConfig) {
       spdlog::trace("---> Experiment #{}", j++);
 
       researcher.research();
+      
+      researcher.experiment->exprid++;
 
       spdlog::trace("\n\n==========================================================================\n");
     }

@@ -83,7 +83,6 @@ public:
   std::string hacking_execution_order;
   
   //! Indicates the probablity of a Researcher _deciding_ to go for hacking an Experiment
-//  std::variant<double, Distribution> probability_of_being_a_hacker;
   Parameter<double> probability_of_being_a_hacker;
   
   //! Indicates the probablity of a Researcher _actally applying_ a choosen hacking strategy

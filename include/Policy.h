@@ -423,10 +423,9 @@ struct PolicyChain {
   
   /// @brief  Returns a list of submission satisfying the policy chain
   ///
-  /// to get around the stopping condition implementation
-  /// @note I'm not sure if I need this one
+  /// Applies the policy chain on the Experiment and returns a list of hits, or
+  /// returns an empty optional otherwise.
   std::optional<std::vector<Submission>> operator()(Experiment &experiment) {
-    /// @todo we check the experiment, and return the submission
     
     spdlog::trace("Looking for {}", *this);
     
@@ -442,7 +441,6 @@ struct PolicyChain {
       if (found_sth_unique) {
         selections.emplace_back(experiment, begin->id_);
         spdlog::trace("✓ Found One!");
-//        return selections;
       }
       
       // One of the policies ended up with no results, so, we skip the
@@ -495,8 +493,6 @@ struct PolicyChain {
       
       if (begin == end)
         break;
-      /// else:
-      ///     We are still looking. This happens when I'm testing a comparison
     }
     
     if (found_sth_unique)
@@ -506,9 +502,7 @@ struct PolicyChain {
       spdlog::trace("✓ Found the only one!");
       selections.push_back(*begin);
       return selections;
-    } else if (begin != end) { /// We found a bunch
-                               /// This is not a acceptable case for now!
-                               /// @todo But it should be!
+    } else if (begin != end) { 
       for (auto it{begin}; it != end; ++it) {
         selections.push_back(*it);
         spdlog::trace("\t {}", *it);

@@ -60,6 +60,7 @@ SelectionStrategy::build(json &selection_strategy_config) {
 }
 
 
+/// @brief  Reviewing the list of submissions based on the user-defined policy
 ///
 /// Check wheter the selection_policy passes, if so, and a
 /// random draw from U(0, 1) is true, then the submission will
@@ -68,7 +69,8 @@ SelectionStrategy::build(json &selection_strategy_config) {
 bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
   
   /// Checks selection policy returns anything
-  /// @todo this is quite ugly, fix it!
+  /// @todo I don't really like the const_cast here, maybe I need to find a way to
+  /// remove it!
   auto check = selection_policy(const_cast<std::vector<Submission>&>(subs));
   if (check and
         Random::get<bool>(params.pub_chance) and
@@ -92,9 +94,12 @@ bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
 bool SignificantSelection::review(const std::vector<Submission> &subs) {
 
   // Only accepting +/- results if journal cares about it, side != 0
-//  if (subs.group_.eff_side_ != params.side && params.side != 0) {
-//    return false;
-//  }
+  if (params.side != 0 and
+      std::any_of(subs.begin(), subs.end(),
+                  [&](auto &s){return s.group_.eff_side_ != params.side; })
+      ) {
+    return false;
+  }
 
   /// Checking whether any of the outcomes are significant
   if (std::any_of(subs.begin(), subs.end(),
