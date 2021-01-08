@@ -2,7 +2,6 @@
 // Created by Amir Masoud Abdol on 2020-03-11
 //
 
-#include <iostream>
 #include <string>
 
 #include "DataStrategy.h"

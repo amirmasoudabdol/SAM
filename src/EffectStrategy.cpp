@@ -11,7 +11,7 @@ using namespace sam;
 
 EffectStrategy::~EffectStrategy(){
     // Pure destructors
-};
+}
 
 std::unique_ptr<EffectStrategy>
 EffectStrategy::build(json &effect_strategy_config) {
@@ -24,7 +24,7 @@ EffectStrategy::build(json &effect_strategy_config) {
   } else if (effect_strategy_config["name"] == "StandardizedMeanDifference") {
     return std::make_unique<StandardizedMeanDifference>();
   } else {
-    throw std::invalid_argument("Uknown effect size strategy.\n");
+    throw std::invalid_argument("Unknown effect size strategy.\n");
   }
 }
 
@@ -115,7 +115,7 @@ double hedges_g(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
   // Sum of sample sizes
   double n = Sn1 + Sn2;
 
-  // Adding the bais correction factor for n < 50
+  // Adding the bias correction factor for n < 50
   if (n < 50) {
     return Cd * (n - 3) / (n - 2.25) * sqrt((n - 2) / n);
   }

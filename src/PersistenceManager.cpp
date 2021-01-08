@@ -19,7 +19,7 @@ PersistenceManager::Writer::Writer(const string &filename)
     : file_name_(filename) {
   writer = std::make_unique<csv::Writer>(file_name_);
   writer->configure_dialect().delimiter(",");
-};
+}
 
 PersistenceManager::Writer::Writer(const string &filename, const std::vector<std::string> colnames)
     : file_name_(filename), column_names(colnames) {

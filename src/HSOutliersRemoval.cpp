@@ -43,7 +43,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
 
 bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const double k) {
 
-  arma::rowvec standaraized;
+  arma::rowvec standardized;
   
   int begin {0}, end {0};
   std::tie(begin, end) = getTargetBounds(experiment, params.target);
@@ -57,18 +57,18 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const 
 
     // At least one row has less than `min_observations`
     if (row.size() <= params.min_observations)
-      return false; // Unsuccessful retrun, nothing has removed.
+      return false; // Unsuccessful return, nothing has removed.
 
     // This trick makes finding the largest outlier easier. I'll see if I can
     // find a better way
     if (params.order == "max first")
       row = sort(row);
 
-    standaraized =
+    standardized =
         arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
 
     // Finding the outliers, returning only `n` of them
-    arma::uvec inx = arma::find(standaraized > k, n, "first");
+    arma::uvec inx = arma::find(standardized > k, n, "first");
 
     if ((row.n_elem - inx.n_elem) <= params.min_observations)
       inx = inx.head(row.n_elem - params.min_observations);

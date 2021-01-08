@@ -2,9 +2,6 @@
 // Created by Amir Masoud Abdol on 2019-10-29
 //
 
-#include <iostream>
-#include <string>
-
 #include "DataStrategy.h"
 #include "Experiment.h"
 #include "ExperimentSetup.h"

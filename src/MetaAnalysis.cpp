@@ -3,12 +3,10 @@
 //
 
 #include <algorithm>
-#include <iostream>
 #include <cmath>
 
 #include <spdlog/spdlog.h>
 #include <fmt/core.h>
-#include <fmt/format.h>
 
 #include "sam.h"
 
