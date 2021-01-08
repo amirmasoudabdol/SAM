@@ -37,7 +37,7 @@ Experiment::Experiment(ExperimentSetup &e) : setup{e} {
       std::shared_ptr<EffectStrategy>(EffectStrategy::build(setup.esp_conf));
 
   initResources();
-};
+}
 
 Experiment::Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
                        std::shared_ptr<TestStrategy> &ts,
@@ -45,7 +45,7 @@ Experiment::Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
     : setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs} {
 
   initResources();
-};
+}
 
 void Experiment::generateData() { data_strategy->genData(this); }
 
@@ -89,12 +89,12 @@ void Experiment::recalculateEverything() {
 }
 
 void Experiment::recalculateEverythingForGroup(size_t inx) {
-  
+
   this->groups_[inx].updateStats();
-  
-//  this->calculateEffects();
-//  
-//  this->runTest();
+
+  //  this->calculateEffects();
+  //
+  //  this->runTest();
 }
 
 void Experiment::clear() {

@@ -2,9 +2,6 @@
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
 
-#include <stdexcept>
-#include <tuple>
-
 #include "ExperimentSetup.h"
 
 using namespace sam;
@@ -18,7 +15,7 @@ ExperimentSetup::ExperimentSetup(json &config) {
   nc_ = config["n_conditions"];
   nd_ = config["n_dep_vars"];
   ng_ = nc_ * nd_;
-  
+
   n_reps_ = config["n_reps"];
 
   nobs_ = Parameter<int>(config["n_obs"], ng_);
@@ -28,11 +25,7 @@ ExperimentSetup::ExperimentSetup(json &config) {
   esp_conf = config["effect_strategy"];
 }
 
-void ExperimentSetup::randomizeTheParameters() {
-  
-  nobs_.randomize();
-  
-}
+void ExperimentSetup::randomizeTheParameters() { nobs_.randomize(); }
 
 ExperimentSetupBuilder &ExperimentSetupBuilder::fromConfigFile(json &config) {
 

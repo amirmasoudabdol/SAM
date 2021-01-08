@@ -313,7 +313,7 @@ public:
         };
 
   // Submission hackedSubmission;
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
 
 private:
   bool removeOutliers(Experiment *experiment, const int n, const double k);
@@ -480,7 +480,7 @@ public:
         
         };
 
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
 
 private:
   void pool(Experiment *experiment, int r);
@@ -517,7 +517,7 @@ public:
   ConditionDropping() { params.name = HackingMethod::ConditionDropping; };
 
 private:
-  virtual void perform(Experiment *experiment) override {};
+  void perform(Experiment *experiment) override {};
 };
 
 inline void to_json(json &j, const ConditionDropping::Parameters &p) {
@@ -599,7 +599,7 @@ public:
     stage_ = params.stage;
   };
   
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
 };
 
 
@@ -680,7 +680,7 @@ public:
     stage_ = params.stage;
   };
   
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
   
 private:
   bool removeOutliers(Experiment *experiment, const int n, const double k);
@@ -810,7 +810,7 @@ public:
     stage_ = params.stage;
   };
   
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
   
 private:
   bool perturb(Experiment *experiment);
@@ -934,7 +934,7 @@ public:
     stage_ = params.stage;
   };
   
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
   
 private:
   bool generate(Experiment *experiment, const int n);
@@ -1006,6 +1006,7 @@ public:
     //!   - control
     //!   - treatment
     //!   - both
+    //! @todo to be implemented
     HackingTarget target {HackingTarget::Both};
     
     //! Indicates a set of rule that is going to be used to select the target group
@@ -1038,7 +1039,7 @@ public:
     stage_ = params.stage;
   };
   
-  virtual void perform(Experiment *experiment) override;
+  void perform(Experiment *experiment) override;
   
 //private:
 //  bool generate(Experiment *experiment, const int n);
