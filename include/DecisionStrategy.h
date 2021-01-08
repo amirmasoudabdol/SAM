@@ -68,7 +68,7 @@ public:
   /// @todo: These guys should move to their own class, I don't have to keep everything here!
   PolicyChainSet initial_selection_policies;
   PolicyChain submission_decision_policies;
-  PolicyChainSet between_hacks_selection_policies;
+  PolicyChainSet between_stashed_selection_policies;
   PolicyChainSet between_reps_policies;
   
   PolicyChain will_start_hacking_decision_policies;
@@ -157,7 +157,7 @@ public:
 
     std::vector<std::vector<std::string>> initial_selection_policies_defs;
     std::vector<std::string> submission_decision_policies_defs;
-    std::vector<std::vector<std::string>> between_hacks_selection_policies_defs;
+    std::vector<std::vector<std::string>> between_stashed_selection_policies_defs;
     std::vector<std::vector<std::string>> between_replications_selection_policies_defs;
     
     std::vector<std::string> will_start_hacking_decision_policies_def;
@@ -173,7 +173,7 @@ public:
 
     initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
 
-    between_hacks_selection_policies = PolicyChainSet(p.between_hacks_selection_policies_defs, lua);
+    between_stashed_selection_policies = PolicyChainSet(p.between_stashed_selection_policies_defs, lua);
 
     submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
     
@@ -205,7 +205,7 @@ inline void to_json(json &j, const DefaultDecisionMaker::Parameters &p) {
   j = json{{"name", p.name},
            {"initial_selection_policies", p.initial_selection_policies_defs},
            {"submission_decision_policies", p.submission_decision_policies_defs},
-           {"between_hacks_selection_policies", p.between_hacks_selection_policies_defs},
+           {"between_stashed_selection_policies", p.between_stashed_selection_policies_defs},
            {"between_replications_selection_policies", p.between_replications_selection_policies_defs},
           {"will_start_hacking_decision_policies", p.will_start_hacking_decision_policies_def},
           {"will_continue_replicating_decision_policy", p.will_continue_replicating_decision_policy_def},
@@ -217,7 +217,7 @@ inline void from_json(const json &j, DefaultDecisionMaker::Parameters &p) {
   j.at("name").get_to(p.name);
   j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
   j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
-  j.at("between_hacks_selection_policies").get_to(p.between_hacks_selection_policies_defs);
+  j.at("between_stashed_selection_policies").get_to(p.between_stashed_selection_policies_defs);
   j.at("between_replications_selection_policies").get_to(p.between_replications_selection_policies_defs);
   j.at("will_start_hacking_decision_policies").get_to(p.will_start_hacking_decision_policies_def);
   j.at("will_continue_replicating_decision_policy").get_to(p.will_continue_replicating_decision_policy_def);

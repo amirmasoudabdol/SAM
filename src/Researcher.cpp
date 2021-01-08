@@ -253,7 +253,7 @@ void Researcher::research() {
         spdlog::trace("Selecting between Hacked Submissions: ");
         spdlog::trace("{}", decision_strategy->submission_candidates.value());
         decision_strategy->selectOutcomeFromPool(decision_strategy->submission_candidates.value(),
-                                               decision_strategy->between_hacks_selection_policies);
+                                               decision_strategy->between_stashed_selection_policies);
       } else {
 
         /// @todo Make `stashed_submissions` a optional like `submission_candidates`
@@ -261,7 +261,7 @@ void Researcher::research() {
           spdlog::trace("Selecting between Stashed Submissions: ");
           spdlog::trace("{}", decision_strategy->stashed_submissions);
           decision_strategy->selectOutcomeFromPool(decision_strategy->stashed_submissions,
-                                                   decision_strategy->between_hacks_selection_policies);
+                                                   decision_strategy->between_stashed_selection_policies);
         }
       }
 
@@ -272,7 +272,7 @@ void Researcher::research() {
         if (!decision_strategy->stashed_submissions.empty()) {
           spdlog::trace("Selecting between Stashed Submissions: {}", decision_strategy->stashed_submissions);
           decision_strategy->selectOutcomeFromPool(decision_strategy->stashed_submissions,
-                                                   decision_strategy->between_hacks_selection_policies);
+                                                   decision_strategy->between_stashed_selection_policies);
         }
     }
     

@@ -62,25 +62,15 @@ DecisionStrategy::build(json &decision_strategy_config) {
 /// @param pchain_set a reference to a policy chain set
 void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
-
-//  spdlog::debug("---");
-  /// @todo I probably should check this somewhere else, and don't throw here!
-//  assert(!pchain_set.empty() && "PolicyChainSet is empty!");
   
   for (auto &pchain : pchain_set) {
     
-    auto selections = pchain(experiment);
+    submission_candidates = pchain(experiment);
     
-    if (selections) {
-      /// @todo optimize this by directly assigning pchain() output to selection
-      submission_candidates = selections;
-//      if (selections.value().size() == 1) {
-//        submission_candidate = selections.value().back();
-//      }
-      /// This is the case where we managed to find more than one submission
-      /// So, we return here
+    /// If any of the pchains return something, we ignore the rest, and leave!
+    if (submission_candidates)
       return;
-    }
+      
   }
 
 }
@@ -97,35 +87,23 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   
-//  spdlog::debug("→ → Selecting from Submissions Pool...");
-//
-//  spdlog::trace("→ → Current Submission Pool: ");
-//  for (auto &s : spool) {
-//    spdlog::trace("\t\t{}", s);
-//  }
   
-  /// @todo Check what this actually means!
-  if (pchain_set.empty()){
+  /// If there is no policy defined, then, we don't do any filtering and returns
+  /// all of the candidates
+  if (pchain_set.empty()) {
     submission_candidates = spool;
     return;   // we just don't have anything to work with
   }
 
   for (auto &pchain : pchain_set) {
     
-    auto selection = pchain(spool);
+    submission_candidates = pchain(spool);
     
-    if (selection) {
-      submission_candidates = selection;
-//      if (selection.value().size() == 1){
-//        submission_candidate = selection.value()[0];
-//      }
-      /// This is the case where we managed to find more than one submission
-      /// So, we return here
+    /// If any of the pchains return something, we ignore the rest, and leave!
+    if (submission_candidates)
       return;
-    }
 
   }
-
 
   spdlog::trace("✗ Found none in the pile!");
 }
