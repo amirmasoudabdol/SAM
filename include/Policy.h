@@ -155,7 +155,7 @@ struct Policy {
     } else if (std::any_of(cops.begin(), cops.end(), [&p_def](const auto &op) {
                  return p_def.find(op.first) != std::string::npos;
                })) {
-      // Found a comparision
+      // Found a comparison
 
       std::string s_op{};
       for (const auto &op : cops)
@@ -216,14 +216,14 @@ struct Policy {
         spdlog::trace("\n\t\tMin: {} \
                       \n\t\t\t{}", def, *it);
         return {true, it, it};
-      } break;
+      }
         
       case PolicyType::Max: {
         auto it = std::max_element(begin, end, func);
         spdlog::trace("\n\t\tMax: {} \
                       \n\t\t\t{}", def, *it);
         return {true, it, it};
-      } break;
+      }
         
       case PolicyType::Comp: {
         auto pit = std::partition(begin, end, func);
@@ -232,7 +232,7 @@ struct Policy {
         
         return {false, begin, pit};
         
-      } break;
+      }
         
       case PolicyType::Random: {
         /// Shuffling the array and setting the end pointer to the first time,
@@ -243,7 +243,7 @@ struct Policy {
                       \n\t\t\t{}", def, fmt::join(begin, end, "\n\t\t\t"));
         return {true, begin, end};
         
-      } break;
+      }
         
       case PolicyType::First: {
         
@@ -255,7 +255,7 @@ struct Policy {
         
         return {true, begin, end};
         
-      } break;
+      }
         
       case PolicyType::Last: {
         
@@ -267,12 +267,12 @@ struct Policy {
         
         return {true, end-1, end};
         
-      } break;
+      }
         
       case PolicyType::All: {
         return {false, begin, end};
         
-      } break;
+      }
         
       default: {
         throw std::invalid_argument("Invalid Policy Type.");

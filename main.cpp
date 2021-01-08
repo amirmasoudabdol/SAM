@@ -257,7 +257,7 @@ void runSimulation(json &simConfig) {
       researcher.journal->saveMetaAnalysis();
 
     if (is_saving_pubs_summaries_per_sim) {
-      researcher.journal->savePulicationsPerSimSummaries();
+      researcher.journal->savePublicationsPerSimSummaries();
     }
 
     researcher.journal->clear();

@@ -15,7 +15,7 @@ namespace sam {
 
 using namespace std;
 
-/// Perisistence Manager class, dealing with CSV Read/Write.
+/// Persistence Manager class, dealing with CSV Read/Write.
 /// This is designed such that I can hopefully replace the CSV with
 /// something more efficient later.
 class PersistenceManager {
@@ -27,7 +27,7 @@ public:
   ~PersistenceManager() = default;
 };
 
-/// Declration of the Writer class
+/// Declaration of the Writer class
 class PersistenceManager::Writer {
 
   //! Filename
@@ -35,7 +35,7 @@ class PersistenceManager::Writer {
   string prefix_;
   string file_name_;
 
-  //! Keeps track of number of records corrently written into the file
+  //! Keeps track of number of records currently written into the file
   int counter{0};
 
   //! A unique pointer to a new writer object,
@@ -94,7 +94,7 @@ public:
     reader->read(file_name_);
   };
 
-  void read_raw_data(Experiment *epxr);
+  void read_raw_data(Experiment *expr);
 };
 
 } // namespace sam

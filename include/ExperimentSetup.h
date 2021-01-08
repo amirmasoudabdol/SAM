@@ -14,7 +14,7 @@
 
 namespace sam {
 
-// Forward declration of the necessary classes.
+// Forward declaration of the necessary classes.
 class ExperimentSetupBuilder;
 
 ///
@@ -101,7 +101,7 @@ class ExperimentSetupBuilder {
     }
   }
 
-  /// Check if variable sizes are set properly, if not, tries to calcualte
+  /// Check if variable sizes are set properly, if not, tries to calculate
   /// them, if fails, it'll throw and error.
   void check_expr_size() {
     if (!is_expr_size_decided) {

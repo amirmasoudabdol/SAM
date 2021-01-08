@@ -53,18 +53,17 @@ std::vector<T> get_expr_setup_params(json const &j, int const size) {
                                         of the experiment.\n");
     else
       return j.get<std::vector<T>>();
-  } break;
+  }
 
   case nlohmann::detail::value_t::number_integer:
   case nlohmann::detail::value_t::number_unsigned:
   case nlohmann::detail::value_t::number_float:
     return std::vector<T>(size, j.get<T>());
-    break;
 
   case nlohmann::detail::value_t::null:
   default:
     throw std::invalid_argument("Missing parameter.\n");
-    break;
+
   }
 }
 
@@ -212,7 +211,7 @@ struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
     }
 
     if (j.find("lowers") == j.end() || j.find("uppers") == j.end())
-      std::invalid_argument("lower or upper boundries are missing.");
+      std::invalid_argument("lower or upper boundaries are missing.");
 
     lowers = get_expr_setup_params(j.at("lowers"), n_dims);
     uppers = get_expr_setup_params(j.at("uppers"), n_dims);

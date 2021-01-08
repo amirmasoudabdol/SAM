@@ -328,7 +328,7 @@ void Journal::saveSummaries() {
 ///
 /// @brief Saving the runner statistics of each batch of publications in Journal
 ///
-void Journal::savePulicationsPerSimSummaries() {
+void Journal::savePublicationsPerSimSummaries() {
   
   static std::map<std::string, std::string> record;
   

@@ -15,7 +15,7 @@ void QuestionableRounding::perform(Experiment *experiment) {
     
     /// Checking whether the outcome is significant, if not, we check whether
     /// it's close enough to be a hacked, if so, we either set the pvalue
-    /// to `alpha` or the difference between pvalue and threshorld
+    /// to `alpha` or the difference between pvalue and threshold
     ///
     if ((experiment->groups_[i].pvalue_ > experiment->test_strategy->alpha()) and
         (experiment->groups_[i].pvalue_ - params.threshold < experiment->test_strategy->alpha())) {

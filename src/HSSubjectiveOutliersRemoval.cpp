@@ -20,7 +20,7 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
   static arma::vec Ks = arma::regspace<arma::vec>(
       params.range[1], -1. * params.step_size, params.range[0]);
 
-  /// Going through K's in order and return as soon as the deicsion_strategy is
+  /// Going through K's in order and return as soon as the decision_strategy is
   /// satisfied.
   for (const auto k : Ks) {
 
@@ -28,11 +28,11 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
     for (int i{0}; i < experiment->setup.ng(); ++i) {
       auto &row = (*experiment)[i].measurements();
 
-      arma::rowvec standaraized =
+      arma::rowvec standardized =
           arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
 
       /// Finding the outliers
-      arma::uvec inx = arma::find(standaraized > k);
+      arma::uvec inx = arma::find(standardized > k);
 
       /// Keeping at least `min_observations`
       if ((row.n_elem - inx.n_elem) <= params.min_observations)

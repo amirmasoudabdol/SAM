@@ -25,7 +25,7 @@
 
 #include "Experiment.h"
 #include "Submission.h"
-//#include "Journal.h"
+
 
 namespace sam {
 

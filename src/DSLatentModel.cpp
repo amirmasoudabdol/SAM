@@ -8,8 +8,8 @@
 using namespace sam;
 
 ///
-/// Construct a structural equation model based on the given paramters specified
-/// in the ExperimentSteup. Beside `experiment->measurements`,
+/// Construct a structural equation model based on the given parameters specified
+/// in the ExperimentSetup. Beside `experiment->measurements`,
 /// LatentDataStrategy populates the `experiment->items` as well.
 ///
 void LatentDataStrategy::genData(Experiment *experiment) {
@@ -154,7 +154,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   //    gsl_matrix_free(allErrors);
   //    gsl_matrix_free(allScores);
 
-  // return meaurements;
+  // return measurements;
 }
 
 std::vector<arma::Row<double>>

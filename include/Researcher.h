@@ -29,7 +29,7 @@ using HackingWorkflow = std::vector<std::vector<std::variant<std::shared_ptr<Hac
 
 class Researcher {
   // Making the ResearcherBuilder a friend class in order to give it access to
-  // private memebers of the Researcher. At the moment it's only `name` but I'll
+  // private members of the Researcher. At the moment it's only `name` but I'll
   // encapsulate more variables as the time goes.
   friend class ResearcherBuilder;
 
@@ -69,7 +69,7 @@ public:
   bool isCommittingToTheHack(HackingStrategy *hs);
   
   
-  //! Number of hacking strategies to be choosen from the given list of strategies
+  //! Number of hacking strategies to be chosen from the given list of strategies
   size_t n_hacks;
   
   bool reselect_hacking_strategies_after_every_simulation {false};
@@ -82,10 +82,10 @@ public:
   //! Indicates the execution order of selected/given hacking strategies
   std::string hacking_execution_order;
   
-  //! Indicates the probablity of a Researcher _deciding_ to go for hacking an Experiment
+  //! Indicates the probability of a Researcher _deciding_ to go for hacking an Experiment
   Parameter<double> probability_of_being_a_hacker;
   
-  //! Indicates the probablity of a Researcher _actally applying_ a choosen hacking strategy
+  //! Indicates the probability of a Researcher _actually applying_ a chosen hacking strategy
   std::variant<double, std::string, Distribution, std::unique_ptr<HackingProbabilityStrategy>> probability_of_committing_a_hack;
     
   double submission_probability {1};
@@ -103,13 +103,8 @@ public:
   
   void randomizeParameters();
   void reorderHackingStrategies(HackingWorkflow &hw, std::string priority);
-  
-  // void checkAndsubmitTheResearch(const std::optional<Submission> &sub);
-  void checkAndsubmitTheResearch(const std::optional<std::vector<Submission>> &subs);
 
-  // This could be renamed to something like, selectThePreferedSubmission()
-//  void prepareTheSubmission();
-//  void submitToJournal();
+  void checkAndsubmitTheResearch(const std::optional<std::vector<Submission>> &subs);
   
   void computeStuff() {
     experiment->calculateStatistics();
@@ -145,7 +140,7 @@ public:
 //  void setExperiment(Experiment *e) { experiment = e; };
 
   ///
-  /// @brief      Set the Jouranl
+  /// @brief      Set the Journal
   ///
   /// @param      j     The pointer to a Journal instance
   ///
@@ -153,7 +148,7 @@ public:
 };
 
 ///
-/// ResearcherBuilder class for Researcher. This takes care of eveyrthing and
+/// ResearcherBuilder class for Researcher. This takes care of everything and
 /// return a fully initialized Researcher after calling `.build()` method.
 ///
 class ResearcherBuilder {
@@ -171,12 +166,12 @@ public:
   ///
   /// Build a researcher entirely based on the given config file. This is not
   /// the best implementation still but I think it's more readable and
-  /// reasonable for some usecases.
+  /// reasonable for some use-cases.
   ///
   /// @param      config  A JSON object
   /// @return     Return an instance of itself
   ///
-  /// @todo This needs to be splitted into different pieces
+  /// @todo This needs to be split into different pieces
   ResearcherBuilder &fromConfigFile(json &config) {
 
     this->config = config;
@@ -284,7 +279,7 @@ public:
     if (config["researcher_parameters"].contains("hacking_execution_order")) {
       researcher.hacking_execution_order = config["researcher_parameters"]["hacking_execution_order"].get<std::string>();
       
-      /// Reorder hacking strategies based on the prefered execution order
+      /// Reorder hacking strategies based on the preferred execution order
       researcher.reorderHackingStrategies(researcher.h_workflow, researcher.hacking_execution_order);
       
     }
@@ -426,9 +421,9 @@ public:
    the given `hacking_strategies_pool`
 
    @param hacking_strategies_pool A set of hacking strategy methods use to
-   prepare researcher's hacking startegies
+   prepare researcher's hacking strategies
    @param n_group The number of hacking strategies groups
-   @param m_strategies The number of hacking startegies in each group
+   @param m_strategies The number of hacking strategies in each group
    @return Return an instance of itself where hacking_strategies has been
    initialized accordingly.
    */
@@ -457,7 +452,7 @@ public:
 
   ///
   /// Constructs `n_group`'s of hacking strategies, each consisting of maximum
-  /// `m_strategies`'s or steps. Each startegy is being selected randomly
+  /// `m_strategies`'s or steps. Each strategy is being selected randomly
   /// between all available strategies.
   ///
   /// @param      n_group       Number of groups of hacking strategies

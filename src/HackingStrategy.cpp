@@ -8,7 +8,7 @@ using namespace sam;
 
 HackingStrategy::~HackingStrategy(){
     // Pure destructors
-};
+}
 
 HackingStrategy::HackingStrategy() {
   lua.open_libraries();

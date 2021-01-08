@@ -84,8 +84,8 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
 
   mat L = trimatl(temp, -1);
 
-  mat::row_iterator row_it = L.begin_row(1);       // start of rowumn 1
-  mat::row_iterator row_it_end = L.end_row(n - 1); //   end of rowumn 3
+  mat::row_iterator row_it = L.begin_row(1);       // start of rownum 1
+  mat::row_iterator row_it_end = L.end_row(n - 1); //   end of rownum 3
 
   for (int i = 0; row_it != row_it_end; ++row_it)
     if ((*row_it) == -1)

@@ -8,8 +8,8 @@ using namespace sam;
 
 /// Implementation of Optional Stopping method
 ///
-/// Iterates for maximum `n_attemps` and add new obversations to experiment's
-/// gourps. The number of new observations to be added to each group is deducted
+/// Iterates for maximum `n_attempts` and add new obversations to experiment's
+/// groups. The number of new observations to be added to each group is deducted
 /// either a fixed number indicated by `params.num` or a variable number for each
 /// group, calculated as a fraction of already existing observations, `params.ratio`.
 ///

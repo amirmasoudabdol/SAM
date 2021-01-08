@@ -172,7 +172,7 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 ///
 /// @brief ⚠️ TO BE IMPLEMENTED!
 ///
-/// A Data Strategy for constructing a general [Structural Equaiton
+/// A Data Strategy for constructing a general [Structural Equation
 /// Model](https://en.wikipedia.org/wiki/Structural_equation_modeling).
 ///
 /// @ingroup  DataStrategies
@@ -213,7 +213,7 @@ private:
 /// - DVs in GRM are distinguished by their participant abilities to answer tests.
 ///   Therefore, we'll have `ng_` number of `abilities`. This value is being used
 ///   to, in each group, to initialize a normal distribution of `\theta ~
-///   N(abilitis[i], 1)`.
+///   N(abilities[i], 1)`.
 /// - \f$ \beta \f$
 ///
 class GRMDataStrategy final : public DataStrategy {
@@ -228,7 +228,7 @@ public:
     //! Number of categories
     int n_categories;
     
-    //! Inidicates the Response Function
+    //! Indicates the Response Function
     std::string response_function {"Rasch"};
 
     std::optional<MultivariateDistribution> m_diff_dist;
@@ -258,7 +258,7 @@ private:
   /// test it first.
   Distribution uniform_dist = std::uniform_real_distribution<>{};
 
-  arma::mat poa;        //! probablity of answering
+  arma::mat poa;        //! probability of answering
   arma::umat responses; //! responses to items, binary
   arma::vec scores;     //! scores of each item
 
@@ -275,7 +275,7 @@ private:
   ///
   /// @param[in]  theta  Indicates the participant's ability, θ
   ///
-  /// @return     Sum score of `j`th participart over all items
+  /// @return     Sum score of `j`th participant over all items
   ///
   double rasch_score(const double theta);
 };

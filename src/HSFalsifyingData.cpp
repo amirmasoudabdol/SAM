@@ -52,14 +52,14 @@ bool FalsifyingData::perturb(Experiment *experiment) {
     
     // Selecting n indices randomly
     arma::uvec shuffled_indices = arma::shuffle(arma::regspace<arma::uvec>(0, 1, row.n_elem - 1));
-    arma::uvec candicate_indices = shuffled_indices.head(num);
+    arma::uvec candidate_indices = shuffled_indices.head(num);
     
     static arma::Row<double> noise(num, arma::fill::zeros);
     noise.imbue([&](){
       return Random::get(params.noise_dist.value());
     });
     
-    row.elem(candicate_indices) += noise;
+    row.elem(candidate_indices) += noise;
     
   }
   
@@ -72,7 +72,7 @@ bool FalsifyingData::swapGroups(Experiment *experiment) {
   
   spdlog::debug(" → Swapping some data points...");
   
-  /// @todo This is a rahter expensive implementation, I need to see if I can find
+  /// @todo This is a rather expensive implementation, I need to see if I can find
   /// something in STL to do it better
   /// @note Maybe I can actually implement something in the Group to do this nicer
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
@@ -126,7 +126,7 @@ bool FalsifyingData::switchGroups(Experiment *experiment) {
         experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
       }
       
-      // Making sure that there is enough elements to select. Only concered about one group
+      // Making sure that there is enough elements to select. Only concerned about one group
       size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[d].measurements().n_elem));
 
       arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(num);
@@ -141,7 +141,7 @@ bool FalsifyingData::switchGroups(Experiment *experiment) {
         experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
       }
       
-      // Making sure that there is enough elements to select. Only concered about one group
+      // Making sure that there is enough elements to select. Only concerned about one group
       size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[i].measurements().n_elem));
 
       arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(num);

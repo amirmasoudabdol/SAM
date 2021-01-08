@@ -27,7 +27,7 @@ using namespace sam;
 
 MetaAnalysis::~MetaAnalysis(){
   
-};
+}
 
 std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
   
@@ -629,13 +629,13 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
           p = pkendall(q, n);
         }
         p = std::min(2. * p, 1.);
-      }; break;
+      } break;
       case TestStrategy::TestAlternative::Greater: {
         p = 1. - pkendall(q - 1, n);
-      }; break;
+      } break;
       case TestStrategy::TestAlternative::Less: {
         p = pkendall(q, n);
-      }; break;
+      } break;
     }
     
   }else{
@@ -689,13 +689,13 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
     switch (alternative) {
       case TestStrategy::TestAlternative::TwoSided: {
         p = 2 * min(cdf(norm, statistic), cdf(complement(norm, statistic)));
-      }; break;
+      } break;
       case TestStrategy::TestAlternative::Greater: {
         p = cdf(complement(norm, statistic));
-      }; break;
+      } break;
       case TestStrategy::TestAlternative::Less: {
         p = cdf(norm, statistic);
-      }; break;
+      } break;
     }
     
   }

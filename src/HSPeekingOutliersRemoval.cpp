@@ -34,7 +34,7 @@ void PeekingOutliersRemoval::perform(Experiment *experiment) {
           spdlog::trace("{}", *experiment);
           
         } else {
-          spdlog::trace("Rejecting the outlier removal..., no improvemnts found.");
+          spdlog::trace("Rejecting the outlier removal..., no improvements found.");
         }
       }
       
@@ -58,7 +58,7 @@ void PeekingOutliersRemoval::perform(Experiment *experiment) {
 
 bool PeekingOutliersRemoval::removeOutliers(Experiment *experiment, const int n, const double k) {
   
-  arma::rowvec standaraized;
+  arma::rowvec standardized;
   
   /// Removing outliers only from the original groups, see #104
   /// This is addressing the GroupPooling, and it doesn't have to do anything
@@ -69,18 +69,18 @@ bool PeekingOutliersRemoval::removeOutliers(Experiment *experiment, const int n,
     
     // At least one row has less than `min_observations`
     if (row.size() <= params.min_observations)
-      return false; // Unsuccessful retrun, nothing has removed.
+      return false; // Unsuccessful return, nothing has removed.
     
     // This trick makes finding the largest outlier easier. I'll see if I can
     // find a better way
     if (params.order == "max first")
       row = sort(row);
-    
-    standaraized =
+
+    standardized =
     arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
     
     // Finding the outliers, returning only `n` of them
-    arma::uvec inx = arma::find(standaraized > k, n, "first");
+    arma::uvec inx = arma::find(standardized > k, n, "first");
     
     if ((row.n_elem - inx.n_elem) <= params.min_observations)
       inx = inx.head(row.n_elem - params.min_observations);

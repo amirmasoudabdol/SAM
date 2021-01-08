@@ -29,7 +29,7 @@ namespace sam {
 /// conduct its research.
 ///
 /// Experiment has access to all data-related
-/// strategies, e.g., DataStrategy, TestStraregy, and EffectStrategy. Moreover,
+/// strategies, e.g., DataStrategy, TestStrategy, and EffectStrategy. Moreover,
 /// it stores the actual research data in a vector of Group objects. Researcher's
 /// access to actual data, and other data-related strategies always goes
 /// through an Experiment object.
@@ -64,12 +64,12 @@ public:
   /// @brief  Constructing an Experiment object using the given JSON configuration.
   ///
   /// Starting by the initialization of an ExperimentSetup, followed by Data, Test, and
-  /// Effect stratgies initialization; and finally, all necessary resources will be initialized.
+  /// Effect strategies initialization; and finally, all necessary resources will be initialized.
   Experiment(json &experiment_config);
 
   /// @brief Constructing an Experiment using an already initialized ExperimentSetup
   ///
-  /// Since ExperimenSetup already contains the definition of Data, Test, and Effect strategies,
+  /// Since ExperimentSetup already contains the definition of Data, Test, and Effect strategies,
   /// this method accept the ExperimentSetup as it is, and only initialize those strategies.
   ///
   /// @note This can be used in cases where the underlying strategies should be preserved while
@@ -83,7 +83,7 @@ public:
   /// These operators are returning the correct group, even if the group list is
   /// not sorted
   ///
-  /// @todo: I think these guys are a bit strange, they work and I'm not sure
+  /// @todo I think these guys are a bit strange, they work and I'm not sure
   /// why I have them like this but I think I can do better, for now I put some
   /// guard
   /// @note I think these are bad ideas, I think they should just return the index
@@ -143,7 +143,7 @@ public:
     effect_strategy = es;
   };
 
-  /// Helper function for the Researcher to fully initilize the experiment
+  /// Helper function for the Researcher to fully initialize the experiment
   /// by generating the data, calculating the statistics and effects, as
   /// well as running the test.
   void initExperiment();

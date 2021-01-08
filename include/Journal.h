@@ -143,7 +143,7 @@ public:
   ///
   /// @param[in]  s     A reference to the Submission
   ///
-  /// @return     A boolean indicating whether the Submission should be accpeted
+  /// @return     A boolean indicating whether the Submission should be accepted
   /// or
   ///             not.
   ///
@@ -166,7 +166,7 @@ public:
   bool isStillAccepting() const { return still_accepting; }
 
   ///
-  /// Save enteries of publications_list to a CSV file.
+  /// Save entries of publications_list to a CSV file.
   ///
   /// @param      simid   The index to be used for the given set.
   /// @param      writer  The output file.
@@ -177,7 +177,7 @@ public:
   void saveSummaries();
   void saveMetaStatsOf(std::string method);
   
-  void savePulicationsPerSimSummaries();
+  void savePublicationsPerSimSummaries();
   
 
   ///
