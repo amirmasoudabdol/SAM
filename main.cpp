@@ -18,10 +18,7 @@
 #include "utils/tqdm.h"
 #include "nlohmann/json.hpp"
 
-#include <indicators/block_progress_bar.hpp>
-#include <indicators/progress_bar.hpp>
-#include <indicators/termcolor.hpp>
-#include <indicators/cursor_control.hpp>
+#include "indicators/indicators.hpp"
 
 #include "Researcher.h"
 #include "PersistenceManager.h"
