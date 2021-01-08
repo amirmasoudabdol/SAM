@@ -146,22 +146,20 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 ///
 bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submission>>& subs, PolicyChain &pchain) {
   
-  if (pchain.empty() and subs)
+  if (pchain.empty())
     return true;
-  else
-    return false;
-  
-  // Checking whether all policies are returning `true`
-  if (subs) {
-    bool check {false};
-    for (auto &sub : subs.value())
-      check |= std::all_of(pchain.begin(), pchain.end(),
-        [&](auto &policy) -> bool {
-          return policy.func(sub);
-        });
-    return check;
-  } else
-    return false;
+  else {
+    // Checking whether all policies are returning `true`
+    if (subs) {
+      bool check{false};
+      for (auto &sub : subs.value())
+        check |=
+            std::all_of(pchain.begin(), pchain.end(),
+                        [&](auto &policy) -> bool { return policy.func(sub); });
+      return check;
+    } else
+      return false;
+  }
   
 }
 
