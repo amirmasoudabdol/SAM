@@ -72,18 +72,14 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     auto selections = pchain(experiment);
     
     if (selections) {
-      if (selections.value().size() == 1) {
-        submission_candidate = selections.value().back();
-        return;
-      }
-//       else {
-        /// If we find many, we just collect them, and quit
-        /// @note update: I think this is actually an incorrect behavior. I think I was confusing this
-        /// with stashing! I think I designed pchain operator to be able to return more than one outcome
-        /// but didn't test for it
-//        submissions_pool.insert(submissions_pool.end(), selections.value().begin(), selections.value().end());
-//        return;
+      /// @todo optimize this by directly assigning pchain() output to selection
+      submission_candidates = selections;
+//      if (selections.value().size() == 1) {
+//        submission_candidate = selections.value().back();
 //      }
+      /// This is the case where we managed to find more than one submission
+      /// So, we return here
+      return;
     }
   }
 
@@ -101,32 +97,33 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   
-  spdlog::debug("→ Selecting from Submissions Pool...");
-  
-  spdlog::trace("→ Current Submission Pool...");
-  for (auto &s : spool) {
-    spdlog::trace("\t\t{}", s);
-  }
+//  spdlog::debug("→ → Selecting from Submissions Pool...");
+//
+//  spdlog::trace("→ → Current Submission Pool: ");
+//  for (auto &s : spool) {
+//    spdlog::trace("\t\t{}", s);
+//  }
   
   /// @todo Check what this actually means!
-  if (pchain_set.empty())
+  if (pchain_set.empty()){
+    submission_candidates = spool;
     return;   // we just don't have anything to work with
+  }
 
   for (auto &pchain : pchain_set) {
     
     auto selection = pchain(spool);
     
     if (selection) {
-      submission_candidate = selection.value();
+      submission_candidates = selection;
+//      if (selection.value().size() == 1){
+//        submission_candidate = selection.value()[0];
+//      }
+      /// This is the case where we managed to find more than one submission
+      /// So, we return here
       return;
     }
-      /// @todo This is the same issue as it was in selectOutcome, if I return here, I'll not go through
-      /// the rest of then chain
-//    else {
-//      /// We didn't find anything
-//      return;
-//    }
-    
+
   }
 
 
@@ -134,59 +131,107 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 }
 
 
-  /// Create and save all possible submissions from an experiment, if 
-  /// the satisfy all of the given policies in the pchain.
-  ///
-  /// @param      experiment  a reference to the experiment
-  /// @param      pchain      a policy chain, usually stored in
-  ///                         `stashing_policy` in the config file
+/// Create and save all possible submissions from an experiment, if
+/// the satisfy all of the given policies in the pchain.
+///
+/// @param      experiment  a reference to the experiment
+/// @param      pchain      a policy chain, usually stored in
+///                         `stashing_policy` in the config file
  void DecisionStrategy::saveOutcomes(Experiment &experiment, PolicyChain &pchain) {
     
+   if (not pchain.empty()) {
+     
     spdlog::debug("Stashing...");
-    
+   
     auto selections = pchain(experiment);
     
     if (selections) {
-      submissions_pool.insert(submissions_pool.end(), selections.value().begin(),
+      stashed_submissions.insert(stashed_submissions.end(), selections.value().begin(),
                               selections.value().end());
     }
     
-  }
+   }
+   
+}
 
-bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
+//bool DecisionStrategy::willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain) {
+//
+//  if (pchain.empty() and sub)
+//    return true;
+//  else
+//    return false;
+//  
+//  // Checking whether all policies are returning `true`
+//  if (sub)
+//      return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
+//        return policy.func(sub.value());
+//      });
+//  else
+//      return false;
+//
+//}
 
-  if (pchain.empty() and sub)
+bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submission>>& subs, PolicyChain &pchain) {
+  
+  if (pchain.empty() and subs)
     return true;
   else
     return false;
   
   // Checking whether all policies are returning `true`
-  if (sub)
-      return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) {
-        return policy.func(sub.value());
-      });
-  else
-      return false;
-
+  if (subs) {
+    bool check {false};
+    for (auto &sub : subs.value())
+      check |= std::all_of(pchain.begin(), pchain.end(),
+        [&](auto &policy) -> bool {
+          return policy.func(sub);
+        });
+    return check;
+  } else
+    return false;
+  
 }
 
 
-/// @brief  Decides whether we are going to start hacking.
-/// In this canse, we only check if the `current_submission` complies with
+/// @brief  Decides whether Researcher is going to hacking the Experiment
+///
+/// In this case, we only check if the `current_submission` complies with
 /// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
 /// if no, then we will not continue to the hacking procedure
 bool DefaultDecisionMaker::willStartHacking() {
-    if (will_start_hacking_decision_policies.empty())
-      return true;
+  
+  spdlog::trace("Checking whether to start hacking or not...");
+
+  /// Start hacking if there is no criteria is defined
+  if (will_start_hacking_decision_policies.empty())
+    return true;
     
-    if (submission_candidate) {
-      /// @todo this can be replaced by Policy->oprator()
-      return std::any_of(will_start_hacking_decision_policies.begin(), will_start_hacking_decision_policies.end(), [this](auto &policy) -> bool {
-          return policy.func(this->submission_candidate.value());
-          });
-    }else{
-      return true;
-    }
+  
+  if (submission_candidates) {
+    spdlog::trace("Looking for: {}", will_start_hacking_decision_policies);
+    spdlog::trace("Submission Candidates: {}", submission_candidates.value());
+    /// @todo this can be replaced by Policy->oprator()
+    
+    /// Basically any of the candidates is good enough, then we're going
+    /// to STOP hacking
+    bool verdict {false};
+    for (auto &sub : submission_candidates.value())
+      verdict |= std::any_of(will_start_hacking_decision_policies.begin(),
+                             will_start_hacking_decision_policies.end(),
+                             [&](auto &policy) -> bool {
+                                return policy.func(sub);
+                              });
+    return verdict;
+    
+    
+//    return std::any_of(will_start_hacking_decision_policies.begin(), will_start_hacking_decision_policies.end(), [this](auto &policy) -> bool {
+//        return policy.func(this->submission_candidate.value());
+//        });
+  } else {
+    spdlog::trace("No Candidate is available → Will Start Hacking");
+    return true;
+  }
+  
 };
 
 
@@ -227,10 +272,16 @@ bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
   if (pchain.empty())
     return true;
   
-  if (submission_candidate) {
-    return std::any_of(pchain.begin(), pchain.end(), [this](auto &policy) -> bool {
-        return policy.func(this->submission_candidate.value());
-        });
+  if (submission_candidates) {
+    
+    bool verdict {false};
+    for (auto &sub : submission_candidates.value())
+      verdict |= std::any_of(pchain.begin(),
+                             pchain.end(),
+                             [&](auto &policy) -> bool {
+                                return policy.func(sub);
+                              });
+    return not verdict;
   }else{
     return true;
   }
@@ -241,18 +292,20 @@ DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
   
+  /// @todo this is confusing and I need to change it
   saveOutcomes(*experiment, stashing_policy);
   
-  spdlog::trace("Collected pile of every submission: ");
-  for (auto &s : submissions_pool) {
-    spdlog::trace("\t{}", s);
-  }
+//  spdlog::trace("Collected pile of every hacked/submission: {}", stashed_submissions);
+  
   return *this;
 }
-  
+
 DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromPool(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
+  
+  /// @todo This looks terrible! A random clear() inside a function!
+  /// @bug I need change this!
   clear();
   return *this;
 }

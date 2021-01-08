@@ -81,7 +81,7 @@ public:
   ///
   /// @return     A boolean indicating whether the Submission should be accepted.
   ///
-  virtual bool review(const Submission &s) = 0;
+  virtual bool review(const std::vector<Submission> &s) = 0;
 };
 
 
@@ -122,8 +122,10 @@ public:
     selection_policy = PolicyChain(params.selection_policy_defs, lua);
   }
   
-  virtual bool review(const Submission &s) override;
+  virtual bool review(const std::vector<Submission> &s) override;
 };
+
+
 
 ///
 /// @brief      Significant-based Selection Strategy
@@ -165,7 +167,7 @@ public:
 
   SignificantSelection(const Parameters &p) : params{p} {};
 
-  virtual bool review(const Submission &s) override;
+  virtual bool review(const std::vector<Submission> &s) override;
 };
 
 ///
@@ -193,7 +195,7 @@ public:
 
   RandomSelection(const Parameters &p) : params{p} {};
 
-  virtual bool review(const Submission &s) override;
+  virtual bool review(const std::vector<Submission> &s) override;
 };
 
 
@@ -214,7 +216,7 @@ public:
   FreeSelection(){};
 
   /// Accepting anything!
-  virtual bool review(const Submission &s) override { return true; };
+  virtual bool review(const std::vector<Submission> &s) override { return true; };
 };
 
 } // namespace sam

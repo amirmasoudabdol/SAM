@@ -81,8 +81,31 @@ struct fmt::formatter<sam::Submission> {
     // ctx.out() is an output iterator to write to.
     return format_to(
         ctx.out(),
-        "{}, {}, {}, {}, {}",
-        s.simid, s.repid, s.pubid, s.tnobs, s.group_);
+        "{}, {}, {}, {}, {}, {}",
+        s.simid, s.exprid, s.repid, s.pubid, s.tnobs, s.group_);
+  }
+};
+
+template <>
+struct fmt::formatter<std::vector<sam::Submission>> {
+  // Presentation format: 'f' - fixed, 'e' - exponential.
+  char presentation = 'f';
+  
+  // Parses format specifications of the form ['f' | 'e'].
+  constexpr auto parse(format_parse_context& ctx) {
+    return ctx.begin();
+  }
+  
+  // Formats the point p using the parsed format specification (presentation)
+  // stored in this formatter.
+  template <typename FormatContext>
+  auto format(const std::vector<sam::Submission>& subs, FormatContext& ctx) {
+    // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
+    // ctx.out() is an output iterator to write to.
+    ctx.out() = format_to(ctx.out(), "\n\t\t");
+    return format_to(ctx.out(),
+                     "{}",
+                     join(subs.begin(), subs.end(), "\n\t\t"));
   }
 };
 

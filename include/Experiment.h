@@ -41,8 +41,8 @@ namespace sam {
 class Experiment {
 
 public:
+  int simid{0};
   int exprid{0};
-  
   int repid{0};
 
   //! Indicates if any hacking routine has been applied on the experiment
@@ -199,9 +199,10 @@ namespace fmt {
     auto format(const sam::Experiment& e, FormatContext& ctx) {
       // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
       // ctx.out() is an output iterator to write to.
-      ctx.out() = format_to(ctx.out(), "Experiment:\n\t\t\t\t");
+      ctx.out() = format_to(ctx.out(), "\n\t\t");
       return format_to(ctx.out(),
-                       "{}", join(e.begin(), e.end(), "\n\t\t\t\t"));
+                       "{}",
+                       join(e.begin(), e.end(), "\n\t\t"));
     }
   
   };

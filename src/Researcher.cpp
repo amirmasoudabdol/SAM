@@ -12,7 +12,7 @@ ResearcherBuilder Researcher::create(std::string name) {
   return ResearcherBuilder(name);
 }
 
-void Researcher::letTheHackBegin() {
+bool Researcher::letTheHackBegin() {
   
   spdlog::debug("Initiate the Hacking Procedure...");
   
@@ -52,12 +52,15 @@ void Researcher::letTheHackBegin() {
           [&](PolicyChainSet& selection_policies) {
             /// Performing a Selection
             /// With PolicyChainSet we can look for different results
+            /// @note This will overwrite the submission_candidates, and if
+            /// stashing, it'll stash everything into stashed_submissions
               decision_strategy->selectOutcomeFromExperiment(&copy_of_experiment, selection_policies);
           },
           [&](PolicyChain &decision_policy) {
               /// Performing a Decision
               /// With PolicyChain, we can only validate if a submission passes all the criteria
-              spdlog::trace("Checking whether we are going to continue hacking ?");
+              spdlog::trace("Checking whether we are going to continue hacking?");
+              spdlog::trace("Looking for: {}", decision_policy);
               if (!decision_strategy->willContinueHacking(&copy_of_experiment, decision_policy)) {
                 spdlog::trace("Done Hacking!");
                 stopped_hacking = true;
@@ -68,7 +71,7 @@ void Researcher::letTheHackBegin() {
                 /// @bug, this could possibly cause some confusion! In cases where I only have one strategy and
                 /// wants to be done after it, this role discard the last selection.
                 /// @workaround, the current workaround is to select from the stash using between_hacking_selection
-                decision_strategy->submission_candidate.reset();
+                decision_strategy->submission_candidates.reset();
                 spdlog::trace("Continue Hacking...");
               }
           }
@@ -83,11 +86,14 @@ void Researcher::letTheHackBegin() {
       
       /// We leave the workflow when we have a submission, and it also passes the decision policy
       if (stopped_hacking) {
-        return;
+        return true;
       }
       
     }
   }
+  
+  spdlog::trace("No more hacking strategies...");
+  return false;
   
 }
 
@@ -136,17 +142,33 @@ void Researcher::preProcessData() {
 ///
 /// @todo Maybe I should pass the `final_submission` to this, and don't rely on it
 /// reading it from the `decision_strategy`
-void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub) {
+//void Researcher::checkAndsubmitTheResearch(const std::optional<Submission> &sub) {
+//
+//  spdlog::debug("Checking whether the Final Submission is going to be submited to Journal...");
+//
+//  if (sub and
+//      decision_strategy->willBeSubmitting(sub, decision_strategy->submission_decision_policies)) {
+//    spdlog::trace("To be submitted submission: ");
+//    spdlog::trace("\t{}", decision_strategy->submission_candidate.value());
+//
+//    if (Random::get<bool>(submission_probability))
+//      journal->review(decision_strategy->submission_candidates.value());
+////      journal->review(decision_strategy->submission_candidate.value());
+//  }
+//
+//}
+
+void Researcher::checkAndsubmitTheResearch(const std::optional<std::vector<Submission>> &subs) {
   
   spdlog::debug("Checking whether the Final Submission is going to be submited to Journal...");
   
-  if (sub and
-      decision_strategy->willBeSubmitting(sub, decision_strategy->submission_decision_policies)) {
-    spdlog::trace("To be submitted submission: ");
-    spdlog::trace("\t{}", decision_strategy->submission_candidate.value());
+  if (subs and
+      decision_strategy->willBeSubmitting(subs, decision_strategy->submission_decision_policies)) {
+    spdlog::trace("To be submitted submission: {}", decision_strategy->submission_candidates.value());
+
     
     if (Random::get<bool>(submission_probability))
-      journal->review(decision_strategy->submission_candidate.value());
+      journal->review(decision_strategy->submission_candidates.value());
   }
   
 }
@@ -234,50 +256,81 @@ void Researcher::research() {
     decision_strategy->selectOutcomeFromExperiment(experiment.get(),
                                   decision_strategy->initial_selection_policies);
     
+    bool init_desc_succeed {false};
+    std::optional<SubmissionPool> init_submissions;
+
+    if (decision_strategy->submission_candidates) {
+      init_desc_succeed = true;
+      init_submissions = decision_strategy->submission_candidates;
+    }
+    
     /// ----------------------
     /// WillBeHacking DECISION
-    if (isHacker()) {
-      if (decision_strategy->willStartHacking()) {
-        /// If we are a hacker, and we decide to start hacking — based on the current submission —,
-        /// then, we are going to the hacking procedure!
-        
-          letTheHackBegin();
+    
+    /// @todo refine me, #multiple-subs-transition
+    /// This shenanigans tries to avoid a scenario that hacking is successful and SAM has to discard
+    /// the stashed submissions!
+    bool hacking_succeed{false};
+    std::optional<SubmissionPool> hacked_submissions;
+    
+    // if (isHacker()) {
+    // }
+    if (isHacker() and decision_strategy->willStartHacking()) {
+      /// If we are a hacker, and we decide to start hacking — based on the current submission —,
+      /// then, we are going to the hacking procedure!
+      
+      hacking_succeed = letTheHackBegin();
+      // hacked_submissions = decision_strategy->submission_candidates;
+      
+      if (hacking_succeed) {
+        spdlog::trace("Selecting between Hacked Submissions: ");
+        spdlog::trace("{}", decision_strategy->submission_candidates.value());
+        decision_strategy->selectOutcomeFromPool(decision_strategy->submission_candidates.value(),
+                                               decision_strategy->between_hacks_selection_policies);
+      } else {
 
+        /// @todo Make `stashed_submissions` a optional like `submission_candidates`
+        if (!decision_strategy->stashed_submissions.empty()) {
+          spdlog::trace("Selecting between Stashed Submissions: ");
+          spdlog::trace("{}", decision_strategy->stashed_submissions);
+          decision_strategy->selectOutcomeFromPool(decision_strategy->stashed_submissions,
+                                                   decision_strategy->between_hacks_selection_policies);
+        }
       }
+
+    } else {
+      if (init_desc_succeed)
+        decision_strategy->submission_candidates = init_submissions;
+      else
+        if (!decision_strategy->stashed_submissions.empty()) {
+          spdlog::trace("Selecting between Stashed Submissions: {}", decision_strategy->stashed_submissions);
+          decision_strategy->selectOutcomeFromPool(decision_strategy->stashed_submissions,
+                                                   decision_strategy->between_hacks_selection_policies);
+        }
     }
     
     /// ------------------------------
     /// BetweenHackedOutcome SELECTION
-    if (not decision_strategy->submission_candidate and
-        not decision_strategy->submissions_pool.empty()){
-      /// If the pool of viable submissions is not empty, then we have to choose between them!
-      /// Otherwise, we don't have to look into the pile!
-      
-      {
-        spdlog::trace("→ Selecting between Hacked and Stashed Outcome!");
-        for (auto &sub : decision_strategy->submissions_pool)
-          spdlog::trace("\t{}", sub);
-        spdlog::trace("-----^");
-        // assert(!decision_strategy->between_hacks_selection_policies.empty() && "Research doesn't know how to select a submission from hacked submissions!");
-      } // Logging
-      
-      decision_strategy->selectOutcomeFromPool(decision_strategy->submissions_pool,
-                                               decision_strategy->between_hacks_selection_policies);
-    }
+    // if (init_desc_succeed) {
+    //   decision_strategy->submission_candidates = init_submissions;
+    // } else 
+    // if (hacking_succeed){
+    // } else {
+    // }
 
     
     /// ---------------------
     /// Replication Stashings
-    if (decision_strategy->willBeSubmitting(decision_strategy->submission_candidate, decision_strategy->submission_decision_policies)) {
+    if (decision_strategy->willBeSubmitting(decision_strategy->submission_candidates, decision_strategy->submission_decision_policies)) {
       /// If we have a submittable candidate, then we collect it
       
-      {
-        spdlog::trace("Final Submission Candidate: ");
-        spdlog::trace("\t{}", decision_strategy->submission_candidate.value());
-      } // Logging
+      spdlog::trace("Final Submission Candidates: {}", decision_strategy->submission_candidates.value());
       
-      submissions_from_reps.push_back(decision_strategy->submission_candidate.value());
+      submissions_from_reps.insert(submissions_from_reps.end(),
+                                   decision_strategy->submission_candidates.value().begin(),
+                                   decision_strategy->submission_candidates.value().end());
       
+      spdlog::trace("Collection of Submissions from Replications: {}", submissions_from_reps);
     }
     
     /// ----------------------------------
@@ -292,22 +345,24 @@ void Researcher::research() {
   }
   
   /// BetweenReplications SELECTION
-  if (submissions_from_reps.size() > 1) {
+//  if (submissions_from_reps.size() > 1) {
     /// If we have done more than one replication, then we have to select between them
     {
       spdlog::trace("__________");
       spdlog::trace("→ Choosing Between Replications");
-      assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
+//      assert(!decision_strategy->between_reps_policies.empty() && "Research doesn't know how to select between submissions!");
     }
     decision_strategy->selectOutcomeFromPool(submissions_from_reps, decision_strategy->between_reps_policies);
-  }else{
-    /// If we did only one replication, then if there is anything, that's our final submission
-    if (submissions_from_reps.size() == 1) {
-      decision_strategy->submission_candidate = submissions_from_reps.front();
-    }
-  }
+//  }else{
+//    /// If we did only one replication, then if there is anything, that's our final submission
+//    /// @todo #multiple-sub-transition
+//    /// @bug this breaks things
+//    if (submissions_from_reps.size() == 1) {
+//      decision_strategy->submission_candidate = submissions_from_reps.front();
+//    }
+//  }
   
-  checkAndsubmitTheResearch(decision_strategy->submission_candidate);
+  checkAndsubmitTheResearch(decision_strategy->submission_candidates);
   
   decision_strategy->reset();
   experiment->clear();

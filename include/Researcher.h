@@ -100,12 +100,13 @@ public:
   HackingWorkflow h_workflow;
   
   void research();
-  void letTheHackBegin();
+  bool letTheHackBegin();
   
   void randomizeParameters();
   void reorderHackingStrategies(HackingWorkflow &hw, std::string priority);
   
-  void checkAndsubmitTheResearch(const std::optional<Submission> &sub);
+  // void checkAndsubmitTheResearch(const std::optional<Submission> &sub);
+  void checkAndsubmitTheResearch(const std::optional<std::vector<Submission>> &subs);
 
   // This could be renamed to something like, selectThePreferedSubmission()
 //  void prepareTheSubmission();

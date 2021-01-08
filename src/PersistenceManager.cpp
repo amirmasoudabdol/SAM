@@ -54,15 +54,12 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid)
       is_header_set = true;
     }
 
-    s["simid"] = std::to_string(simid);
     s["pubid"] = std::to_string(i++);
 
     writer->write_row(s);
   }
 
-  for (const auto &s : subs) {
-    spdlog::trace("{}", s);
-  }
+  spdlog::trace("Publications: {}", subs);
 }
 
 void PersistenceManager::Writer::setColumnNames(const std::vector<std::string> &colnames) {

@@ -38,6 +38,8 @@ public:
   std::vector<Submission> rejection_list;
   int n_rejected{0};
   
+  int n_studies{0};
+  
   //! Number of significant submissions
   int n_sigs{0};
   double sum_sig_pvalue {0};
@@ -145,21 +147,21 @@ public:
   /// or
   ///             not.
   ///
-  bool review(Submission &s);
+  bool review(std::vector<Submission> &s);
 
   ///
   /// @brief      Accept the Submission by adding it to the `publicationList`.
   ///
   /// @param[in]  s     A copy of the Submission
   ///
-  void accept(const Submission &s);
+  void accept(const std::vector<Submission> &s);
 
   ///
   /// @brief      Rejecting the Submission!
   ///
   /// @param[in]  s     A reference to the Submission
   ///
-  void reject(const Submission &s);
+  void reject(const std::vector<Submission> &s);
 
   bool isStillAccepting() const { return still_accepting; }
 

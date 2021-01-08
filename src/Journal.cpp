@@ -122,44 +122,56 @@ Journal::Journal(json &journal_config) {
   journal_config.erase("save_overall_summaries");
 }
 
-bool Journal::review(Submission &s) {
+bool Journal::review(std::vector<Submission> &subs) {
 
-  bool decision = this->selection_strategy->review(s);
+  bool decision = this->selection_strategy->review(subs);
 
   if (decision) {
-    accept(s);
+    accept(subs);
     
     /// Stats runner over all publications of this journal
+    /// @todo BRING US BACK! #multi-subs-transition
     if (is_saving_pubs_per_sim_summaries) {
-      pubs_per_sim_stat_runner(static_cast<arma::rowvec>(s));
+      for (auto &s : subs)
+        pubs_per_sim_stat_runner(static_cast<arma::rowvec>(s));
     }
     
     /// Stat runner over all simulations
     if (is_saving_summaries) {
-      pubs_stat_runner(static_cast<arma::rowvec>(s));
+      for (auto &s : subs)
+        pubs_stat_runner(static_cast<arma::rowvec>(s));
     }
     
   } else {
-    reject(s);
+    reject(subs);
   }
   
   return decision;
 }
 
-void Journal::accept(const Submission &s) {
+void Journal::accept(const std::vector<Submission> &subs) {
 
-  publications_list.push_back(s);
-  n_accepted++;
+//  publications_list.push_back(subs);
+  publications_list.insert(publications_list.end(), subs.begin(), subs.end());
+  n_accepted += subs.size();
   
-  if (s.isSig()) {
-    n_sigs++;
+  n_studies++;
+  
+//  spdlog::trace("Accepted Submissions:");
+  spdlog::trace("Accepted Submissions: {}", subs);
+  
+//  if (s.isSig()) {
+//    n_sigs++;
 //    sum_sig_pvalue += s.group_.pvalue_;
 //    sum_sig_effect += s.group_.effect_;
-  }
+//  }
 
   /// @todo Maybe I should calculate the publications stats here
   
-  if (publications_list.size() == max_pubs) {
+  /// @todo #multi-subs-transition
+  /// @todo collecting multiple items changes the meaning of publication! so far, max_pubs
+  /// was basically `max_subs` but now I have to change this!
+  if (publications_list.size() >= max_pubs) {
     still_accepting = false;
     
     /// Updating journal's info
@@ -171,10 +183,10 @@ void Journal::accept(const Submission &s) {
   }
 }
 
-void Journal::reject(const Submission &s) {
+void Journal::reject(const std::vector<Submission> &subs) {
 
-  rejection_list.push_back(s);
-  n_rejected++;
+  rejection_list.insert(rejection_list.end(), subs.begin(), subs.end());
+  n_rejected += subs.size();
 }
 
 

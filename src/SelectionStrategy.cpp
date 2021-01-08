@@ -65,15 +65,20 @@ SelectionStrategy::build(json &selection_strategy_config) {
 /// random draw from U(0, 1) is true, then the submission will
 /// be accepted; otherwise, it will be rejected
 ///
-bool PolicyBasedSelection::review(const Submission &s) {
+bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
   
-  if (selection_policy(s) and
+  /// Checks selection policy returns anything
+  /// @todo this is quite ugly, fix it!
+  auto check = selection_policy(const_cast<std::vector<Submission>&>(subs));
+  if (check and
         Random::get<bool>(params.pub_chance) and
           Random::get<bool>(1 - params.pub_bias))
     return true;
-  
+
   return false;
 }
+
+
 
 ///
 /// Check if `p-value` of the Submission is less than the specified
@@ -84,14 +89,16 @@ bool PolicyBasedSelection::review(const Submission &s) {
 /// @param      s     A reference to the Submission
 /// @return     a boolean indicating whether the Submission is accepted.
 ///
-bool SignificantSelection::review(const Submission &s) {
+bool SignificantSelection::review(const std::vector<Submission> &subs) {
 
   // Only accepting +/- results if journal cares about it, side != 0
-  if (s.group_.eff_side_ != params.side && params.side != 0) {
-    return false;
-  }
+//  if (subs.group_.eff_side_ != params.side && params.side != 0) {
+//    return false;
+//  }
 
-  if (s.group_.pvalue_ < params.alpha) {
+  /// Checking whether any of the outcomes are significant
+  if (std::any_of(subs.begin(), subs.end(),
+                  [&](auto &s){return s.group_.pvalue_ < params.alpha; })) {
     return true;
   } else if (Random::get<bool>(1 - params.pub_bias)) {
     return true;
@@ -107,10 +114,6 @@ bool SignificantSelection::review(const Submission &s) {
 /// @param      s     corresponding submission
 /// @return     a boolean indicating whether the Submission is accpeted.
 ///
-bool RandomSelection::review(const Submission &s) {
-  if (Random::get<bool>(0.5)) {
-    return true;
-  } else {
-    return false;
-  }
+bool RandomSelection::review(const std::vector<Submission> &subs) {
+  return Random::get<bool>(0.5);
 }

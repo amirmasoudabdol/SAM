@@ -57,10 +57,13 @@ public:
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
   
-  std::optional<Submission> submission_candidate;
+//  std::optional<Submission> submission_candidate;
+  std::optional<std::vector<Submission>> submission_candidates;
   
   //! List of selected Submission by the researcher, during the hacking procedure
-  SubmissionPool submissions_pool;
+  SubmissionPool stashed_submissions;
+  
+  SubmissionPool hacked_submissions;
 
   /// @todo: These guys should move to their own class, I don't have to keep everything here!
   PolicyChainSet initial_selection_policies;
@@ -89,7 +92,10 @@ public:
   
   
   /// Submission
-  bool willBeSubmitting(const std::optional<Submission>& sub, PolicyChain &pchain);
+  // bool willBeSubmitting(const std::optional<Submission>& sub,
+  //                       PolicyChain &pchain);
+  bool willBeSubmitting(const std::optional<std::vector<Submission>>& sub,
+                        PolicyChain &pchain);
   
   virtual bool willContinueReplicating(PolicyChain &pchain) {return false; };
   
@@ -97,16 +103,17 @@ public:
   /// submission pools or other collected information by the decision
   /// strategy.
   void clear() {
-    submissions_pool.clear();
+    stashed_submissions.clear();
   }
   
-  /// @todo: This needs to be private but currently, I don't have a good place to put it.
+  /// @todo This needs to be private but currently, I don't have a good place to put it.
   /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
   /// and I cannot just call it in any other methods because then it's hidden
-  /// 
+  ///
   /// Reset the internal state of the decision strategy
   void reset() {
-    submission_candidate.reset();
+//    submission_candidate.reset();
+    submission_candidates.reset();
     clear();
   }
   
@@ -120,7 +127,7 @@ public:
   void saveEveryOutcome(Experiment &experiment) {
     for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
          ++i, ++d %= experiment.setup.nd()) {
-      submissions_pool.emplace_back(experiment, i);
+      stashed_submissions.emplace_back(experiment, i);
     }
   };
   
@@ -134,15 +141,6 @@ public:
   void saveOutcomes(Experiment &experiment, PolicyChain &pchain);
   
 protected:
-  
-  /// A helper method to save the current submission. This needs to be called
-  /// after verdict.
-  void saveCurrentSubmissionCandidate() {
-    if (submission_candidate)
-      submissions_pool.push_back(submission_candidate.value());
-  };
-  
-
   
   void selectOutcome(Experiment &experiment, PolicyChainSet &pchain_set);
 

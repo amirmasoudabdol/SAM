@@ -230,6 +230,8 @@ void runSimulation(json &simConfig) {
       spdlog::trace("\n\n==========================================================================\n");
     }
     
+    researcher.experiment->simid++;
+    
     if (show_progress_bar) {
       progress += 1. / n_sims;
       sim_progress_bar.set_progress(progress * 100);

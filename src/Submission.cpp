@@ -11,7 +11,8 @@ Submission::Submission(Experiment &e, const int &index) {
   tnobs = e[index].true_nobs_.value();
 
   group_ = e[index];
-  
+ 
+  simid = e.simid;
   exprid = e.exprid;
   repid = e.repid;
 };
