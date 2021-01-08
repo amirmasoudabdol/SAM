@@ -15,7 +15,7 @@ using namespace sam;
 using boost::math::students_t;
 
 TestStrategy::~TestStrategy(){
-    // Pure deconstructor
+    // Pure destructors
 };
 
 std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config) {

@@ -10,7 +10,7 @@ using namespace sam;
 using boost::math::relative_difference;
 
 HackingProbabilityStrategy::~HackingProbabilityStrategy(){
-  // Pure deconstructor
+  // Pure destructors
 };
 
 

@@ -10,7 +10,7 @@
 using namespace sam;
 
 DataStrategy::~DataStrategy() {
-  // Pure deconstructor
+  // Pure destructors
 }
 
 std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {

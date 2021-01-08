@@ -51,7 +51,7 @@ protected:
 
 public:
   ///
-  /// @brief      Pure deconstructor of the base class
+  /// @brief      Pure destructors of the base class
   ///
   virtual ~SelectionStrategy() = 0;
   

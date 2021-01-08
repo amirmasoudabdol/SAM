@@ -44,7 +44,7 @@ public:
   /// @return     A unique_ptr to a new DataStrategy
   static std::unique_ptr<DataStrategy> build(json &data_strategy_config);
 
-  /// @brief Pure deconstructor of the DataStrategy abstract class.
+  /// @brief Pure destructors of the DataStrategy abstract class.
   virtual ~DataStrategy() = 0;
 
   ///

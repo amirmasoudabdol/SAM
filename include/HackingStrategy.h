@@ -409,7 +409,7 @@ public:
     //! Indicates the step size of walking through K's
     double step_size{0.1};
 
-    //! Indicates minimum number of observatons
+    //! Indicates minimum number of observations
     int min_observations{5};
     
     //! Stopping condition PolicyChain definitions

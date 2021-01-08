@@ -2,26 +2,21 @@
 // Created by Amir Masoud Abdol on 2019-04-20.
 //
 
-#include <fstream>
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <sstream>
-#include <vector>
-#include <chrono>
-//#include <filesystem>
 
 #include "sam.h"
 
 #include "effolkronium/random.hpp"
-#include "spdlog/spdlog.h"
-#include "utils/tqdm.h"
 #include "nlohmann/json.hpp"
+#include "spdlog/spdlog.h"
 
 #include "indicators/indicators.hpp"
 
-#include "Researcher.h"
 #include "PersistenceManager.h"
+#include "Researcher.h"
 
 using namespace sam;
 
@@ -32,26 +27,28 @@ using Random = effolkronium::random_static;
 
 using namespace std;
 
-bool show_progress_bar {false};
+bool show_progress_bar{false};
 
 void runSimulation(json &simConfig);
 
 int main(int argc, const char **argv) {
-  
+
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
 
   po::options_description desc("SAMrun Options");
-  desc.add_options()
-      ("help", "produce help message")
-      ("version", "SAMrun 0.0.1 (Alpha)")
-      ("verbose", po::bool_switch(), "Print more texts.")
-      ("debug", po::value<std::string>(), "Print debugging information")
-      ("update-config", po::bool_switch(), "Update the config file with the drawn seeds")
-      ("progress", po::bool_switch()->default_value(false), "Shows the progress bar")
-      ("master-seed", po::value<int>()->default_value(42), "Set the master seed")
-      ("output-prefix", po::value<std::string>(), "Output prefix used for saving files")
-      ("output-path", po::value<std::string>(), "Output path")
-      ("config", po::value<std::string>(), "JSON config file");
+  desc.add_options()("help", "produce help message")(
+      "version", "SAMrun 0.0.1 (Alpha)")("verbose", po::bool_switch(),
+                                         "Print more texts.")(
+      "debug", po::value<std::string>(), "Print debugging information")(
+      "update-config", po::bool_switch(),
+      "Update the config file with the drawn seeds")(
+      "progress", po::bool_switch()->default_value(false),
+      "Shows the progress bar")(
+      "master-seed", po::value<int>()->default_value(42),
+      "Set the master seed")("output-prefix", po::value<std::string>(),
+                             "Output prefix used for saving files")(
+      "output-path", po::value<std::string>(),
+      "Output path")("config", po::value<std::string>(), "JSON config file");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -67,20 +64,20 @@ int main(int argc, const char **argv) {
   std::string configfilename;
   if (vm.count("config")) {
     configfilename = vm["config"].as<string>();
-//    if (!exists(configfilename)){
-//      throw std::invalid_argument("Config file doesn't exist");
-//    }
+    //    if (!exists(configfilename)){
+    //      throw std::invalid_argument("Config file doesn't exist");
+    //    }
   } else {
     configfilename = "/Users/amabdol/Projects/SAMpp/config_file.json";
   }
-  
+
   std::ifstream configFile(configfilename);
   configFile >> configs;
-  
-  
-  auto log_level = static_cast<spdlog::level::level_enum>(configs["simulation_parameters"]["log_level"].get<LogLevel>());
+
+  auto log_level = static_cast<spdlog::level::level_enum>(
+      configs["simulation_parameters"]["log_level"].get<LogLevel>());
   spdlog::set_level(log_level);
-  
+
   // Overwriting the logging level if given in CLI
   if (vm.count("debug")) {
     const string debug = vm["debug"].as<string>();
@@ -99,7 +96,7 @@ int main(int argc, const char **argv) {
     else
       spdlog::set_level(spdlog::level::off);
   }
-  
+
   spdlog::info("Processing the configuration file...");
 
   if (vm.count("output-path")) {
@@ -113,30 +110,35 @@ int main(int argc, const char **argv) {
     const string output_prefix = vm["output-prefix"].as<string>();
     configs["simulation_parameters"]["output_prefix"] = output_prefix;
   }
-  
+
   if (vm.count("progress")) {
     show_progress_bar = vm["progress"].as<bool>();
   }
-    
+
   /// Setting and saving the config file before starting the simulation
-  std::mt19937::result_type masterseed{0};
+  std::mt19937::result_type masterseed;
   if (configs["simulation_parameters"]["master_seed"] == "random") {
-    
+
     /// Generating a seed for Random
     /// @link https://stackoverflow.com/a/13446015/1141307
     std::random_device rd;
-    masterseed = rd() ^ (
-       (std::mt19937::result_type)
-       std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count() +
-       (std::mt19937::result_type)
-       std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() );
+    masterseed =
+        rd() ^
+        ((std::mt19937::result_type)
+             std::chrono::duration_cast<std::chrono::seconds>(
+                 std::chrono::system_clock::now().time_since_epoch())
+                 .count() +
+         (std::mt19937::result_type)
+             std::chrono::duration_cast<std::chrono::microseconds>(
+                 std::chrono::high_resolution_clock::now().time_since_epoch())
+                 .count());
     configs["simulation_parameters"]["master_seed"] = masterseed;
   } else {
     masterseed = configs["simulation_parameters"]["master_seed"].get<int>();
   }
   Random::seed(masterseed);
   arma::arma_rng::set_seed(masterseed);
-  
+
   /// Saving the updated config file if necessary
   if (vm.count("update-config")) {
     const bool update_config = vm["update-config"].as<bool>();
@@ -155,7 +157,8 @@ int main(int argc, const char **argv) {
 
 void runSimulation(json &simConfig) {
 
-  show_progress_bar |= simConfig["simulation_parameters"]["progress"].get<bool>();
+  show_progress_bar |=
+      simConfig["simulation_parameters"]["progress"].get<bool>();
 
   spdlog::info("Initializing the Researcher...");
   Researcher researcher =
@@ -175,8 +178,10 @@ void runSimulation(json &simConfig) {
       simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
 
-  bool is_saving_pubs_summaries_per_sim = simConfig["simulation_parameters"]["save_pubs_per_sim_summaries"];
-  bool is_saving_summaries = simConfig["simulation_parameters"]["save_overall_summaries"];
+  bool is_saving_pubs_summaries_per_sim =
+      simConfig["simulation_parameters"]["save_pubs_per_sim_summaries"];
+  bool is_saving_summaries =
+      simConfig["simulation_parameters"]["save_overall_summaries"];
   bool is_saving_meta = simConfig["simulation_parameters"]["save_meta"];
 
   int n_sims = simConfig["simulation_parameters"]["n_sims"];
@@ -193,7 +198,7 @@ void runSimulation(json &simConfig) {
         std::make_unique<PersistenceManager::Writer>(rejectedfilename);
 
   indicators::show_console_cursor(false);
-  
+
   indicators::BlockProgressBar sim_progress_bar{
       indicators::option::BarWidth{50},
       indicators::option::Start{"["},
@@ -210,27 +215,28 @@ void runSimulation(json &simConfig) {
     spdlog::trace("---> Sim {}", i);
 
     float j{0};
-    
-    // Reseting the experiment Id, this is mainly for counting the number of trial
-    // before collecting `k` publications...
+
+    // Resetting the experiment Id, this is mainly for counting the number of
+    // trial before collecting `k` publications...
     researcher.experiment->exprid = 0;
-    
+
     researcher.randomizeParameters();
-    
-    // Doning research until Journal doesn't accept anything
+
+    // Performing research until Journal doesn't accept anything
     while (researcher.journal->isStillAccepting()) {
 
       spdlog::trace("---> Experiment #{}", j++);
 
       researcher.research();
-      
+
       researcher.experiment->exprid++;
 
-      spdlog::trace("\n\n==========================================================================\n");
+      spdlog::trace("\n\n======================================================"
+                    "====================\n");
     }
-    
+
     researcher.experiment->simid++;
-    
+
     if (show_progress_bar) {
       progress += 1. / n_sims;
       sim_progress_bar.set_progress(progress * 100);
@@ -246,23 +252,20 @@ void runSimulation(json &simConfig) {
 
     if (is_saving_summaries or is_saving_meta)
       researcher.journal->runMetaAnalysis();
-    
+
     if (is_saving_meta)
       researcher.journal->saveMetaAnalysis();
-    
+
     if (is_saving_pubs_summaries_per_sim) {
       researcher.journal->savePulicationsPerSimSummaries();
     }
-    
+
     researcher.journal->clear();
   }
-  
+
   if (is_saving_summaries) {
     researcher.journal->saveSummaries();
   }
-  
-  
-  indicators::show_console_cursor(true);
-  
 
+  indicators::show_console_cursor(true);
 }

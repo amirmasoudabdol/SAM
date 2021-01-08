@@ -10,7 +10,7 @@
 using namespace sam;
 
 EffectStrategy::~EffectStrategy(){
-    // Pure deconstructor
+    // Pure destructors
 };
 
 std::unique_ptr<EffectStrategy>

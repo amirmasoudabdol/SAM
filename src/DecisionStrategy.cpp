@@ -7,11 +7,11 @@
 using namespace sam;
 
 ///
-/// Pure deconstructor of DecisionStrategy. This is necessary for proper
+/// Pure destructors of DecisionStrategy. This is necessary for proper
 /// deconstruction of derived classes.
 ///
 DecisionStrategy::~DecisionStrategy(){
-    // pure deconstructor
+    // pure destructors
 };
 
 DecisionStrategy::DecisionStrategy() {
@@ -52,7 +52,7 @@ DecisionStrategy::build(json &decision_strategy_config) {
 
 
 /// Select an unique outcome from an experiment, if at some point, a PolicyChain
-/// finds a group of outcomes instread of a unique outcome, the selection will be
+/// finds a group of outcomes instead of a unique outcome, the selection will be
 /// saved and the will await for processing in a different stages.
 ///
 /// We check all available PolicyChains in the given chain set, and will stop as soon
@@ -183,7 +183,7 @@ bool DefaultDecisionMaker::willStartHacking() {
   if (submission_candidates) {
     spdlog::trace("Looking for: {}", will_start_hacking_decision_policies);
     spdlog::trace("Submission Candidates: {}", submission_candidates.value());
-    /// @todo this can be replaced by Policy->oprator()
+    /// @todo this can be replaced by Policy->operator()
     
     /// Basically any of the candidates is good enough, then we're going
     /// to STOP hacking

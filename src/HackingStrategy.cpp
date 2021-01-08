@@ -7,7 +7,7 @@
 using namespace sam;
 
 HackingStrategy::~HackingStrategy(){
-    // Pure deconstructor
+    // Pure destructors
 };
 
 HackingStrategy::HackingStrategy() {

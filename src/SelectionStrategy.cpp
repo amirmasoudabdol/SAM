@@ -9,7 +9,7 @@
 using namespace sam;
 
 SelectionStrategy::~SelectionStrategy() {
-  // Pure deconstructor
+  // Pure destructors
 }
 
 SelectionStrategy::SelectionStrategy() {
