@@ -8,16 +8,12 @@ using namespace sam;
 
 void Group::updateStats() {
 
-  /// @todo Bring this back,
-  /// I'm removing this because group is not being notified with some of the changes, and this leads
-  /// to SAM not updating the statistics, i.e., the type of changes that Falsifying Data will cause
-//  if (not is_stats_up_to_date) {
+  /// @todo Maybe implement some caching! It's not that easy btw!
     nobs_ = measurements_.size();
     mean_ = arma::mean(measurements_);
     var_ = arma::var(measurements_);
     stddev_ = arma::stddev(measurements_);
     sei_ = sqrt(var_ / nobs_);
-//  }
 
   is_stats_up_to_date = true;
 }
@@ -41,7 +37,7 @@ Group::Columns() {
   };
 }
 
-Group::operator std::map<std::string, std::string>() {
+Group::operator std::map<std::string, std::string>() const {
 
   static std::map<std::string, std::string> record;
 

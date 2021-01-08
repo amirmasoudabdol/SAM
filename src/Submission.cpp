@@ -15,7 +15,7 @@ Submission::Submission(Experiment &e, const int &index) {
   simid = e.simid;
   exprid = e.exprid;
   repid = e.repid;
-};
+}
 
 std::vector<std::string> Submission::Columns() {
 

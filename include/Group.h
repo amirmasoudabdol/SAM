@@ -23,7 +23,7 @@ enum class GroupType : int {
 };
 
 
-/// @brief Declartiong of Group class
+/// @brief Declaration of Group class
 ///
 /// The Group class is an abstract representation of a dependant variable
 class Group {
@@ -72,7 +72,7 @@ public: // Public for now
   int n_added_obs{0};
   int n_removed_obs{0};
 
-  Group(){};
+  Group() = default;
 
   Group(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
 
@@ -121,12 +121,12 @@ public: // Public for now
   auto begin() { return measurements_.begin(); };
   auto end() { return measurements_.end(); };
 
-  operator std::map<std::string, std::string>();
-  operator arma::Row<double>();
+  explicit operator std::map<std::string, std::string>() const;
+  explicit operator arma::Row<double>();
 
   void updateStats();
 
-  void testAgaist(const Group &other_group, TestStrategy &test_strategy);
+  void testAgainst(const Group &other_group, TestStrategy &test_strategy);
 
   void effectComparedTo(const Group &other_group,
                         EffectStrategy &effect_strategy);

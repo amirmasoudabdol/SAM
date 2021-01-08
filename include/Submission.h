@@ -27,7 +27,7 @@ public:
   int simid {0};
   //! Experiment ID
   int exprid {0};
-  //! Replicaiton ID
+  //! Replication ID
   int repid {0};
   //! Publication ID
   int pubid {0};
@@ -48,7 +48,7 @@ public:
   ///
   /// @return     `true` if the Submission is significant, `false` otherwise
   ///
-  bool isSig() const { return group_.sig_; }
+  [[nodiscard]] bool isSig() const { return group_.sig_; }
 
   template <typename OStream>
   friend OStream &operator<<(OStream &os, const Submission &s) {
@@ -57,8 +57,8 @@ public:
     return os;
   }
 
-  operator std::map<std::string, std::string>();
-  operator arma::Row<double>();
+  explicit operator std::map<std::string, std::string>();
+  explicit operator arma::Row<double>();
 };
 
 } // namespace sam
