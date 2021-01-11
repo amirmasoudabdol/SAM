@@ -22,7 +22,6 @@ enum class GroupType : int {
   Pooled
 };
 
-
 /// @brief Declaration of Group class
 ///
 /// The Group class is an abstract representation of a dependant variable
@@ -62,8 +61,8 @@ public: // Public for now
   double se_effect_{0};
   int eff_side_{0};
   bool sig_{false};
-  bool is_test_updated_ {false};
-  
+  bool is_test_updated_{false};
+
   static std::vector<std::string> Columns();
 
   /// --- Hacking Meta
@@ -90,9 +89,9 @@ public: // Public for now
     measurements_ = meas;
     nobs_ = meas.size();
     is_stats_up_to_date = false;
-    
+
     true_nobs_ = nobs_;
-    
+
     is_measurements_initd_ = true;
   }
 
@@ -120,7 +119,7 @@ public: // Public for now
 
     return os;
   }
-  
+
   auto begin() { return measurements_.begin(); };
   auto end() { return measurements_.end(); };
 
@@ -133,33 +132,43 @@ public: // Public for now
 
   void effectComparedTo(const Group &other_group,
                         EffectStrategy &effect_strategy);
-  
+
   void clear();
 };
 
 } // namespace sam
 
-
-template <>
-struct fmt::formatter<sam::Group> {
+template <> struct fmt::formatter<sam::Group> {
   // Presentation format: 'l' - log, 'c' - csv
   char presentation = 'l';
-  
-  // Parses format specifications of the form ['f' | 'e'].
-  constexpr auto parse(format_parse_context& ctx) {
-    return ctx.begin();
+
+  // Parses format specifications of the form ['l' | 'c'].
+  constexpr auto parse(format_parse_context &ctx) {
+
+    auto it = ctx.begin(), end = ctx.end();
+    if (it != end && (*it == 'f' || *it == 'e'))
+      presentation = *it++;
+
+    // Check if reached the end of the range:
+    if (it != end && *it != '}')
+      throw format_error("invalid format");
+
+    // Return an iterator past the end of the parsed range:
+    return it;
   }
-  
+
   // Formats the point p using the parsed format specification (presentation)
   // stored in this formatter.
   template <typename FormatContext>
-  auto format(const sam::Group& g, FormatContext& ctx) {
-    // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
+  auto format(const sam::Group &g, FormatContext &ctx) {
     // ctx.out() is an output iterator to write to.
     return format_to(
                      ctx.out(),
-                     "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {}",
+                     presentation != 'l' ? "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {}" : "{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{}",
                      g.id_, g.nobs_, g.mean_, g.var_, g.stddev_, g.sei_, g.stats_, g.pvalue_, g.effect_, g.var_effect_, g.se_effect_, g.sig_, g.eff_side_);
+    
+    /// @todo this is an example of how fmt can be used to generate CSV rows, but I've not yet
+    /// implemented it, I need to re-write the Writer class for this first
   }
 };
 
