@@ -11,7 +11,7 @@ using boost::math::fisher_f;
 
 void FTest::run(Experiment *experiment) {
 
-  ResultType res;
+  static ResultType res;
 
   // The first group is always the control group
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();

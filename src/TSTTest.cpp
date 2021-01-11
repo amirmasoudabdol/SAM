@@ -11,8 +11,7 @@ using boost::math::students_t;
 
 void TTest::run(Experiment *experiment) {
 
-  /// @todo This could be declared static
-  ResultType res;
+  static ResultType res{};
 
   // The first group is always the control group
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();

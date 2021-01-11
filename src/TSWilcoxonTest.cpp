@@ -10,7 +10,7 @@ void WilcoxonTest::run(Experiment *experiment) {
 
   // The first group is always the control group
 
-  ResultType res;
+  static ResultType res;
 
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {

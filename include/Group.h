@@ -139,14 +139,14 @@ public: // Public for now
 } // namespace sam
 
 template <> struct fmt::formatter<sam::Group> {
-  // Presentation format: 'l' - log, 'c' - csv
-  char presentation = 'l';
+  // Presentation format: 'u' - undefined, 'l' - log, 'c' - csv
+  char presentation = 'u';
 
   // Parses format specifications of the form ['l' | 'c'].
   constexpr auto parse(format_parse_context &ctx) {
 
     auto it = ctx.begin(), end = ctx.end();
-    if (it != end && (*it == 'f' || *it == 'e'))
+    if (it != end && (*it == 'l' || *it == 'c'))
       presentation = *it++;
 
     // Check if reached the end of the range:
@@ -164,7 +164,7 @@ template <> struct fmt::formatter<sam::Group> {
     // ctx.out() is an output iterator to write to.
     return format_to(
                      ctx.out(),
-                     presentation != 'l' ? "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {}" : "{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{}",
+                     (presentation == 'l' or presentation == 'u') ? "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {}" : "{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{}",
                      g.id_, g.nobs_, g.mean_, g.var_, g.stddev_, g.sei_, g.stats_, g.pvalue_, g.effect_, g.var_effect_, g.se_effect_, g.sig_, g.eff_side_);
     
     /// @todo this is an example of how fmt can be used to generate CSV rows, but I've not yet

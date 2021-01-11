@@ -107,7 +107,7 @@ public:
   }
   
   /// @todo This needs to be private but currently, I don't have a good place to put it.
-  /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's werid
+  /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's weird
   /// and I cannot just call it in any other methods because then it's hidden
   ///
   /// Reset the internal state of the decision strategy
