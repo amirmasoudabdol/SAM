@@ -43,7 +43,7 @@ find_package(ensmallen)
 find_package(LAPACK)
 find_package(BLAS)
 find_package(spdlog 1.7 REQUIRED)
-find_package(sol2 3.0 REQUIRED)
+# find_package(sol2 3.0 REQUIRED)
 find_package(Lua 5.2 REQUIRED)
 find_package(fmt 7.0 REQUIRED)
 
@@ -57,7 +57,7 @@ include_directories(include)
 include_directories(${BAARAAN_INCLUDE_DIRS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${SOL2_INCLUDE_DIRS})
+# include_directories(${SOL2_INCLUDE_DIRS})
 include_directories(${LUA_INCLUDE_DIR})
 include_directories(${MLPACK_INCLUDE_DIRS})
 include_directories(${ENSMALLEN_INCLUDE_DIRS})
@@ -73,7 +73,7 @@ target_link_libraries(sam baaraan
                             ${SPDLOG_LIBRARIES}
                             ${LUA_LIBRARIES}
                             fmt::fmt
-                            sol2::sol2
+                            # sol2::sol2
                             Threads::Threads
                             mlpack::mlpack)
 
@@ -111,11 +111,16 @@ if (${ENABLE_TESTS})
         add_executable(${testName} ${testSrc} ${SOURCES})
 
         #link to Boost libraries AND your targets and dependencies
-        target_link_libraries(${testName} ${ARMADILLO_LIBRARIES}
-                                            ${Boost_LIBRARIES}
-                                            ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                                            # ${MLPACK}
-                                            nlohmann_json::nlohmann_json)
+        target_link_libraries(${testName} baaraan
+                                            ${ARMADILLO_LIBRARIES}
+                                            ${BOOST_LIBRARIES}
+                                            ${NLOHMANN_JSON_LIBRARIES}
+                                            ${SPDLOG_LIBRARIES}
+                                            ${LUA_LIBRARIES}
+                                            fmt::fmt
+                                            # sol2::sol2
+                                            Threads::Threads
+                                            mlpack::mlpack)
 
         #I like to move testing binaries into a build/tests directory
         set_target_properties(${testName} PROPERTIES

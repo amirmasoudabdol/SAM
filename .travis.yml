@@ -34,6 +34,11 @@ addons:
       - boost
       - nlohmann_json
       - armadillo
+      - fmt
+      - mlpack
+      - ensmallen
+      - spdlog
+      - lua
     update: true
   apt:
     packages:
