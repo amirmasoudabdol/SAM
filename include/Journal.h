@@ -65,7 +65,7 @@ public:
   
   static std::vector<std::string> Columns();
   
-  operator std::vector<std::string>() {
+  explicit operator std::vector<std::string>() const {
     return {
       std::to_string(n_accepted),
       std::to_string(n_rejected),
@@ -75,7 +75,7 @@ public:
     };
   }
   
-  operator arma::Row<double>() {
+  explicit operator arma::Row<double>() {
     return {
       static_cast<double>(n_accepted),
       static_cast<double>(n_rejected),
@@ -99,9 +99,6 @@ public:
   std::map<std::string, PersistenceManager::Writer> meta_stats_writers;
   
 //  arma::running_stat_vec<arma::Row<double>> journal_stat_runner;
-  
-  // I don't think I really need this
-//  arma::running_stat_vec<arma::Row<double>> journal_per_sim_stat_runner;
   
   // Instrument of the stats writer...
   std::vector<std::string> submission_columns;
@@ -163,7 +160,7 @@ public:
   ///
   void reject(const std::vector<Submission> &s);
 
-  bool isStillAccepting() const { return still_accepting; }
+  [[nodiscard]] bool isStillAccepting() const { return still_accepting; }
 
   ///
   /// Save entries of publications_list to a CSV file.
@@ -217,7 +214,6 @@ public:
       yi.shed_cols(nans);
       vi.shed_cols(nans);
       wi.shed_cols(nans);
-      n -= nans.n_elem;
       spdlog::warn("{} study(-ies) have been removed from meta-anlaysis pool due to unavailability of variance", nans.n_elem);
     }
     

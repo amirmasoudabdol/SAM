@@ -107,9 +107,6 @@ public:
     return *g;
   };
 
-  Group &get_group(std::size_t idx) { return groups_[idx]; };
-  const Group &get_group(std::size_t idx) const { return groups_[idx]; };
-
   auto begin() { return groups_.begin(); };
   auto end() { return groups_.end(); };
   
@@ -156,9 +153,6 @@ public:
 
   /// Run different pre-processing steps before passing the data to the
   /// Researcher.
-
-  /// @note `pre_processing_steps` lists the available steps and their order.
-  void preProcessData();
 
   /// Calculate the statistics by sending the `experiment` to the
   /// `test_strategy`.

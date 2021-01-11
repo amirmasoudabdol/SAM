@@ -105,16 +105,14 @@ public:
     Parameters() = default;
   };
 
-  LinearModelStrategy(){};
+  LinearModelStrategy() = default;
 
-  LinearModelStrategy(const Parameters p)
-      : params(p){
+  explicit LinearModelStrategy(const Parameters p)
+      : params(p) {};
 
-        };
+  void genData(Experiment *experiment) override;
 
-  virtual void genData(Experiment *experiment) override;
-
-  virtual std::vector<arma::Row<double>>
+  std::vector<arma::Row<double>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
@@ -185,11 +183,11 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
 class LatentDataStrategy final : public DataStrategy {
 
 public:
-  LatentDataStrategy() {}
+  LatentDataStrategy() = default;
 
-  virtual void genData(Experiment *experiment) override;
+  void genData(Experiment *experiment) override;
 
-  virtual std::vector<arma::Row<double>>
+  std::vector<arma::Row<double>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
@@ -240,13 +238,13 @@ public:
     Parameters() = default;
   };
 
-  GRMDataStrategy(){};
+  GRMDataStrategy() = default;;
 
   GRMDataStrategy(const Parameters &p);
 
-  virtual void genData(Experiment *experiment) override;
+  void genData(Experiment *experiment) override;
 
-  virtual std::vector<arma::Row<double>>
+  std::vector<arma::Row<double>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 

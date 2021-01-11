@@ -25,19 +25,12 @@ class EffectStrategy {
 public:
   enum class EffectEstimator { CohensD, HedgesG, OddRatio, StandardizedMeanDifference };
 
-  struct EffectStrategyParameters {
-    EffectEstimator name;
-  };
-
-  EffectStrategyParameters params;
-
   static std::unique_ptr<EffectStrategy> build(json &effect_strategy_config);
 
   virtual ~EffectStrategy() = 0;
 
   virtual void computeEffects(Experiment *experiment) = 0;
 
-  // std::string name = "";
 };
 
 ///
@@ -46,15 +39,10 @@ public:
 class MeanDifference final : public EffectStrategy {
   
 public:
-  //        std::string name = "MeanDifference";
   
-  explicit MeanDifference(){
-    // name = "MeanDifference";
-  };
+  explicit MeanDifference() = default;
   
-  explicit MeanDifference(EffectStrategyParameters esp) { params = esp; };
-  
-  void computeEffects(Experiment *experiment);
+  void computeEffects(Experiment *experiment) override;
 };
 
 ///
@@ -63,15 +51,10 @@ public:
 class StandardizedMeanDifference final : public EffectStrategy {
 
 public:
-  //        std::string name = "StandardizedMeanDifference";
 
-  explicit StandardizedMeanDifference(){
-      // name = "StandardizedMeanDifference";
-  };
+  explicit StandardizedMeanDifference() = default;
 
-  explicit StandardizedMeanDifference(EffectStrategyParameters esp) { params = esp; };
-
-  void computeEffects(Experiment *experiment);
+  void computeEffects(Experiment *experiment) override;
 };
 
 ///
@@ -80,15 +63,10 @@ public:
 class CohensD final : public EffectStrategy {
 
 public:
-  //        std::string name = "CohensD";
 
-  explicit CohensD(){
-      // name = "CohensD";
-  };
+  explicit CohensD() = default;
 
-  explicit CohensD(EffectStrategyParameters esp) { params = esp; };
-
-  void computeEffects(Experiment *experiment);
+  void computeEffects(Experiment *experiment) override;
 };
 
 ///
@@ -97,15 +75,10 @@ public:
 class HedgesG final : public EffectStrategy {
 
 public:
-  //        std::string name = "HedgesG";
 
-  explicit HedgesG() {
-    // name = "HedgesG";
-  }
+  explicit HedgesG() = default;
 
-  explicit HedgesG(EffectStrategyParameters esp) { params = esp; };
-
-  void computeEffects(Experiment *experiment);
+  void computeEffects(Experiment *experiment) override;
 };
 
 //
