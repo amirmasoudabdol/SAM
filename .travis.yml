@@ -32,7 +32,7 @@ addons:
     taps: nlohmann/json
     packages:
       - boost
-      - nlohmann_json
+      - nlohmann-json
       - armadillo
       - fmt
       - mlpack
