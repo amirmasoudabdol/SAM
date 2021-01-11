@@ -30,8 +30,6 @@ set(CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/../baaraan ${PROJECT_SOURCE_DIR}/../baaraan/build)
-
 find_package(Threads REQUIRED)
 
 find_package(Boost 1.73 COMPONENTS unit_test_framework program_options REQUIRED)
@@ -43,7 +41,6 @@ find_package(ensmallen)
 find_package(LAPACK)
 find_package(BLAS)
 find_package(spdlog 1.7 REQUIRED)
-# find_package(sol2 3.0 REQUIRED)
 find_package(Lua 5.2 REQUIRED)
 find_package(fmt 7.0 REQUIRED)
 
@@ -51,16 +48,16 @@ find_package(fmt 7.0 REQUIRED)
 set(NLOHMANN_JSON_LIBRARIES "nlohmann_json::nlohmann_json")
 set(SPDLOG_LIBRARIES "spdlog::spdlog")
 
-# find_library(MLPACK mlpack)
-
 include_directories(include)
+include_directories(baaraan/include/)
 include_directories(${BAARAAN_INCLUDE_DIRS})
 include_directories(${ARMADILLO_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
-# include_directories(${SOL2_INCLUDE_DIRS})
 include_directories(${LUA_INCLUDE_DIR})
 include_directories(${MLPACK_INCLUDE_DIRS})
 include_directories(${ENSMALLEN_INCLUDE_DIRS})
+
+add_subdirectory(baaraan)
 
 file(GLOB INCLUDES "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
@@ -73,7 +70,6 @@ target_link_libraries(sam baaraan
                             ${SPDLOG_LIBRARIES}
                             ${LUA_LIBRARIES}
                             fmt::fmt
-                            # sol2::sol2
                             Threads::Threads
                             mlpack::mlpack)
 
@@ -118,7 +114,6 @@ if (${ENABLE_TESTS})
                                             ${SPDLOG_LIBRARIES}
                                             ${LUA_LIBRARIES}
                                             fmt::fmt
-                                            # sol2::sol2
                                             Threads::Threads
                                             mlpack::mlpack)
 
