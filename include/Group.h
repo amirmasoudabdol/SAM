@@ -72,6 +72,9 @@ public: // Public for now
   int n_added_obs{0};
   int n_removed_obs{0};
 
+  /// --- Meta Data
+  bool is_candidate_{false};
+
   Group() = default;
 
   Group(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
@@ -139,8 +142,8 @@ public: // Public for now
 
 template <>
 struct fmt::formatter<sam::Group> {
-  // Presentation format: 'f' - fixed, 'e' - exponential.
-  char presentation = 'f';
+  // Presentation format: 'l' - log, 'c' - csv
+  char presentation = 'l';
   
   // Parses format specifications of the form ['f' | 'e'].
   constexpr auto parse(format_parse_context& ctx) {
