@@ -11,13 +11,13 @@ os:
 
 # Travis CI build matrix components -> 2 compilers
 compiler:
-  - gcc
+  # - gcc
   - clang
 
 # Travis CI environmental variables -> 2 env variables
 env:
   - TRAVIS_BUILD_TYPE=Debug
-  - TRAVIS_BUILD_TYPE=Release
+  # - TRAVIS_BUILD_TYPE=Release
 
 # Total builds: 8 = 2 [OSs] * 2 [comps] * 2 [env vars]
 
