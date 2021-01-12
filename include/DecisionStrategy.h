@@ -57,7 +57,6 @@ public:
   static std::unique_ptr<DecisionStrategy>
   build(json &decision_strategy_config);
   
-//  std::optional<Submission> submission_candidate;
   std::optional<SubmissionPool> submission_candidates;
   
   //! List of selected submissions colelcted by the researcher

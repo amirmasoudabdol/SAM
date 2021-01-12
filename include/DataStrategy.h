@@ -212,7 +212,7 @@ private:
 ///   Therefore, we'll have `ng_` number of `abilities`. This value is being used
 ///   to, in each group, to initialize a normal distribution of `\theta ~
 ///   N(abilities[i], 1)`.
-/// - \f$ \beta \f$
+/// - β
 ///
 class GRMDataStrategy final : public DataStrategy {
 public:

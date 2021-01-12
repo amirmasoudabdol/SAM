@@ -24,6 +24,8 @@
 
 namespace sam {
 
+class Submission;
+
 ///
 /// @brief      Experiment encapsulates data and methods needed by the Researcher to
 /// conduct its research.
@@ -59,7 +61,7 @@ public:
 
   std::vector<Group> groups_;
   
-  std::optional<set::vector<Submission>> candidates;
+  std::optional<std::vector<Submission>> candidates;
   void updateCandidatesList(const std::vector<Submission>& subs);
   
   void setHackedStatus(const bool status);

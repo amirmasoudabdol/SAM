@@ -108,7 +108,7 @@ void Experiment::clear() {
 }
 
 void Experiment::updateCandidatesList(const std::vector<Submission>& subs) {
-  candidates.value().insert(candidates.end(), subs.begin(), subs.end());
+  candidates.value().insert(candidates.value().end(), subs.begin(), subs.end());
 }
 
 

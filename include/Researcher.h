@@ -1,6 +1,7 @@
 //
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
+
 ///
 /// @defgroup   AbstractBuilders Abstract Factory Builders
 /// @brief      List of Abstract Factory Builder classes
@@ -25,6 +26,7 @@ namespace sam {
 /// @ingroup AbstractBuilders
 class ResearcherBuilder;
 
+/// A helper typedef representing selection → decision sequence
 using HackingWorkflow = std::vector<std::vector<std::variant<std::shared_ptr<HackingStrategy>, PolicyChain, PolicyChainSet>>>;
 
 class Researcher {
@@ -99,6 +101,9 @@ public:
   HackingWorkflow h_workflow;
   
   void research();
+  
+  /// @brief      Sequentially applies a set of hacking strategies and their
+  /// corresponding selection → decision sequences on researcher's experiment.
   bool letTheHackBegin();
   
   void randomizeParameters();

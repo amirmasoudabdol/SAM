@@ -12,17 +12,30 @@ ResearcherBuilder Researcher::create(std::string name) {
   return ResearcherBuilder(name);
 }
 
+///
+/// letTheHackBegin() uses HackingWorkflow to sequentially apply sets of
+/// hacking → selection → decision on the available Experiment. Before applying
+/// each hacking strategy, researcher asks isCommittingToTheHack() to decide
+/// whether or not it is going to commit to a hack, if not, the rest of the
+/// set will be ignored, and researcher continues with the next set, if available.
+///
+/// @return     Returns `true` if any of the decision steps passes, otherwise, it
+/// returns `false` indicating that none of the selection → decisions were 
+/// successful
+///
 bool Researcher::letTheHackBegin() {
 
   spdlog::debug("Initiate the Hacking Procedure...");
 
-  /// @todo Does this copy even make any sense! I don't think so!
   Experiment copy_of_experiment = *experiment;
 
+  // It indicates whether or not the hacking is successful, if so, we skip the remaining
+  // of the methods
   bool stopped_hacking{false};
 
-  /// This is a handy flag for propagating the information out of the
-  /// std::visit.
+  // This is a handy flag to propogate the information out of the std::visit
+  // It indicates whether or not the Researcher has committed to the hack or
+  // not.
   bool has_committed;
 
   for (auto &h_set : h_workflow) {
@@ -31,54 +44,61 @@ bool Researcher::letTheHackBegin() {
 
     for (auto &step : h_set) {
 
-      /// In each step, we either run a hack or a policy
+      // In each step, we either run a hack or a policy, HackingWorkflow is 
+      // ordered such that every hacking stategy is followed by a 
+      // selection → decision sequence
       std::visit(
           overload{
 
               [&](std::shared_ptr<HackingStrategy> &hacking_strategy) {
-                /// Performing a Hack
+                // Performing a Hack
 
-                /// If we are not committed to the method, then, we just leave
-                /// the entire set behind
+                // If we are not committed to the method, we leave the entire set behind
                 has_committed = isCommittingToTheHack(hacking_strategy.get());
 
                 if (has_committed) {
                   spdlog::trace("++++++++++++++++");
                   spdlog::trace("→ Starting a new HackingSet");
 
+                  // Applying the hack
                   (*hacking_strategy)(&copy_of_experiment);
-                  copy_of_experiment.is_hacked = true;
+
+                  copy_of_experiment.setHackedStatus(true);
                 }
               },
               [&](PolicyChainSet &selection_policies) {
-                /// Performing a Selection
-                /// With PolicyChainSet we can look for different results
-                /// @note This will overwrite the submission_candidates, and if
-                /// stashing, it'll stash everything into stashed_submissions
+                // Performing a Selection
+
+                // This will overwrite the submission_candidates, and if
+                // stashing, it'll select and stash some of the outcomes to
+                // into stashed_submissions
                 decision_strategy->selectOutcomeFromExperiment(
                     &copy_of_experiment, selection_policies);
+                
+                
               },
               [&](PolicyChain &decision_policy) {
-                /// Performing a Decision
-                /// With PolicyChain, we can only validate if a submission
-                /// passes all the criteria
+                // Performing a Decision
+                
                 spdlog::trace(
                     "Checking whether we are going to continue hacking?");
                 spdlog::trace("Looking for: {}", decision_policy);
+                
                 if (!decision_strategy->willContinueHacking(&copy_of_experiment,
                                                             decision_policy)) {
                   spdlog::trace("Done Hacking!");
                   stopped_hacking = true;
                 } else {
-                  /// Since I'm going to continue hacking, I'm going to reset
-                  /// the candidate because it should be evaluated again, and
-                  /// I've already performed a selection, I'm going to reset the
-                  /// selected submission.
-                  /// @bug, this could possibly cause some confusion! In cases
-                  /// where I only have one strategy and wants to be done after
-                  /// it, this role discard the last selection.
-                  /// @workaround, the current workaround is to select from the
-                  /// stash using between_hacking_selection
+                  // Since I'm going to continue hacking, I'm going to reset
+                  // the candidate because it should be evaluated again, and
+                  // I've already performed a selection, I'm going to reset the
+                  // selected submission.
+                  
+                  // This could possibly cause some confusion! In cases
+                  // where I only have one strategy and wants to be done after
+                  // it, this role discard the last selection.
+                  // @workaround, the current workaround is to select from the
+                  // stash using between_hacking_selection
                   decision_strategy->submission_candidates.reset();
                   spdlog::trace("Continue Hacking...");
                 }
@@ -87,14 +107,14 @@ bool Researcher::letTheHackBegin() {
           },
           step);
 
-      /// If we haven't committed to the current method, we skip the following
-      /// selection → decision sequence as well
+      // If we haven't committed to the current method, we skip its corresponding
+      // selection → decision sequence as well
       if (not has_committed) {
         break;
       }
 
-      /// We leave the workflow when we have a submission, and it also passes
-      /// the decision policy
+      // We leave the workflow when we have a submission, ie., after successful
+      // decision policy
       if (stopped_hacking) {
         return true;
       }
