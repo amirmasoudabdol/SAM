@@ -12,8 +12,7 @@ ResearcherBuilder Researcher::create(std::string name) {
   return ResearcherBuilder(name);
 }
 
-///
-/// letTheHackBegin() uses HackingWorkflow to sequentially apply sets of
+/// It uses HackingWorkflow to sequentially apply sets of
 /// hacking → selection → decision on the available Experiment. Before applying
 /// each hacking strategy, researcher asks isCommittingToTheHack() to decide
 /// whether or not it is going to commit to a hack, if not, the rest of the
@@ -22,7 +21,6 @@ ResearcherBuilder Researcher::create(std::string name) {
 /// @return     Returns `true` if any of the decision steps passes, otherwise, it
 /// returns `false` indicating that none of the selection → decisions were 
 /// successful
-///
 bool Researcher::letTheHackBegin() {
 
   spdlog::debug("Initiate the Hacking Procedure...");
@@ -89,16 +87,12 @@ bool Researcher::letTheHackBegin() {
                   spdlog::trace("Done Hacking!");
                   stopped_hacking = true;
                 } else {
-                  // Since I'm going to continue hacking, I'm going to reset
-                  // the candidate because it should be evaluated again, and
-                  // I've already performed a selection, I'm going to reset the
-                  // selected submission.
+                  // Since researcher uses only one decision_strategy and uses it
+                  // throughout the research, I need to reset the submission_candidates
+                  // and let it to start fresh with a new hacking strategy
+                  //
+                  // @todo this needs to be a more functional implementation.
                   
-                  // This could possibly cause some confusion! In cases
-                  // where I only have one strategy and wants to be done after
-                  // it, this role discard the last selection.
-                  // @workaround, the current workaround is to select from the
-                  // stash using between_hacking_selection
                   decision_strategy->submission_candidates.reset();
                   spdlog::trace("Continue Hacking...");
                 }
@@ -121,41 +115,50 @@ bool Researcher::letTheHackBegin() {
     }
   }
 
+  // All hacking strategies are exhausted, and we didn't find anything, so, we leave
+  // and notify the researcher by returning `false`.
   spdlog::trace("No more hacking strategies...");
   return false;
 }
 
+
+/// Based on the provided settings, re-select, re-arrange, and shuffle the list of
+/// hacking strategies, and their corresponding parameters.
+///
+/// @note It worth noting that, this method doesn't randomize the internal
+/// parameters of individual hacking stratgies. Hacking strategies parameters can
+/// be randomized by providing distribution objects as their input variables.
+///
+/// @todo I think the name can be more specific
 void Researcher::randomizeParameters() {
 
   if (reselect_hacking_strategies_after_every_simulation) {
 
-    /// Clearing the list
+    // Clearing the list
     h_workflow.clear();
 
-    /// Shuffling the original list
+    // Shuffling the original list
     Random::shuffle(original_workflow.begin(), original_workflow.end());
     h_workflow = original_workflow;
 
-    /// Sorting based on the given selection criteria
+    // Sorting based on the given selection criteria
     reorderHackingStrategies(h_workflow, hacking_selection_priority);
     h_workflow.resize(n_hacks);
 
-    /// Reordering based on the given execution order
+    // Reordering based on the given execution order
     reorderHackingStrategies(h_workflow, hacking_execution_order);
 
-    /// @note Then I need a for-loop to randomize each strategy
-    ///      - I think this might not be necessary as Parameter handles the
-    ///      randomization
-    ///         automatically
   }
 }
 
+/// Iterating over the registered pre_processing_methods, this applies all of the
+/// them to the current experiment. Worth mentioning that pre-processing is done
+/// before any of the decision/hacking stages, and right after data generation.
 ///
-/// Iterating over the registered methods and run them on the current
-/// experiment.
-///
-/// @note This has a very similar implementation to the `hack()` but it
+/// @note This has a very similar implementation to the `letTheHackBegin()` but it
 /// doesn't perform any of the secondary checks.
+///
+/// @todo I think this can/need to be replaced with the notion of HackingStage
 void Researcher::preProcessData() {
 
   experiment->calculateStatistics();
@@ -165,13 +168,10 @@ void Researcher::preProcessData() {
   }
 }
 
-/// @brief Checking the Submission candidates and submitting them to the Journal
-///
-/// This checks whether there is any submissions at all, then, it checks whether
-/// `submission_decision_policies` have a hit, if so, it gives a green light to
+/// This checks whether there is any submissions at all, if so, it checks whether
+/// `submission_decision_policies` have any hits, if so, it gives a green light to
 /// Researcher to submit the list of submissions; otherwise, it discards the
 /// list.
-///
 void Researcher::checkAndsubmitTheResearch(
     const std::optional<std::vector<Submission>> &subs) {
 
@@ -188,12 +188,18 @@ void Researcher::checkAndsubmitTheResearch(
   }
 }
 
-/// @brief  Determines whether or not the Researcher is a hacker
+/// This technically invokes the #probability_of_being_a_hacker, and
+/// returns the outcome. The value then will be casted to a boolean to determine
+/// whether the Reseacher is going to start the hacking procedure or not, ie.,
+/// call letTheHackBegin().
 bool Researcher::isHacker() {
-
   return Random::get<bool>(static_cast<double>(probability_of_being_a_hacker));
 }
 
+/// Similar to isHacker(), this returns a boolean indicating whether or not the
+/// Researcher will commit to the given hacking method. The probablity of
+/// commitment to a hacking strategy is being calcualted from the value of
+/// #probability_of_committing_a_hack.
 bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
   return std::visit(
       overload{[&](double &p) { return Random::get<bool>(p); },
@@ -213,16 +219,31 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
       probability_of_committing_a_hack);
 }
 
-/// @brief  Executing the research workflow
+/// This is the main routine of the Researcher. It is responsible for a few things:
 ///
-/// This is the main routine that the Researcher execute.
+/// - Randomizing the Experiment, if necessary
+/// - Initializing the Experiment
+/// - Performing the research by:
+///   - Generating the data
+///   - Pre-processing the Data, if necessary
+///   - Calculating the statistics
+///   - Deciding whether to hack or not
+///     - Perform the hack, if necessary
+///   - Deciding whether to replicate the research
+///     - Perform the replication, if necessary
+///   - Evaluate the list of final submissions
+///   - Submit the final submissions to the Journal, or discard the Experiment
+///   - Clean up everything, and start a get ready for a new run
+///
+/// @todo This needs more doc!
 void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
 
-  /// Preparing the experiment for a new Research
+  
+  // Prepare the Research
+  // ====================
 
-  // Randomizing the experiment parameters if necessary
   experiment->setup.randomizeTheParameters();
   experiment->initExperiment();
 
@@ -240,15 +261,15 @@ void Researcher::research() {
 
     if (is_pre_processing) {
       spdlog::debug("Initiating the Pre-processing Procedure...");
-
       preProcessData();
     }
 
     // Computing the statistics, effects, etc.
     computeStuff();
 
-    /// -----------------
-    /// Initial SELECTION
+    
+    // _Initial_ Selection → Decision Sequence
+    // -------------------------------------
     spdlog::trace("→ Checking the INITIAL policies");
     decision_strategy->selectOutcomeFromExperiment(
         experiment.get(), decision_strategy->initial_selection_policies);
@@ -256,25 +277,29 @@ void Researcher::research() {
     bool init_desc_succeed{false};
     std::optional<SubmissionPool> init_submissions;
 
+    // Checking whether the Initial Selection was successful or not
     if (decision_strategy->submission_candidates) {
       init_desc_succeed = true;
       init_submissions = decision_strategy->submission_candidates;
     }
 
-    /// ----------------------
-    /// WillBeHacking DECISION
+    
+    // _Will Start Hacking_ Selection → Decision Sequence
+    // --------------------------------------------------
 
-    /// This shenanigans tries to avoid a scenario that hacking is successful
-    /// and SAM has to discard the stashed submissions!
+    // This shenanigans tries to avoid a scenario that hacking is successful
+    // and SAM has to discard the stashed submissions!
     bool hacking_succeed;
 
-    /// If Researcher is a hacker, and it decides to start hacking — based on
-    /// the current submission —, then, we are going to the hacking procedure!
+    // If Researcher is a hacker, and it decides to start hacking — based on
+    // the current submission candidates list —, then, we are going to the
+    // hacking procedure!
     if (isHacker() and decision_strategy->willStartHacking()) {
 
       hacking_succeed = letTheHackBegin();
 
       if (hacking_succeed) {
+        
         spdlog::trace("Selecting between Hacked Submissions: ");
         spdlog::trace("{}", decision_strategy->submission_candidates.value());
         decision_strategy->selectOutcomeFromPool(
@@ -282,8 +307,8 @@ void Researcher::research() {
             decision_strategy->between_stashed_selection_policies);
       } else {
 
-        /// @todo Make `stashed_submissions` a optional like
-        /// `submission_candidates`
+        // If stashed is not empty AND hacking was not successful, then we are
+        // going to select our candidates from the list of stashes submissions
         if (!decision_strategy->stashed_submissions.empty()) {
           spdlog::trace("Selecting between Stashed Submissions: ");
           spdlog::trace("{}", decision_strategy->stashed_submissions);
@@ -294,6 +319,9 @@ void Researcher::research() {
       }
 
     } else {
+      // If hacking has failed, or we didn't even go through hacking, we select our
+      // submissions from the `init_submissions`, if not, we select from the stashed
+      // submissions
       if (init_desc_succeed)
         decision_strategy->submission_candidates = init_submissions;
       else if (!decision_strategy->stashed_submissions.empty()) {
@@ -305,12 +333,14 @@ void Researcher::research() {
       }
     }
 
-    /// ---------------------
-    /// Replication Stashing
+    // _Will be Submitting_ Selection → Decision Sequence
+    // --------------------------------------------------
     if (decision_strategy->willBeSubmitting(
             decision_strategy->submission_candidates,
             decision_strategy->submission_decision_policies)) {
-      /// If we have a submittable candidate, then we collect it
+      // If we have a submittable candidate, then we collect it
+      // Collecting in this case means that selected submissions will be added to the
+      // current replication's outcome
 
       spdlog::trace("Final Submission Candidates: {}",
                     decision_strategy->submission_candidates.value());
@@ -324,8 +354,9 @@ void Researcher::research() {
                     submissions_from_reps);
     }
 
-    /// ----------------------------------
-    /// Will Continue Replicating DECISION
+    
+    // _Will Continue Replicating_ Decision
+    // ------------------------------------
     if (!decision_strategy->willContinueReplicating(
             decision_strategy->will_continue_replicating_decision_policy)) {
       break;
@@ -335,22 +366,22 @@ void Researcher::research() {
     decision_strategy->reset();
   }
 
-  /// -----------------------------
-  /// BetweenReplications SELECTION
+  
+  // BetweenReplications Selection → Decision Sequence
+  // -------------------------------------------------
   spdlog::trace("__________");
   spdlog::trace("→ Choosing Between Replications");
   decision_strategy->selectOutcomeFromPool(
       submissions_from_reps, decision_strategy->between_reps_policies);
 
+  // Will be Submitting Selection → Decision Sequence
+  // ------------------------------------------------
   checkAndsubmitTheResearch(decision_strategy->submission_candidates);
 
-  decision_strategy->reset();
-  experiment->clear();
-
-  submissions_from_reps.clear();
+  // Clean up everything, before starting a new research
+  this->reset();
 }
 
-/// Re-order the hacking strategies according the priority
 void Researcher::reorderHackingStrategies(HackingWorkflow &hw,
                                           std::string priority) {
   if (priority.empty())

@@ -23,7 +23,6 @@ using Random = effolkronium::random_static;
 
 namespace sam {
 
-/// @ingroup AbstractBuilders
 class ResearcherBuilder;
 
 /// A helper typedef representing selection → decision sequence
@@ -35,18 +34,11 @@ class Researcher {
   // encapsulate more variables as the time goes.
   friend class ResearcherBuilder;
 
-  //! An arbitrary name for the Researcher
+  //! An arbitrary (and optional) name of the Researcher
   std::string name;
 
 public:
-  ///
-  /// Default constructor of the Researcher.
-  ///
-  /// @note       This is defined `private` because I want force the user to use
-  /// the
-  ///             `create(name)` method and therefore delegate the construction
-  ///             to the ResearcherBuilder.
-  ///
+  
   Researcher() = default;
 
   ///
@@ -66,8 +58,10 @@ public:
   bool is_pre_processing{false};
   std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
 
+  /// @brief  Determines whether or not the Researcher is a hacker
   bool isHacker();
   
+  /// @brief  Determines whether the Researcher will commit to the given hack
   bool isCommittingToTheHack(HackingStrategy *hs);
   
   
@@ -95,31 +89,48 @@ public:
   //! A Submission record that Researcher is going to submit to the Journal
   SubmissionPool submissions_from_reps;
 
+  /// Applies the pro-processing methods on the Experiment
   void preProcessData();
   
   HackingWorkflow original_workflow;
   HackingWorkflow h_workflow;
   
+  /// @brief Perform the Research
   void research();
   
-  /// @brief      Sequentially applies a set of hacking strategies and their
-  /// corresponding selection → decision sequences on researcher's experiment.
+  /// @brief  Applies the HackingWorkflow on the Experiment
   bool letTheHackBegin();
   
+  /// @brief  Randomizes the internal state of the Researcher
   void randomizeParameters();
-  void reorderHackingStrategies(HackingWorkflow &hw, std::string priority);
 
+  /// @brief Evaluating the candidates and submitting them to the Journal
   void checkAndsubmitTheResearch(const std::optional<std::vector<Submission>> &subs);
   
+  /// A helper function for re-computing all statistics at once
   void computeStuff() {
     experiment->calculateStatistics();
     experiment->calculateEffects();
     experiment->runTest();
     
-    for (int g{0}; g < experiment->setup.ng(); ++g)
-      spdlog::trace("{}: ", (*experiment)[g]);
+    spdlog::trace("{}", *experiment);
+  }
+  
+  /// @brief Reset the internal state of the Researcher
+  void reset() {
+    decision_strategy->reset();
+    experiment->clear();
+    submissions_from_reps.clear();
   }
 
+private:
+  
+  /// @brief re-order the given workflow according the given priority
+  void reorderHackingStrategies(HackingWorkflow &hw, std::string priority);
+  
+  
+public: //--- Builder Related Methods
+  
   ///
   /// Set the decisionStrategy of the researcher.
   ///
@@ -132,9 +143,9 @@ public:
   /// function
   ///             not inside it
   ///
-  void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
-    decision_strategy = std::move(ds);
-  }
+//  void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
+//    decision_strategy = std::move(ds);
+//  }
 
   ///
   /// Set the experiment. This can be used to setup several researchers with one
@@ -156,6 +167,7 @@ public:
 /// ResearcherBuilder class for Researcher. This takes care of everything and
 /// return a fully initialized Researcher after calling `.build()` method.
 ///
+/// @ingroup AbstractBuilders
 class ResearcherBuilder {
 
   Researcher researcher;
@@ -397,7 +409,7 @@ public:
   };
 
   ResearcherBuilder &setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
-    researcher.setDecisionStrategy(std::move(ds));
+//    researcher.setDecisionStrategy(std::move(ds));
     return *this;
   };
 
