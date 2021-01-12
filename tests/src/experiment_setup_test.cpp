@@ -34,7 +34,7 @@ BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, SampleResearch )
     BOOST_AUTO_TEST_CASE( constructing_from_json, * utf::enabled() )
     {
       json config;
-      std::ifstream configFile("/Users/amabdol/Projects/SAMpp/test/configs/simple_experiment_setup.json");
+      std::ifstream configFile("/Users/amabdol/Projects/SAMpp/tests/configs/simple_experiment_setup.json");
       configFile >> config;
 
       ExperimentSetup setup{config["experiment_parameters"]};

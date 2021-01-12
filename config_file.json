@@ -62,8 +62,7 @@
         "decision_strategy": {
             "name": "DefaultDecisionMaker",
             "initial_selection_policies": [
-                [
-                    "id == 2"]
+                ["id == 2"]
             ],
             "between_stashed_selection_policies": [
                 [

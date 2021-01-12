@@ -1,0 +1,56 @@
+{
+    "decision_strategy":
+    {
+        "name": "DefaultDecisionMaker",
+        "initial_selection_policies":
+        [
+            [
+                "id == 2"
+            ]
+        ],
+        "between_stashed_selection_policies":
+        [
+            [
+                "effect > 0",
+                "min(pvalue)"
+            ],
+            [
+                "effect < 0",
+                "max(pvalue)"
+            ]
+        ],
+        "between_replications_selection_policies":
+        [
+            [
+                "effect > 0",
+                "sig",
+                "first"
+            ],
+            [
+                "effect > 0",
+                "min(pvalue)"
+            ],
+            [
+                "effect < 0",
+                "max(pvalue)"
+            ]
+        ],
+        "stashing_policy":
+        [
+            "all"
+        ],
+        "submission_decision_policies":
+        [
+            ""
+        ],
+        "will_continue_replicating_decision_policy":
+        [
+            ""
+        ],
+        "will_start_hacking_decision_policies":
+        [
+            "effect < 0",
+            "!sig"
+        ]
+    }
+}
