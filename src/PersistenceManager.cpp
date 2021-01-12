@@ -77,22 +77,6 @@ PersistenceManager::Reader::Reader(const string &filename)
 
 PersistenceManager::Reader::~Reader() {}
 
-void PersistenceManager::Reader::read_raw_data(Experiment *expr) {
-
-  auto rows = reader->rows();
-
-  if (expr->setup.ng() != reader->cols().size())
-    throw std::length_error("Number of columns in the CSV file doesn't match \
-                                the experiment size.");
-
-  /// TODO: Re-implement me!
-  //    for (int r = 0; r < rows.size(); r++) {
-  //        for (auto &col : reader->cols()) {
-  //            expr[std::stoi(col)].measurements_[r] = std::stod(rows[r][col]);
-  //        }
-  //    }
-}
-
 void PersistenceManager::Writer::write(std::vector<arma::Row<double>> &data,
                                        int sid) {
 

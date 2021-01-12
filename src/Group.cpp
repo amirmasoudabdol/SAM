@@ -91,3 +91,12 @@ void Group::clear() {
   
   is_stats_up_to_date = false;
 }
+
+
+void Group::setHackedStatus(const bool status) {
+  is_hacked_ = status;
+}
+
+void Group::setCandidateStatus(const bool status) {
+  is_candidate_ = status;
+}

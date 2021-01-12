@@ -106,3 +106,31 @@ void Experiment::clear() {
   std::sort(groups_.begin(), groups_.end(),
             [](const auto &l, const auto &r) { return l.id_ < r.id_; });
 }
+
+void Experiment::updateCandidatesList(const std::vector<Submission>& subs) {
+  candidates.value().insert(candidates.end(), subs.begin(), subs.end());
+}
+
+
+void Experiment::setHackedStatus(const bool status) {
+  is_hacked = status;
+  std::for_each(groups_.begin(), groups_.end(),
+                [&status](auto &g){
+    g.is_hacked_ = status;
+  });
+}
+
+void Experiment::setHackedStatusOf(const std::vector<size_t> &idxs, const bool status) {
+  std::for_each(idxs.begin(), idxs.end(),
+                [this, &status](auto &i){
+                    this->groups_[i].is_hacked_ = status;
+                  });
+}
+
+
+void Experiment::setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status) {
+  std::for_each(idxs.begin(), idxs.end(),
+                [this, &status](auto &i){
+                    this->groups_[i].is_candidate_ = status;
+                  });
+}

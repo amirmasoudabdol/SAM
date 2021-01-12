@@ -99,13 +99,6 @@ public:
   
   virtual bool willContinueReplicating(PolicyChain &pchain) {return false; };
   
-  /// Clear the contents of the decision strategy, this include the
-  /// submission pools or other collected information by the decision
-  /// strategy.
-  void clear() {
-    stashed_submissions.clear();
-  }
-  
   /// @todo This needs to be private but currently, I don't have a good place to put it.
   /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's weird
   /// and I cannot just call it in any other methods because then it's hidden
@@ -114,7 +107,7 @@ public:
   void reset() {
     stashed_submissions.clear();
     submission_candidates.reset();
-    clear();
+//    clear();
   }
   
   /// @brief      Implementation of decision-making procedure.

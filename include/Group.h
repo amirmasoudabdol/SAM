@@ -79,6 +79,9 @@ public: // Public for now
   Group(int id_, GroupType type_) : id_{id_}, gtype{type_} {};
 
   Group(arma::Row<double> &data) : measurements_{data} { updateStats(); };
+  
+  void setHackedStatus(const bool status);
+  void setCandidateStatus(const bool status);
 
   /// Getter / Setter
 

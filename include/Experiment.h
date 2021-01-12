@@ -58,6 +58,13 @@ public:
   std::shared_ptr<EffectStrategy> effect_strategy;
 
   std::vector<Group> groups_;
+  
+  std::optional<set::vector<Submission>> candidates;
+  void updateCandidatesList(const std::vector<Submission>& subs);
+  
+  void setHackedStatus(const bool status);
+  void setHackedStatusOf(const std::vector<size_t> &idxs, const bool status);
+  void setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status);
 
   Experiment() = default;
 
