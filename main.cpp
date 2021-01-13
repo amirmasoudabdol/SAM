@@ -1,11 +1,21 @@
+//===-- main.cpp - SAMrun Main Function -------------------------*- C++ -*-===//
 //
+// Part of SAM Project
 // Created by Amir Masoud Abdol on 2019-04-20.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the main function of SAMrun executable. SAMrun is
+/// a simple program that utilizes libsam, and runs a given config file.
+///
+//===----------------------------------------------------------------------===//
 
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <filesystem>
 
 #include "sam.h"
 
@@ -31,6 +41,11 @@ bool show_progress_bar{false};
 
 void runSimulation(json &simConfig);
 
+/// @brief SAMrun's main routine
+///
+/// This reads the config file as well as the command line parameters. If
+/// necessary, it will overwrite some of the config parameters based on command
+/// line values, and finally call runSimulation().
 int main(int argc, const char **argv) {
 
   spdlog::set_pattern("[%R] %^[%l]%$ %v");
@@ -61,18 +76,16 @@ int main(int argc, const char **argv) {
 
   json configs;
 
-  std::string configfilename;
+  std::filesystem::path config_file_name{"/Users/amabdol/Projects/SAMpp/config_file.json"};
   if (vm.count("config")) {
-    configfilename = vm["config"].as<string>();
-    //    if (!exists(configfilename)){
-    //      throw std::invalid_argument("Config file doesn't exist");
-    //    }
-  } else {
-    configfilename = "/Users/amabdol/Projects/SAMpp/config_file.json";
+    config_file_name = vm["config"].as<string>();
+    if (!exists(config_file_name)){
+      throw std::invalid_argument(config_file_name.native() + " does not exist.");
+    }
   }
 
-  std::ifstream configFile(configfilename);
-  configFile >> configs;
+  std::ifstream config_file(config_file_name);
+  config_file >> configs;
 
   auto log_level = static_cast<spdlog::level::level_enum>(
       configs["simulation_parameters"]["log_level"].get<LogLevel>());
@@ -99,12 +112,21 @@ int main(int argc, const char **argv) {
 
   spdlog::info("Processing the configuration file...");
 
+  std::filesystem::path output_path{configs["simulation_parameters"]["output_path"]};
   if (vm.count("output-path")) {
-    configs["simulation_parameters"]["output_path"] =
-        vm["output-path"].as<string>();
-  } else {
-    configs["simulation_parameters"]["output_path"] = "../outputs/";
+    output_path = vm["output-path"].as<string>();
   }
+  if (!exists(output_path)){
+    spdlog::debug("Creating {} directory...", output_path.native());
+    try {
+      create_directory(output_path);
+    } catch (std::filesystem::filesystem_error &e) {
+      std::cerr << e.what();
+      std::cerr << "\nSAM cannot create a directory in the given path.";
+      exit(1);
+    }
+  }
+  configs["simulation_parameters"]["output_path"] = output_path;
 
   if (vm.count("output-prefix")) {
     const string output_prefix = vm["output-prefix"].as<string>();
@@ -114,15 +136,22 @@ int main(int argc, const char **argv) {
   if (vm.count("progress")) {
     show_progress_bar = vm["progress"].as<bool>();
   }
+  
+  // Seeding the RNG
+  // ---------------
 
-  /// Setting and saving the config file before starting the simulation
-  std::mt19937::result_type masterseed;
-  if (configs["simulation_parameters"]["master_seed"] == "random") {
+  // If the config file contains a unique seed number, that will be used to set the
+  // master_seed, otherwise, it'll generate a random seed to be used.
+  std::mt19937::result_type master_seed;
+  if (configs["simulation_parameters"]["master_seed"] == "random"
+      or !configs["simulation_parameters"].contains("master_seed")) {
+    
+    spdlog::debug("Generating the Master Seed");
 
-    /// Generating a seed for Random
-    /// @link https://stackoverflow.com/a/13446015/1141307
+    // Generating a random seed based on using random_device
+    // based on https://stackoverflow.com/a/13446015/1141307
     std::random_device rd;
-    masterseed =
+    master_seed =
         rd() ^
         ((std::mt19937::result_type)
              std::chrono::duration_cast<std::chrono::seconds>(
@@ -132,19 +161,19 @@ int main(int argc, const char **argv) {
              std::chrono::duration_cast<std::chrono::microseconds>(
                  std::chrono::high_resolution_clock::now().time_since_epoch())
                  .count());
-    configs["simulation_parameters"]["master_seed"] = masterseed;
+    configs["simulation_parameters"]["master_seed"] = master_seed;
   } else {
-    masterseed = configs["simulation_parameters"]["master_seed"].get<int>();
+    master_seed = configs["simulation_parameters"]["master_seed"].get<int>();
   }
-  Random::seed(masterseed);
-  arma::arma_rng::set_seed(masterseed);
+  Random::seed(master_seed);
+  arma::arma_rng::set_seed(master_seed);
 
-  /// Saving the updated config file if necessary
+  // Saving the updated config file, if necessary
   if (vm.count("update-config")) {
     const bool update_config = vm["update-config"].as<bool>();
     configs["simulation_parameters"]["update_config"] = update_config;
     if (update_config) {
-      std::ofstream o(configfilename);
+      std::ofstream o(config_file_name);
       o << std::setw(4) << configs << std::endl;
       o.close();
     }
@@ -155,60 +184,69 @@ int main(int argc, const char **argv) {
   return 0;
 }
 
-void runSimulation(json &simConfig) {
+
+/// Configures an instance of the Researcher, initializes its internal and execute
+/// the simulation. This is also responsible for initialization of the CSV files.
+///
+/// @param sim_configs simulation configurations
+void runSimulation(json &sim_configs) {
 
   show_progress_bar |=
-      simConfig["simulation_parameters"]["progress"].get<bool>();
+      sim_configs["simulation_parameters"]["progress"].get<bool>();
 
   spdlog::info("Initializing the Researcher...");
   Researcher researcher =
-      Researcher::create("Peter").fromConfigFile(simConfig).build();
+      Researcher::create("Sam").fromConfigFile(sim_configs).build();
 
   // Initiate the csvWriter
   // I need an interface for this
-  bool is_saving_all_pubs = simConfig["simulation_parameters"]["save_all_pubs"];
-  std::string pubsfilename =
-      simConfig["simulation_parameters"]["output_path"].get<std::string>() +
-      simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
+  bool is_saving_all_pubs = sim_configs["simulation_parameters"]["save_all_pubs"];
+  std::filesystem::path pubs_file_name =
+      sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
+      sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Publications.csv";
 
-  bool is_saving_rejected = simConfig["simulation_parameters"]["save_rejected"];
-  std::string rejectedfilename =
-      simConfig["simulation_parameters"]["output_path"].get<std::string>() +
-      simConfig["simulation_parameters"]["output_prefix"].get<std::string>() +
+  bool is_saving_rejected = sim_configs["simulation_parameters"]["save_rejected"];
+  std::filesystem::path rejs_file_name =
+      sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
+      sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
 
   bool is_saving_pubs_summaries_per_sim =
-      simConfig["simulation_parameters"]["save_pubs_per_sim_summaries"];
+      sim_configs["simulation_parameters"]["save_pubs_per_sim_summaries"];
   bool is_saving_summaries =
-      simConfig["simulation_parameters"]["save_overall_summaries"];
-  bool is_saving_meta = simConfig["simulation_parameters"]["save_meta"];
+      sim_configs["simulation_parameters"]["save_overall_summaries"];
+  bool is_saving_meta = sim_configs["simulation_parameters"]["save_meta"];
 
-  int n_sims = simConfig["simulation_parameters"]["n_sims"];
+  int n_sims = sim_configs["simulation_parameters"]["n_sims"];
 
-  std::unique_ptr<PersistenceManager::Writer> pubswriter;
-  std::unique_ptr<PersistenceManager::Writer> rejectedwriter;
+  std::unique_ptr<PersistenceManager::Writer> pubs_writer;
+  std::unique_ptr<PersistenceManager::Writer> rejs_writer;
 
-  // Initializing the csv writer
+  // Initializing the csv writers
   if (is_saving_all_pubs)
-    pubswriter = std::make_unique<PersistenceManager::Writer>(pubsfilename);
+    pubs_writer = std::make_unique<PersistenceManager::Writer>(pubs_file_name);
 
   if (is_saving_rejected)
-    rejectedwriter =
-        std::make_unique<PersistenceManager::Writer>(rejectedfilename);
+    rejs_writer =
+        std::make_unique<PersistenceManager::Writer>(rejs_file_name);
 
   indicators::show_console_cursor(false);
 
-  indicators::BlockProgressBar sim_progress_bar{
-      indicators::option::BarWidth{50},
-      indicators::option::Start{"["},
-      indicators::option::End{"]"},
-      indicators::option::ForegroundColor{indicators::Color::yellow},
-      indicators::option::ShowElapsedTime{true},
-      indicators::option::ShowRemainingTime{true}};
+  indicators::ProgressBar sim_progress_bar{
+    indicators::option::BarWidth{50},
+    indicators::option::Start{"["},
+    indicators::option::End{"]"},
+    indicators::option::ForegroundColor{indicators::Color::yellow},
+    indicators::option::ShowElapsedTime{true},
+    indicators::option::ShowRemainingTime{true},
+    indicators::option::MaxProgress{n_sims}
+  };
 
-  auto progress = 0.0f;
-  // This loop can be parallelized
+  
+  // Main Simulation Loop
+  // --------------------
+  
   spdlog::info("Starting the simulation...");
   for (int i = 0; i < n_sims; ++i) {
 
@@ -237,17 +275,14 @@ void runSimulation(json &simConfig) {
 
     researcher.experiment->simid++;
 
-    if (show_progress_bar) {
-      progress += 1. / n_sims;
-      sim_progress_bar.set_progress(progress * 100);
-    }
+    if (show_progress_bar) sim_progress_bar.tick();
 
     if (is_saving_all_pubs) {
-      pubswriter->write(researcher.journal->publications_list, i);
+      pubs_writer->write(researcher.journal->publications_list, i);
     }
 
     if (is_saving_rejected) {
-      rejectedwriter->write(researcher.journal->rejection_list, i);
+      rejs_writer->write(researcher.journal->rejection_list, i);
     }
 
     if (is_saving_summaries or is_saving_meta)

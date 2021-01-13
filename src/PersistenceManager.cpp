@@ -15,13 +15,13 @@
 
 using namespace sam;
 
-PersistenceManager::Writer::Writer(const string &filename)
+PersistenceManager::Writer::Writer(const std::filesystem::path &filename)
     : file_name_(filename) {
   writer = std::make_unique<csv::Writer>(file_name_);
   writer->configure_dialect().delimiter(",");
 }
 
-PersistenceManager::Writer::Writer(const string &filename, const std::vector<std::string> colnames)
+PersistenceManager::Writer::Writer(const std::filesystem::path &filename, const std::vector<std::string> colnames)
     : file_name_(filename), column_names(colnames) {
       writer = std::make_unique<csv::Writer>(file_name_);
       writer->configure_dialect().delimiter(",")
@@ -68,7 +68,7 @@ void PersistenceManager::Writer::setColumnNames(const std::vector<std::string> &
   writer->configure_dialect().column_names(colnames);
 }
 
-PersistenceManager::Reader::Reader(const string &filename)
+PersistenceManager::Reader::Reader(const std::filesystem::path &filename)
     : file_name_(filename) {
   reader = std::make_unique<csv::Reader>();
   reader->configure_dialect().delimiter(",").header(false);
