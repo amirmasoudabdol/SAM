@@ -1,6 +1,15 @@
+//===-- ExperimentSetup.h - Experiment Setup Module -----------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the declaration of Experiment Setup module, which
+/// stores the information about the experiment design.
+///
+//===----------------------------------------------------------------------===//
 
 #ifndef SAMPP_EXPERIMENTSETUP_H
 #define SAMPP_EXPERIMENTSETUP_H
@@ -14,14 +23,13 @@
 
 namespace sam {
 
-// Forward declaration of the necessary classes.
 class ExperimentSetupBuilder;
 
+/// @brief      Declaraton of ExperimentSetup class
 ///
-/// @brief      Define a class for ExperimentSetup.
-///
-/// ExperimentSetup contains the necessary parameters for initiating and
-/// generating the data needed for the Experiment.
+/// ExperimentSetup stores all the necessary parameters concerning the experiment
+/// design, e.g., number of conditions, number of dependent variables, etc. It
+/// also stores a copy of the data, test, and effect strategies' configurations.
 ///
 /// @ingroup    Experiment
 class ExperimentSetup {
@@ -35,10 +43,9 @@ class ExperimentSetup {
   int nd_{0};
 
   //! Total number of groups. Always calculated as
-  //! \f$n_g = n_c \times n_d\f$, unless the simulation contains latent
-  //! variables, \f$n_g = n_c \times n_d \times n_i\f$
   int ng_{0};
   
+  //! Total number of replications
   int n_reps_{1};
 
   ///! Indicates the number of observations in each group
@@ -46,15 +53,11 @@ class ExperimentSetup {
 
 public:
 
-  ///
   /// Create a new ExperimentSetup by invoking a ExperimentSetupBuilder.
   ///
   /// @return     An instance of the builder.
-  ///
   static ExperimentSetupBuilder create();
 
-  /// Default constructor of the ExperimentSetup. This is necessary because of
-  /// the ExperimentSetupBuilder
   ExperimentSetup() = default;
 
   explicit ExperimentSetup(json &config);
@@ -68,11 +71,22 @@ public:
   //! Effect Estimator Parameters
   json esp_conf;
 
-  const int nc() const { return nc_; };
-  const int nd() const { return nd_; };
-  const int ng() const { return ng_; };
-  const int nreps() const { return n_reps_; };
+  /// Returns the number of conditions
+  [[nodiscard]] int nc() const { return nc_; };
+  
+  /// Returns the number of dependent variables in each conditions
+  [[nodiscard]] int nd() const { return nd_; };
+  
+  /// Returns the total number of groups
+  ///
+  /// This is an internal parameters mainly used to iterate over conditions and
+  /// dependent variables, and it's calculated as \f$n_g = n_c \times n_d\f$
+  [[nodiscard]] int ng() const { return ng_; };
+  
+  /// Returns the total number of _planned_ replications
+  [[nodiscard]] int nreps() const { return n_reps_; };
 
+  /// Returns the _original_ number of observations per group
   const arma::Row<int> &nobs() const { return nobs_; };
 //  void set_nobs(arma::Row<int> &val) { nobs_ = val; };
 
@@ -87,8 +101,6 @@ class ExperimentSetupBuilder {
 
   //! Used to make sure that experiment setup has the correct size
   bool is_expr_size_decided{false};
-
-  int seed{-1};
 
   /// Calculate the experiment setup sizes
   void calculate_experiment_size() {
@@ -128,7 +140,6 @@ public:
   ///
   /// @return     A reference to the builder
   ExperimentSetupBuilder &setSeed(const int s) {
-    seed = s;
     return *this;
   }
 
@@ -197,10 +208,6 @@ public:
 
   ExperimentSetup build() {
     check_expr_size();
-
-    if (seed == -1) {
-      seed = rand();
-    }
 
     return setup;
   }

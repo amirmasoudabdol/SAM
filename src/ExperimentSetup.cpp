@@ -1,6 +1,14 @@
+//===-- ExperimentSetup.cpp - Experiment Setup Definition ----------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the definition of ExperimentSetup methods.
+///
+//===----------------------------------------------------------------------===//
 
 #include "ExperimentSetup.h"
 

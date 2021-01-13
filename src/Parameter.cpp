@@ -1,11 +1,28 @@
+//===-- Parameter.cpp - Parameter Implementation --------------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 14-07-2020
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of Parameter template calss.
+///
+//===----------------------------------------------------------------------===//
 
 #include "Parameter.h"
 
 using namespace sam;
 
+
+/// This constructs **and** initializes the Parameter object based on the given 
+/// JSON object. 
+///
+/// @param[in]  j     The configuration of the parameter
+/// @param[in]  size  The size of the array
+///
+/// @tparam     T     The type of the Paramter, a.k.a, the type of armadillo 
+/// vector
 template <typename T>
 Parameter<T>::Parameter(const json &j, size_t size) {
   
@@ -27,14 +44,14 @@ Parameter<T>::Parameter(const json &j, size_t size) {
     case nlohmann::detail::value_t::object: {
       auto name = j.at("dist").get<std::string>();
       if (name.find("mv") != std::string::npos) {
-        /// Multivariate Distribution
+        // Multivariate Distribution
         dist = make_multivariate_distribution(j);
         auto v = Random::get(std::get<2>(dist));
         val.imbue([&, i = 0]() mutable {
           return static_cast<T>(v[i++]);
         });
       }else{
-        /// Univariate Distribution
+        // Univariate Distribution
         dist = make_distribution(j);
         auto v = static_cast<T>(Random::get(std::get<1>(dist)));
         val = arma::Col<T>(std::vector<T>(size, v));
@@ -46,11 +63,19 @@ Parameter<T>::Parameter(const json &j, size_t size) {
       throw std::invalid_argument("Missing parameter.\n");
   }
   
+  // Fill in the array values into `this`
   this->imbue([&, i = 0]() mutable {
     return val[i++];
   });
 }
 
+/// In the case of Parameter being initialized by a distribution, this method 
+/// will be able to randomize its values everytime that is being called.
+///
+/// @attention This will be called everytime any of the cast operators are 
+/// called.
+///
+/// @tparam     T     Type of the Parameter
 template <typename T>
 void Parameter<T>::randomize() {
   if (dist.index() != 0) {
@@ -65,7 +90,10 @@ void Parameter<T>::randomize() {
           return static_cast<T>(v[i++]);
         });
       },
-      [&](std::monostate &m) { }
+      [&](std::monostate &m) {
+        // If there is no distribution, we don't randomize, and the values will
+        // stay intact
+      }
     }, dist);
   }
 }
