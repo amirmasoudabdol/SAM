@@ -53,14 +53,7 @@ addons:
       - nlohmann-json-dev
     update: true
 
-git:
-  submodules: false
-
 before_install:
-
-  # Making sure that travis can access baaraan
-  - echo -e "machine github.com\n  login 95b20d5e703cf5c23463a5d312d66d82256594fe" > ~/.netrc
-  - git submodule update --init --recursive
   
   # Configure Homebrew
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH="/usr/local/bin:$PATH"; fi
