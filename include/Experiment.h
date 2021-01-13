@@ -48,10 +48,10 @@ public:
   int repid{0};
 
   //! Indicates if any hacking routine has been applied on the experiment
-  bool is_hacked = false;
+  bool is_hacked{false};
   std::vector<int> hacks_history;
 
-  bool is_published = false;
+  bool is_published{false};
 
   ExperimentSetup setup;
 
