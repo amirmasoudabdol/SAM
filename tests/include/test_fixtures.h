@@ -26,7 +26,6 @@
 using namespace arma;
 using namespace sam;
 using namespace std;
-using json = nlohmann::json;
 using Random = effolkronium::random_static;
 
 struct SampleResearch {
@@ -48,7 +47,6 @@ struct SampleResearch {
     arma::Row<double> v_vars;
     arma::Mat<double> v_sigma;
 
-    DataStrategy::DataStrategyParameters dsp;
     DataStrategy *ds;
     json d_s_conf = {
         {"name", "LinearModel"},
@@ -138,11 +136,11 @@ struct SampleResearch {
 
         experiment = new Experiment(setup);
 
-        researcher = Researcher::create("John")
-                                    .createExperiment(setup)
-                                    .createDecisionStrategy(de_s_conf)
-                                    .createJournal(j_conf)
-                                    .build();
+//        researcher = Researcher::create("John")
+//                                    .createExperiment(setup)
+//                                    .createDecisionStrategy(de_s_conf)
+//                                    .createJournal(j_conf)
+//                                    .build();
     }
 
 
@@ -153,11 +151,7 @@ struct SampleResearch {
 
             while (researcher.journal->isStillAccepting()) {
 
-                researcher.prepareResearch();
-
-                researcher.performResearch();
-
-                researcher.publishResearch();
+                researcher.research();
                 
             }
 

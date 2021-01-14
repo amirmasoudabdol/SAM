@@ -1,0 +1,15 @@
+{
+    "name": "OutliersRemoval",
+    "max_attempts": 1,
+    "min_observations": 1,
+    "multipliers":
+    [
+        2
+    ],
+    "n_attempts": 1,
+    "target": "Both",
+    "prevalence": 0.1,
+    "defensibility": 0.1,
+    "num": 10,
+    "order": "random"
+}

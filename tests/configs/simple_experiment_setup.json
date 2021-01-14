@@ -43,11 +43,7 @@
         },
         "n_conditions": 2,
         "n_dep_vars": 2,
-        "n_obs": {
-            "dist": "normal_distribution",
-            "mean": 20,
-            "stddev": 2
-        },
+        "n_obs": 10,
         "n_reps": 5,
         "test_strategy": {
             "name": "TTest",
@@ -66,7 +62,8 @@
         "decision_strategy": {
             "name": "DefaultDecisionMaker",
             "initial_selection_policies": [
-                ["id == 2"]
+                [
+                    "id == 2"]
             ],
             "between_stashed_selection_policies": [
                 [

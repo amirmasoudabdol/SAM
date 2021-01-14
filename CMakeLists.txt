@@ -95,8 +95,8 @@ if (${ENABLE_TESTS})
 
     enable_testing()
 
-    include_directories(test/include)
-    file(GLOB TESTSOURCES "test/src/*.cpp")
+    include_directories(tests/include)
+    file(GLOB TESTSOURCES "tests/src/*.cpp")
 
     #Run through each source
     foreach(testSrc ${TESTSOURCES})
