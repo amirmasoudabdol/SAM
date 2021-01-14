@@ -1,6 +1,15 @@
+//===-- Experiment.cpp - Experiment Implementation ------------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-22.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of the Experiment, and
+/// the ExperimentBuilder classes. Both
+///
+//===----------------------------------------------------------------------===//
 
 #include "Experiment.h"
 

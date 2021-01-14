@@ -25,7 +25,7 @@ namespace sam {
 
 class ExperimentSetupBuilder;
 
-/// @brief      Declaraton of ExperimentSetup class
+/// @brief      Declaration of ExperimentSetup class
 ///
 /// ExperimentSetup stores all the necessary parameters concerning the experiment
 /// design, e.g., number of conditions, number of dependent variables, etc. It
@@ -60,6 +60,7 @@ public:
 
   ExperimentSetup() = default;
 
+  /// Constructs and initializes the ExperimentSetup
   explicit ExperimentSetup(json &config);
 
   //! Test Strategy Parameters
@@ -88,8 +89,8 @@ public:
 
   /// Returns the _original_ number of observations per group
   const arma::Row<int> &nobs() const { return nobs_; };
-//  void set_nobs(arma::Row<int> &val) { nobs_ = val; };
 
+  /// Randomizes the internal parameters of the Experiment, if necessary
   void randomizeTheParameters();
 };
 

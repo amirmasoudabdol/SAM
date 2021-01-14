@@ -6,7 +6,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// @file
-/// This file contains the implementation of Parameter template calss.
+/// This file contains the implementation of Parameter template class.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -21,7 +21,7 @@ using namespace sam;
 /// @param[in]  j     The configuration of the parameter
 /// @param[in]  size  The size of the array
 ///
-/// @tparam     T     The type of the Paramter, a.k.a, the type of armadillo 
+/// @tparam     T     The type of the Parameter, a.k.a, the type of armadillo
 /// vector
 template <typename T>
 Parameter<T>::Parameter(const json &j, size_t size) {
@@ -42,6 +42,10 @@ Parameter<T>::Parameter(const json &j, size_t size) {
       break;
       
     case nlohmann::detail::value_t::object: {
+      
+      if (!j.contains("dist"))
+        throw std::invalid_argument("Please provide a distribution specification.\n");
+      
       auto name = j.at("dist").get<std::string>();
       if (name.find("mv") != std::string::npos) {
         // Multivariate Distribution
@@ -50,7 +54,7 @@ Parameter<T>::Parameter(const json &j, size_t size) {
         val.imbue([&, i = 0]() mutable {
           return static_cast<T>(v[i++]);
         });
-      }else{
+      } else if (name.find("distribution") != std::string::npos) {
         // Univariate Distribution
         dist = make_distribution(j);
         auto v = static_cast<T>(Random::get(std::get<1>(dist)));
@@ -104,20 +108,4 @@ namespace sam {
 }
 
 
-/// I'm not so sure if this is online, in a sense that it's being used
-/// by nlohmann::json
-namespace nlohmann {
-
-template <typename T>
-struct adl_serializer<sam::Parameter<T>> {
-  
-  static void to_json(json &j, const sam::Parameter<T> &p) {
-    j = static_cast<T>(p);
-  }
-  
-  static void from_json(const json &j, sam::Parameter<T> &p) {
-    p = Parameter<T>(j, 1);
-  }
-};
-
-}
+/// @todo Implement a JSON serializer for Parameter<T>

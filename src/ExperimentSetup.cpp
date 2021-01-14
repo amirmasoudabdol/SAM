@@ -14,10 +14,11 @@
 
 using namespace sam;
 
-ExperimentSetupBuilder ExperimentSetup::create() {
-  return ExperimentSetupBuilder();
-}
-
+/// This set and calculates design parameters of the experiment. It also archives
+/// the definition of data, test, and effect strategies. These archives may later
+/// be retrieved by the Journal during the review process.
+///
+/// @param config A JSON configuration object
 ExperimentSetup::ExperimentSetup(json &config) {
 
   nc_ = config["n_conditions"];
@@ -28,12 +29,24 @@ ExperimentSetup::ExperimentSetup(json &config) {
 
   nobs_ = Parameter<int>(config["n_obs"], ng_);
 
-  tsp_conf = config["test_strategy"];
   dsp_conf = config["data_strategy"];
+  tsp_conf = config["test_strategy"];
   esp_conf = config["effect_strategy"];
 }
 
-void ExperimentSetup::randomizeTheParameters() { nobs_.randomize(); }
+/// This randomizes all those parameters of the ExperimentSetup that are defined
+/// by a distribution
+void ExperimentSetup::randomizeTheParameters() {
+  nobs_.randomize();
+}
+
+// ------------------------ //
+// Experiment Setup Builder //
+// ------------------------ //
+
+ExperimentSetupBuilder ExperimentSetup::create() {
+  return ExperimentSetupBuilder();
+}
 
 ExperimentSetupBuilder &ExperimentSetupBuilder::fromConfigFile(json &config) {
 
