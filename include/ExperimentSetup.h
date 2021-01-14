@@ -75,8 +75,20 @@ public:
   /// Returns the number of conditions
   [[nodiscard]] int nc() const { return nc_; };
   
+  /// Sets the number of conditions
+  void setNC(int n_c) {
+    nc_ = n_c;
+    ng_ = nc_ * nd_;
+  };
+  
   /// Returns the number of dependent variables in each conditions
   [[nodiscard]] int nd() const { return nd_; };
+  
+  /// Sets the number of dependent variables in each group
+  void setND(int n_d) {
+    nd_ = n_d;
+    ng_ = nc_ * nd_;
+  };
   
   /// Returns the total number of groups
   ///
@@ -86,9 +98,13 @@ public:
   
   /// Returns the total number of _planned_ replications
   [[nodiscard]] int nreps() const { return n_reps_; };
+  
+  /// Sets the number of replications
+  void setNR(int n_reps) { n_reps_ = n_reps; };
 
   /// Returns the _original_ number of observations per group
   const arma::Row<int> &nobs() const { return nobs_; };
+  
 
   /// Randomizes the internal parameters of the Experiment, if necessary
   void randomizeTheParameters();

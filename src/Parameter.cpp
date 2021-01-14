@@ -47,14 +47,14 @@ Parameter<T>::Parameter(const json &j, size_t size) {
         throw std::invalid_argument("Please provide a distribution specification.\n");
       
       auto name = j.at("dist").get<std::string>();
-      if (name.find("mv") != std::string::npos) {
+      if (name.find("mv") != name.npos) {
         // Multivariate Distribution
         dist = make_multivariate_distribution(j);
         auto v = Random::get(std::get<2>(dist));
         val.imbue([&, i = 0]() mutable {
           return static_cast<T>(v[i++]);
         });
-      } else if (name.find("distribution") != std::string::npos) {
+      } else if (name.find("distribution") != name.npos) {
         // Univariate Distribution
         dist = make_distribution(j);
         auto v = static_cast<T>(Random::get(std::get<1>(dist)));
@@ -104,6 +104,7 @@ void Parameter<T>::randomize() {
 
 namespace sam {
   template class Parameter<int>;
+  template class Parameter<float>;
   template class Parameter<double>;
 }
 

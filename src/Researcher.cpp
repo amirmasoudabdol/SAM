@@ -192,8 +192,11 @@ void Researcher::checkAndsubmitTheResearch(
 /// returns the outcome. The value then will be casted to a boolean to determine
 /// whether the Reseacher is going to start the hacking procedure or not, ie.,
 /// call letTheHackBegin().
+///
+/// @note Note that probability_of_being_a_hacker is called through it's call operator.
+/// This guarantees that its value is being randomized if it contains a distribution
 bool Researcher::isHacker() {
-  return Random::get<bool>(static_cast<double>(probability_of_being_a_hacker));
+  return Random::get<bool>(static_cast<double>(probability_of_being_a_hacker()));
 }
 
 /// Similar to isHacker(), this returns a boolean indicating whether or not the

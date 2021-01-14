@@ -41,7 +41,10 @@ class Parameter : public arma::Row<T> {
   //! A variant storing either an instance of Distribution or
   //! MultivariateDistribution
   std::variant<std::monostate, Distribution, MultivariateDistribution> dist;
-    
+  
+  /// Randomize the values of the arma::Row<T> container
+  void randomize();
+  
 public:
   
   Parameter() : arma::Row<T>() {};
@@ -55,18 +58,14 @@ public:
 
   /// Returns the _first_ element of the array
   explicit operator T() {
-    this->randomize();
     return this->at(0);
   };
   
-  /// Randomizes and returns the entire array of data
-  explicit operator arma::Row<T>() {
-    this->randomize();
-    return this->head(this->n_elem);
+  /// Randomizes and returns the save Parameter
+  Parameter<T>& operator()() {
+    randomize();
+    return *this;
   }
-  
-  /// Randomize the values of the arma::Row<T> container
-  void randomize();
   
   /// Returns true if a distribution is assigned to the Parameter
   [[nodiscard]] bool isDist() {

@@ -37,7 +37,7 @@ ExperimentSetup::ExperimentSetup(json &config) {
 /// This randomizes all those parameters of the ExperimentSetup that are defined
 /// by a distribution
 void ExperimentSetup::randomizeTheParameters() {
-  nobs_.randomize();
+  nobs_();
 }
 
 // ------------------------ //
