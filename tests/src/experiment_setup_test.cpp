@@ -6,118 +6,105 @@
 
 #define BOOST_TEST_MODULE ExperimentSetup Tests
 
+#include "nlohmann/json.hpp"
 #include <boost/test/unit_test.hpp>
 namespace tt = boost::test_tools;
 namespace utf = boost::unit_test;
 
-#include <algorithm>
-
-#include "sam.h"
 #include "ExperimentSetup.h"
 
-#include "test_fixtures.h"
+#include "sample_experiment_setup.h"
+
+using json = nlohmann::ordered_json;
 
 using namespace arma;
 using namespace sam;
 using namespace std;
 
-BOOST_AUTO_TEST_CASE( default_constructor, * utf::enabled() )
-{
-    ExperimentSetup setup;
+BOOST_AUTO_TEST_SUITE(constructor)
 
-    BOOST_TEST(true);
-}
+  BOOST_AUTO_TEST_CASE( default_constructor )
+  {
+      ExperimentSetup setup;
 
-BOOST_FIXTURE_TEST_SUITE( experiment_setup_builder, SampleResearch )
+      BOOST_TEST(setup.nc() == 0);
+  }
 
+  BOOST_FIXTURE_TEST_SUITE( json_constructor, ExperimentSetupSampleConfigs )
 
-    BOOST_AUTO_TEST_CASE( constructing_from_json, * utf::enabled() )
+    BOOST_AUTO_TEST_CASE( json_constructor )
     {
-      json config;
-      std::ifstream configFile("/Users/amabdol/Projects/SAMpp/tests/configs/simple_experiment_setup.json");
-      configFile >> config;
-
-      ExperimentSetup setup{config["experiment_parameters"]};
-
-//      BOOST_TEST( setup.nobs() == v_nobs, tt::per_element());
-
-      BOOST_TEST( true );
-
-//      BOOST_TEST( setup.means() == v_means, tt::per_element());
-//
-//      BOOST_TEST( setup.vars() == v_vars, tt::per_element());
-//
-//      BOOST_TEST( setup.sigma() == v_sigma, tt::per_element());
-
+      ExperimentSetup setup{sample_experiment_setup["experiment_parameters"]};
+      
+      BOOST_TEST(setup.nc() == 2);
+      BOOST_TEST(setup.nd() == 2);
+      BOOST_TEST(setup.ng() == 4);
+      BOOST_TEST(setup.nreps() == 5);
+      
+      arma::Row<int> obs{10, 10, 10, 10};
+      BOOST_TEST(arma::approx_equal(setup.nobs(), obs,
+                                    "absdiff", 0.0001));
+      
     }
 
-
-//    BOOST_AUTO_TEST_CASE( building_with_fixed_params )
-//    {
-//
-//        ExperimentSetup setup = ExperimentSetup::create().setNumConditions(nc)
-//                                .setNumDependentVariables(nd)
-//                                .setNumItems(ni)
-//                                .setNumObservations(nobs)
-//                                .setMeans(mean)
-//                                .setVariance(var)
-//                                .setCovariance(cov)
-//                                .build();
-//
-//        BOOST_TEST( setup.nobs() == v_nobs, tt::per_element());
-//
-//        BOOST_TEST( setup.means() == v_means, tt::per_element());
-//
-//        BOOST_TEST( setup.vars() == v_vars, tt::per_element());
-//
-//        BOOST_TEST( setup.sigma() == v_sigma, tt::per_element());
-//
-//    }
-//
-//    BOOST_AUTO_TEST_CASE( building_with_arrays )
-//    {
-//
-//        ExperimentSetup setup = ExperimentSetup::create()
-//                                                .setNumConditions(nc)
-//                                                .setNumDependentVariables(nd)
-//                                                .setNumItems(ni)
-//                                                .setNumObservations(v_nobs)
-//                                                .setMeans(v_means)
-//                                                .setCovarianceMatrix(v_sigma)
-//                                                .build();
-//
-//
-//        BOOST_TEST( setup.nobs() == v_nobs, tt::per_element());
-//
-//        BOOST_TEST( setup.means() == v_means, tt::per_element());
-//
-//        BOOST_TEST( setup.vars() == v_vars, tt::per_element());
-//
-//        BOOST_TEST( setup.sigma() == v_sigma, tt::per_element());
-//    }
-//
-//    BOOST_AUTO_TEST_CASE( builder_test_and_data_strategy )
-//    {
-//        ExperimentSetup setup = ExperimentSetup::create()
-//                .setNumConditions(nc)
-//                .setNumDependentVariables(nd)
-//                .setNumItems(ni)
-//                .setNumObservations(v_nobs)
-//                .setMeans(v_means)
-//                .setCovarianceMatrix(v_sigma)
-//                .setTestStrategyParameters(t_s_conf)
-//                .setDataStrategyParameters(d_s_conf)
-//                .setEffectStrategyParameters(e_s_conf)
-//                .build();
-//
-//        BOOST_TEST( (setup.dsp_.name == DataStrategy::DataModel::LinearModel ));
-//
-//    }
+  BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE_END()
 
-// Write some tests for randomization
 
+// Setter's Tests
+// --------------
 
+BOOST_FIXTURE_TEST_SUITE( setter_tests, ExperimentSetupSampleConfigs )
+
+  BOOST_AUTO_TEST_CASE( independent_parameters )
+  {
+    ExperimentSetup setup{sample_experiment_setup["experiment_parameters"]};
+    
+    setup.setNR(1);
+    BOOST_TEST(setup.nreps() == 1);
+  }
+
+  BOOST_AUTO_TEST_CASE( dependent_parameters )
+  {
+    ExperimentSetup setup{sample_experiment_setup["experiment_parameters"]};
+    
+    setup.setNC(5);
+    BOOST_TEST(setup.nc() == 5);
+    BOOST_TEST(setup.ng() == 10);
+    
+    setup.setND(4);
+    BOOST_TEST(setup.ng() == 5 * 4);
+  }
+
+  BOOST_AUTO_TEST_CASE( n_obs_parameter )
+  {
+    ExperimentSetup setup{sample_experiment_setup["experiment_parameters"]};
+    
+    arma::Row<int> obs{10, 10, 10, 10};
+    BOOST_TEST(arma::approx_equal(setup.nobs(), obs,
+                                  "absdiff", 0.0001));
+    
+    
+    json normal_dist = R"(
+      {
+      "param": {
+        "dist": "normal_distribution",
+        "mean": 0,
+        "stddev": 1
+        }
+      }
+    )"_json;
+    
+    setup.setObs(normal_dist["param"], setup.nc(), setup.nd());
+    BOOST_TEST(arma::accu(setup.nobs()) < 40);
+    
+    obs = {10, 20, 30, 40};
+    setup.setObs(obs, 2, 2);
+    BOOST_TEST(arma::accu(setup.nobs()) == 100);
+    
+  }
+
+BOOST_AUTO_TEST_SUITE_END()
 
 

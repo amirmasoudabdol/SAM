@@ -77,8 +77,7 @@ public:
   
   /// Sets the number of conditions
   void setNC(int n_c) {
-    nc_ = n_c;
-    ng_ = nc_ * nd_;
+    updateDesignParameters(n_c, nd_);
   };
   
   /// Returns the number of dependent variables in each conditions
@@ -86,14 +85,13 @@ public:
   
   /// Sets the number of dependent variables in each group
   void setND(int n_d) {
-    nd_ = n_d;
-    ng_ = nc_ * nd_;
+    updateDesignParameters(nc_, n_d);
   };
   
-  /// Returns the total number of groups
+  /// @brief  Returns the total number of groups
   ///
-  /// This is an internal parameters mainly used to iterate over conditions and
-  /// dependent variables, and it's calculated as \f$n_g = n_c \times n_d\f$
+  /// This is an internal parameters and it's mainly used to iterate over conditions and
+  /// dependent variables. It's calculated as \f$n_g = n_c \times n_d\f$
   [[nodiscard]] int ng() const { return ng_; };
   
   /// Returns the total number of _planned_ replications
@@ -105,9 +103,36 @@ public:
   /// Returns the _original_ number of observations per group
   const arma::Row<int> &nobs() const { return nobs_; };
   
-
+  /** @name nObs Setters
+   *  Helper methods for setting nObs
+   */
+  ///@{
+  void setObs(const json &config, size_t n_c, size_t n_d) {
+    updateDesignParameters(n_c, n_d);
+    nobs_ = Parameter<int>(config, ng_);
+  };
+  
+  void setObs(Parameter<int> nobs, size_t n_c, size_t n_d) {
+    updateDesignParameters(n_c, n_d);
+    nobs_ = nobs;
+  };
+  
+  void setObs(arma::Row<int> nobs, size_t n_c, size_t n_d) {
+    updateDesignParameters(n_c, n_d);
+    nobs_ = Parameter<int>(nobs);
+  };
+  ///@}
+  
   /// Randomizes the internal parameters of the Experiment, if necessary
-  void randomizeTheParameters();
+  void randomize();
+  
+  
+private:
+  void updateDesignParameters(size_t n_c, size_t n_d) {
+    nc_ = n_c;
+    nd_ = n_d;
+    ng_ = nc_ * nd_;
+  }
 };
 
 /// @ingroup AbstractBuilders

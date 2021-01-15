@@ -36,9 +36,10 @@ ExperimentSetup::ExperimentSetup(json &config) {
 
 /// This randomizes all those parameters of the ExperimentSetup that are defined
 /// by a distribution
-void ExperimentSetup::randomizeTheParameters() {
+void ExperimentSetup::randomize() {
   nobs_();
 }
+
 
 // ------------------------ //
 // Experiment Setup Builder //

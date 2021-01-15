@@ -29,7 +29,7 @@ namespace sam {
 /// - An array of size _n_, with different values
 /// - An array of size _n_, with values drawn from a distribution. This is the
 ///   case where Parameter can loosely resemble a random variable.
-///   
+///
 /// @attention Parameter<T> is inherited from arma::Row<T>. This is quite useful and
 /// essential because I can pass it around easily, and use all the overloaded 
 /// operators of the arma::Row<T>
@@ -48,6 +48,13 @@ class Parameter : public arma::Row<T> {
 public:
   
   Parameter() : arma::Row<T>() {};
+  
+  Parameter(const arma::Row<T>& X) {
+    this->resize(X.n_elem);
+    this->imbue([&, i = 0]() mutable {
+      return X.at(i++);
+    });
+  }
 
   Parameter(std::initializer_list<T> l) : arma::Row<T>(l) {};
   

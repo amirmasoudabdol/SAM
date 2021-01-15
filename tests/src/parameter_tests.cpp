@@ -87,13 +87,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE( array_of_scalars_parameter, T, test_types) {
 BOOST_AUTO_TEST_CASE_TEMPLATE( univariate_parameter, T, dist_test_types) {
 
   json config = R"(
-  {
-    "param": {
-      "dist": "normal_distribution",
-      "mean": 0,
-      "stddev": 1
+    {
+      "param": {
+        "dist": "normal_distribution",
+        "mean": 0,
+        "stddev": 1
+      }
     }
-  }
   )"_json;
 
   Parameter<T> parameter(config["param"], 1);
