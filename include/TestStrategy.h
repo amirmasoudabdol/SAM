@@ -18,7 +18,7 @@
 
 namespace sam {
 
-class Group;
+class DependentVariable;
 class ExperimentSetup;
 class Experiment;
 
@@ -54,7 +54,7 @@ public:
 
   virtual void run(Experiment *experiment) = 0;
 
-  virtual void run(Group &group_1, Group &group_2) = 0;
+  virtual void run(DependentVariable &group_1, DependentVariable &group_2) = 0;
   
   // A tiny wrapper for accessing test alpha
   double alpha_;
@@ -119,7 +119,7 @@ public:
 
   virtual void run(Experiment *experiment) override;
 
-  virtual void run(Group &group_1, Group &group_2) override{};
+  virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType t_test(const arma::Row<double> &d1,
                            const arma::Row<double> &d2, double alpha,
@@ -192,7 +192,7 @@ public:
 
   virtual void run(Experiment *experiment) override;
 
-  virtual void run(Group &group_1, Group &group_2) override{};
+  virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType f_test(double Sd1, unsigned Sn1, double Sd2, unsigned Sn2,
                     double alpha);
@@ -246,7 +246,7 @@ public:
 
   virtual void run(Experiment *experiment) override;
 
-  virtual void run(Group &group_1, Group &group_2) override{};
+  virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType
   yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
@@ -309,7 +309,7 @@ public:
 
   virtual void run(Experiment *experiment) override;
 
-  virtual void run(Group &group_1, Group &group_2) override{};
+  virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType
   wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> &y,

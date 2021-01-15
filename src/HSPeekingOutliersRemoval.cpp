@@ -85,7 +85,7 @@ bool PeekingOutliersRemoval::removeOutliers(Experiment *experiment, const int n,
     if ((row.n_elem - inx.n_elem) <= params.min_observations)
       inx = inx.head(row.n_elem - params.min_observations);
     
-    (*experiment)[i].del_measurements(inx);
+    (*experiment)[i].removeMeasurements(inx);
   }
   
   // Success Code

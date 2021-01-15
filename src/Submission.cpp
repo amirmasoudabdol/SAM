@@ -20,7 +20,7 @@ Submission::Submission(Experiment &e, const int &index) {
 std::vector<std::string> Submission::Columns() {
 
   std::vector<std::string> cols {"simid", "exprid", "repid", "pubid", "tnobs"};
-  auto group_cols = Group::Columns();
+  auto group_cols = DependentVariable::Columns();
   cols.insert(cols.end(), group_cols.begin(), group_cols.end());
   
   return cols;

@@ -67,23 +67,17 @@ void Experiment::initExperiment() {
 
 void Experiment::initResources() {
 
-  groups_.resize(setup.ng());
+  dvs_.resize(setup.ng());
 
   for (int g{0}; g < setup.ng(); ++g) {
-
-    if (g < setup.nd())
-      groups_[g].gtype = GroupType::Control;
-    else
-      groups_[g].gtype = GroupType::Treatment;
-
-    groups_[g].id_ = g;
+    dvs_[g].id_ = g;
   }
 }
 
 void Experiment::calculateStatistics() {
 
-  for (int g{0}; g < groups_.size(); ++g)
-    groups_[g].updateStats();
+  for (int g{0}; g < dvs_.size(); ++g)
+    dvs_[g].updateStats();
 }
 
 void Experiment::calculateEffects() { effect_strategy->computeEffects(this); }
@@ -99,7 +93,7 @@ void Experiment::recalculateEverything() {
 
 void Experiment::recalculateEverythingForGroup(size_t inx) {
 
-  this->groups_[inx].updateStats();
+  this->dvs_[inx].updateStats();
 
   //  this->calculateEffects();
   //
@@ -108,11 +102,11 @@ void Experiment::recalculateEverythingForGroup(size_t inx) {
 
 void Experiment::clear() {
 
-  for (auto &group : groups_) {
+  for (auto &group : dvs_) {
     group.clear();
   }
 
-  std::sort(groups_.begin(), groups_.end(),
+  std::sort(dvs_.begin(), dvs_.end(),
             [](const auto &l, const auto &r) { return l.id_ < r.id_; });
 }
 
@@ -123,7 +117,7 @@ void Experiment::updateCandidatesList(const std::vector<Submission>& subs) {
 
 void Experiment::setHackedStatus(const bool status) {
   is_hacked = status;
-  std::for_each(groups_.begin(), groups_.end(),
+  std::for_each(dvs_.begin(), dvs_.end(),
                 [&status](auto &g){
     g.is_hacked_ = status;
   });
@@ -132,7 +126,7 @@ void Experiment::setHackedStatus(const bool status) {
 void Experiment::setHackedStatusOf(const std::vector<size_t> &idxs, const bool status) {
   std::for_each(idxs.begin(), idxs.end(),
                 [this, &status](auto &i){
-                    this->groups_[i].is_hacked_ = status;
+                    this->dvs_[i].is_hacked_ = status;
                   });
 }
 
@@ -140,6 +134,6 @@ void Experiment::setHackedStatusOf(const std::vector<size_t> &idxs, const bool s
 void Experiment::setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status) {
   std::for_each(idxs.begin(), idxs.end(),
                 [this, &status](auto &i){
-                    this->groups_[i].is_candidate_ = status;
+                    this->dvs_[i].is_candidate_ = status;
                   });
 }

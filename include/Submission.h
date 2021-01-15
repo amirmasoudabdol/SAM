@@ -13,7 +13,7 @@
 
 namespace sam {
 
-class Group;
+class DependentVariable;
 
 class Submission {
 
@@ -38,7 +38,7 @@ public:
   //! True number of observations
   int tnobs;
 
-  Group group_;
+  DependentVariable group_;
 
   Submission() = default;
   Submission(Experiment &e, const int &index);
@@ -49,13 +49,6 @@ public:
   /// @return     `true` if the Submission is significant, `false` otherwise
   ///
   [[nodiscard]] bool isSig() const { return group_.sig_; }
-
-  template <typename OStream>
-  friend OStream &operator<<(OStream &os, const Submission &s) {
-    os << s.simid << ",\t" << s.repid << ",\t"  << s.pubid << ",\t" << s.tnobs << ",\t" << s.group_;
-
-    return os;
-  }
 
   explicit operator std::map<std::string, std::string>();
   explicit operator arma::Row<double>();

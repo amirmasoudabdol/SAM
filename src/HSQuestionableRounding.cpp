@@ -17,13 +17,13 @@ void QuestionableRounding::perform(Experiment *experiment) {
     /// it's close enough to be a hacked, if so, we either set the pvalue
     /// to `alpha` or the difference between pvalue and threshold
     ///
-    if ((experiment->groups_[i].pvalue_ > experiment->test_strategy->alpha()) and
-        (experiment->groups_[i].pvalue_ - params.threshold < experiment->test_strategy->alpha())) {
+    if ((experiment->dvs_[i].pvalue_ > experiment->test_strategy->alpha()) and
+        (experiment->dvs_[i].pvalue_ - params.threshold < experiment->test_strategy->alpha())) {
       
       if (params.rounding_method == "diff")
-        experiment->groups_[i].pvalue_ = experiment->groups_[i].pvalue_ - params.threshold;
+        experiment->dvs_[i].pvalue_ = experiment->dvs_[i].pvalue_ - params.threshold;
       else if (params.rounding_method == "alpha")
-        experiment->groups_[i].pvalue_ = experiment->test_strategy->alpha();
+        experiment->dvs_[i].pvalue_ = experiment->test_strategy->alpha();
       
     }
       

@@ -48,7 +48,7 @@ bool FalsifyingData::perturb(Experiment *experiment) {
     auto &row = (*experiment)[i].measurements();
     
     // Making sure that there is enough elements to select
-    size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[i].measurements().n_elem));
+    size_t num = std::min(params.num, static_cast<size_t>(experiment->dvs_[i].measurements().n_elem));
     
     // Selecting n indices randomly
     arma::uvec shuffled_indices = arma::shuffle(arma::regspace<arma::uvec>(0, 1, row.n_elem - 1));
@@ -74,35 +74,35 @@ bool FalsifyingData::swapGroups(Experiment *experiment) {
   
   /// @todo This is a rather expensive implementation, I need to see if I can find
   /// something in STL to do it better
-  /// @note Maybe I can actually implement something in the Group to do this nicer
+  /// @note Maybe I can actually implement something in the DependentVariable to do this nicer
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
     
     if (params.selection_method == "random") {
       // Shuffling the data because I don't know its status. Better safe than sorry!
-      Random::shuffle(experiment->groups_[d].measurements());
-      Random::shuffle(experiment->groups_[i].measurements());
+      Random::shuffle(experiment->dvs_[d].measurements());
+      Random::shuffle(experiment->dvs_[i].measurements());
     } else {
-      experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
-      experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
+      experiment->dvs_[d].measurements() = arma::sort(experiment->dvs_[d].measurements(), "descend");
+      experiment->dvs_[i].measurements() = arma::sort(experiment->dvs_[i].measurements(), "ascend");
     }
     
     // Making sure that there is enough elements to select. There should be equal number in each group
     size_t num = std::min(params.num,
-                          static_cast<size_t>(std::min(experiment->groups_[d].measurements().n_elem,
-                                                       experiment->groups_[i].measurements().n_elem)));
+                          static_cast<size_t>(std::min(experiment->dvs_[d].measurements().n_elem,
+                                                       experiment->dvs_[i].measurements().n_elem)));
         
     // Candidates from Control group
-    arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(num);
-    experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
+    arma::rowvec C_cand_values = experiment->dvs_[d].measurements().head(num);
+    experiment->dvs_[d].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
 
     // Candidates from Treatment group
-    arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(num);
-    experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
+    arma::rowvec T_cand_values = experiment->dvs_[i].measurements().head(num);
+    experiment->dvs_[i].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
 
     // --- Actual swapping
-    experiment->groups_[d].add_measurements(T_cand_values);
-    experiment->groups_[i].add_measurements(C_cand_values);
+    experiment->dvs_[d].addNewMeasurements(T_cand_values);
+    experiment->dvs_[i].addNewMeasurements(C_cand_values);
         
   }
   
@@ -121,32 +121,32 @@ bool FalsifyingData::switchGroups(Experiment *experiment) {
     if (params.switching_direction == "control-to-treatment") {
       if (params.selection_method == "random") {
         // Shuffling the data because I don't know its status. Better safe than sorry!
-        Random::shuffle(experiment->groups_[d].measurements());
+        Random::shuffle(experiment->dvs_[d].measurements());
       } else {
-        experiment->groups_[d].measurements() = arma::sort(experiment->groups_[d].measurements(), "descend");
+        experiment->dvs_[d].measurements() = arma::sort(experiment->dvs_[d].measurements(), "descend");
       }
       
       // Making sure that there is enough elements to select. Only concerned about one group
-      size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[d].measurements().n_elem));
+      size_t num = std::min(params.num, static_cast<size_t>(experiment->dvs_[d].measurements().n_elem));
 
-      arma::rowvec C_cand_values = experiment->groups_[d].measurements().head(num);
-      experiment->groups_[d].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
-      experiment->groups_[i].add_measurements(C_cand_values);
+      arma::rowvec C_cand_values = experiment->dvs_[d].measurements().head(num);
+      experiment->dvs_[d].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
+      experiment->dvs_[i].addNewMeasurements(C_cand_values);
       
     } else {
       if (params.selection_method == "random") {
         // Shuffling the data because I don't know its status. Better safe than sorry!
-        Random::shuffle(experiment->groups_[i].measurements());
+        Random::shuffle(experiment->dvs_[i].measurements());
       } else {
-        experiment->groups_[i].measurements() = arma::sort(experiment->groups_[i].measurements(), "ascend");
+        experiment->dvs_[i].measurements() = arma::sort(experiment->dvs_[i].measurements(), "ascend");
       }
       
       // Making sure that there is enough elements to select. Only concerned about one group
-      size_t num = std::min(params.num, static_cast<size_t>(experiment->groups_[i].measurements().n_elem));
+      size_t num = std::min(params.num, static_cast<size_t>(experiment->dvs_[i].measurements().n_elem));
 
-      arma::rowvec T_cand_values = experiment->groups_[i].measurements().head(num);
-      experiment->groups_[i].del_measurements(arma::regspace<arma::uvec>(0, 1, num - 1));
-      experiment->groups_[d].add_measurements(T_cand_values);
+      arma::rowvec T_cand_values = experiment->dvs_[i].measurements().head(num);
+      experiment->dvs_[i].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
+      experiment->dvs_[d].addNewMeasurements(T_cand_values);
 
     }
     

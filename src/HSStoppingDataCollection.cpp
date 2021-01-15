@@ -10,7 +10,7 @@ void StoppingDataCollection::perform(Experiment *experiment) {
   
   spdlog::debug("Stopping Data Collection: ");
   
-  auto groups = experiment->groups_;
+  auto groups = experiment->dvs_;
   
   int n_obs_max = experiment->setup.nobs().max();
   int n_trials = n_obs_max / params.batch_size;
@@ -25,7 +25,7 @@ void StoppingDataCollection::perform(Experiment *experiment) {
     spdlog::trace("Adding {} new items.", (t + 1) * params.batch_size);
     for (int g{0}; g < experiment->setup.ng(); ++g) {
 
-      (*experiment)[g].set_measurements(groups[g].measurements().head((t + 1) * params.batch_size));
+      (*experiment)[g].setMeasurements(groups[g].measurements().head((t + 1) * params.batch_size));
     }
     
     experiment->recalculateEverything();

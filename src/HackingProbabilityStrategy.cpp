@@ -35,7 +35,7 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
     bool is_any_non_sig {false};
     for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
          ++i, ++d %= experiment->setup.nd()) {
-      is_any_non_sig |= !experiment->groups_[i].sig_;
+      is_any_non_sig |= !experiment->dvs_[i].sig_;
     }
     
     if (!is_any_non_sig) {
@@ -48,14 +48,14 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
       arma::rowvec dangers(g - d);
       
       dangers.imbue([&, i = d]() mutable {
-        return this->border(experiment->groups_[i++].se_effect_);
+        return this->border(experiment->dvs_[i++].se_effect_);
       });
             
       probabilities.resize(g - d);
       probabilities.imbue([&, i = d]() mutable {
-        if (experiment->groups_[i].effect_ > dangers[i - 1]) {
+        if (experiment->dvs_[i].effect_ > dangers[i - 1]) {
           
-          double d_sig = experiment->groups_[i].se_effect_ * 1.959964;
+          double d_sig = experiment->dvs_[i].se_effect_ * 1.959964;
           arma::rowvec danger_breaks = arma::linspace<arma::rowvec>(dangers[i - 1], d_sig, 11);
           
           /// If the hacking probability is 1, then everything in this range is going to be
@@ -67,7 +67,7 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
             return 1.;
           }
           
-          return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->groups_[i++].effect_))));
+          return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->dvs_[i++].effect_))));
           
         }else{
           return 0.;

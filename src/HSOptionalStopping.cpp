@@ -28,7 +28,7 @@ void OptionalStopping::perform(Experiment *experiment) {
     double fraction {params.ratio};
     
     ns.imbue([&, i = 0]() mutable {
-      return std::floor(fraction * experiment->groups_[i++].nobs_);
+      return std::floor(fraction * experiment->dvs_[i++].nobs_);
     });
   }else{
     ns.fill(static_cast<int>(params.num));
@@ -66,7 +66,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const int n) {
   std::tie(begin, end) = getTargetBounds(experiment, params.target);
   
   for (int i = begin; i < end; ++i) {
-    (*experiment)[i].add_measurements(new_observations[i]);
+    (*experiment)[i].addNewMeasurements(new_observations[i]);
   }
   
 }
@@ -83,7 +83,7 @@ void OptionalStopping::addObservations(Experiment *experiment, const arma::Row<i
   
   // Distributing new items according to the requested size
   for (int i = begin; i < end; ++i) {
-    (*experiment)[i].add_measurements(new_observations[i].head(ns.at(i)));
+    (*experiment)[i].addNewMeasurements(new_observations[i].head(ns.at(i)));
   }
   
 }

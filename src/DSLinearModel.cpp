@@ -30,7 +30,7 @@ void LinearModelStrategy::genData(Experiment *experiment) {
 
   /// This is ugly but it should work
   for (int g{0}; g < experiment->setup.ng(); ++g) {
-    (*experiment)[g].set_measurements(
+    (*experiment)[g].setMeasurements(
         sample.row(g).head(experiment->setup.nobs()[g]));
   }
 }

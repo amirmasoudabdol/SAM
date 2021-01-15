@@ -24,7 +24,7 @@
 
 #include "DataStrategy.h"
 #include "EffectStrategy.h"
-#include "Group.h"
+#include "DependentVariable.h"
 #include "Submission.h"
 #include "TestStrategy.h"
 
@@ -40,7 +40,7 @@ class Submission;
 ///
 /// Experiment has access to all data-related
 /// strategies, e.g., DataStrategy, TestStrategy, and EffectStrategy. Moreover,
-/// it stores the actual research data in a vector of Group objects. Researcher's
+/// it stores the actual research data in a vector of DependentVariable objects. Researcher's
 /// access to actual data, and other data-related strategies always goes
 /// through an Experiment object.
 ///
@@ -67,7 +67,7 @@ public:
   std::shared_ptr<TestStrategy> test_strategy;
   std::shared_ptr<EffectStrategy> effect_strategy;
 
-  std::vector<Group> groups_;
+  std::vector<DependentVariable> dvs_;
   
   std::optional<std::vector<Submission>> candidates;
   void updateCandidatesList(const std::vector<Submission>& subs);
@@ -105,30 +105,30 @@ public:
   /// guard
   /// @note I think these are bad ideas, I think they should just return the index
   /// that are being asked to, and then some other method, actually returns the group
-  /// like `get_group`, and `set_group` or even a `Group operator()` why not.
+  /// like `get_group`, and `set_group` or even a `DependentVariable operator()` why not.
   /// @note This means I need to change the DataStrategy too, and make sure that
   /// in each iteration, I start with a fresh Experiment rather than a half cleanup one.
-  Group &operator[](std::size_t idx) {
-    if (idx > groups_.size())
+  DependentVariable &operator[](std::size_t idx) {
+    if (idx > dvs_.size())
       throw std::invalid_argument("Index out of bound.");
     
-    auto g = std::find_if(groups_.begin(), groups_.end(), [&](auto &g) -> bool {return g.id_ == idx; });
+    auto g = std::find_if(dvs_.begin(), dvs_.end(), [&](auto &g) -> bool {return g.id_ == idx; });
     return *g;
   };
   
-  const Group &operator[](std::size_t idx) const {
-    if (idx > groups_.size())
+  const DependentVariable &operator[](std::size_t idx) const {
+    if (idx > dvs_.size())
       throw std::invalid_argument("Index out of bound.");
     
-    auto g = std::find_if(groups_.cbegin(), groups_.cend(), [&](auto &g) -> bool {return g.id_ == idx; });
+    auto g = std::find_if(dvs_.cbegin(), dvs_.cend(), [&](auto &g) -> bool {return g.id_ == idx; });
     return *g;
   };
 
-  auto begin() { return groups_.begin(); };
-  auto end() { return groups_.end(); };
+  auto begin() { return dvs_.begin(); };
+  auto end() { return dvs_.end(); };
   
-  auto begin() const { return groups_.begin(); };
-  auto end() const { return groups_.end(); };
+  auto begin() const { return dvs_.begin(); };
+  auto end() const { return dvs_.end(); };
 
   /// Runs the Test Strategy
   void runTest();

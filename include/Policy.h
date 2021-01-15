@@ -203,7 +203,7 @@ struct Policy {
   ///
   /// @return     Return a tuple containing three variables.
   ///
-  /// @note This can take care of either Group or Submission because the Lua instance is aware of them!
+  /// @note This can take care of either DependentVariable or Submission because the Lua instance is aware of them!
   ///
   template <typename ForwardIt>
   std::tuple<bool, ForwardIt, ForwardIt>
@@ -431,8 +431,8 @@ struct PolicyChain {
     
     std::vector<Submission> selections {};
     auto found_sth_unique {false};
-    auto begin = experiment.groups_.begin() + experiment.setup.nd();
-    auto end = experiment.groups_.end();
+    auto begin = experiment.dvs_.begin() + experiment.setup.nd();
+    auto end = experiment.dvs_.end();
     
     /// Looping through PolicyChain(s)
     for (auto &policy : pchain) {

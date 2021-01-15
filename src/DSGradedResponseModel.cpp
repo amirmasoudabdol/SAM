@@ -41,7 +41,7 @@ void GRMDataStrategy::genData(Experiment *experiment) {
       return rasch_score(thetas.at(i++, g));
     });
 
-    (*experiment)[g].set_measurements(data);
+    (*experiment)[g].setMeasurements(data);
   }
 }
 

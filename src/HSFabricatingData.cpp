@@ -44,7 +44,7 @@ bool FabricatingData::generate(Experiment *experiment, const int n) {
   
   for (int i = begin; i < end; ++i) {
     
-    experiment->groups_[i].add_measurements(new_observations[i]);
+    experiment->dvs_[i].addNewMeasurements(new_observations[i]);
     
   }
   
@@ -62,7 +62,7 @@ bool FabricatingData::duplicate(Experiment *experiment, const int n) {
     arma::Row<double> row = arma::shuffle((*experiment)[i].measurements());
     arma::Row<double> copy_candidates = row.head(n);
     
-    experiment->groups_[i].add_measurements(copy_candidates);
+    experiment->dvs_[i].addNewMeasurements(copy_candidates);
     
   }
   
