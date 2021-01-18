@@ -82,7 +82,7 @@ public:
   Parameter<double> probability_of_being_a_hacker;
   
   //! Indicates the probability of a Researcher _actually applying_ a chosen hacking strategy
-  std::variant<double, std::string, Distribution, std::unique_ptr<HackingProbabilityStrategy>> probability_of_committing_a_hack;
+  std::variant<double, std::string, UnivariateDistribution, std::unique_ptr<HackingProbabilityStrategy>> probability_of_committing_a_hack;
     
   double submission_probability {1};
 
@@ -235,7 +235,7 @@ public:
         break;
       case nlohmann::detail::value_t::object: {
         if (prob_of_committing_a_hack.contains("dist"))
-          researcher.probability_of_committing_a_hack = make_distribution(prob_of_committing_a_hack);
+          researcher.probability_of_committing_a_hack = makeUnivariateDistribution(prob_of_committing_a_hack);
         else
           researcher.probability_of_committing_a_hack = HackingProbabilityStrategy::build(prob_of_committing_a_hack);
       }

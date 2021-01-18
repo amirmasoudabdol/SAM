@@ -105,5 +105,8 @@ void DependentVariable::clear() {
   is_hacked_ = false;
   is_candidate_ = false;
   
+  n_added_obs = 0;
+  n_removed_obs = 0;
+  
   measurements_.clear();
 }

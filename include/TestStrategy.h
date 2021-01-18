@@ -13,7 +13,7 @@
 #define SAMPP_TESTSTRATEGIES_H
 
 #include "Experiment.h"
-#include "Utilities.h"
+#include "Distributions.h"
 #include <ostream>
 
 namespace sam {

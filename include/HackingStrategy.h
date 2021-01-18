@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-#include "Utilities.h"
+#include "Distributions.h"
 #include "DecisionStrategy.h"
 #include "Experiment.h"
 #include "HackingStrategyTypes.h"
@@ -781,7 +781,7 @@ public:
     size_t num {5};
     
     //! Distribution of noise
-    std::optional<Distribution> noise_dist = make_distribution({
+    std::optional<UnivariateDistribution> noise_dist = makeUnivariateDistribution({
       {"dist", "normal_distribution"},
       {"mean", 0},
       {"stddev", 0.1}
@@ -856,7 +856,7 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
     j.at("stage").get_to(p.stage);
   
   if (j.contains("noise")) {
-    p.noise_dist = make_distribution(j["noise"]);
+    p.noise_dist = makeUnivariateDistribution(j["noise"]);
   }
   
   if (j.contains("stopping_condition"))
@@ -909,7 +909,7 @@ public:
     //! Distribution of fabricated data
     //! @todo Check if this is even necessary, I think in most cases, we
     //! can probably just use the data_strategy and get over it
-    std::optional<Distribution> dist;
+    std::optional<UnivariateDistribution> dist;
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
@@ -971,7 +971,7 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
     j.at("stage").get_to(p.stage);
   
   if (j.contains("dist")) {
-    p.dist = make_distribution(j["dist"]);
+    p.dist = makeUnivariateDistribution(j["dist"]);
   }
   
   if (j.contains("stopping_condition"))

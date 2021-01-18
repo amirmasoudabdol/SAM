@@ -13,7 +13,7 @@
 #define SAMPP_SELECTIONSTRATEGIES_H
 
 #include "Submission.h"
-#include "Utilities.h"
+#include "Distributions.h"
 #include <sol/sol.hpp>
 #include "Policy.h"
 
@@ -47,7 +47,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 class SelectionStrategy {
 
 protected:
-  Distribution dist;
+  UnivariateDistribution dist;
 
 public:
   ///

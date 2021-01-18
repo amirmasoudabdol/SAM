@@ -15,7 +15,7 @@
 #define SAMPP_PARAMETER_H
 
 #include "sam.h"
-#include "Utilities.h"
+#include "Distributions.h"
 #include <variant>
 
 namespace sam {
@@ -40,7 +40,7 @@ class Parameter : public arma::Row<T> {
   
   //! A variant storing either an instance of Distribution or
   //! MultivariateDistribution
-  std::variant<std::monostate, Distribution, MultivariateDistribution> dist;
+  std::variant<std::monostate, UnivariateDistribution, MultivariateDistribution> dist;
   
   /// Randomize the values of the arma::Row<T> container
   void randomize();

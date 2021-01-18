@@ -213,7 +213,7 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
                    return Random::get<bool>(hs->defensibility());
                  }
                },
-               [&](Distribution &dist) {
+               [&](UnivariateDistribution &dist) {
                  return Random::get<bool>(Random::get(dist));
                },
                [&](std::unique_ptr<HackingProbabilityStrategy> &hps) {

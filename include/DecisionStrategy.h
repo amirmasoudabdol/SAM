@@ -18,7 +18,7 @@
 #include <sol/sol.hpp>
 
 #include "Experiment.h"
-#include "Utilities.h"
+#include "Distributions.h"
 #include "Policy.h"
 
 namespace sam {

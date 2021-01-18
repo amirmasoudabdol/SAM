@@ -8,7 +8,7 @@ namespace sam {
 
 Submission::Submission(Experiment &e, const int &index) {
   
-  tnobs = e[index].true_nobs_.value();
+  tnobs = e[index].true_nobs_;
 
   group_ = e[index];
  

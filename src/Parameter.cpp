@@ -47,16 +47,16 @@ Parameter<T>::Parameter(const json &j, size_t size) {
         throw std::invalid_argument("Please provide a distribution specification.\n");
       
       auto name = j.at("dist").get<std::string>();
-      if (name.find("mv") != name.npos) {
+      if (multivariate_dists.find(name) != multivariate_dists.end()) {
         // Multivariate Distribution
-        dist = make_multivariate_distribution(j);
+        dist = makeMultivariateDistribution(j);
         auto v = Random::get(std::get<2>(dist));
         val.imbue([&, i = 0]() mutable {
           return static_cast<T>(v[i++]);
         });
-      } else if (name.find("distribution") != name.npos) {
+      } else if (univariate_dists.find(name) != univariate_dists.end()) {
         // Univariate Distribution
-        dist = make_distribution(j);
+        dist = makeUnivariateDistribution(j);
         auto v = static_cast<T>(Random::get(std::get<1>(dist)));
         val = arma::Col<T>(std::vector<T>(size, v));
       }
@@ -84,7 +84,7 @@ template <typename T>
 void Parameter<T>::randomize() {
   if (dist.index() != 0) {
     std::visit(overload {
-      [&](Distribution &d) {
+      [&](UnivariateDistribution &d) {
         auto v = static_cast<T>(Random::get(d));
         this->fill(v);
       },

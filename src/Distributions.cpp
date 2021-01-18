@@ -1,78 +1,35 @@
+//===-- Utilities.cpp - Implementation of Utility Functions ---------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-05-29.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of some utility functions mainly
+/// concerning the distribution setup, and everything around it, e.g. JSON
+/// serializer, and object constructions.
+///
+//===----------------------------------------------------------------------===//
 
-#include "Utilities.h"
+#include "Distributions.h"
+
+using namespace sam;
 
 using Generator = std::mt19937;
 
-namespace sam {
 
-/// A dataset of each distributions with their parameters name.
-const std::map<std::string, std::vector<std::string>> disto_params_names = {
-    {"uniform_int_distribution", {"a", "b"}},
-    {"uniform_real_distribution", {"a", "b"}},
-    {"binomial_distribution", {"p", "t"}},
-    {"exponential_distribution", {"lambda"}},
-    {"gamma_distribution", {"alpha", "beta"}},
-    {"weibull_distribution", {"a", "b"}},
-    {"extreme_value_distribution", {"a", "b"}},
-    {"normal_distribution", {"mean", "stddev"}},
-    {"lognormal_distribution", {"m", "s"}},
-    {"chi_squared_distribution", {"n"}},
-    {"cauchy_distribution", {"a", "b"}},
-    {"fisher_f_distribution", {"m", "n"}},
-    {"student_t_distribution", {"n"}},
-    {"negative_binomial_distribution", {"p", "k"}},
-    {"geometric_distribution", {"p"}},
-    {"poisson_distribution", {"mean"}},
-    {"discrete_distribution", {"probabilities"}},
-    {"piecewise_linear_distribution", {"intervals", "densities"}},
-    {"piecewise_constant_distribution", {"intervals", "densities"}},
-    {"bernoulli_distribution", {"p"}},
-    {"truncated_normal_distribution", {"mean", "stddev", "min", "max"}},
-
-    // Multivariate Distros
-    {"mvnorm_distribution", {"means", "covs"}},
-    {"truncated_mvnorm_distribution", {"means", "covs", "lowers", "uppers"}}};
-
-} // namespace sam
-
-std::map<std::string, std::string> flatten_json_to_map(const json &j) {
-
-  std::map<std::string, std::string> result;
-
-  auto flattened_j = j.flatten();
-
-  for (const auto &entry : flattened_j.items()) {
-    switch (entry.value().type()) {
-    // avoid escaping string value
-    case nlohmann::detail::value_t::string:
-      result[entry.key()] = entry.value();
-      break;
-
-      // use dump() for all other value types
-    default:
-      result[entry.key()] = entry.value().dump();
-      break;
-    }
-  }
-
-  return result;
+arma::Mat<double> constructCovMatrix(const double stddev,
+                                     const double cov,
+                                     const int n) {
+  arma::Row<double> stddevs(n);
+  stddevs.fill(stddev);
+  return constructCovMatrix(stddevs, cov, n);
 }
 
 arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     const double cov, int n) {
-  arma::Mat<double> cov_matrix(n, n);
-
-  cov_matrix.fill(cov);
-  cov_matrix.diag() = arma::pow(stddevs, 2);
-
-  return cov_matrix;
-}
-
-arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     const arma::Row<double> &covs, int n) {
+                                     const arma::Row<double> &covs,
+                                     int n) {
   using namespace arma;
 
   assert(covs.size() == n * (n - 1) / 2);
@@ -97,14 +54,18 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
   return sigma;
 }
 
-arma::Mat<double> constructCovMatrix(const double stddev, const double cov,
-                                     const int n) {
-  arma::Row<double> stddevs(n);
-  stddevs.fill(stddev);
-  return constructCovMatrix(stddevs, cov, n);
+arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
+                                     const double cov,
+                                     int n) {
+  arma::Mat<double> cov_matrix(n, n);
+  
+  cov_matrix.fill(cov);
+  cov_matrix.diag() = arma::pow(stddevs, 2);
+  
+  return cov_matrix;
 }
 
-Distribution make_distribution(json const &j) {
+UnivariateDistribution makeUnivariateDistribution(json const &j) {
   auto const &distributionName = j.at("dist");
 
   // Both piecewise distributions need be handled differently because they
@@ -144,12 +105,12 @@ Distribution make_distribution(json const &j) {
 /// @param      type_  The distribution type
 /// @param      ...    Parameters of the distribution, according to their
 ///                    representation in the standard library
-/// @return     A function call to the make_distribution_impl that returns a
+/// @return     A function call to the make_univariate_distribution_impl that returns a
 ///             distribution class.
 ///
 #define generate_distribution_factory(name_, type_, ...)                       \
   if (distributionName == #name_)                                              \
-    return make_distribution_impl<std::name_<type_>>(j, ##__VA_ARGS__);
+    return make_univariate_distribution_impl<std::name_<type_>>(j, ##__VA_ARGS__);
 
   // Continuous Distributions
   generate_distribution_factory(uniform_int_distribution, int, "a", "b")
@@ -178,7 +139,7 @@ Distribution make_distribution(json const &j) {
   throw std::runtime_error{"Unknown distribution"};
 }
 
-MultivariateDistribution make_multivariate_distribution(json const &j) {
+MultivariateDistribution makeMultivariateDistribution(json const &j) {
 
   auto const &distributionName = j.at("dist");
 
@@ -199,7 +160,7 @@ MultivariateDistribution make_multivariate_distribution(json const &j) {
 /// @param      type_  The distribution type
 /// @param      ...    Parameters of the distribution, according to their
 ///                    representation in the standard library
-/// @return     A function call to the make_distribution_impl that returns a
+/// @return     A function call to the make_multivariate_distribution_impl that returns a
 ///             distribution class.
 ///
 #define generate_multivariate_distribution_factory(name_, type_, ...)          \

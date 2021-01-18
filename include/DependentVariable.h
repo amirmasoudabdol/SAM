@@ -41,9 +41,9 @@ public:
    *  These are determined by the DataStrategy
    */
   ///@{
-  std::optional<double> true_nobs_{0};
-  std::optional<double> true_mean_{0};
-  std::optional<double> true_std_{0};
+  double true_nobs_{0};
+  double true_mean_{0};
+  double true_std_{0};
   ///@}
 
   /** @name Descriptive Statistics
@@ -75,10 +75,6 @@ public:
   double se_effect_{0};
   int eff_side_{0};
   ///@}
-  
-  
-  /// @brief List the name of all avaliable variables
-  static std::vector<std::string> Columns();
 
   /** @name Hacking Information
    *  These will be calculated (and kept updated) by the Researcher, or individual
@@ -95,7 +91,10 @@ public:
 
   DependentVariable() = default;
 
-  DependentVariable(const arma::Row<double> &data) : measurements_{data} { updateStats(); };
+  DependentVariable(const arma::Row<double> &data) : measurements_{data} {
+    updateStats();
+    true_nobs_ = nobs_;
+  };
   
   /// Sets the hacking status
   void setHackedStatus(const bool status) {
@@ -106,6 +105,25 @@ public:
   void setCandidateStatus(const bool status) {
     is_candidate_ = status;
   };
+  
+  
+  /** @name Dependent Variable Status
+   *
+   *  These allows you to query the status of the dependent variable
+   */
+  ///@{
+  [[nodiscard]] bool isModified() const {
+    return is_hacked_ || (n_added_obs > 0) || (n_removed_obs > 0);
+  }
+  
+  [[nodiscard]] bool isHacked() const {
+    return is_hacked_;
+  }
+  
+  [[nodiscard]] bool isCandidate() const {
+    return is_candidate_;
+  }
+  ///@}
 
   /// Getter / Setter
 
@@ -117,7 +135,7 @@ public:
     measurements_ = meas;
     nobs_ = meas.size();
     
-    // Should this be here?
+    // We are basically redefining the values here
     true_nobs_ = nobs_;
   }
 
@@ -125,26 +143,53 @@ public:
   void addNewMeasurements(const arma::Row<double> new_meas) {
     measurements_.insert_cols(nobs_, new_meas);
     n_added_obs += new_meas.n_elem;
+    
+    // Keeping the stats up to date
+    updateStats();
   }
 
   /// Removes the measurements by their indices
   void removeMeasurements(const arma::uvec &idxs) {
     measurements_.shed_cols(idxs);
     n_removed_obs += idxs.n_elem;
-    nobs_ -= idxs.n_elem;
+    
+    // Keeping the stats up to date
+    updateStats();
   }
-
-  auto begin() { return measurements_.begin(); };
-  auto end() { return measurements_.end(); };
-
-  explicit operator std::map<std::string, std::string>() const;
-  explicit operator arma::Row<double>();
 
   /// Updates the descriptive statistics of the dependent variable
   void updateStats();
 
   /// Reset the internal state of the dependent variable
   void clear();
+  
+  
+  /** @name STL-like default operators, and methods
+   */
+  ///@{
+  auto begin() { return measurements_.begin(); };
+  auto end() { return measurements_.end(); };
+  
+  double &operator[](std::size_t idx) {
+    if (idx > measurements_.size())
+      throw std::invalid_argument("Index out of bound.");
+    
+    return measurements_(idx);
+  }
+  
+  const double &operator[](std::size_t idx) const {
+    if (idx > measurements_.size())
+      throw std::invalid_argument("Index out of bound.");
+    
+    return measurements_(idx);
+  }
+  ///@}
+  
+  
+  /// @brief List the name of all avaliable variables
+  static std::vector<std::string> Columns();
+  explicit operator std::map<std::string, std::string>() const;
+  explicit operator arma::Row<double>();
 };
 
 } // namespace sam

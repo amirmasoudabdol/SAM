@@ -92,13 +92,13 @@ public:
 
     ///@{
     /// Distributions of main effects
-    std::optional<std::vector<Distribution>> meas_dists;
+    std::optional<std::vector<UnivariateDistribution>> meas_dists;
     std::optional<MultivariateDistribution> m_meas_dist;
     ///@}
 
     ///@{
     /// Distributions of error.
-    std::optional<std::vector<Distribution>> erro_dists;
+    std::optional<std::vector<UnivariateDistribution>> erro_dists;
     std::optional<MultivariateDistribution> m_erro_dist;
     ///@}
 
@@ -139,26 +139,26 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
   j.at("name").get_to(p.name);
 
   if (j.at("measurements").type() == nlohmann::detail::value_t::object) {
-    p.m_meas_dist = make_multivariate_distribution(j.at("measurements"));
+    p.m_meas_dist = makeMultivariateDistribution(j.at("measurements"));
   }
 
   if (j.at("measurements").type() == nlohmann::detail::value_t::array) {
-    std::vector<Distribution> dists;
+    std::vector<UnivariateDistribution> dists;
     for (const auto &value : j["measurements"]) {
-      dists.push_back(make_distribution(value));
+      dists.push_back(makeUnivariateDistribution(value));
     }
     p.meas_dists = dists;
   }
   
   if (j.contains("errors")) {
     if (j.at("errors").type() == nlohmann::detail::value_t::object) {
-      p.m_erro_dist = make_multivariate_distribution(j.at("errors"));
+      p.m_erro_dist = makeMultivariateDistribution(j.at("errors"));
     }
 
     if (j.at("errors").type() == nlohmann::detail::value_t::array) {
-      std::vector<Distribution> dists;
+      std::vector<UnivariateDistribution> dists;
       for (const auto &value : j["errors"]) {
-        dists.push_back(make_distribution(value));
+        dists.push_back(makeUnivariateDistribution(value));
       }
       p.erro_dists = dists;
     }
@@ -232,8 +232,8 @@ public:
     std::optional<MultivariateDistribution> m_diff_dist;
     std::optional<MultivariateDistribution> m_abil_dist;
 
-    std::optional<std::vector<Distribution>> diff_dists;
-    std::optional<std::vector<Distribution>> abil_dists;
+    std::optional<std::vector<UnivariateDistribution>> diff_dists;
+    std::optional<std::vector<UnivariateDistribution>> abil_dists;
 
     Parameters() = default;
   };
@@ -254,7 +254,7 @@ private:
 
   /// Improvement: This can be replaced by `Random::get<bool>` but I need to
   /// test it first.
-  Distribution uniform_dist = std::uniform_real_distribution<>{};
+  UnivariateDistribution uniform_dist = std::uniform_real_distribution<>{};
 
   arma::mat poa;        //! probability of answering
   arma::umat responses; //! responses to items, binary
@@ -304,24 +304,24 @@ inline void from_json(const json &j, GRMDataStrategy::Parameters &p) {
 
   // Collecting difficulties
   if (j.at("difficulties").type() == nlohmann::detail::value_t::object) {
-    p.m_diff_dist = make_multivariate_distribution(j.at("difficulties"));
+    p.m_diff_dist = makeMultivariateDistribution(j.at("difficulties"));
   } else {
     if (j.at("difficulties").type() == nlohmann::detail::value_t::array) {
-      std::vector<Distribution> dists;
+      std::vector<UnivariateDistribution> dists;
       for (const auto &value : j["difficulties"])
-        dists.push_back(make_distribution(value));
+        dists.push_back(makeUnivariateDistribution(value));
       p.diff_dists = dists;
     }
   }
 
   // Collecting abilities
   if (j.at("abilities").type() == nlohmann::detail::value_t::object)
-    p.m_abil_dist = make_multivariate_distribution(j.at("abilities"));
+    p.m_abil_dist = makeMultivariateDistribution(j.at("abilities"));
   else {
     if (j.at("abilities").type() == nlohmann::detail::value_t::array) {
-      std::vector<Distribution> dists;
+      std::vector<UnivariateDistribution> dists;
       for (const auto &value : j["abilities"])
-        dists.push_back(make_distribution(value));
+        dists.push_back(makeUnivariateDistribution(value));
       p.abil_dists = dists;
     }
   }
