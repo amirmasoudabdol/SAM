@@ -1,4 +1,4 @@
-//===-- Distributions.h - Implementation of Some Utility Functions ------------===//
+//===-- Distributions.h - Implementation of Some Utility Functions --------===//
 //
 // Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-05-29.
@@ -7,9 +7,12 @@
 ///
 /// @file
 /// This file contains the decelerations of some utility function which are
-/// mainly dealing with the randomness and distributino setup.
+/// mainly dealing with the randomness and distribution setup.
 ///
 //===----------------------------------------------------------------------===//
+///
+/// @defgroup DistributionBuilders Machinery of Building a Distribution Object
+///
 
 #ifndef SAMPP_UTILITIES_H
 #define SAMPP_UTILITIES_H
@@ -20,6 +23,7 @@
 
 namespace sam {
 
+// A list of every supported univariate distributions
 static const std::map<std::string, std::vector<std::string>> univariate_dists = {
   {"uniform_int_distribution", {"a", "b"}},
   {"uniform_real_distribution", {"a", "b"}},
@@ -44,7 +48,7 @@ static const std::map<std::string, std::vector<std::string>> univariate_dists = 
   {"truncated_normal_distribution", {"mean", "stddev", "min", "max"}}
 };
 
-// A list of every multivariate distribution
+// A list of every supported multivariate distribution
 static const std::map<std::string, std::vector<std::string>> multivariate_dists {
   // Multivariate Distros
   {"mvnorm_distribution", {"means", "covs"}},
@@ -53,19 +57,48 @@ static const std::map<std::string, std::vector<std::string>> multivariate_dists 
 
 }
 
-
-
 using Random = effolkronium::random_static;
 
+/** @name Distributions' Wrapper
+ *
+ *  These wrap the Univariate and Multivariate distributions to a function with a given,
+ *  ie. std::mt19937, generator. This
+ *
+ *  @ingroup DistributionBuilders
+ */
+///@{
 using Generator = std::mt19937;
 using UnivariateDistribution = std::function<double(Generator &)>;
 using MultivariateDistribution = std::function<arma::mat(Generator &)>;
+///@}
 
 /// Univariate Distribution's Constructor
 UnivariateDistribution makeUnivariateDistribution(json const &j);
 
 /// Multivariate Distribution's Constructor
 MultivariateDistribution makeMultivariateDistribution(json const &j);
+
+/** @name Abstract Distributions' Builders
+ *
+ *  These are being used by the `generate_*_distribution_factory` functions to generate
+ *  an object of UnivariateDistribution or MultivariateDistribution
+ *
+ *  @ingroup DistributionBuilders
+ */
+///@{
+/// Abstract builder of the univariate distributions
+template <class DistributionType, class... Parameters>
+UnivariateDistribution make_univariate_distribution_impl(json const &j, Parameters... parameters) {
+  return DistributionType{j.at(parameters)...};
+}
+
+/// Abstract builder of the multivariate distributions
+template <class DistributionType, class... Parameters>
+MultivariateDistribution
+make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
+  return DistributionType{j.at(parameters)...};
+}
+///@}
 
 
 /// @brief Fills the matrix with values drawn from the given distribution
@@ -95,6 +128,15 @@ static arma::mat fillMatrix(std::optional<std::vector<UnivariateDistribution>> &
   return data;
 }
 
+
+/// @brief Returns a vector of values based on the content of the JSON.
+/// 
+/// This is a very simplified version of Parameter<T>, when it can only handle
+/// array and fixed values, but not distributions. It does the job, but I want
+/// to remove it and replace whatever relies on it with Parameter<T>. However,
+/// I faced some header collisions and I gave up!
+///
+/// @see Parameter<T>
 template <typename T = double>
 std::vector<T> get_expr_setup_params(json const &j, int const size) {
   
@@ -119,20 +161,14 @@ std::vector<T> get_expr_setup_params(json const &j, int const size) {
   }
 }
 
-template <class DistributionType, class... Parameters>
-UnivariateDistribution make_univariate_distribution_impl(json const &j, Parameters... parameters) {
-  return DistributionType{j.at(parameters)...};
-}
-
-template <class DistributionType, class... Parameters>
-MultivariateDistribution
-make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
-  return DistributionType{j.at(parameters)...};
-}
-
-/** @name Constructing 
+/** @name Covariance matrix constructors
+ *
+ * These are handy functions for constructing a covariance matrix based on users' input.
+ * For instnace, they make it easy to setup a covariance with fixed, or an array of
+ * standard deviations.
  *
  */
+///@{
 arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
                                      const arma::Row<double> &covs,
                                      int n);
@@ -144,6 +180,7 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
 arma::Mat<double> constructCovMatrix(const double stddev,
                                      const double cov,
                                      const int n);
+///@}
 
 
 namespace nlohmann {
