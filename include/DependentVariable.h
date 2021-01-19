@@ -34,7 +34,8 @@ class DependentVariable {
   arma::Row<double> measurements_;
 
 public:
-  //! Dependent variable's ID. This is being used by Policy to perform some searchs
+  //! Dependent variable's ID. This is being used by Policy to perform some
+  //! searches
   int id_;
 
   /** @name Population Values
@@ -91,7 +92,7 @@ public:
 
   DependentVariable() = default;
 
-  DependentVariable(const arma::Row<double> &data) : measurements_{data} {
+  explicit DependentVariable(const arma::Row<double> &data) : measurements_{data} {
     updateStats();
     true_nobs_ = nobs_;
   };
@@ -131,7 +132,7 @@ public:
   const arma::Row<double> &measurements() const { return measurements_; };
 
   /// Sets the raw measurements values
-  void setMeasurements(const arma::Row<double> meas) {
+  void setMeasurements(const arma::Row<double>& meas) {
     measurements_ = meas;
     nobs_ = meas.size();
     
@@ -140,7 +141,7 @@ public:
   }
 
   /// Adds new measurements to the currently available data
-  void addNewMeasurements(const arma::Row<double> new_meas) {
+  void addNewMeasurements(const arma::Row<double>& new_meas) {
     measurements_.insert_cols(nobs_, new_meas);
     n_added_obs += new_meas.n_elem;
     
@@ -170,15 +171,17 @@ public:
   auto end() { return measurements_.end(); };
   
   double &operator[](std::size_t idx) {
-    if (idx > measurements_.size())
+    if (idx > measurements_.size()) {
       throw std::invalid_argument("Index out of bound.");
+    }
     
     return measurements_(idx);
   }
   
   const double &operator[](std::size_t idx) const {
-    if (idx > measurements_.size())
+    if (idx > measurements_.size()) {
       throw std::invalid_argument("Index out of bound.");
+    }
     
     return measurements_(idx);
   }
@@ -200,13 +203,16 @@ template <> struct fmt::formatter<sam::DependentVariable> {
   // Parses format specifications of the form ['l' | 'c'].
   constexpr auto parse(format_parse_context &ctx) {
 
-    auto it = ctx.begin(), end = ctx.end();
-    if (it != end && (*it == 'l' || *it == 'c'))
+    auto it = ctx.begin();
+    auto end = ctx.end();
+    if (it != end && (*it == 'l' || *it == 'c')) {
       presentation = *it++;
+    }
 
     // Check if reached the end of the range:
-    if (it != end && *it != '}')
+    if (it != end && *it != '}') {
       throw format_error("invalid format");
+    }
 
     // Return an iterator past the end of the parsed range:
     return it;

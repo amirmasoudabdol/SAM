@@ -24,7 +24,7 @@
 namespace sam {
 
 // A list of every supported univariate distributions
-static const std::map<std::string, std::vector<std::string>> univariate_dists = {
+const std::map<std::string, std::vector<std::string>> univariate_dists = {
   {"uniform_int_distribution", {"a", "b"}},
   {"uniform_real_distribution", {"a", "b"}},
   {"binomial_distribution", {"p", "t"}},
@@ -49,7 +49,7 @@ static const std::map<std::string, std::vector<std::string>> univariate_dists = 
 };
 
 // A list of every supported multivariate distribution
-static const std::map<std::string, std::vector<std::string>> multivariate_dists {
+const std::map<std::string, std::vector<std::string>> multivariate_dists {
   // Multivariate Distros
   {"mvnorm_distribution", {"means", "sigma"}},
   {"truncated_mvnorm_distribution", {"means", "sigma", "lowers", "uppers"}}
@@ -138,15 +138,15 @@ static arma::mat fillMatrix(std::optional<std::vector<UnivariateDistribution>> &
 ///
 /// @see Parameter<T>
 template <typename T = double>
-std::vector<T> get_expr_setup_params(json const &j, int const size) {
+std::vector<T> get_expr_setup_params(json const &j, size_t size) {
   
   switch (j.type()) {
     case nlohmann::detail::value_t::array: {
-      if (j.size() != size)
+      if (j.size() != size) {
         throw std::length_error("Array size does not match with the size\
                                 of the experiment.\n");
-      else
-        return j.get<std::vector<T>>();
+      }
+      return j.get<std::vector<T>>();
     }
       
     case nlohmann::detail::value_t::number_integer:
@@ -163,9 +163,9 @@ std::vector<T> get_expr_setup_params(json const &j, int const size) {
 
 /** @name Covariance matrix constructors
  *
- * These are handy functions for constructing a covariance matrix based on users' input.
- * For instnace, they make it easy to setup a covariance with fixed, or an array of
- * standard deviations.
+ * These are handy functions for constructing a covariance matrix based on
+ * users' input. For instance, they make it easy to setup a covariance with
+ * fixed, or an array of standard deviations.
  *
  */
 ///@{
@@ -174,12 +174,12 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
                                      int n);
 
 arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     const double cov,
+                                     double cov,
                                      int n);
 
-arma::Mat<double> constructCovMatrix(const double stddev,
-                                     const double cov,
-                                     const int n);
+arma::Mat<double> constructCovMatrix(double stddev,
+                                     double cov,
+                                     int n);
 ///@}
 
 
@@ -226,8 +226,9 @@ template <typename T> struct adl_serializer<arma::Mat<T>> {
 
     auto n_rows = j.size();
     auto n_cols = j[0].size();
-    for (int i{0}; i < n_rows; ++i)
+    for (int i{0}; i < n_rows; ++i) {
       assert(j[i].size() == n_cols);
+    }
 
     mat = arma::Mat<T>(n_rows, n_cols);
     for (int i{0}; i < n_rows; ++i) {
@@ -256,7 +257,7 @@ template <typename T> struct adl_serializer<baaraan::mvnorm_distribution<T>> {
       // TODO: Check for sigma dimension
     } else {
       if (j.find("stddevs") == j.end() || j.find("covs") == j.end()) {
-        std::invalid_argument(
+        throw std::invalid_argument(
             "Either `sigma` or `covs` and `stddevs` have to be given.");
       }
       arma::rowvec stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
@@ -288,17 +289,19 @@ struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
     auto n_dims = means.n_elem;
 
     arma::Mat<T> sigma;
-    arma::Mat<T> lowers, uppers;
+    arma::Mat<T> lowers;
+    arma::Mat<T> uppers;
 
     if (j.find("sigma") != j.end()) {
       sigma = j.at("sigma").get<arma::Mat<double>>();
       if (sigma.n_elem != n_dims * n_dims) {
-        std::domain_error("`sigma` doesn't have the correct size.");
+        throw std::domain_error("`sigma` doesn't have the correct size.");
       }
     } else {
-      if (j.find("stddevs") == j.end() || j.find("covs") == j.end())
-        std::invalid_argument(
+      if (j.find("stddevs") == j.end() || j.find("covs") == j.end()) {
+        throw std::invalid_argument(
             "Either `sigma` or `covs` and `stddevs` have to be given.");
+      }
 
       arma::rowvec stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
       arma::rowvec covs =
@@ -306,8 +309,9 @@ struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
       sigma = constructCovMatrix(stddevs, covs, n_dims);
     }
 
-    if (j.find("lowers") == j.end() || j.find("uppers") == j.end())
-      std::invalid_argument("lower or upper boundaries are missing.");
+    if (j.find("lowers") == j.end() || j.find("uppers") == j.end()) {
+      throw std::invalid_argument("lower or upper boundaries are missing.");
+    }
 
     lowers = get_expr_setup_params(j.at("lowers"), n_dims);
     uppers = get_expr_setup_params(j.at("uppers"), n_dims);

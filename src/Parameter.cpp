@@ -43,8 +43,10 @@ Parameter<T>::Parameter(const json &j, size_t size) {
       
     case nlohmann::detail::value_t::object: {
       
-      if (!j.contains("dist"))
-        throw std::invalid_argument("Please provide a distribution specification.\n");
+      if (!j.contains("dist")) {
+        throw std::invalid_argument(
+            "Please provide a distribution specification.\n");
+      }
       
       auto name = j.at("dist").get<std::string>();
       if (multivariate_dists.find(name) != multivariate_dists.end()) {

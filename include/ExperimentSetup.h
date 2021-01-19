@@ -117,7 +117,7 @@ public:
     nobs_ = nobs;
   };
   
-  void setObs(arma::Row<int> nobs, size_t n_c, size_t n_d) {
+  void setObs(const arma::Row<int>& nobs, size_t n_c, size_t n_d) {
     updateDesignParameters(n_c, n_d);
     nobs_ = Parameter<int>(nobs);
   };
@@ -148,11 +148,7 @@ class ExperimentSetupBuilder {
   void calculate_experiment_size() {
     setup.ng_ = setup.nc_ * setup.nd_;
 
-    if (setup.ng_ == 0) {
-      is_expr_size_decided = false;
-    } else {
-      is_expr_size_decided = true;
-    }
+    is_expr_size_decided = (setup.ng_ != 0);
   }
 
   /// Check if variable sizes are set properly, if not, tries to calculate

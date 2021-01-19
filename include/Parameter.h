@@ -49,7 +49,7 @@ public:
   
   Parameter() : arma::Row<T>() {};
   
-  Parameter(const arma::Row<T>& X) {
+  explicit Parameter(const arma::Row<T>& X) {
     this->resize(X.n_elem);
     this->imbue([&, i = 0]() mutable {
       return X.at(i++);
