@@ -63,7 +63,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     def = p_def;
   } else if (p_def.find("!sig") != std::string::npos) {
 
-    auto f_name = "cond_not_sig";
+    std::string f_name{"cond_not_sig"};
 
     auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
                              f_name, "sig == false");
@@ -76,7 +76,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
   } else if (p_def.find("sig") != std::string::npos) {
 
-    auto f_name = "cond_sig";
+    std::string f_name{"cond_sig"};
 
     auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
                              f_name, "sig == true");
@@ -95,7 +95,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
   } else if (p_def.find("first") != std::string::npos) {
 
-    auto var_name = "id";
+    std::string var_name{"id"};
     auto f_name = fmt::format("min_{}", var_name);
     auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
                              f_name, var_name, var_name);
@@ -108,7 +108,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
   } else if (p_def.find("last") != std::string::npos) {
 
-    auto var_name = "id";
+    std::string var_name{"id"};
     auto f_name = fmt::format("max_{}", var_name);
     auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
                              f_name, var_name, var_name);
@@ -121,7 +121,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
   } else if (p_def.find("all") != std::string::npos) {
 
-    auto var_name = "id";
+    std::string var_name{"id"};
     auto f_name = fmt::format("all_{}", var_name);
     auto f_def = fmt::format("function all_id () return true end");
 
@@ -139,11 +139,12 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     // a comparison function if necessary
 
     std::string s_op{};
-    for (const auto &op : cops)
+    for (const auto &op : cops) {
       if (p_def.find(op.first) != std::string::npos) {
         s_op = op.first;
         break;
       }
+    }
 
     auto op_start = p_def.find(s_op);
 
@@ -289,9 +290,10 @@ Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
 PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
                          sol::state &lua) {
 
-  for (auto &p_def : pchain_defs) {
-    if (p_def.empty())
+  for (const auto &p_def : pchain_defs) {
+    if (p_def.empty()) {
       continue;
+    }
     pchain.emplace_back(p_def, lua);
   }
 }
@@ -332,8 +334,9 @@ bool PolicyChain::operator()(Experiment *experiment) {
           return policy(Submission{*experiment, i});
         });
 
-    if (verdict)
+    if (verdict) {
       return verdict;
+    }
   }
 
   return verdict;
@@ -363,12 +366,14 @@ PolicyChain::operator()(Experiment &experiment) {
 
     // One of the policies ended up with no results, so, we skip the
     // rest of the search
-    if (begin == end)
+    if (begin == end) {
       break;
+    }
   }
 
-  if (found_sth_unique)
+  if (found_sth_unique) {
     return selections;
+  }
 
   // We found one!
   if (begin + 1 == end) {
@@ -407,12 +412,14 @@ PolicyChain::operator()(std::vector<Submission> &spool) {
       return selections;
     }
 
-    if (begin == end)
+    if (begin == end) {
       break;
+    }
   }
 
-  if (found_sth_unique)
+  if (found_sth_unique) {
     return selections;
+  }
 
   if (begin + 1 == end) {
     spdlog::trace("✓ Found the only one!");
@@ -436,10 +443,11 @@ PolicyChain::operator()(std::vector<Submission> &spool) {
 
 PolicyChainSet::PolicyChainSet(
     const std::vector<std::vector<std::string>> &psets_defs, sol::state &lua) {
-  for (auto &pchain_def : psets_defs) {
+  for (const auto &pchain_def : psets_defs) {
     PolicyChain pchain{pchain_def, lua};
-    if (pchain.empty())
+    if (pchain.empty()) {
       continue;
+    }
     pchains.emplace_back(pchain);
   }
 }
