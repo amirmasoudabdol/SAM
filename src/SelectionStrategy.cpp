@@ -15,9 +15,16 @@ SelectionStrategy::~SelectionStrategy() {
 SelectionStrategy::SelectionStrategy() {
   lua.open_libraries();
 
-  lua.new_usertype<DependentVariable>("GroupData", "id", &DependentVariable::id_, "nobs", &DependentVariable::nobs_,
-                          "pvalue", &DependentVariable::pvalue_, "effect", &DependentVariable::effect_,
-                          "sig", &DependentVariable::sig_);
+  lua.new_usertype<DependentVariable>("DependentVariable",
+   "id", &DependentVariable::id_,
+   "nobs", &DependentVariable::nobs_,
+   "mean", &DependentVariable::mean_,
+   "pvalue", &DependentVariable::pvalue_,
+   "effect", &DependentVariable::effect_,
+   "sig", &DependentVariable::sig_,
+   "hacked", &DependentVariable::is_hacked_,
+   "candidated", &DependentVariable::is_candidate_
+   );
 
   lua.new_usertype<Submission>("Submission",
       "id", sol::property([](Submission &s) { return s.group_.id_; }),

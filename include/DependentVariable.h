@@ -163,7 +163,6 @@ public:
   /// Reset the internal state of the dependent variable
   void clear();
   
-  
   /** @name STL-like default operators, and methods
    */
   ///@{

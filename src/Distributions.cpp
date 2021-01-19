@@ -137,14 +137,16 @@ MultivariateDistribution makeMultivariateDistribution(json const &j) {
 /// @return     A function call to the make_multivariate_distribution_impl that returns a
 ///             distribution class.
 ///
+/// @note This is currently offline for multivariate distribution, I rather construct
+/// them individually while baaraan is still in development.
 #define generate_multivariate_distribution_factory(name_, type_, ...)          \
   if (distributionName == #name_)                                              \
     return make_multivariate_distribution_impl<name_<type_>>(j, ##__VA_ARGS__);
 
   generate_multivariate_distribution_factory(baaraan::mvnorm_distribution,
-                                             double, "means", "covs")
+                                             double, "means", "sigma")
   generate_multivariate_distribution_factory(
-      baaraan::truncated_mvnorm_distribution, double, "means", "covs", "lowers",
+      baaraan::truncated_mvnorm_distribution, double, "means", "sigma", "lowers",
       "uppers")
 
 #undef generate_multivariate_distribution_factory
