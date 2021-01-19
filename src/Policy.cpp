@@ -16,164 +16,164 @@
 using namespace sam;
 
 /// This mostly performs some string search, and decided what type of function
-/// has been given as the input. Then, it uses a lua function template to 
-/// construct the appropriate function definition. Finally, it registers the 
-/// function to the given lua state. 
+/// has been given as the input. Then, it uses a lua function template to
+/// construct the appropriate function definition. Finally, it registers the
+/// function to the given lua state.
 ///
-/// @attention Since everything is happening via text processing, Policy is 
-/// quite sensitive to the function definition and it regets anythings with 
-/// slighest of mistake in its definition.
+/// @attention Since everything is happening via text processing, Policy is
+/// quite sensitive to the function definition and it rejects anythings with
+/// slightest of mistake in its definition.
 ///
 /// @param[in]  p_def  The definition
 /// @param      lua    The lua state
 Policy::Policy(const std::string &p_def, sol::state &lua) {
-  
+
   if (p_def.find("min") != std::string::npos) {
-    
-    auto open_par = p_def.find("(");
-    auto close_par = p_def.find(")");
-    
+
+    auto open_par = p_def.find('(');
+    auto close_par = p_def.find(')');
+
     auto var_name = p_def.substr(open_par + 1, close_par - open_par - 1);
-    
+
     auto f_name = fmt::format("min_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name, var_name,
-                             var_name);
-    
+    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
+                             f_name, var_name, var_name);
+
     lua.script(f_def);
-    
+
     type = PolicyType::Min;
     func = lua[f_name];
     def = p_def;
-    
+
   } else if (p_def.find("max") != std::string::npos) {
-    
-    auto open_par = p_def.find("(");
-    auto close_par = p_def.find(")");
-    
+
+    auto open_par = p_def.find('(');
+    auto close_par = p_def.find(')');
+
     auto var_name = p_def.substr(open_par + 1, close_par - open_par - 1);
-    
+
     auto f_name = fmt::format("max_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["max_script"], f_name, var_name,
-                             var_name);
-    
+    auto f_def =
+        fmt::format(lua_temp_scripts["max_script"], f_name, var_name, var_name);
+
     lua.script(f_def);
-    
+
     type = PolicyType::Max;
     func = lua[f_name];
     def = p_def;
   } else if (p_def.find("!sig") != std::string::npos) {
-    
+
     auto f_name = "cond_not_sig";
-    
-    auto f_def =
-    fmt::format(lua_temp_scripts["unary_function_template"], f_name, "sig == false");
-    
+
+    auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
+                             f_name, "sig == false");
+
     lua.script(f_def);
-    
+
     type = PolicyType::Comp;
     func = lua[f_name];
     def = p_def;
-    
+
   } else if (p_def.find("sig") != std::string::npos) {
-    
+
     auto f_name = "cond_sig";
-    
-    auto f_def =
-    fmt::format(lua_temp_scripts["unary_function_template"], f_name, "sig == true");
-    
+
+    auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
+                             f_name, "sig == true");
+
     lua.script(f_def);
-    
+
     type = PolicyType::Comp;
     func = lua[f_name];
     def = p_def;
-    
+
   } else if (p_def.find("random") != std::string::npos) {
-    
+
     type = PolicyType::Random;
     func = sol::function();
     def = "random";
-    
+
   } else if (p_def.find("first") != std::string::npos) {
-    
+
     auto var_name = "id";
     auto f_name = fmt::format("min_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name, var_name,
-                             var_name);
-    
+    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
+                             f_name, var_name, var_name);
+
     lua.script(f_def);
-    
+
     type = PolicyType::First;
     func = lua[f_name];
     def = p_def;
-    
+
   } else if (p_def.find("last") != std::string::npos) {
-    
+
     auto var_name = "id";
     auto f_name = fmt::format("max_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name, var_name,
-                             var_name);
-    
+    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
+                             f_name, var_name, var_name);
+
     lua.script(f_def);
-    
+
     type = PolicyType::Last;
     func = lua[f_name];
     def = p_def;
-    
+
   } else if (p_def.find("all") != std::string::npos) {
-    
+
     auto var_name = "id";
     auto f_name = fmt::format("all_{}", var_name);
     auto f_def = fmt::format("function all_id () return true end");
-    
+
     lua.script(f_def);
-    
+
     type = PolicyType::All;
     func = lua[f_name];
     def = p_def;
-    
+
   } else if (std::any_of(cops.begin(), cops.end(), [&p_def](const auto &op) {
-    return p_def.find(op.first) != std::string::npos;})) {
-    // If none of the special functions are defined, then we might have a 
+               return p_def.find(op.first) != std::string::npos;
+             })) {
+    // If none of the special functions are defined, then we might have a
     // comparison; so, we check for any of the binary operators, and constructs
     // a comparison function if necessary
-    
+
     std::string s_op{};
     for (const auto &op : cops)
       if (p_def.find(op.first) != std::string::npos) {
         s_op = op.first;
         break;
       }
-    
+
     auto op_start = p_def.find(s_op);
-    
+
     auto var_name = p_def.substr(0, op_start - 1);
-    
+
     // Adding the actual value to the function name is not really necessary but
     // I want to make sure that I don't overwrite a function by accident
-    auto f_name =
-    fmt::format("cond_{}", var_name + "_" + cops[s_op] + "_" +
-                p_def.substr(op_start + s_op.size() + 1,
-                             p_def.size()));
-    
+    auto f_name = fmt::format(
+        "cond_{}", var_name + "_" + cops[s_op] + "_" +
+                       p_def.substr(op_start + s_op.size() + 1, p_def.size()));
+
     // In case any of the logics has decimal points
     std::replace(f_name.begin(), f_name.end(), '.', '_');
-    
-    auto f_def = fmt::format(lua_temp_scripts["unary_function_template"], f_name,
-                             p_def); // Full text goes here
-    
+
+    auto f_def =
+        fmt::format(lua_temp_scripts["unary_function_template"], f_name,
+                    p_def); // Full text goes here
+
     lua.script(f_def);
-    
+
     type = PolicyType::Comp;
     func = lua[f_name];
     def = p_def;
-    
+
   } else {
     throw std::invalid_argument("Invalid policy definition.");
   }
 }
 
-
-/// This applies the current policy on a range of values, and returns a subset 
+/// This applies the current policy on a range of values, and returns a subset
 /// of the range if it finds anything.
 ///
 /// @param[in]  begin      The begin
@@ -183,94 +183,94 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 ///
 /// @return     Return a tuple containing three variables.
 ///
-/// @attention  You can only use this on DependentVariable and Submission 
+/// @attention  You can only use this on DependentVariable and Submission
 /// objects, since these are the two classes that are registered as usertype.
 template <typename ForwardIt>
 std::tuple<bool, ForwardIt, ForwardIt>
 Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
-  
+
   switch (type) {
-      
-    case PolicyType::Min: {
-      auto it = std::min_element(begin, end, func);
-      spdlog::trace("\n\t\tMin: {} \
-                    \n\t\t\t{}", def, *it);
-      return {true, it, it};
-    }
-      
-    case PolicyType::Max: {
-      auto it = std::max_element(begin, end, func);
-      spdlog::trace("\n\t\tMax: {} \
-                    \n\t\t\t{}", def, *it);
-      return {true, it, it};
-    }
-      
-    case PolicyType::Comp: {
-      auto pit = std::partition(begin, end, func);
-      spdlog::trace("\n\t\tComp: {} \
-                    \n\t\t\t{}", def, fmt::join(begin, end, "\n\t\t\t"));
-      
-      return {false, begin, pit};
-      
-    }
-      
-    case PolicyType::Random: {
-      /// Shuffling the array and setting the end pointer to the first time,
-      /// this basically mimic the process of selecting a random element from
-      /// the list.
-      Random::shuffle(begin, end);
-      spdlog::trace("\n\t\tShuffled: {} \
-                    \n\t\t\t{}", def, fmt::join(begin, end, "\n\t\t\t"));
-      return {true, begin, end};
-      
-    }
-      
-    case PolicyType::First: {
-      
-      spdlog::trace("\n\t\tFirst: {} \
-                    \n\t\t\t{}", def, *begin);
-      
-      return {true, begin, end};
-      
-    }
-      
-    case PolicyType::Last: {
-            
-      spdlog::trace("\n\t\tLast: {} \
-                    \n\t\t\t{}", def, *(end-1));
-      
-      return {true, end-1, end};
-      
-    }
-      
-    case PolicyType::All: {
-      return {false, begin, end};
-      
-    }
-      
-    default: {
-      throw std::invalid_argument("Invalid Policy Type.");
-    }
-  }
+
+  case PolicyType::Min: {
+    auto it = std::min_element(begin, end, func);
+    spdlog::trace("\n\t\tMin: {} \
+                    \n\t\t\t{}",
+                  def, *it);
+    return {true, it, it};
   }
 
+  case PolicyType::Max: {
+    auto it = std::max_element(begin, end, func);
+    spdlog::trace("\n\t\tMax: {} \
+                    \n\t\t\t{}",
+                  def, *it);
+    return {true, it, it};
+  }
 
-//std::optional<std::vector<DependentVariable>>
-//Policy::operator()(Experiment *experiment) {
+  case PolicyType::Comp: {
+    auto pit = std::partition(begin, end, func);
+    spdlog::trace("\n\t\tComp: {} \
+                    \n\t\t\t{}",
+                  def, fmt::join(begin, end, "\n\t\t\t"));
+
+    return {false, begin, pit};
+  }
+
+  case PolicyType::Random: {
+    /// Shuffling the array and setting the end pointer to the first time,
+    /// this basically mimic the process of selecting a random element from
+    /// the list.
+    Random::shuffle(begin, end);
+    spdlog::trace("\n\t\tShuffled: {} \
+                    \n\t\t\t{}",
+                  def, fmt::join(begin, end, "\n\t\t\t"));
+    return {true, begin, end};
+  }
+
+  case PolicyType::First: {
+
+    spdlog::trace("\n\t\tFirst: {} \
+                    \n\t\t\t{}",
+                  def, *begin);
+
+    return {true, begin, end};
+  }
+
+  case PolicyType::Last: {
+
+    spdlog::trace("\n\t\tLast: {} \
+                    \n\t\t\t{}",
+                  def, *(end - 1));
+
+    return {true, end - 1, end};
+  }
+
+  case PolicyType::All: {
+    return {false, begin, end};
+  }
+
+  default: {
+    throw std::invalid_argument("Invalid Policy Type.");
+  }
+  }
+}
+
+// std::optional<std::vector<DependentVariable>>
+// Policy::operator()(Experiment *experiment) {
 //  std::vector<DependentVariable> selection;
-//  
+//
 //  std::transform(experiment->dvs_.begin() + experiment->setup.nd(),
 //                 experiment->dvs_.end(),
 //                 selection.begin(),
 //                 [&](auto &dv) -> bool {
 //    return func(dv);
 //  });
-//  
+//
 //  return selection;
 //}
 
-//std::optional<std::vector<Submission>>
-//Policy::operator()(std::vector<Submission> &subs) {
+// std::optional<std::vector<Submission>>
+// Policy::operator()(std::vector<Submission> &subs) {
 //  std::vector<Submission> selection;
 //
 //  std::transform(subs.begin(), subs.end(),
@@ -286,8 +286,9 @@ Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
 //                     Policy Chain                         //
 // -------------------------------------------------------- //
 
-PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs, sol::state &lua) {
-  
+PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
+                         sol::state &lua) {
+
   for (auto &p_def : pchain_defs) {
     if (p_def.empty())
       continue;
@@ -300,124 +301,119 @@ PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs, sol::state
 /// @return     The result of applying all policies on the given submission
 ///
 bool PolicyChain::operator()(const Submission &sub) {
-  return std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
-    return policy(sub);
-  });
+  return std::all_of(pchain.begin(), pchain.end(),
+                     [&](auto &policy) -> bool { return policy(sub); });
 }
 
-
-/// For every dependent variable, we check whether that dv satisfies any of the given rules,
-/// if so, we set the verdict to `true` meaning that at least part of the experiment satisfies
-/// all the policies. However, if after going through all outcomes, none satisfies all the rules
-/// `false` will be returned, meaning that none of the outcomes satisfied all the given rules
+/// For every dependent variable, we check whether that dv satisfies any of the
+/// given rules, if so, we set the verdict to `true` meaning that at least part
+/// of the experiment satisfies all the policies. However, if after going
+/// through all outcomes, none satisfies all the rules `false` will be returned,
+/// meaning that none of the outcomes satisfied all the given rules
 ///
-/// @note Currently this only uses `all_of` meaning that all policies need to be satisfied for
-/// the check to be passed.
+/// @note Currently this only uses `all_of` meaning that all policies need to be
+/// satisfied for the check to be passed.
 ///
-/// @todo I'm planning to implement the `logic` variable by which one can control which logic
-/// is going to be used
+/// @todo I'm planning to implement the `logic` variable by which one can
+/// control which logic is going to be used
 ///
-/// @note This is horrible, there are two methods, one gets the pointer and another one the ref.
-/// This is very confusing!
+/// @note This is horrible, there are two methods, one gets the pointer and
+/// another one the ref. This is very confusing!
 bool PolicyChain::operator()(Experiment *experiment) {
-  
+
   spdlog::trace("Looking for {}", *this);
-  
-  bool verdict {false};
+
+  bool verdict{false};
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
-    
-    verdict |= std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
-      return policy(Submission{*experiment, i});
-    });
-    
+
+    verdict |=
+        std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
+          return policy(Submission{*experiment, i});
+        });
+
     if (verdict)
       return verdict;
-    
   }
-  
+
   return verdict;
 }
-
 
 ///
 /// Applies the policy chain on the Experiment and returns a list of hits, or
 /// returns an empty optional otherwise.
 std::optional<std::vector<Submission>>
 PolicyChain::operator()(Experiment &experiment) {
-  
+
   spdlog::trace("Looking for {}", *this);
-  
-  std::vector<Submission> selections {};
-  auto found_sth_unique {false};
+
+  std::vector<Submission> selections{};
+  auto found_sth_unique{false};
   auto begin = experiment.dvs_.begin() + experiment.setup.nd();
   auto end = experiment.dvs_.end();
-  
+
   // Looping through PolicyChain(s)
   for (auto &policy : pchain) {
     std::tie(found_sth_unique, begin, end) = policy(begin, end);
-    
+
     if (found_sth_unique) {
       selections.emplace_back(experiment, begin->id_);
       spdlog::trace("✓ Found One!");
     }
-    
+
     // One of the policies ended up with no results, so, we skip the
     // rest of the search
     if (begin == end)
       break;
-    
   }
-  
+
   if (found_sth_unique)
     return selections;
-  
+
   // We found one!
   if (begin + 1 == end) {
     selections.emplace_back(experiment, begin->id_);
     spdlog::trace("✓ Found the only one!");
     return selections;
   } else if (begin != end) { /// We found a bunch
-    
+
     for (auto it{begin}; it != end; ++it) {
       selections.emplace_back(experiment, it->id_);
     }
     spdlog::trace("✓ Found a bunch: {}", selections);
-    
-    
+
     return selections;
   }
-  
+
   spdlog::trace("✗ Found nothing!");
   return {};
 }
 
 std::optional<std::vector<Submission>>
 PolicyChain::operator()(std::vector<Submission> &spool) {
-  
-  std::vector<Submission> selections {};
-  auto found_sth_unique {false};
+
+  std::vector<Submission> selections{};
+  auto found_sth_unique{false};
   auto begin = spool.begin();
   auto end = spool.end();
-  
+
   for (auto &policy : pchain) {
-    
-    std::tie(found_sth_unique, begin, end) =
-    policy(begin, end);
-    
+
+    std::tie(found_sth_unique, begin, end) = policy(begin, end);
+
     if (found_sth_unique) {
       spdlog::trace("✓ Found something in the pile!");
       selections.push_back(*begin);
       return selections;
     }
-    
+
     if (begin == end)
       break;
   }
-  
+
   if (found_sth_unique)
     return selections;
-  
+
   if (begin + 1 == end) {
     spdlog::trace("✓ Found the only one!");
     selections.push_back(*begin);
@@ -429,19 +425,17 @@ PolicyChain::operator()(std::vector<Submission> &spool) {
     }
     return selections;
   }
-  
+
   spdlog::trace("✗ Found nothing!");
   return {};
-  
 }
-
 
 // -------------------------------------------------------- //
 //                    Policy Chain Set                      //
 // -------------------------------------------------------- //
 
-PolicyChainSet::PolicyChainSet(const std::vector<std::vector<std::string>> &psets_defs,
-               sol::state &lua) {
+PolicyChainSet::PolicyChainSet(
+    const std::vector<std::vector<std::string>> &psets_defs, sol::state &lua) {
   for (auto &pchain_def : psets_defs) {
     PolicyChain pchain{pchain_def, lua};
     if (pchain.empty())
