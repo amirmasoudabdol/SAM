@@ -39,15 +39,13 @@ using PolicyChainSetDefinition = std::vector<std::vector<std::string>>;
 /// @brief Implementation of the Policy class.
 ///
 /// A policy is a logical rule that it's being applied on an experiment,
-/// submission, or a
-///  set of submissions.
+/// submission, or a set of submissions.
 ///
 /// - In the case of submission, policy checks whether the given submission
 /// satisfies the given policy.
 /// - In the case of set of submissions, or an experiment, policy checks whether
-/// the any
-///  of the items, ie., dvs or subs, will satisfy the given policy, if so, it'll
-///  return those items, otherwise, the output will be empty.
+/// the any of the items, ie., dvs or subs, will satisfy the given policy, if so
+/// , it'll return those items, otherwise, the output will be empty.
 ///
 /// @ingroup  Policies
 struct Policy {
