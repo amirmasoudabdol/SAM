@@ -51,8 +51,8 @@ static const std::map<std::string, std::vector<std::string>> univariate_dists = 
 // A list of every supported multivariate distribution
 static const std::map<std::string, std::vector<std::string>> multivariate_dists {
   // Multivariate Distros
-  {"mvnorm_distribution", {"means", "covs"}},
-  {"truncated_mvnorm_distribution", {"means", "covs", "lowers", "uppers"}}
+  {"mvnorm_distribution", {"means", "sigma"}},
+  {"truncated_mvnorm_distribution", {"means", "sigma", "lowers", "uppers"}}
 };
 
 }
