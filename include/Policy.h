@@ -71,9 +71,9 @@ struct Policy {
   }
 
   /// Returns the result of applying the policy on a dependent variable
-  //  bool operator()(const DependentVariable &dv) {
-  //    return func(dv);
-  //  }
+  [[nodiscard]] bool operator()(const DependentVariable &dv) const {
+    return func(dv);
+  }
 
   /// Returns a list of dependent variables that are satisfying the policy
   //  std::optional<std::vector<DependentVariable>> operator()(Experiment
@@ -95,6 +95,14 @@ private:
   std::map<std::string, std::string> cops = {
       {">=", "greater_eq"}, {"<=", "lesser_eq"}, {">", "greater"},
       {"<", "lesser"},      {"==", "equal"},     {"!=", "not_equal"}};
+  
+  std::vector<std::string> quantitative_variables {"id", "nobs", "mean", "pvalue", "effect"};
+  
+  std::vector<std::string> meta_variables {"sig", "hacked", "candidate"};
+  
+  std::vector<std::string> binary_operators {">=", "<=", "<", ">", "==", "!="};
+  
+  std::vector<std::string> unary_functions {"min", "max", "random", "first", "last", "all"};
 };
 
 inline void to_json(json &j, const Policy &p) {

@@ -225,8 +225,8 @@ template <> struct fmt::formatter<sam::DependentVariable> {
     // ctx.out() is an output iterator to write to.
     return format_to(
                      ctx.out(),
-                     (presentation == 'l' or presentation == 'u') ? "id: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {} is_hacked: {} is_candidate: {}" : "{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{},{},{}",
-                     dv.id_, dv.nobs_, dv.mean_, dv.var_, dv.stddev_, dv.sei_, dv.stats_, dv.pvalue_, dv.effect_, dv.var_effect_, dv.se_effect_, dv.sig_, dv.eff_side_, dv.is_hacked_, dv.is_candidate_);
+                     (presentation == 'l' or presentation == 'u') ? "id: {} tnobs: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {} is_hacked: {} is_candidate: {}" : "{},{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{},{},{}",
+                     dv.id_, dv.true_nobs_, dv.nobs_, dv.mean_, dv.var_, dv.stddev_, dv.sei_, dv.stats_, dv.pvalue_, dv.effect_, dv.var_effect_, dv.se_effect_, dv.sig_, dv.eff_side_, dv.is_hacked_, dv.is_candidate_);
     
     /// @todo this is an example of how fmt can be used to generate CSV rows, but I've not yet
     /// implemented it, I need to re-write the Writer class for this first

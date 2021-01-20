@@ -61,25 +61,35 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     type = PolicyType::Max;
     func = lua[f_name];
     def = p_def;
-  } else if (p_def.find("!sig") != std::string::npos) {
+  } else if (p_def[0] == '!') {
 
-    std::string f_name{"cond_not_sig"};
+    std::string p_def_without_excl = p_def.substr(1);
+
+    if (std::any_of(meta_variables.begin(), meta_variables.end(),
+                    [&p_def_without_excl](auto &var) -> bool {
+                      return p_def_without_excl == var;
+                    })) {
+
+      std::string f_name{"cond_not_" + p_def_without_excl};
+
+      auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
+                               f_name, p_def_without_excl + " == false");
+
+      lua.script(f_def);
+
+      type = PolicyType::Comp;
+      func = lua[f_name];
+      def = p_def;
+    }
+
+  } else if (std::any_of(
+                 meta_variables.begin(), meta_variables.end(),
+                 [&p_def](auto &var) -> bool { return p_def == var; })) {
+
+    std::string f_name{"cond_" + p_def};
 
     auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
-                             f_name, "sig == false");
-
-    lua.script(f_def);
-
-    type = PolicyType::Comp;
-    func = lua[f_name];
-    def = p_def;
-
-  } else if (p_def.find("sig") != std::string::npos) {
-
-    std::string f_name{"cond_sig"};
-
-    auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
-                             f_name, "sig == true");
+                             f_name, p_def + " == true");
 
     lua.script(f_def);
 
@@ -138,10 +148,11 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     // comparison; so, we check for any of the binary operators, and constructs
     // a comparison function if necessary
 
+    // Searching for the operator
     std::string s_op{};
-    for (const auto &op : cops) {
-      if (p_def.find(op.first) != std::string::npos) {
-        s_op = op.first;
+    for (const auto &op : binary_operators) {
+      if (p_def.find(op) != std::string::npos) {
+        s_op = op;
         break;
       }
     }
@@ -159,9 +170,15 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     // In case any of the logics has decimal points
     std::replace(f_name.begin(), f_name.end(), '.', '_');
 
+    // In the case of any of the logics contains negative value
+    std::replace(f_name.begin(), f_name.end(), '-', '_');
+
     auto f_def =
         fmt::format(lua_temp_scripts["unary_function_template"], f_name,
                     p_def); // Full text goes here
+
+    // This is because lua uses ~ instead of !
+    std::replace(f_def.begin(), f_def.end(), '!', '~');
 
     lua.script(f_def);
 

@@ -21,18 +21,18 @@ HackingStrategy::HackingStrategy() {
    "effect", &DependentVariable::effect_,
    "sig", &DependentVariable::sig_,
    "hacked", &DependentVariable::is_hacked_,
-   "candidated", &DependentVariable::is_candidate_
+   "candidate", &DependentVariable::is_candidate_
    );
 
   lua.new_usertype<Submission>("Submission",
-      "id", sol::property([](Submission &s) { return s.group_.id_; }),
-      "nobs", sol::property([](Submission &s) { return s.group_.nobs_; }),
-      "mean", sol::property([](Submission &s) { return s.group_.mean_; }),
-      "pvalue", sol::property([](Submission &s) { return s.group_.pvalue_; }),
-      "effect", sol::property([](Submission &s) { return s.group_.effect_; }),
-      "sig", sol::property([](Submission &s) { return s.group_.sig_; }),
-      "hacked", sol::property([](Submission &s) { return s.group_.is_hacked_; }),
-      "candidated", sol::property([](Submission &s) { return s.group_.is_candidate_; }));
+      "id", sol::property([](Submission &s) { return s.dv_.id_; }),
+      "nobs", sol::property([](Submission &s) { return s.dv_.nobs_; }),
+      "mean", sol::property([](Submission &s) { return s.dv_.mean_; }),
+      "pvalue", sol::property([](Submission &s) { return s.dv_.pvalue_; }),
+      "effect", sol::property([](Submission &s) { return s.dv_.effect_; }),
+      "sig", sol::property([](Submission &s) { return s.dv_.sig_; }),
+      "hacked", sol::property([](Submission &s) { return s.dv_.is_hacked_; }),
+      "candidate", sol::property([](Submission &s) { return s.dv_.is_candidate_; }));
 }
 
 ///

@@ -23,18 +23,18 @@ SelectionStrategy::SelectionStrategy() {
    "effect", &DependentVariable::effect_,
    "sig", &DependentVariable::sig_,
    "hacked", &DependentVariable::is_hacked_,
-   "candidated", &DependentVariable::is_candidate_
+   "candidate", &DependentVariable::is_candidate_
    );
 
   lua.new_usertype<Submission>("Submission",
-      "id", sol::property([](Submission &s) { return s.group_.id_; }),
-      "nobs", sol::property([](Submission &s) { return s.group_.nobs_; }),
-      "mean", sol::property([](Submission &s) { return s.group_.mean_; }),
-      "pvalue", sol::property([](Submission &s) { return s.group_.pvalue_; }),
-      "effect", sol::property([](Submission &s) { return s.group_.effect_; }),
-      "sig", sol::property([](Submission &s) { return s.group_.sig_; }),
-      "hacked", sol::property([](Submission &s) { return s.group_.is_hacked_; }),
-      "candidated", sol::property([](Submission &s) { return s.group_.is_candidate_; }));
+      "id", sol::property([](Submission &s) { return s.dv_.id_; }),
+      "nobs", sol::property([](Submission &s) { return s.dv_.nobs_; }),
+      "mean", sol::property([](Submission &s) { return s.dv_.mean_; }),
+      "pvalue", sol::property([](Submission &s) { return s.dv_.pvalue_; }),
+      "effect", sol::property([](Submission &s) { return s.dv_.effect_; }),
+      "sig", sol::property([](Submission &s) { return s.dv_.sig_; }),
+      "hacked", sol::property([](Submission &s) { return s.dv_.is_hacked_; }),
+      "candidate", sol::property([](Submission &s) { return s.dv_.is_candidate_; }));
 }
 
 std::unique_ptr<SelectionStrategy>
@@ -98,7 +98,7 @@ bool SignificantSelection::review(const std::vector<Submission> &subs) {
 
   // Only accepting +/- results if journal cares about it, side != 0
   if (params.side != 0 and std::any_of(subs.begin(), subs.end(), [&](auto &s) {
-        return s.group_.eff_side_ != params.side;
+        return s.dv_.eff_side_ != params.side;
       })) {
     return false;
   }
@@ -106,7 +106,7 @@ bool SignificantSelection::review(const std::vector<Submission> &subs) {
   /// Checking whether any of the outcomes are significant
   return std::any_of(subs.begin(), subs.end(),
                      [&](auto &s) -> bool {
-                       return s.group_.pvalue_ < params.alpha;
+                       return s.dv_.pvalue_ < params.alpha;
                      }) or
          Random::get<bool>(1 - params.pub_bias);
 }

@@ -57,6 +57,7 @@ DependentVariable::operator std::map<std::string, std::string>() const {
 
   record["gid"] = std::to_string(id_);
 
+  record["tnobs"] = std::to_string(true_nobs_);
   record["nobs"] = std::to_string(nobs_);
   record["mean"] = std::to_string(mean_);
   record["var"] = std::to_string(var_);
@@ -84,6 +85,7 @@ DependentVariable::operator std::map<std::string, std::string>() const {
 DependentVariable::operator arma::Row<double>() {
   
   return {static_cast<double>(id_),
+    static_cast<double>(true_nobs_),
     static_cast<double>(nobs_),
     mean_,
     var_,

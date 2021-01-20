@@ -296,12 +296,12 @@ void TestOfObsOverExptSig::estimate(Journal *journal) {
   
   arma::rowvec sigs(journal->yi.n_elem);
   sigs.imbue([&, i = 0]() mutable {
-    return journal->publications_list[i++].group_.sig_;
+    return journal->publications_list[i++].dv_.sig_;
   });
   
   arma::rowvec ni(journal->yi.n_elem);
   ni.imbue([&, i = 0]() mutable {
-    return journal->publications_list[i++].group_.nobs_;
+    return journal->publications_list[i++].dv_.nobs_;
   });
   
   
@@ -314,7 +314,7 @@ void TrimAndFill::estimate(Journal *journal) {
   
   arma::rowvec ni(journal->yi.n_elem);
   ni.imbue([&, i = 0]() mutable {
-    return journal->publications_list[i++].group_.nobs_;
+    return journal->publications_list[i++].dv_.nobs_;
   });
   
   journal->meta_analysis_submissions.push_back(TrimAndFill::TF(journal->yi, journal->vi, ni, params));

@@ -202,8 +202,8 @@ public:
     yi.resize(n); vi.resize(n); wi.resize(n);
     
     for (int i{0}; i < n; ++i) {
-      yi[i] = publications_list[i].group_.effect_;
-      vi[i] = publications_list[i].group_.var_;
+      yi[i] = publications_list[i].dv_.effect_;
+      vi[i] = publications_list[i].dv_.var_;
     }
     
     wi = 1./vi;

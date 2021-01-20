@@ -31,24 +31,23 @@ public:
   int repid {0};
   //! Publication ID
   int pubid {0};
-  
-  
-  //! Index of the selected group
 
-  //! True number of observations
-  int tnobs;
-
-  DependentVariable group_;
+  DependentVariable dv_;
 
   Submission() = default;
   Submission(Experiment &e, const int &index);
+  Submission(int sim_id, int expr_id, int rep_id, int pub_id, DependentVariable dv);
 
   ~Submission() = default;
 
-  ///
-  /// @return     `true` if the Submission is significant, `false` otherwise
-  ///
-  [[nodiscard]] bool isSig() const { return group_.sig_; }
+  /** @name Submission's status information
+   *  Allowing for quick and easy inquiry of submission's status
+   */
+  ///@{
+  [[nodiscard]] bool isSig() const { return dv_.sig_; }
+  [[nodiscard]] bool isHacked() const { return dv_.is_hacked_; }
+  [[nodiscard]] bool isCandidate() const { return dv_.is_candidate_; }
+  ///@}
 
   explicit operator std::map<std::string, std::string>();
   explicit operator arma::Row<double>();
@@ -75,7 +74,7 @@ struct fmt::formatter<sam::Submission> {
     return format_to(
         ctx.out(),
         "{}, {}, {}, {}, {}, {}",
-        s.simid, s.exprid, s.repid, s.pubid, s.tnobs, s.group_);
+        s.simid, s.exprid, s.repid, s.pubid, s.dv_);
   }
 };
 

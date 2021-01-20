@@ -26,6 +26,8 @@ BOOST_AUTO_TEST_SUITE(constructor)
 
   BOOST_AUTO_TEST_CASE( from_an_arma_array ) {
     
+    BOOST_TEST_MESSAGE("Testing the Initialization from arma::rowvec...");
+    
     arma::rowvec data(100);
     data.randn();
     
@@ -36,6 +38,22 @@ BOOST_AUTO_TEST_SUITE(constructor)
     // Testing whether stats are initialized, and updated
     BOOST_TEST(dp.mean_ != 0);
     BOOST_TEST(dp.var_ != 0);
+    
+  }
+
+  BOOST_AUTO_TEST_CASE( copy_constructor ) {
+    
+    BOOST_TEST_MESSAGE("Testing the Copy Constructor...");
+    
+    arma::rowvec data(100);
+    data.randn();
+    
+    DependentVariable dv{data};
+    
+    DependentVariable dv_copy{dv};
+    BOOST_TEST(dv.mean_ == dv_copy.mean_);
+    BOOST_TEST(arma::approx_equal(dv.measurements(), dv_copy.measurements(),
+                                  "absdiff", 0.001));
     
   }
 
