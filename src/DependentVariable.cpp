@@ -72,6 +72,7 @@ DependentVariable::operator std::map<std::string, std::string>() const {
   record["side"] = std::to_string(eff_side_);
 
   record["is_hacked"] = std::to_string(is_hacked_);
+  record["is_candidate"] = std::to_string(is_candidate_);
 
   return record;
 }
@@ -97,7 +98,9 @@ DependentVariable::operator arma::Row<double>() {
     se_effect_,
     static_cast<double>(sig_),
     static_cast<double>(eff_side_),
-    static_cast<double>(is_hacked_)};
+    static_cast<double>(is_hacked_),
+    static_cast<double>(is_candidate_)
+  };
   
 }
 

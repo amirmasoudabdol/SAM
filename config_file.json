@@ -7,8 +7,8 @@
                 "means": [
                     0.0,
                     0.0,
-                    0.8500000000000001,
-                    0.8500000000000001
+                    0.1,
+                    0.1
                 ],
                 "sigma": [
                     [
@@ -66,7 +66,7 @@
         "decision_strategy": {
             "name": "DefaultDecisionMaker",
             "initial_selection_policies": [
-                ["id == 2"]
+                ["sig"]
             ],
             "between_stashed_selection_policies": [
                 [

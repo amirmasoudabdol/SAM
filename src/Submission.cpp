@@ -32,6 +32,8 @@ std::vector<std::string> Submission::Columns() {
 
 Submission::operator std::map<std::string, std::string>() {
   
+  static std::map<std::string, std::string> record;
+  
   record["simid"] = std::to_string(simid);
   record["exprid"] = std::to_string(exprid);
   record["repid"] = std::to_string(repid);

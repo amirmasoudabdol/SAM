@@ -18,7 +18,7 @@ class DependentVariable;
 class Submission {
 
   //! Somewhat of a buffer for storing and returning a csv rows
-  std::map<std::string, std::string> record;
+//  std::map<std::string, std::string> record;
 
 public:
   static std::vector<std::string> Columns();
@@ -73,7 +73,7 @@ struct fmt::formatter<sam::Submission> {
     // ctx.out() is an output iterator to write to.
     return format_to(
         ctx.out(),
-        "{}, {}, {}, {}, {}, {}",
+        "{}, {}, {}, {}, {}",
         s.simid, s.exprid, s.repid, s.pubid, s.dv_);
   }
 };

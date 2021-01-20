@@ -159,18 +159,25 @@ public:
 
   explicit DefaultDecisionMaker(const Parameters &p) : params{p} {
 
+    spdlog::trace("Preparing Initial Selection Policies: ");
     initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
 
+    spdlog::trace("Preparing Between Stashed Selection Policies: ");
     between_stashed_selection_policies = PolicyChainSet(p.between_stashed_selection_policies_defs, lua);
 
+    spdlog::trace("Preparing Submission Decision Policies: ");
     submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
     
+    spdlog::trace("Preparing Between Replication Selection Policies: ");
     between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
     
+    spdlog::trace("Preparing Will Start Hacking Decision Policies: ");
     will_start_hacking_decision_policies = PolicyChain(p.will_start_hacking_decision_policies_def, lua);
     
+    spdlog::trace("Preparing Will Conitnue Replicating Decision Policies: ");
     will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, lua);
     
+    spdlog::trace("Preparing Stashing Policies: ");
     stashing_policy = PolicyChain(p.stashing_policy_def, lua);
   };
 

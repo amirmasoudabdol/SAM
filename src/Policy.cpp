@@ -27,6 +27,8 @@ using namespace sam;
 /// @param[in]  p_def  The definition
 /// @param      lua    The lua state
 Policy::Policy(const std::string &p_def, sol::state &lua) {
+  
+  std::string f_def;
 
   if (p_def.find("min") != std::string::npos) {
 
@@ -36,7 +38,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     auto var_name = p_def.substr(open_par + 1, close_par - open_par - 1);
 
     auto f_name = fmt::format("min_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"],
                              f_name, var_name, var_name);
 
     lua.script(f_def);
@@ -53,8 +55,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     auto var_name = p_def.substr(open_par + 1, close_par - open_par - 1);
 
     auto f_name = fmt::format("max_{}", var_name);
-    auto f_def =
-        fmt::format(lua_temp_scripts["max_script"], f_name, var_name, var_name);
+    f_def =
+        fmt::format(lua_temp_scripts["binary_function_template"], f_name, var_name, var_name);
 
     lua.script(f_def);
 
@@ -72,7 +74,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
       std::string f_name{"cond_not_" + p_def_without_excl};
 
-      auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
+      f_def = fmt::format(lua_temp_scripts["unary_function_template"],
                                f_name, p_def_without_excl + " == false");
 
       lua.script(f_def);
@@ -88,7 +90,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string f_name{"cond_" + p_def};
 
-    auto f_def = fmt::format(lua_temp_scripts["unary_function_template"],
+    f_def = fmt::format(lua_temp_scripts["unary_function_template"],
                              f_name, p_def + " == true");
 
     lua.script(f_def);
@@ -107,7 +109,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string var_name{"id"};
     auto f_name = fmt::format("min_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"],
                              f_name, var_name, var_name);
 
     lua.script(f_def);
@@ -120,7 +122,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string var_name{"id"};
     auto f_name = fmt::format("max_{}", var_name);
-    auto f_def = fmt::format(lua_temp_scripts["binary_function_template"],
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"],
                              f_name, var_name, var_name);
 
     lua.script(f_def);
@@ -133,7 +135,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string var_name{"id"};
     auto f_name = fmt::format("all_{}", var_name);
-    auto f_def = fmt::format("function all_id () return true end");
+    f_def = fmt::format("function all_id () return true end");
 
     lua.script(f_def);
 
@@ -173,7 +175,7 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     // In the case of any of the logics contains negative value
     std::replace(f_name.begin(), f_name.end(), '-', '_');
 
-    auto f_def =
+    f_def =
         fmt::format(lua_temp_scripts["unary_function_template"], f_name,
                     p_def); // Full text goes here
 
@@ -189,6 +191,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
   } else {
     throw std::invalid_argument("Invalid policy definition.");
   }
+  
+  spdlog::trace("Lua Function: {}", f_def);
 }
 
 /// This applies the current policy on a range of values, and returns a subset
@@ -209,67 +213,67 @@ Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
 
   switch (type) {
 
-  case PolicyType::Min: {
-    auto it = std::min_element(begin, end, func);
-    spdlog::trace("\n\t\tMin: {} \
-                    \n\t\t\t{}",
-                  def, *it);
-    return {true, it, it};
-  }
+    case PolicyType::Min: {
+      auto it = std::min_element(begin, end, func);
+      spdlog::trace("\n\t\tMin: {} \
+                      \n\t\t\t{}",
+                    def, *it);
+      return {true, it, it};
+    }
 
-  case PolicyType::Max: {
-    auto it = std::max_element(begin, end, func);
-    spdlog::trace("\n\t\tMax: {} \
-                    \n\t\t\t{}",
-                  def, *it);
-    return {true, it, it};
-  }
+    case PolicyType::Max: {
+      auto it = std::max_element(begin, end, func);
+      spdlog::trace("\n\t\tMax: {} \
+                      \n\t\t\t{}",
+                    def, *it);
+      return {true, it, it};
+    }
 
-  case PolicyType::Comp: {
-    auto pit = std::partition(begin, end, func);
-    spdlog::trace("\n\t\tComp: {} \
-                    \n\t\t\t{}",
-                  def, fmt::join(begin, end, "\n\t\t\t"));
+    case PolicyType::Comp: {
+      auto pit = std::partition(begin, end, func);
+      spdlog::trace("\n\t\tComp: {} \
+                      \n\t\t\t{}",
+                    def, fmt::join(begin, end, "\n\t\t\t"));
 
-    return {false, begin, pit};
-  }
+      return {false, begin, pit};
+    }
 
-  case PolicyType::Random: {
-    /// Shuffling the array and setting the end pointer to the first time,
-    /// this basically mimic the process of selecting a random element from
-    /// the list.
-    Random::shuffle(begin, end);
-    spdlog::trace("\n\t\tShuffled: {} \
-                    \n\t\t\t{}",
-                  def, fmt::join(begin, end, "\n\t\t\t"));
-    return {true, begin, end};
-  }
+    case PolicyType::Random: {
+      /// Shuffling the array and setting the end pointer to the first time,
+      /// this basically mimic the process of selecting a random element from
+      /// the list.
+      Random::shuffle(begin, end);
+      spdlog::trace("\n\t\tShuffled: {} \
+                      \n\t\t\t{}",
+                    def, fmt::join(begin, end, "\n\t\t\t"));
+      return {true, begin, end};
+    }
 
-  case PolicyType::First: {
+    case PolicyType::First: {
 
-    spdlog::trace("\n\t\tFirst: {} \
-                    \n\t\t\t{}",
-                  def, *begin);
+      spdlog::trace("\n\t\tFirst: {} \
+                      \n\t\t\t{}",
+                    def, *begin);
 
-    return {true, begin, end};
-  }
+      return {true, begin, end};
+    }
 
-  case PolicyType::Last: {
+    case PolicyType::Last: {
 
-    spdlog::trace("\n\t\tLast: {} \
-                    \n\t\t\t{}",
-                  def, *(end - 1));
+      spdlog::trace("\n\t\tLast: {} \
+                      \n\t\t\t{}",
+                    def, *(end - 1));
 
-    return {true, end - 1, end};
-  }
+      return {true, end - 1, end};
+    }
 
-  case PolicyType::All: {
-    return {false, begin, end};
-  }
+    case PolicyType::All: {
+      return {false, begin, end};
+    }
 
-  default: {
-    throw std::invalid_argument("Invalid Policy Type.");
-  }
+    default: {
+      throw std::invalid_argument("Invalid Policy Type.");
+    }
   }
 }
 
