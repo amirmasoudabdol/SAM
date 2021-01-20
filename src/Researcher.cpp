@@ -31,7 +31,7 @@ bool Researcher::letTheHackBegin() {
   // of the methods
   bool stopped_hacking{false};
 
-  // This is a handy flag to propogate the information out of the std::visit
+  // This is a handy flag to propagate the information out of the std::visit
   // It indicates whether or not the Researcher has committed to the hack or
   // not.
   bool has_committed;
@@ -43,7 +43,7 @@ bool Researcher::letTheHackBegin() {
     for (auto &step : h_set) {
 
       // In each step, we either run a hack or a policy, HackingWorkflow is 
-      // ordered such that every hacking stategy is followed by a 
+      // ordered such that every hacking strategy is followed by a
       // selection → decision sequence
       std::visit(
           overload{
@@ -126,7 +126,7 @@ bool Researcher::letTheHackBegin() {
 /// hacking strategies, and their corresponding parameters.
 ///
 /// @note It worth noting that, this method doesn't randomize the internal
-/// parameters of individual hacking stratgies. Hacking strategies parameters can
+/// parameters of individual hacking strategies. Hacking strategies parameters can
 /// be randomized by providing distribution objects as their input variables.
 ///
 /// @todo I think the name can be more specific
@@ -190,7 +190,7 @@ void Researcher::checkAndsubmitTheResearch(
 
 /// This technically invokes the #probability_of_being_a_hacker, and
 /// returns the outcome. The value then will be casted to a boolean to determine
-/// whether the Reseacher is going to start the hacking procedure or not, ie.,
+/// whether the Researcher is going to start the hacking procedure or not, ie.,
 /// call letTheHackBegin().
 ///
 /// @note Note that probability_of_being_a_hacker is called through it's call operator.
@@ -200,8 +200,8 @@ bool Researcher::isHacker() {
 }
 
 /// Similar to isHacker(), this returns a boolean indicating whether or not the
-/// Researcher will commit to the given hacking method. The probablity of
-/// commitment to a hacking strategy is being calcualted from the value of
+/// Researcher will commit to the given hacking method. The probability of
+/// commitment to a hacking strategy is being calculated from the value of
 /// #probability_of_committing_a_hack.
 bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
   return std::visit(

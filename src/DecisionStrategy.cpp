@@ -12,7 +12,7 @@ using namespace sam;
 ///
 DecisionStrategy::~DecisionStrategy(){
     // pure destructors
-};
+}
 
 DecisionStrategy::DecisionStrategy() {
 
@@ -40,7 +40,7 @@ DecisionStrategy::DecisionStrategy() {
       "sig", sol::property([](Submission &s) { return s.group_.sig_; }),
       "hacked", sol::property([](Submission &s) { return s.group_.is_hacked_; }),
       "candidated", sol::property([](Submission &s) { return s.group_.is_candidate_; }));
-};
+}
 
 
 std::unique_ptr<DecisionStrategy>
@@ -76,8 +76,9 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
     submission_candidates = pchain(experiment);
     
     /// If any of the pchains return something, we ignore the rest, and leave!
-    if (submission_candidates)
+    if (submission_candidates) {
       return;
+    }
       
   }
 
@@ -108,8 +109,9 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
     submission_candidates = pchain(spool);
     
     /// If any of the pchains return something, we ignore the rest, and leave!
-    if (submission_candidates)
+    if (submission_candidates) {
       return;
+    }
 
   }
 
@@ -160,10 +162,11 @@ bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submissi
     // Checking whether all policies are returning `true`
     if (subs) {
       bool check{false};
-      for (auto &sub : subs.value())
+      for (const auto &sub : subs.value()) {
         check |=
             std::all_of(pchain.begin(), pchain.end(),
                         [&](auto &policy) -> bool { return policy.func(sub); });
+      }
       return check;
     } else
       return false;
@@ -211,7 +214,7 @@ bool DefaultDecisionMaker::willStartHacking() {
     return true;
   }
   
-};
+}
 
 
 /// Determines whether the `final_submission_candidates` complies with **any** of the
@@ -241,7 +244,7 @@ bool DefaultDecisionMaker::willContinueHacking(Experiment *experiment,
   
   return verdict;
   
-};
+}
 
 
 bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
@@ -265,7 +268,7 @@ bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
     return true;
   }
   
-};
+}
 
 DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {

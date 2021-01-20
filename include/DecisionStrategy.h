@@ -42,13 +42,9 @@ class DecisionStrategy {
 public:
   // Lua state
   sol::state lua;
-
-public:
   
   virtual ~DecisionStrategy() = 0;
   DecisionStrategy();
-    
-  json config_;
   
   /// DecisionStrategy factory method.
   ///
@@ -59,14 +55,14 @@ public:
   
   std::optional<SubmissionPool> submission_candidates;
   
-  //! List of selected submissions colelcted by the researcher
+  //! List of selected submissions collected by the researcher
   //! using the stashing_policy
   SubmissionPool stashed_submissions;
   
   //! List of submissions selecting during the hacking procedure
   SubmissionPool hacked_submissions;
 
-  /// @todo: These guys should move to their own class, I don't have to keep everything here!
+  /// @todo These guys should move to their own class, I don't have to keep everything here!
   PolicyChainSet initial_selection_policies;
   PolicyChain submission_decision_policies;
   PolicyChainSet between_stashed_selection_policies;
@@ -116,15 +112,6 @@ public:
   virtual DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) = 0;
 
-  void saveEveryOutcome(Experiment &experiment) {
-    for (int i{experiment.setup.nd()}, d{0}; i < experiment.setup.ng();
-         ++i, ++d %= experiment.setup.nd()) {
-      stashed_submissions.emplace_back(experiment, i);
-    }
-  };
-  
-  
-  
   /// Create and save all possible submissions from an experiment, if they pass
   /// the given policy predicate
   ///
@@ -180,18 +167,18 @@ public:
     stashing_policy = PolicyChain(p.stashing_policy_def, lua);
   };
 
-  virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
+  DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) override;
   
-  virtual DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
+  DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) override;
 
-  virtual bool willStartHacking() override;
+  bool willStartHacking() override;
   
-  virtual bool willContinueHacking(Experiment *experiment,
+  bool willContinueHacking(Experiment *experiment,
                                    PolicyChain &pchain) override;
   
-  virtual bool willContinueReplicating(PolicyChain &pchain) override;
+  bool willContinueReplicating(PolicyChain &pchain) override;
 };
 
 // JSON Parser for DefaultDecisionStrategy::Parameters
