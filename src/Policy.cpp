@@ -311,11 +311,16 @@ Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
 PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
                          sol::state &lua) {
 
-  for (const auto &p_def : pchain_defs) {
-    if (p_def.empty()) {
-      continue;
+  
+  for(int i{0}; i < pchain_defs.size(); ++i) {
+    if (pchain_defs[i].empty()) {
+      continue;;
     }
-    pchain.emplace_back(p_def, lua);
+    pchain.emplace_back(pchain_defs[i], lua);
+    
+    // Checking whether there is any formula after the first noncomparitive formula
+    if (pchain.back().type != PolicyType::Comp and i + 1 < pchain_defs.size())
+      throw std::invalid_argument("No formula should be listed after any of the unary functions.");
   }
 }
 
