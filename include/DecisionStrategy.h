@@ -1,12 +1,19 @@
+//===-- DecisionStrategy.h - Decision Strategy Deceleration ---------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
-
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This files contains the deceleration of the Decision Strategy class which
+/// is responsible for almost all the decision making throughout the research
+/// process.
+///
+//===----------------------------------------------------------------------===//
 ///
 /// @defgroup   DecisionStrategies Decision Strategies
 /// @brief      List of available Decision Strategies
-///
-/// Description to come!
 ///
 
 #ifndef SAMPP_DECISIONSTRATEGY_H

@@ -1,19 +1,21 @@
+//===-- HackingStrategy.h - Hacking Strategy Deceleration -----------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
-
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the deceleration of the Abstract Hacking Strategy class
+/// and all the other classes inhereted from it.
+///
+//===----------------------------------------------------------------------===//
 ///
 /// @defgroup   HackingStrategies Hacking Strategies
 /// @brief      List of available hacking strategies
 ///
-/// Description to come!
-///
-
-///
 /// @defgroup   HackingStrategiesParameters Parameters of Hacking Strategies
 /// @brief      Description of hacking strategies parameters
-///
-/// Description to come!
 ///
 
 #ifndef SAMPP_HACKINGSTRATEGIES_H

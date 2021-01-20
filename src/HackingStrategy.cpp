@@ -1,6 +1,15 @@
+//===-- HackingStrategy.cpp - Hacking Strategy Abstract Class Imp  --------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of the hacking strategy abstract
+/// class, e.g., the abstract builder, and pure constructor implementation.
+///
+//===----------------------------------------------------------------------===//
 
 #include "HackingStrategy.h"
 

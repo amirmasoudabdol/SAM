@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_SUITE_END() // FIXTURE
   BOOST_AUTO_TEST_SUITE( call_operator_test )
 
     BOOST_DATA_TEST_CASE_F(PoliciesVariablesAndFunctions,
-                           statistical_queries,
+                           binary_operators_on_stats,
                            bdata::random( (bdata::distribution=std::uniform_real_distribution<float>(1, 4))) ^
                            bdata::random( (bdata::distribution=std::uniform_int_distribution<int>(100, 1000))) ^
                            bdata::random( (bdata::distribution=std::bernoulli_distribution(0.5))) ^
@@ -136,6 +136,12 @@ BOOST_AUTO_TEST_SUITE_END() // FIXTURE
       
     }
 
+
+//    BOOST_DATA_TEST_CASE_F(PoliciesVariablesAndFunctions,
+//                           unary_operators_on_submissions_stats,
+//                           ) {
+//      
+//    }
 
   BOOST_AUTO_TEST_SUITE_END()
 

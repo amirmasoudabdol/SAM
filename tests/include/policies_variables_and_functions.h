@@ -8,12 +8,18 @@
 #include "sol/sol.hpp"
 #include "DependentVariable.h"
 #include "Submission.h"
+#include <random>
 
 using namespace sam;
 
 struct PoliciesVariablesAndFunctions {
+  
+  
 
   sol::state lua;
+  
+  std::vector<DependentVariable> dvs;
+  std::vector<Submission> subs;
   
   PoliciesVariablesAndFunctions() {
 

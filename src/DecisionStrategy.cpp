@@ -1,6 +1,16 @@
+//===-- DecisionStrategy.h - Decision Strategy Implementation -------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-02-01.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This files contains the implementation of the Decision Strategy class which
+/// is responsible for almost all the decision making throughout the research
+/// process.
+///
+//===----------------------------------------------------------------------===//
 
 #include "DecisionStrategy.h"
 
