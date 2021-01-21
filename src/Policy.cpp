@@ -208,73 +208,95 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 /// @attention  You can only use this on DependentVariable and Submission
 /// objects, since these are the two classes that are registered as usertype.
 template <typename ForwardIt>
-std::tuple<bool, ForwardIt, ForwardIt>
-Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
+std::optional<std::pair<ForwardIt, ForwardIt>>
+Policy::operator()(ForwardIt begin, ForwardIt end) {
 
   switch (type) {
-
-    case PolicyType::Min: {
-      auto it = std::min_element(begin, end, func);
-      spdlog::trace("\n\t\tMin: {} \
-                      \n\t\t\t{}",
-                    def, *it);
-      return {true, it, it};
-    }
-
-    case PolicyType::Max: {
-      auto it = std::max_element(begin, end, func);
-      spdlog::trace("\n\t\tMax: {} \
-                      \n\t\t\t{}",
-                    def, *it);
-      return {true, it, it};
-    }
-
+      
+    // This is probably the most used one!
     case PolicyType::Comp: {
       auto pit = std::partition(begin, end, func);
       spdlog::trace("\n\t\tComp: {} \
-                      \n\t\t\t{}",
-                    def, fmt::join(begin, end, "\n\t\t\t"));
-
-      return {false, begin, pit};
+                    \n\t\t\t{}",
+                    def, fmt::join(begin, pit, "\n\t\t\t"));
+      
+      end = pit;
     }
+      break;
+     
+    // This is somewhat a special case where I can allow it in between but then it
+    // doesn't fullfill any purpose anyway
+    case PolicyType::All: {
+      spdlog::trace("\n\t\tFunc: {} \
+                    \n\t\t\t{}",
+                    def, fmt::join(begin, end, "\n\t\t\t"));
+      // We don't need to do anything here...
+    }
+      break;
+
+    case PolicyType::Min: {
+      auto it = std::min_element(begin, end, func);
+      spdlog::trace("\n\t\tFunc: {} \
+                      \n\t\t\t{}",
+                    def, *it);
+      begin = it;
+      end = it + 1;
+    }
+      break;
+
+    case PolicyType::Max: {
+      auto it = std::max_element(begin, end, func);
+      spdlog::trace("\n\t\tFunc: {} \
+                      \n\t\t\t{}",
+                    def, *it);
+      begin = it;
+      end = it + 1;
+    }
+      break;
 
     case PolicyType::Random: {
       /// Shuffling the array and setting the end pointer to the first time,
       /// this basically mimic the process of selecting a random element from
       /// the list.
       Random::shuffle(begin, end);
-      spdlog::trace("\n\t\tShuffled: {} \
+      spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
                     def, fmt::join(begin, end, "\n\t\t\t"));
-      return {true, begin, end};
+      end = begin + 1;
     }
+      break;
 
     case PolicyType::First: {
 
-      spdlog::trace("\n\t\tFirst: {} \
+      spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
                     def, *begin);
 
-      return {true, begin, end};
+      end = begin + 1;
     }
+      break;
 
     case PolicyType::Last: {
 
-      spdlog::trace("\n\t\tLast: {} \
+      spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
                     def, *(end - 1));
-
-      return {true, end - 1, end};
+      begin = end  - 1;
+      end = begin + 1;
     }
-
-    case PolicyType::All: {
-      return {false, begin, end};
-    }
+      break;
 
     default: {
       throw std::invalid_argument("Invalid Policy Type.");
     }
   }
+  
+  if (begin == end) {
+    return {};
+  }
+    
+  return std::make_pair(begin, end);
+  
 }
 
 // std::optional<std::vector<DependentVariable>>
@@ -309,18 +331,24 @@ Policy::operator()(const ForwardIt &begin, ForwardIt &end) {
 // -------------------------------------------------------- //
 
 PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
+                         PolicyChainType type,
                          sol::state &lua) {
-
+  
+  this->type_ = type;
   
   for(int i{0}; i < pchain_defs.size(); ++i) {
+    
     if (pchain_defs[i].empty()) {
       continue;;
     }
     pchain.emplace_back(pchain_defs[i], lua);
     
+    has_any_unary_functions |= (pchain.back().type != PolicyType::Comp);
+    
     // Checking whether there is any formula after the first noncomparitive formula
-    if (pchain.back().type != PolicyType::Comp and i + 1 < pchain_defs.size())
+    if (pchain.back().type != PolicyType::Comp and i + 1 < pchain_defs.size()) {
       throw std::invalid_argument("No formula should be listed after any of the unary functions.");
+    }
   }
 }
 
@@ -368,51 +396,38 @@ bool PolicyChain::operator()(Experiment *experiment) {
   return verdict;
 }
 
-///
-/// Applies the policy chain on the Experiment and returns a list of hits, or
+/// This applies the policy chain on the Experiment and returns a list of hits, or
 /// returns an empty optional otherwise.
+///
+/// These will only operator on SELECTION anyway
 std::optional<std::vector<Submission>>
 PolicyChain::operator()(Experiment &experiment) {
 
   spdlog::trace("Looking for {}", *this);
 
   std::vector<Submission> selections{};
-  auto found_sth_unique{false};
+  auto found_sth_unique{true};
   auto begin = experiment.dvs_.begin() + experiment.setup.nd();
   auto end = experiment.dvs_.end();
 
   // Looping through PolicyChain(s)
   for (auto &policy : pchain) {
-    std::tie(found_sth_unique, begin, end) = policy(begin, end);
-
-    if (found_sth_unique) {
-      selections.emplace_back(experiment, begin->id_);
-      spdlog::trace("✓ Found One!");
-    }
-
-    // One of the policies ended up with no results, so, we skip the
-    // rest of the search
-    if (begin == end) {
+    auto res = policy(begin, end);
+    
+    if (res) {
+      begin = res->first;
+      end = res->second;
+    } else {
+      found_sth_unique = false;
       break;
     }
   }
-
-  if (found_sth_unique) {
-    return selections;
-  }
-
-  // We found one!
-  if (begin + 1 == end) {
-    selections.emplace_back(experiment, begin->id_);
-    spdlog::trace("✓ Found the only one!");
-    return selections;
-  } else if (begin != end) { /// We found a bunch
-
+  
+  if (begin != end and found_sth_unique) {
     for (auto it{begin}; it != end; ++it) {
       selections.emplace_back(experiment, it->id_);
     }
     spdlog::trace("✓ Found a bunch: {}", selections);
-
     return selections;
   }
 
@@ -424,38 +439,31 @@ std::optional<std::vector<Submission>>
 PolicyChain::operator()(std::vector<Submission> &spool) {
 
   std::vector<Submission> selections{};
-  auto found_sth_unique{false};
+  auto found_sth_unique{true};
   auto begin = spool.begin();
   auto end = spool.end();
 
+  
   for (auto &policy : pchain) {
 
-    std::tie(found_sth_unique, begin, end) = policy(begin, end);
-
-    if (found_sth_unique) {
-      spdlog::trace("✓ Found something in the pile!");
-      selections.push_back(*begin);
-      return selections;
-    }
-
-    if (begin == end) {
+    auto res = policy(begin, end);
+    
+    if (res) {
+      begin = res->first;
+      end = res->second;
+    } else {
+      found_sth_unique = false;
       break;
     }
-  }
 
-  if (found_sth_unique) {
-    return selections;
   }
-
-  if (begin + 1 == end) {
-    spdlog::trace("✓ Found the only one!");
-    selections.push_back(*begin);
-    return selections;
-  } else if (begin != end) {
+  
+  if (begin != end and found_sth_unique) {
     for (auto it{begin}; it != end; ++it) {
       selections.push_back(*it);
       spdlog::trace("\t {}", *it);
     }
+    spdlog::trace("✓ Found a bunch: {}", selections);
     return selections;
   }
 
@@ -470,7 +478,9 @@ PolicyChain::operator()(std::vector<Submission> &spool) {
 PolicyChainSet::PolicyChainSet(
     const std::vector<std::vector<std::string>> &psets_defs, sol::state &lua) {
   for (const auto &pchain_def : psets_defs) {
-    PolicyChain pchain{pchain_def, lua};
+    
+    // All the policy chains will be declared as ::Selection
+    PolicyChain pchain{pchain_def, PolicyChainType::Selection, lua};
     if (pchain.empty()) {
       continue;
     }

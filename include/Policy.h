@@ -31,10 +31,12 @@
 namespace sam {
 
 enum class PolicyType : int { Min, Max, Comp, Random, First, Last, All };
+enum class PolicyChainType : int { Selection, Decision };
 
 using PolicyDefinition = std::string;
 using PolicyChainDefinition = std::vector<std::string>;
 using PolicyChainSetDefinition = std::vector<std::vector<std::string>>;
+
 
 /// @brief Implementation of the Policy class.
 ///
@@ -62,8 +64,8 @@ struct Policy {
   /// and returns a subset of the range where all items satisfy the `func`
   /// criteria
   template <typename ForwardIt>
-  std::tuple<bool, ForwardIt, ForwardIt> operator()(const ForwardIt &begin,
-                                                    ForwardIt &end);
+  std::optional<std::pair<ForwardIt, ForwardIt>> operator()(ForwardIt begin,
+                                                    ForwardIt end);
 
   /// Returns the result of applying the policy on a submission
   [[nodiscard]] bool operator()(const Submission &sub) const {
@@ -121,19 +123,21 @@ inline void from_json(const json &j, Policy &p, sol::state &lua) {
 ///
 /// @ingroup  Policies
 struct PolicyChain {
+  PolicyChainType type_;
   PolicyChainDefinition defs;
   std::vector<Policy> pchain;
 
   PolicyChain() = default;
 
   /// PolicyChain constructor
-  PolicyChain(const PolicyChainDefinition &pchain_defs, sol::state &lua);
+  PolicyChain(const PolicyChainDefinition &pchain_defs,
+              PolicyChainType type, sol::state &lua);
 
   /// Checks whether the given Submission satisfies __all__ listed policies.
-  bool operator()(const Submission &sub);
+  [[nodiscard]] bool operator() (const Submission &sub);
 
   /// Determines whether the experiment satisfies any of the given policies
-  bool operator()(Experiment *experiment);
+  [[nodiscard]] bool operator() (Experiment *experiment);
 
   /// Returns a list of submission satisfying the policy chain
   std::optional<std::vector<Submission>> operator()(Experiment &experiment);
@@ -157,6 +161,16 @@ struct PolicyChain {
 
   [[nodiscard]] bool empty() const { return pchain.empty(); };
   ///@}
+  
+  /// Indicates whether any of the policies is a function
+  [[nodiscard]] bool hasUnaryFunction() const {
+    return has_any_unary_functions;
+  }
+  
+private:
+  
+  bool has_any_unary_functions{false};
+  
 };
 
 inline void to_json(json &j, const PolicyChain &p) {
@@ -164,7 +178,7 @@ inline void to_json(json &j, const PolicyChain &p) {
 }
 
 inline void from_json(const json &j, PolicyChain &p, sol::state &lua) {
-  p = PolicyChain(j.at("definitions"), lua);
+  p = PolicyChain(j.at("definitions"), PolicyChainType::Decision, lua);
 }
 
 /// PolicyChainSet is a collection of PolicyChains

@@ -149,7 +149,7 @@ public:
 
   OptionalStopping(const Parameters &p)
       : params{p} {
-        stopping_condition = PolicyChain{p.stopping_cond_defs, lua};
+        stopping_condition = PolicyChain{p.stopping_cond_defs, PolicyChainType::Decision, lua};
         
         prevalence_ = params.prevalence;
         defensibility_ = params.defensibility;
@@ -307,7 +307,9 @@ public:
 
   OutliersRemoval(const Parameters &p)
       : params{p} {
-        stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+        stopping_condition = PolicyChain(params.stopping_cond_defs,
+                                         PolicyChainType::Decision,
+                                         lua);
         
         prevalence_ = params.prevalence;
         defensibility_ = params.defensibility;
@@ -424,7 +426,9 @@ public:
 
   SubjectiveOutlierRemoval(const Parameters &p)
       : params(p) {
-          stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+          stopping_condition = PolicyChain(params.stopping_cond_defs,
+                                           PolicyChainType::Decision,
+                                           lua);
         
         prevalence_ = params.prevalence;
         defensibility_ = params.defensibility;
@@ -805,7 +809,9 @@ public:
   FalsifyingData() = default;
   
   FalsifyingData(const Parameters &p) : params{p} {
-    stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+    stopping_condition = PolicyChain(params.stopping_cond_defs,
+                                     PolicyChainType::Decision,
+                                     lua);
     
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
@@ -929,7 +935,9 @@ public:
   FabricatingData() = default;
   
   FabricatingData(const Parameters &p) : params{p} {
-    stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+    stopping_condition = PolicyChain(params.stopping_cond_defs,
+                                     PolicyChainType::Decision,
+                                     lua);
     
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
@@ -1034,7 +1042,9 @@ public:
   StoppingDataCollection() = default;
   
   StoppingDataCollection(const Parameters &p) : params{p} {
-    stopping_condition = PolicyChain(params.stopping_cond_defs, lua);
+    stopping_condition = PolicyChain(params.stopping_cond_defs,
+                                     PolicyChainType::Decision,
+                                     lua);
     
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;

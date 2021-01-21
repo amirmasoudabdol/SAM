@@ -166,19 +166,19 @@ public:
     between_stashed_selection_policies = PolicyChainSet(p.between_stashed_selection_policies_defs, lua);
 
     spdlog::trace("Preparing Submission Decision Policies: ");
-    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, lua);
+    submission_decision_policies = PolicyChain(p.submission_decision_policies_defs, PolicyChainType::Decision, lua);
     
     spdlog::trace("Preparing Between Replication Selection Policies: ");
     between_reps_policies = PolicyChainSet(p.between_replications_selection_policies_defs, lua);
     
     spdlog::trace("Preparing Will Start Hacking Decision Policies: ");
-    will_start_hacking_decision_policies = PolicyChain(p.will_start_hacking_decision_policies_def, lua);
+    will_start_hacking_decision_policies = PolicyChain(p.will_start_hacking_decision_policies_def, PolicyChainType::Decision, lua);
     
     spdlog::trace("Preparing Will Conitnue Replicating Decision Policies: ");
-    will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, lua);
+    will_continue_replicating_decision_policy = PolicyChain(p.will_continue_replicating_decision_policy_def, PolicyChainType::Decision, lua);
     
     spdlog::trace("Preparing Stashing Policies: ");
-    stashing_policy = PolicyChain(p.stashing_policy_def, lua);
+    stashing_policy = PolicyChain(p.stashing_policy_def, PolicyChainType::Selection, lua);
   };
 
   DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,

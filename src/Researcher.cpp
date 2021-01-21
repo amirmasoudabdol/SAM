@@ -345,13 +345,16 @@ void Researcher::research() {
       // Collecting in this case means that selected submissions will be added to the
       // current replication's outcome
 
-      spdlog::trace("Final Submission Candidates: {}",
+      if (decision_strategy->submission_candidates) {
+        spdlog::trace("Final Submission Candidates: {}",
                     decision_strategy->submission_candidates.value());
 
-      submissions_from_reps.insert(
+      
+        submissions_from_reps.insert(
           submissions_from_reps.end(),
           decision_strategy->submission_candidates.value().begin(),
           decision_strategy->submission_candidates.value().end());
+      }
 
       spdlog::trace("Collection of Submissions from Replications: {}",
                     submissions_from_reps);

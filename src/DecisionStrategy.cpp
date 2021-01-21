@@ -125,7 +125,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
   }
 
-  spdlog::trace("✗ Found none in the pile!");
+//  spdlog::trace("✗ Found none in the pile!");
 }
 
 
@@ -175,7 +175,7 @@ bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submissi
       for (const auto &sub : subs.value()) {
         check |=
             std::all_of(pchain.begin(), pchain.end(),
-                        [&](auto &policy) -> bool { return policy.func(sub); });
+                        [&](auto &policy) -> bool { return policy(sub); });
       }
       return check;
     } else
@@ -211,13 +211,13 @@ bool DefaultDecisionMaker::willStartHacking() {
       verdict |= std::any_of(will_start_hacking_decision_policies.begin(),
                              will_start_hacking_decision_policies.end(),
                              [&](auto &policy) -> bool {
-                                return policy.func(sub);
+                                return policy(sub);
                               });
     return verdict;
     
     
 //    return std::any_of(will_start_hacking_decision_policies.begin(), will_start_hacking_decision_policies.end(), [this](auto &policy) -> bool {
-//        return policy.func(this->submission_candidate.value());
+//        return policy(this->submission_candidate.value());
 //        });
   } else {
     spdlog::trace("No Candidate is available → Will Start Hacking");
@@ -248,7 +248,7 @@ bool DefaultDecisionMaker::willContinueHacking(Experiment *experiment,
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
   ++i, ++d %= experiment->setup.nd()) {
     verdict &= std::any_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
-                  return policy.func(Submission{*experiment, i});
+                  return policy(Submission{*experiment, i});
                 });
   }
   
@@ -271,7 +271,7 @@ bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
       verdict |= std::any_of(pchain.begin(),
                              pchain.end(),
                              [&](auto &policy) -> bool {
-                                return policy.func(sub);
+                                return policy(sub);
                               });
     return not verdict;
   }else{

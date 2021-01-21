@@ -119,7 +119,7 @@ public:
   PolicyChain selection_policy;
   
   PolicyBasedSelection(Parameters &p) : params{p} {
-    selection_policy = PolicyChain(params.selection_policy_defs, lua);
+    selection_policy = PolicyChain(params.selection_policy_defs, PolicyChainType::Decision, lua);
   }
   
   virtual bool review(const std::vector<Submission> &s) override;

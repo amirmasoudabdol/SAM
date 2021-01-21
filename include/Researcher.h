@@ -260,7 +260,7 @@ public:
 
       researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
 
-      researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), researcher.decision_strategy->lua});
+      researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), PolicyChainType::Decision, researcher.decision_strategy->lua});
       
     }
     
