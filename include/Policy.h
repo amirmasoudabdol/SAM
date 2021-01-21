@@ -30,24 +30,44 @@
 
 namespace sam {
 
+/// @brief      Indicates the type of the Policy
+///
+/// This is mainly being used by Policy to decide which type of formula it's
+/// dealing with.
+///
+/// @ingroup    Policies
 enum class PolicyType : int { Min, Max, Comp, Random, First, Last, All };
+
+/// @brief      Indicates the type of the PolicyChain
+///
+/// A PolicyChain can either be used to perform *selection*, or a *decision*.
+/// The main difference between them being that the `::Selection` chains could
+/// include a function call, e.g., `min`, while the `::Decision` chains cannot.
+///
+/// @ingroup    Policies
 enum class PolicyChainType : int { Selection, Decision };
 
+/** @name Handy Policy Typedefs
+ *
+ */
+///@{
 using PolicyDefinition = std::string;
 using PolicyChainDefinition = std::vector<std::string>;
 using PolicyChainSetDefinition = std::vector<std::vector<std::string>>;
-
+///@}
 
 /// @brief Implementation of the Policy class.
 ///
 /// A policy is a logical rule that it's being applied on an experiment,
-/// submission, or a set of submissions.
+/// submission, or a set of submissions. A policy can be used to perform two
+/// type of operation on either of the mentioned data structures, selection or
+/// decision.
 ///
-/// - In the case of submission, policy checks whether the given submission
-/// satisfies the given policy.
-/// - In the case of set of submissions, or an experiment, policy checks whether
-/// the any of the items, ie., dvs or subs, will satisfy the given policy, if so
-/// , it'll return those items, otherwise, the output will be empty.
+/// - To check whether a submission, a dependent variable satisfies a given
+/// Policy, you must use the appropriate call operator in the form of `bool
+/// operator()`.
+/// - To filter a list of submissions or dependent variables of the experiment
+/// based on the given Policy, you must use the iterator-based operator.
 ///
 /// @ingroup  Policies
 struct Policy {
@@ -60,12 +80,10 @@ struct Policy {
   /// Creates a policy, and registers it to the available lua state
   Policy(const std::string &p_def, sol::state &lua);
 
-  /// Given the forward iterator, it applies `func` on each item,
-  /// and returns a subset of the range where all items satisfy the `func`
-  /// criteria
+  /// Filters the range based on the given policy
   template <typename ForwardIt>
   std::optional<std::pair<ForwardIt, ForwardIt>> operator()(ForwardIt begin,
-                                                    ForwardIt end);
+                                                            ForwardIt end);
 
   /// Returns the result of applying the policy on a submission
   [[nodiscard]] bool operator()(const Submission &sub) const {
@@ -76,14 +94,6 @@ struct Policy {
   [[nodiscard]] bool operator()(const DependentVariable &dv) const {
     return func(dv);
   }
-
-  /// Returns a list of dependent variables that are satisfying the policy
-  //  std::optional<std::vector<DependentVariable>> operator()(Experiment
-  //  *experiment);
-
-  /// Returns a list of submissions that are satisfying the policy
-  //  std::optional<std::vector<Submission>> operator()(std::vector<Submission>
-  //  &subs);
 
   /// String operator for the JSON library
   explicit operator std::string() const { return def; }
@@ -97,14 +107,16 @@ private:
   std::map<std::string, std::string> cops = {
       {">=", "greater_eq"}, {"<=", "lesser_eq"}, {">", "greater"},
       {"<", "lesser"},      {"==", "equal"},     {"!=", "not_equal"}};
-  
-  std::vector<std::string> quantitative_variables {"id", "nobs", "mean", "pvalue", "effect"};
-  
-  std::vector<std::string> meta_variables {"sig", "hacked", "candidate"};
-  
-  std::vector<std::string> binary_operators {">=", "<=", "<", ">", "==", "!="};
-  
-  std::vector<std::string> unary_functions {"min", "max", "random", "first", "last", "all"};
+
+  std::vector<std::string> quantitative_variables{"id", "nobs", "mean",
+                                                  "pvalue", "effect"};
+
+  std::vector<std::string> meta_variables{"sig", "hacked", "candidate"};
+
+  std::vector<std::string> binary_operators{">=", "<=", "<", ">", "==", "!="};
+
+  std::vector<std::string> unary_functions{"min",   "max",  "random",
+                                           "first", "last", "all"};
 };
 
 inline void to_json(json &j, const Policy &p) {
@@ -115,11 +127,18 @@ inline void from_json(const json &j, Policy &p, sol::state &lua) {
   p = Policy(j.at("definition"), lua);
 }
 
-/// Implementation of the PolicyChain class
+/// @brief  Implementation of the PolicyChain class
 ///
-/// PolicyChain is a list of Policies that will be executed chronologically.
-/// They often being used to check whether an Experiment or a Submission can
-/// satisfy the set of given rules.
+/// PolicyChains are a list of Policies that will be executed chronologically.
+/// They are often being used to check whether an Experiment or a Submission can
+/// satisfy all the given policies.
+///
+/// PolicyChains can be defined in two different ways. They are either a
+/// _selection_ or _decision_ chains. The `::Selection` chains are used to
+/// filter an experiment or a list of submissions based on the given policies.
+/// The `::Decision` chains are used to check whether any of the submissions or
+/// dependent variables are satisfying all the available policies in the given
+/// chain.
 ///
 /// @ingroup  Policies
 struct PolicyChain {
@@ -130,14 +149,17 @@ struct PolicyChain {
   PolicyChain() = default;
 
   /// PolicyChain constructor
-  PolicyChain(const PolicyChainDefinition &pchain_defs,
-              PolicyChainType type, sol::state &lua);
+  PolicyChain(const PolicyChainDefinition &pchain_defs, PolicyChainType type,
+              sol::state &lua);
 
-  /// Checks whether the given Submission satisfies __all__ listed policies.
-  [[nodiscard]] bool operator() (const Submission &sub);
+  /// Checks whether the given Submission satisfies __all__ all policies.
+  [[nodiscard]] bool operator()(const Submission &sub);
+
+  /// Checks whether the given DependentVariable satisfies __all__ the policies.
+  [[nodiscard]] bool operator()(const DependentVariable &dv);
 
   /// Determines whether the experiment satisfies any of the given policies
-  [[nodiscard]] bool operator() (Experiment *experiment);
+  [[nodiscard]] bool operator()(Experiment *experiment);
 
   /// Returns a list of submission satisfying the policy chain
   std::optional<std::vector<Submission>> operator()(Experiment &experiment);
@@ -161,16 +183,6 @@ struct PolicyChain {
 
   [[nodiscard]] bool empty() const { return pchain.empty(); };
   ///@}
-  
-  /// Indicates whether any of the policies is a function
-  [[nodiscard]] bool hasUnaryFunction() const {
-    return has_any_unary_functions;
-  }
-  
-private:
-  
-  bool has_any_unary_functions{false};
-  
 };
 
 inline void to_json(json &j, const PolicyChain &p) {
@@ -194,15 +206,15 @@ struct PolicyChainSet {
 
   PolicyChainSet() = default;
 
+  /// PolicyChainSet constructor
   PolicyChainSet(const PolicyChainSetDefinition &psets_defs, sol::state &lua);
 
-  /// Not Implemented Yet!
-  //  std::optional<std::vector<DependentVariable>> operator()(const Experiment
-  //  *expr);
+  /// Returns a list of submissions from DVs of an experiment
+  std::optional<std::vector<Submission>> operator()(Experiment &expr);
 
-  /// Not Implemented Yet!
-  //  std::optional<std::vector<Submission>> operator()(const
-  //  std::vector<Submission> &subs);
+  /// Returns a list of submissions from a list of submissions
+  std::optional<std::vector<Submission>>
+  operator()(std::vector<Submission> &spool);
 
   /** @name STL-like operators
    *

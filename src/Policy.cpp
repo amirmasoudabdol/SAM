@@ -15,6 +15,7 @@
 
 using namespace sam;
 
+///
 /// This mostly performs some string search, and decided what type of function
 /// has been given as the input. Then, it uses a lua function template to
 /// construct the appropriate function definition. Finally, it registers the
@@ -26,8 +27,9 @@ using namespace sam;
 ///
 /// @param[in]  p_def  The definition
 /// @param      lua    The lua state
+///
 Policy::Policy(const std::string &p_def, sol::state &lua) {
-  
+
   std::string f_def;
 
   if (p_def.find("min") != std::string::npos) {
@@ -38,8 +40,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     auto var_name = p_def.substr(open_par + 1, close_par - open_par - 1);
 
     auto f_name = fmt::format("min_{}", var_name);
-    f_def = fmt::format(lua_temp_scripts["binary_function_template"],
-                             f_name, var_name, var_name);
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name,
+                        var_name, var_name);
 
     lua.script(f_def);
 
@@ -55,8 +57,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     auto var_name = p_def.substr(open_par + 1, close_par - open_par - 1);
 
     auto f_name = fmt::format("max_{}", var_name);
-    f_def =
-        fmt::format(lua_temp_scripts["binary_function_template"], f_name, var_name, var_name);
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name,
+                        var_name, var_name);
 
     lua.script(f_def);
 
@@ -74,8 +76,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
       std::string f_name{"cond_not_" + p_def_without_excl};
 
-      f_def = fmt::format(lua_temp_scripts["unary_function_template"],
-                               f_name, p_def_without_excl + " == false");
+      f_def = fmt::format(lua_temp_scripts["unary_function_template"], f_name,
+                          p_def_without_excl + " == false");
 
       lua.script(f_def);
 
@@ -90,8 +92,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string f_name{"cond_" + p_def};
 
-    f_def = fmt::format(lua_temp_scripts["unary_function_template"],
-                             f_name, p_def + " == true");
+    f_def = fmt::format(lua_temp_scripts["unary_function_template"], f_name,
+                        p_def + " == true");
 
     lua.script(f_def);
 
@@ -109,8 +111,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string var_name{"id"};
     auto f_name = fmt::format("min_{}", var_name);
-    f_def = fmt::format(lua_temp_scripts["binary_function_template"],
-                             f_name, var_name, var_name);
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name,
+                        var_name, var_name);
 
     lua.script(f_def);
 
@@ -122,8 +124,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 
     std::string var_name{"id"};
     auto f_name = fmt::format("max_{}", var_name);
-    f_def = fmt::format(lua_temp_scripts["binary_function_template"],
-                             f_name, var_name, var_name);
+    f_def = fmt::format(lua_temp_scripts["binary_function_template"], f_name,
+                        var_name, var_name);
 
     lua.script(f_def);
 
@@ -175,9 +177,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     // In the case of any of the logics contains negative value
     std::replace(f_name.begin(), f_name.end(), '-', '_');
 
-    f_def =
-        fmt::format(lua_temp_scripts["unary_function_template"], f_name,
-                    p_def); // Full text goes here
+    f_def = fmt::format(lua_temp_scripts["unary_function_template"], f_name,
+                        p_def); // Full text goes here
 
     // This is because lua uses ~ instead of !
     std::replace(f_def.begin(), f_def.end(), '!', '~');
@@ -191,12 +192,17 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
   } else {
     throw std::invalid_argument("Invalid policy definition.");
   }
-  
+
   spdlog::trace("Lua Function: {}", f_def);
 }
 
+///
 /// This applies the current policy on a range of values, and returns a subset
-/// of the range if it finds anything.
+/// of the range if it finds anything. If not, it will return an empty optional.
+///
+/// @attention  You can only use this on DependentVariable and Submission
+/// objects, since these are the two classes that are registered as lua
+/// usertype.
 ///
 /// @param[in]  begin      The begin
 /// @param      end        The end
@@ -205,153 +211,121 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
 ///
 /// @return     Return a tuple containing three variables.
 ///
-/// @attention  You can only use this on DependentVariable and Submission
-/// objects, since these are the two classes that are registered as usertype.
 template <typename ForwardIt>
 std::optional<std::pair<ForwardIt, ForwardIt>>
 Policy::operator()(ForwardIt begin, ForwardIt end) {
 
   switch (type) {
-      
-    // This is probably the most used one!
-    case PolicyType::Comp: {
-      auto pit = std::partition(begin, end, func);
-      spdlog::trace("\n\t\tComp: {} \
+
+  // This is probably the most used one!
+  case PolicyType::Comp: {
+    auto pit = std::partition(begin, end, func);
+    spdlog::trace("\n\t\tComp: {} \
                     \n\t\t\t{}",
-                    def, fmt::join(begin, pit, "\n\t\t\t"));
-      
-      end = pit;
-    }
-      break;
-     
-    // This is somewhat a special case where I can allow it in between but then it
-    // doesn't fullfill any purpose anyway
-    case PolicyType::All: {
-      spdlog::trace("\n\t\tFunc: {} \
+                  def, fmt::join(begin, pit, "\n\t\t\t"));
+
+    end = pit;
+  } break;
+
+  // This is somewhat a special case where I can allow it in between but then it
+  // doesn't fulfill any purpose anyway
+  case PolicyType::All: {
+    spdlog::trace("\n\t\tFunc: {} \
                     \n\t\t\t{}",
-                    def, fmt::join(begin, end, "\n\t\t\t"));
-      // We don't need to do anything here...
-    }
-      break;
+                  def, fmt::join(begin, end, "\n\t\t\t"));
+    // We don't need to do anything here...
+  } break;
 
-    case PolicyType::Min: {
-      auto it = std::min_element(begin, end, func);
-      spdlog::trace("\n\t\tFunc: {} \
+  case PolicyType::Min: {
+    auto it = std::min_element(begin, end, func);
+    spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
-                    def, *it);
-      begin = it;
-      end = it + 1;
-    }
-      break;
+                  def, *it);
+    begin = it;
+    end = it + 1;
+  } break;
 
-    case PolicyType::Max: {
-      auto it = std::max_element(begin, end, func);
-      spdlog::trace("\n\t\tFunc: {} \
+  case PolicyType::Max: {
+    auto it = std::max_element(begin, end, func);
+    spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
-                    def, *it);
-      begin = it;
-      end = it + 1;
-    }
-      break;
+                  def, *it);
+    begin = it;
+    end = it + 1;
+  } break;
 
-    case PolicyType::Random: {
-      /// Shuffling the array and setting the end pointer to the first time,
-      /// this basically mimic the process of selecting a random element from
-      /// the list.
-      Random::shuffle(begin, end);
-      spdlog::trace("\n\t\tFunc: {} \
+  case PolicyType::Random: {
+    /// Shuffling the array and setting the end pointer to the first time,
+    /// this basically mimic the process of selecting a random element from
+    /// the list.
+    Random::shuffle(begin, end);
+    spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
-                    def, fmt::join(begin, end, "\n\t\t\t"));
-      end = begin + 1;
-    }
-      break;
+                  def, fmt::join(begin, end, "\n\t\t\t"));
+    end = begin + 1;
+  } break;
 
-    case PolicyType::First: {
+  case PolicyType::First: {
 
-      spdlog::trace("\n\t\tFunc: {} \
+    spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
-                    def, *begin);
+                  def, *begin);
 
-      end = begin + 1;
-    }
-      break;
+    end = begin + 1;
+  } break;
 
-    case PolicyType::Last: {
+  case PolicyType::Last: {
 
-      spdlog::trace("\n\t\tFunc: {} \
+    spdlog::trace("\n\t\tFunc: {} \
                       \n\t\t\t{}",
-                    def, *(end - 1));
-      begin = end  - 1;
-      end = begin + 1;
-    }
-      break;
+                  def, *(end - 1));
+    begin = end - 1;
+    end = begin + 1;
+  } break;
 
-    default: {
-      throw std::invalid_argument("Invalid Policy Type.");
-    }
+  default: {
+    throw std::invalid_argument("Invalid Policy Type.");
   }
-  
+  }
+
   if (begin == end) {
     return {};
   }
-    
+
   return std::make_pair(begin, end);
-  
 }
-
-// std::optional<std::vector<DependentVariable>>
-// Policy::operator()(Experiment *experiment) {
-//  std::vector<DependentVariable> selection;
-//
-//  std::transform(experiment->dvs_.begin() + experiment->setup.nd(),
-//                 experiment->dvs_.end(),
-//                 selection.begin(),
-//                 [&](auto &dv) -> bool {
-//    return func(dv);
-//  });
-//
-//  return selection;
-//}
-
-// std::optional<std::vector<Submission>>
-// Policy::operator()(std::vector<Submission> &subs) {
-//  std::vector<Submission> selection;
-//
-//  std::transform(subs.begin(), subs.end(),
-//                 std::back_inserter(selection),
-//                 [&](auto &s) -> bool {
-//                    return func(s);
-//                });
-//
-//  return selection;
-//}
 
 // -------------------------------------------------------- //
 //                     Policy Chain                         //
 // -------------------------------------------------------- //
 
+///
+/// It constructs a PolicyChain object, and it also takes care of a few other
+/// things like making sure that no comparison operator comes after any of the
+/// function calls. It also sets the type of the PolicyChain, as described in
+/// PolicyChainType.
+///
 PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
-                         PolicyChainType type,
-                         sol::state &lua) {
-  
-  this->type_ = type;
-  
-  for(int i{0}; i < pchain_defs.size(); ++i) {
-    
+                         PolicyChainType type, sol::state &lua)
+    : type_{type} {
+
+  for (int i{0}; i < pchain_defs.size(); ++i) {
+
     if (pchain_defs[i].empty()) {
-      continue;;
+      continue;
     }
     pchain.emplace_back(pchain_defs[i], lua);
-    
-    has_any_unary_functions |= (pchain.back().type != PolicyType::Comp);
-    
-    // Checking whether there is any formula after the first noncomparitive formula
+
+    // Checking whether there is any formula after the first non-comparative
+    // formula
     if (pchain.back().type != PolicyType::Comp and i + 1 < pchain_defs.size()) {
-      throw std::invalid_argument("No formula should be listed after any of the unary functions.");
+      throw std::invalid_argument(
+          "No formula should be listed after any of the unary functions.");
     }
   }
 }
 
+///
 /// @param[in]  sub   The submission
 ///
 /// @return     The result of applying all policies on the given submission
@@ -361,20 +335,25 @@ bool PolicyChain::operator()(const Submission &sub) {
                      [&](auto &policy) -> bool { return policy(sub); });
 }
 
-/// For every dependent variable, we check whether that dv satisfies any of the
-/// given rules, if so, we set the verdict to `true` meaning that at least part
-/// of the experiment satisfies all the policies. However, if after going
-/// through all outcomes, none satisfies all the rules `false` will be returned,
-/// meaning that none of the outcomes satisfied all the given rules
 ///
-/// @note Currently this only uses `all_of` meaning that all policies need to be
-/// satisfied for the check to be passed.
+/// @param[in]  dv   The dependent variable
 ///
-/// @todo I'm planning to implement the `logic` variable by which one can
-/// control which logic is going to be used
+/// @return     The result of applying all policies on the given dv
 ///
-/// @note This is horrible, there are two methods, one gets the pointer and
-/// another one the ref. This is very confusing!
+bool PolicyChain::operator()(const DependentVariable &dv) {
+  return std::all_of(pchain.begin(), pchain.end(),
+                     [&](auto &policy) -> bool { return policy(dv); });
+}
+
+///
+/// This checks whether any of the DependentVariable(s) are satisfying all the
+/// policies of the chain.
+///
+/// @todo Refactor this such that it accepts a reference
+///
+/// @return     Returns `true` if at least one DV satisfies all the policies,
+/// otherwise `false`.
+///
 bool PolicyChain::operator()(Experiment *experiment) {
 
   spdlog::trace("Looking for {}", *this);
@@ -383,47 +362,48 @@ bool PolicyChain::operator()(Experiment *experiment) {
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
        ++i, ++d %= experiment->setup.nd()) {
 
-    verdict |=
-        std::all_of(pchain.begin(), pchain.end(), [&](auto &policy) -> bool {
-          return policy(Submission{*experiment, i});
-        });
+    // It basically repeatedly calls the method above!
+    verdict |= (*this)(experiment->dvs_[i]);
 
     if (verdict) {
       return verdict;
     }
   }
 
-  return verdict;
+  return false;
 }
 
-/// This applies the policy chain on the Experiment and returns a list of hits, or
-/// returns an empty optional otherwise.
 ///
-/// These will only operator on SELECTION anyway
+/// This applies the policy chain on the Experiment and returns a list of
+/// submissions (constructed from dependent variables of the experiment) that
+/// are satisfying all the available policies.
+///
+/// @param      expr  The experiment
+///
+/// @return     An optional list of submissions
+///
 std::optional<std::vector<Submission>>
 PolicyChain::operator()(Experiment &experiment) {
 
   spdlog::trace("Looking for {}", *this);
 
   std::vector<Submission> selections{};
-  auto found_sth_unique{true};
   auto begin = experiment.dvs_.begin() + experiment.setup.nd();
   auto end = experiment.dvs_.end();
 
   // Looping through PolicyChain(s)
   for (auto &policy : pchain) {
     auto res = policy(begin, end);
-    
+
     if (res) {
       begin = res->first;
       end = res->second;
     } else {
-      found_sth_unique = false;
-      break;
+      return std::nullopt;
     }
   }
-  
-  if (begin != end and found_sth_unique) {
+
+  if (begin != end) {
     for (auto it{begin}; it != end; ++it) {
       selections.emplace_back(experiment, it->id_);
     }
@@ -432,33 +412,38 @@ PolicyChain::operator()(Experiment &experiment) {
   }
 
   spdlog::trace("✗ Found nothing!");
-  return {};
+  return std::nullopt;
 }
 
+///
+/// This applies all the available policies of the chain on the given pool of
+/// submissions and if there were any hit, it returns those. If not, it will
+/// report an empty list.
+///
+/// @param      spool  The list of submissions
+///
+/// @return     A subset of `spool`, if any
+///
 std::optional<std::vector<Submission>>
 PolicyChain::operator()(std::vector<Submission> &spool) {
 
   std::vector<Submission> selections{};
-  auto found_sth_unique{true};
   auto begin = spool.begin();
   auto end = spool.end();
 
-  
   for (auto &policy : pchain) {
 
     auto res = policy(begin, end);
-    
+
     if (res) {
       begin = res->first;
       end = res->second;
     } else {
-      found_sth_unique = false;
-      break;
+      return std::nullopt;
     }
-
   }
-  
-  if (begin != end and found_sth_unique) {
+
+  if (begin != end) {
     for (auto it{begin}; it != end; ++it) {
       selections.push_back(*it);
       spdlog::trace("\t {}", *it);
@@ -468,17 +453,25 @@ PolicyChain::operator()(std::vector<Submission> &spool) {
   }
 
   spdlog::trace("✗ Found nothing!");
-  return {};
+  return std::nullopt;
 }
 
 // -------------------------------------------------------- //
 //                    Policy Chain Set                      //
 // -------------------------------------------------------- //
 
+///
+/// Constructs a new PolicyChainSet by iterating over all the PolicyChain(s),
+/// and creating a list of them. All the underlying policy chains will be
+/// defined as `::Selection`.
+///
+/// @param[in]  psets_defs  The list of policy chain's definitions
+/// @param      lua         The lua state
+///
 PolicyChainSet::PolicyChainSet(
     const std::vector<std::vector<std::string>> &psets_defs, sol::state &lua) {
   for (const auto &pchain_def : psets_defs) {
-    
+
     // All the policy chains will be declared as ::Selection
     PolicyChain pchain{pchain_def, PolicyChainType::Selection, lua};
     if (pchain.empty()) {
@@ -486,4 +479,60 @@ PolicyChainSet::PolicyChainSet(
     }
     pchains.emplace_back(pchain);
   }
+}
+
+///
+/// It chronologically applies all the available policy chains on the experiment
+/// and returns a list of submissions that are satisfies the **first**
+/// PolicyChain in the list. If none of the chains were able to select any
+/// submissions, an empty `std::optional` will be returned.
+///
+/// @param      expr  The experiment
+///
+/// @return     An optional list of submissions
+///
+std::optional<std::vector<Submission>>
+PolicyChainSet::operator()(Experiment &expr) {
+
+  for (auto &pchain : pchains) {
+
+    auto selection = pchain(expr);
+
+    // If any of the pchains return something, we ignore the rest, and leave!
+    if (selection) {
+      return selection;
+    }
+  }
+
+  return std::nullopt;
+}
+
+///
+/// It chronologically applies all the available policy chains on the submission
+/// pool and returns a list of submissions that are satisfies the **first**
+/// PolicyChain in the list. If none of the chains were able to select any
+/// submissions, an empty `std::optional` will be returned.
+///
+/// @param      spool  The pool of submissions
+///
+/// @return     An optional list of submissions
+///
+std::optional<std::vector<Submission>>
+PolicyChainSet::operator()(std::vector<Submission> &spool) {
+
+  if (empty()) {
+    return spool;
+  }
+
+  for (auto &pchain : pchains) {
+
+    auto selection = pchain(spool);
+
+    // If any of the pchains return something, we ignore the rest, and leave!
+    if (selection) {
+      return selection;
+    }
+  }
+
+  return std::nullopt;
 }
