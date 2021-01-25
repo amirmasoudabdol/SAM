@@ -61,6 +61,8 @@ public:
   int exprid{0};
   int repid{0};
 
+  //! An instance of the ExperimentSetup. All other strategies can access and query it
+  //! for meta information about the Experiment
   ExperimentSetup setup;
 
   std::shared_ptr<DataStrategy> data_strategy;
@@ -75,6 +77,23 @@ public:
   //! of this experiment
   //!
   std::optional<std::vector<Submission>> candidates;
+  
+  /// Default constructor
+  Experiment() = default;
+  
+  /// Constructs an Experiment object using the given JSON configuration.
+  Experiment(json &experiment_config);
+  
+  /// Constructs an Experiment using an already initialized ExperimentSetup
+  Experiment(ExperimentSetup &e);
+  
+  /// Directly constructs an Experiment from its components
+  Experiment(ExperimentSetup &e,
+             std::shared_ptr<DataStrategy> &ds,
+             std::shared_ptr<TestStrategy> &ts,
+             std::shared_ptr<EffectStrategy> &es);
+  
+  /// Adds new submissions to the list of submissions
   void addNewCandidates(const std::vector<Submission>& subs);
   
   /// Sets the hacked status of the experiment
@@ -103,23 +122,6 @@ public:
   
   /// Returns the number of candidate DVs
   size_t nCandidates() const;
-
-  Experiment() = default;
-
-  /// Constructs an Experiment object using the given JSON configuration.
-  Experiment(json &experiment_config);
-
-  /// Constructs an Experiment using an already initialized ExperimentSetup
-  Experiment(ExperimentSetup &e);
-
-  /// Directly constructs an Experiment from its components
-  Experiment(ExperimentSetup &e,
-             std::shared_ptr<DataStrategy> &ds,
-             std::shared_ptr<TestStrategy> &ts,
-             std::shared_ptr<EffectStrategy> &es);
-
-  ///
-  /// @todo I think I can avoid this search if I use std::reference_wrapper
   
   /**
    * @name STL-like operators and methods

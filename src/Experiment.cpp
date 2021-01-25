@@ -181,6 +181,7 @@ void Experiment::clear() {
 /// not sorted.
 ///
 /// @todo I'm not the fan of this `find_if` here, and I think I can do better.
+/// @todo I think I can avoid this search if I use std::reference_wrapper
 ///
 DependentVariable& Experiment::operator[](std::size_t idx) {
   if (idx > dvs_.size()) {
