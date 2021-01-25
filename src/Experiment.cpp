@@ -1,4 +1,4 @@
-//===-- Experiment.cpp - Experiment Implementation ------------------------===//
+//===-- Experiment.cpp - Experiment Implementation -------------------------===//
 //
 // Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-22.
@@ -41,9 +41,12 @@ Experiment::Experiment(json &experiment_config) {
 }
 
 ///
-/// Similar to the other constructor, it constructs all necessary internals of the
-/// experiment, however, it uses the ExperimentSetup and its specification as the
-/// source of the configurations.
+/// Since ExperimentSetup already contains the definition of Data, Test, and Effect
+/// strategies, this method accepts the ExperimentSetup as it is, and only initialize
+/// those strategies.
+///
+/// @note This can be used in cases where the underlying strategies should be
+/// preserved while some experiment parameters needs to be modified.
 ///
 Experiment::Experiment(ExperimentSetup &e) : setup{e} {
 
@@ -59,7 +62,8 @@ Experiment::Experiment(ExperimentSetup &e) : setup{e} {
   initResources();
 }
 
-/// This directly constructs the expreiment by directly constructing its internal based on
+///
+/// This directly constructs the experiment by directly constructing its internal based on
 /// the set of given parameters.
 ///
 /// @note This is mainly used by the ExperimentBuilder
@@ -82,23 +86,25 @@ void Experiment::initExperiment() {
 }
 
 ///
-/// It allocates the necessary memeory for the dependent variables.
+/// It allocates the necessary memory for the dependent variables.
 ///
 /// @todo This should be done nicer! It's only being done like this at the moment
 /// because I need to update each dv's id.
 void Experiment::initResources() {
 
   dvs_.resize(setup.ng());
-
-  for (int g{0}; g < setup.ng(); ++g) {
-    dvs_[g].id_ = g;
-  }
+  
+  std::for_each(dvs_.begin(), dvs_.end(), [i = 0](auto &dv) mutable {
+    dv.id_ = i++;
+  });
 }
 
 void Experiment::calculateStatistics() {
-
-  for (int g{0}; g < dvs_.size(); ++g)
-    dvs_[g].updateStats();
+  
+  std::for_each(dvs_.begin(), dvs_.end(), [](auto &dv){
+    dv.updateStats();
+  });
+  
 }
 
 void Experiment::calculateEffects() { effect_strategy->computeEffects(this); }
@@ -112,6 +118,13 @@ void Experiment::recalculateEverything() {
   this->runTest();
 }
 
+///
+/// It clears every DVs individually, and also sort them back into the correct order.
+///
+/// @todo I think this is a bad implementation, and I should probably just discard the
+/// list of DVs and recreate them for the new Experiment, which is probably safer!
+/// Something like `dvs_.clear()`
+///
 void Experiment::clear() {
 
   for (auto &dv : dvs_) {
@@ -120,14 +133,44 @@ void Experiment::clear() {
 
   // This is strange, and I don't want it! It's here because Policy might mess up the
   // order of DVs when it runs some of the function on a group of them. I think if I use
-  // std::reference_wrapper I can avoid this but that needs some extra work.
+  // std::reference_wrapper<T> I can avoid this but that needs some extra work.
   std::sort(dvs_.begin(), dvs_.end(),
             [](const auto &l, const auto &r) { return l.id_ < r.id_; });
+  
+  
+  has_candidates = false;
+  is_hacked = false;
+  is_published = false;
+  
 }
 
 /// Adds new candidates to the list of selected candidates
 void Experiment::addNewCandidates(const std::vector<Submission>& subs) {
   candidates.value().insert(candidates.value().end(), subs.begin(), subs.end());
+}
+
+///
+/// These operators are returning the correct group, even if the group list is
+/// not sorted.
+///
+/// @todo I'm not the fan of this `find_if` here, and I think I can do better.
+///
+DependentVariable& Experiment::operator[](std::size_t idx) {
+  if (idx > dvs_.size()) {
+    throw std::invalid_argument("Index out of bound.");
+  }
+  
+  auto g = std::find_if(dvs_.begin(), dvs_.end(), [&](auto &g) -> bool {return g.id_ == idx; });
+  return *g;
+}
+
+const DependentVariable& Experiment::operator[](std::size_t idx) const {
+  if (idx > dvs_.size()) {
+    throw std::invalid_argument("Index out of bound.");
+  }
+  
+  auto g = std::find_if(dvs_.cbegin(), dvs_.cend(), [&](auto &g) -> bool {return g.id_ == idx; });
+  return *g;
 }
 
 
@@ -147,6 +190,7 @@ void Experiment::setHackedStatusOf(const std::vector<size_t> &idxs, const bool s
 
 
 void Experiment::setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status) {
+  has_candidates = true;
   std::for_each(idxs.begin(), idxs.end(),
                 [this, &status](auto &i){
                     this->dvs_[i].setCandidateStatus(status);
@@ -158,11 +202,11 @@ void Experiment::setCandidateStatusOf(const std::vector<size_t> &idxs, const boo
 bool Experiment::isHacked() const {
   return is_hacked or
          std::any_of(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isHacked();});
-};
+}
 
 bool Experiment::isModified() const {
   return std::any_of(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isModified();});
-};
+}
 
 bool Experiment::hasCandidates() const {
   return std::any_of(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isCandidate();});
