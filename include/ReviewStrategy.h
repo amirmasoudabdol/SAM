@@ -44,7 +44,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 /// SelectionStrategy provides an interface for implementing different selection
 /// strategies.
 ///
-class SelectionStrategy {
+class ReviewStrategy {
 
 protected:
   UnivariateDistribution dist;
@@ -53,12 +53,12 @@ public:
   ///
   /// @brief      Pure destructors of the base class
   ///
-  virtual ~SelectionStrategy() = 0;
+  virtual ~ReviewStrategy() = 0;
   
   sol::state lua;
 
   SelectionMethod name;
-  SelectionStrategy();
+  ReviewStrategy();
 
   ///
   /// @brief      Factory method for building a SelectionStrategy
@@ -69,7 +69,7 @@ public:
   ///
   /// @return     A new SelectionStrategy
   ///
-  static std::unique_ptr<SelectionStrategy>
+  static std::unique_ptr<ReviewStrategy>
   build(json &selection_straregy_config);
 
   ///
@@ -88,7 +88,7 @@ public:
 ///
 /// @brief Policy-based Selection Strategy
 ///
-/// Policy-based selection strategy accepts a submission if it passes
+/// Policy-based review strategy accepts a submission if it passes
 /// a criteria specified in `selection_policy_defs`. In addition to the
 /// output of selection policy, a submission might get rejected based on
 /// journal's acceptance rate, and publication bias rate.
@@ -97,7 +97,7 @@ public:
 /// @ingroup  SelectionStrategies
 ///
 ///
-class PolicyBasedSelection final : public SelectionStrategy {
+class PolicyBasedSelection final : public ReviewStrategy {
   
 public:
   struct Parameters {
@@ -130,7 +130,7 @@ public:
 ///
 /// @brief      Significant-based Selection Strategy
 ///
-/// Significant-based selection strategy accepts a publication if the given
+/// Significant-based review strategy accepts a publication if the given
 /// *p*-value is significant. Certain degree of *publication bias*, can be
 /// specified. In this case, a Submission has a chance of being published even
 /// if the statistics is not significant. Moreover, the SignificantSelection can
@@ -139,7 +139,7 @@ public:
 ///
 /// @ingroup  SelectionStrategies
 ///
-class SignificantSelection final : public SelectionStrategy {
+class SignificantSelection final : public ReviewStrategy {
 
 public:
   ///
@@ -149,7 +149,7 @@ public:
     //! Selection strategy name
     SelectionMethod name = SelectionMethod::SignificantSelection;
 
-    //! The \alpha at which the _selection strategy_ decides the significance
+    //! The \alpha at which the _review strategy_ decides the significance
     //! of a publication
     double alpha {0.05};
 
@@ -182,7 +182,7 @@ public:
 ///
 /// @ingroup  SelectionStrategies
 ///
-class RandomSelection final : public SelectionStrategy {
+class RandomSelection final : public ReviewStrategy {
 
 public:
   struct Parameters {
@@ -206,7 +206,7 @@ public:
 ///
 /// @ingroup  SelectionStrategies
 ///
-class FreeSelection final : public SelectionStrategy {
+class FreeSelection final : public ReviewStrategy {
 
 public:
   struct Parameters {};

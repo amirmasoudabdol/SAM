@@ -30,28 +30,11 @@ BOOST_AUTO_TEST_SUITE( PolicyTests )
 BOOST_FIXTURE_TEST_SUITE( constructor, PoliciesVariablesAndFunctions)
 
 BOOST_AUTO_TEST_CASE( simple_constructor ) {
-  
-  for (auto &var : quantitative_variables) {
-    for (auto &op : binary_operators) {
-      std::string def{var + " " + op + " 0"};
-      BOOST_TEST_MESSAGE("Testing the construction of: [" + def + "] policy...");
-      BOOST_CHECK_NO_THROW(Policy(def, lua));
-    }
-    
-    for (auto &op : unary_functions) {
-      std::string def{op + "(" + var + ")"};
-      BOOST_TEST_MESSAGE("Testing the construction of: [" + def + "] policy...");
-      BOOST_CHECK_NO_THROW(Policy(def, lua));
-    }
-  }
-  
-  for (auto &var : meta_variables) {
-    std::string def{var};
-    BOOST_TEST_MESSAGE("Testing the construction of: [" + def + "] policy...");
+
+  for (auto &def : all_possible_policies) {
     BOOST_CHECK_NO_THROW(Policy(def, lua));
-    BOOST_CHECK_NO_THROW(Policy("!" + def, lua));
   }
-  
+
 }
 
 BOOST_AUTO_TEST_SUITE_END() // FIXTURE
@@ -137,11 +120,20 @@ BOOST_AUTO_TEST_SUITE_END() // FIXTURE
     }
 
 
-//    BOOST_DATA_TEST_CASE_F(PoliciesVariablesAndFunctions,
-//                           unary_operators_on_submissions_stats,
-//                           ) {
-//      
-//    }
+//BOOST_DATA_TEST_CASE_F(PoliciesVariablesAndFunctions,
+//                       binary,
+//                       (
+//                        bdata::random( bdata::distribution=std::uniform_real_distribution<float>(1, 4)) ^
+//                        bdata::xrange(10)
+//                       )
+//                       * (
+//                         bdata::random( bdata::distribution=std::uniform_real_distribution<float>(1, 4)) ^
+//                         bdata::xrange(5)
+//                        ),
+//                       a, b, c, d) {
+// 
+//  std::cout << "a: " << a << "b: " << b << "c: " << c << std::endl;
+//}
 
   BOOST_AUTO_TEST_SUITE_END()
 
@@ -149,6 +141,8 @@ BOOST_AUTO_TEST_SUITE_END() // SUITE
 
 
 BOOST_AUTO_TEST_SUITE( PolicyChainTests )
+
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

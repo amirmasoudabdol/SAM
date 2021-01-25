@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_SUITE( selection_strategies, SampleResearch );
         for (auto &p : {0., 0.05, 0.5, 0.95} ) {
             
             s_s_conf["pub_bias"] = p;
-            researcher.journal->selection_strategy = SelectionStrategy::build(s_s_conf);
+            researcher.journal->review_strategy = ReviewStrategy::build(s_s_conf);
 
             for (int i = 0; i < nsims; i++) {
 

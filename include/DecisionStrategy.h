@@ -107,6 +107,7 @@ public:
   ///
   /// Reset the internal state of the decision strategy
   void reset() {
+    hacked_submissions.clear();
     stashed_submissions.clear();
     submission_candidates.reset();
 //    clear();

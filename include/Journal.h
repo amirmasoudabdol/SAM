@@ -6,7 +6,7 @@
 #define SAMPP_JOURNAL_H
 
 #include "MetaAnalysis.h"
-#include "SelectionStrategy.h"
+#include "ReviewStrategy.h"
 #include "Submission.h"
 
 #include "PersistenceManager.h"
@@ -86,7 +86,7 @@ public:
   }
 
   //! Journal's Selection Model/Strategy
-  std::unique_ptr<SelectionStrategy> selection_strategy;
+  std::unique_ptr<ReviewStrategy> review_strategy;
 
   //! Meta Analysis Estimators and their Stats Runner
 
@@ -126,12 +126,12 @@ public:
   // SelectionStrategy::SelectionStrategyParameters &ssp);
 
   ///
-  /// Point Journal's selection strategy to the given strategy
+  /// Point Journal's review strategy to the given strategy
   ///
-  /// @param      s     The pointer to the given selection strategy
+  /// @param      s     The pointer to the given review strategy
   ///
-  void setSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
-    selection_strategy = std::move(ss);
+  void setSelectionStrategy(std::unique_ptr<ReviewStrategy> ss) {
+    review_strategy = std::move(ss);
   }
 
   ///

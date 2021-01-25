@@ -16,7 +16,7 @@
 #include "TestStrategy.h"
 #include "EffectStrategy.h"
 #include "Journal.h"
-#include "SelectionStrategy.h"
+#include "ReviewStrategy.h"
 #include "HackingStrategy.h"
 #include "Researcher.h"
 #include "Submission.h"
@@ -117,7 +117,7 @@ struct SampleResearch {
 
     void initResearch() {
         
-        j_conf["selection_strategy"] = s_s_conf;
+        j_conf["review_strategy"] = s_s_conf;
         
         auto ts = TestStrategy::build(t_s_conf);
 

@@ -4,15 +4,15 @@
 
 #include <stdexcept>
 
-#include "SelectionStrategy.h"
+#include "ReviewStrategy.h"
 
 using namespace sam;
 
-SelectionStrategy::~SelectionStrategy() {
+ReviewStrategy::~ReviewStrategy() {
   // Pure destructors
 }
 
-SelectionStrategy::SelectionStrategy() {
+ReviewStrategy::ReviewStrategy() {
   lua.open_libraries();
 
   lua.new_usertype<DependentVariable>("DependentVariable",
@@ -37,27 +37,27 @@ SelectionStrategy::SelectionStrategy() {
       "candidate", sol::property([](Submission &s) { return s.dv_.is_candidate_; }));
 }
 
-std::unique_ptr<SelectionStrategy>
-SelectionStrategy::build(json &selection_strategy_config) {
+std::unique_ptr<ReviewStrategy>
+ReviewStrategy::build(json &review_strategy_config) {
 
-  if (selection_strategy_config["name"] == "PolicyBasedSelection") {
+  if (review_strategy_config["name"] == "PolicyBasedSelection") {
 
     auto params =
-        selection_strategy_config.get<PolicyBasedSelection::Parameters>();
+        review_strategy_config.get<PolicyBasedSelection::Parameters>();
     return std::make_unique<PolicyBasedSelection>(params);
 
-  } else if (selection_strategy_config["name"] == "SignificantSelection") {
+  } else if (review_strategy_config["name"] == "SignificantSelection") {
 
     auto params =
-        selection_strategy_config.get<SignificantSelection::Parameters>();
+        review_strategy_config.get<SignificantSelection::Parameters>();
     return std::make_unique<SignificantSelection>(params);
 
-  } else if (selection_strategy_config["name"] == "RandomSelection") {
+  } else if (review_strategy_config["name"] == "RandomSelection") {
 
-    auto params = selection_strategy_config.get<RandomSelection::Parameters>();
+    auto params = review_strategy_config.get<RandomSelection::Parameters>();
     return std::make_unique<RandomSelection>(params);
 
-  } else if (selection_strategy_config["name"] == "FreeSelection") {
+  } else if (review_strategy_config["name"] == "FreeSelection") {
 
     return std::make_unique<FreeSelection>();
 

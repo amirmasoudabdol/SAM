@@ -25,8 +25,8 @@ Journal::Journal(json &journal_config) {
   max_pubs = journal_config["max_pubs"];
 
   // Setting up the SelectionStrategy
-  this->selection_strategy =
-      SelectionStrategy::build(journal_config["selection_strategy"]);
+  this->review_strategy =
+      ReviewStrategy::build(journal_config["review_strategy"]);
   
   is_saving_meta = journal_config["save_meta"];
   is_saving_summaries = journal_config["save_overall_summaries"];
@@ -124,7 +124,7 @@ Journal::Journal(json &journal_config) {
 
 bool Journal::review(std::vector<Submission> &subs) {
 
-  bool decision = this->selection_strategy->review(subs);
+  bool decision = this->review_strategy->review(subs);
 
   if (decision) {
     accept(subs);

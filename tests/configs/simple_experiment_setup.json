@@ -54,7 +54,7 @@
     },
     "journal_parameters": {
         "max_pubs": 50,
-        "selection_strategy": {
+        "review_strategy": {
             "name": "FreeSelection"
         }
     },

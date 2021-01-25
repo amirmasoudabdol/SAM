@@ -402,7 +402,7 @@ public:
 //  };
 
   ResearcherBuilder &
-  setJournalSelectionStrategy(std::unique_ptr<SelectionStrategy> ss) {
+  setJournalSelectionStrategy(std::unique_ptr<ReviewStrategy> ss) {
 
     researcher.journal->setSelectionStrategy(std::move(ss));
     return *this;

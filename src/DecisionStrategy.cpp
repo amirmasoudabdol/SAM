@@ -21,15 +21,20 @@ using namespace sam;
 /// deconstruction of derived classes.
 ///
 DecisionStrategy::~DecisionStrategy(){
-    // pure destructors
+  // pure destructors
 }
 
+///
+/// Besides constructing the base class, it also registers the Submission and
+/// DependentVariable in Lua for later use of the derived classes, e.g.,
+/// DefaultDecisionMaker
+///
 DecisionStrategy::DecisionStrategy() {
 
   // Preparing a Lua instance, and registering my types there
-
   lua.open_libraries();
 
+  // Registering the DependentVariable
   lua.new_usertype<DependentVariable>("DependentVariable",
    "id", &DependentVariable::id_,
    "nobs", &DependentVariable::nobs_,
@@ -41,6 +46,7 @@ DecisionStrategy::DecisionStrategy() {
    "candidate", &DependentVariable::is_candidate_
    );
 
+  // Registering the Submission
   lua.new_usertype<Submission>("Submission",
       "id", sol::property([](Submission &s) { return s.dv_.id_; }),
       "nobs", sol::property([](Submission &s) { return s.dv_.nobs_; }),
@@ -68,7 +74,7 @@ DecisionStrategy::build(json &decision_strategy_config) {
 }
 
 
-
+///
 /// Select an unique outcome from an experiment, if at some point, a PolicyChain
 /// finds a group of outcomes instead of a unique outcome, the selection will be
 /// saved and the will await for processing in a different stages.
@@ -78,6 +84,7 @@ DecisionStrategy::build(json &decision_strategy_config) {
 ///
 /// @param experiment a reference to an experiment
 /// @param pchain_set a reference to a policy chain set
+///
 void DecisionStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
   
@@ -125,7 +132,6 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
   }
 
-//  spdlog::trace("✗ Found none in the pile!");
 }
 
 
