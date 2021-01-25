@@ -111,7 +111,7 @@ public:
   void computeStuff() {
     experiment->calculateStatistics();
     experiment->calculateEffects();
-    experiment->runTest();
+    experiment->calculateTests();
     
     spdlog::trace("{}", *experiment);
   }

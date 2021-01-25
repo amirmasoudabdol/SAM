@@ -248,7 +248,7 @@ void Researcher::research() {
   // ====================
 
   experiment->setup.randomize();
-  experiment->initExperiment();
+  experiment->reset();
 
   // Performing maximum `nreps` replications
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep) {

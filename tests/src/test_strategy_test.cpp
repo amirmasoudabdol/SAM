@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_SUITE_END()
 //        {
 //            experiment->generateData();
 //            experiment->calculateStatistics();
-//            experiment->runTest();
+//            experiment->calculateTests();
 //
 //            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
 //            statistics.insert_cols(statistics.size(), experiment->statistics);
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_SUITE_END()
 //        {
 //            experiment->generateData();
 //            experiment->calculateStatistics();
-//            experiment->runTest();
+//            experiment->calculateTests();
 //
 //            pvalues.insert_cols(pvalues.size(), experiment->pvalues);
 //            statistics.insert_cols(statistics.size(), experiment->statistics);

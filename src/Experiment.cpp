@@ -70,20 +70,57 @@ Experiment::Experiment(ExperimentSetup &e) : setup{e} {
 ///
 Experiment::Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
                        std::shared_ptr<TestStrategy> &ts,
-                       std::shared_ptr<EffectStrategy> &efs)
-    : setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{efs} {
+                       std::shared_ptr<EffectStrategy> &es)
+    : setup{e}, data_strategy{ds}, test_strategy{ts}, effect_strategy{es} {
 
   initResources();
 }
 
-void Experiment::generateData() { data_strategy->genData(this); }
 
-void Experiment::runTest() { test_strategy->run(this); }
-
-void Experiment::initExperiment() {
-  clear();
-  initResources();
+///
+/// Adds new candidates to the list of selected candidates
+///
+void Experiment::addNewCandidates(const std::vector<Submission>& subs) {
+  candidates.value().insert(candidates.value().end(), subs.begin(), subs.end());
 }
+
+// Calculation Methods
+// ------------------
+
+void Experiment::generateData() {
+  data_strategy->genData(this);
+}
+
+void Experiment::calculateTests() {
+  test_strategy->run(this);
+}
+
+
+void Experiment::calculateStatistics() {
+  
+  std::for_each(dvs_.begin(), dvs_.end(), [](auto &dv){
+    dv.updateStats();
+  });
+  
+}
+
+void Experiment::calculateEffects() {
+  effect_strategy->computeEffects(this);
+}
+
+void Experiment::recalculateEverything() {
+  
+  this->calculateStatistics();
+  
+  this->calculateEffects();
+  
+  this->calculateTests();
+}
+
+
+// Initialization and Resetting
+// ------------------------
+
 
 ///
 /// It allocates the necessary memory for the dependent variables.
@@ -99,23 +136,14 @@ void Experiment::initResources() {
   });
 }
 
-void Experiment::calculateStatistics() {
-  
-  std::for_each(dvs_.begin(), dvs_.end(), [](auto &dv){
-    dv.updateStats();
-  });
-  
-}
 
-void Experiment::calculateEffects() { effect_strategy->computeEffects(this); }
-
-void Experiment::recalculateEverything() {
-
-  this->calculateStatistics();
-
-  this->calculateEffects();
-
-  this->runTest();
+///
+/// This cleanup the Experiment, and reallocate its memory again. Technically, preparing
+/// the experiment for a new run.
+///
+void Experiment::reset() {
+  clear();
+  initResources();
 }
 
 ///
@@ -144,10 +172,9 @@ void Experiment::clear() {
   
 }
 
-/// Adds new candidates to the list of selected candidates
-void Experiment::addNewCandidates(const std::vector<Submission>& subs) {
-  candidates.value().insert(candidates.value().end(), subs.begin(), subs.end());
-}
+
+// Operators
+// ---------
 
 ///
 /// These operators are returning the correct group, even if the group list is
@@ -164,6 +191,7 @@ DependentVariable& Experiment::operator[](std::size_t idx) {
   return *g;
 }
 
+///
 const DependentVariable& Experiment::operator[](std::size_t idx) const {
   if (idx > dvs_.size()) {
     throw std::invalid_argument("Index out of bound.");
@@ -173,11 +201,22 @@ const DependentVariable& Experiment::operator[](std::size_t idx) const {
   return *g;
 }
 
+// Getter / Setter / Status Query
+// ----------------------------
 
-/// It sets the overall hacked status of the experiment to true. This has the power to
-/// overwrites the hacked status of the dependent variables.
+
+/// It sets the overall hacked status of the experiment to status.
+///
+/// @attention Setting this to `true` will make the `isHacked()` to return `true`.
+/// Basically, this overrules the status of the dependent variables, but it doesn't
+/// overwrite them!
 void Experiment::setHackedStatus(const bool status) {
   is_hacked = status;
+}
+
+///
+void Experiment::setPublishedStatus(const bool status) {
+  is_published = status;
 }
 
 ///
@@ -188,7 +227,7 @@ void Experiment::setHackedStatusOf(const std::vector<size_t> &idxs, const bool s
                   });
 }
 
-
+///
 void Experiment::setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status) {
   has_candidates = true;
   std::for_each(idxs.begin(), idxs.end(),
@@ -204,10 +243,22 @@ bool Experiment::isHacked() const {
          std::any_of(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isHacked();});
 }
 
+///
 bool Experiment::isModified() const {
   return std::any_of(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isModified();});
 }
 
+///
 bool Experiment::hasCandidates() const {
   return std::any_of(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isCandidate();});
+}
+
+///
+size_t Experiment::nCandidates() const {
+  return std::count_if(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isCandidate();});
+}
+
+///
+bool Experiment::isPublished() const {
+  return is_published;
 }

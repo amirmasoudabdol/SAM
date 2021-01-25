@@ -38,7 +38,7 @@ void GroupPooling::perform(Experiment *experiment) {
   //
   //    experiment->calculateStatistics();
   //    experiment->calculateEffects();
-  //    experiment->runTest();
+  //    experiment->calculateTests();
   //
   //    if (!researchStrategy->verdict(*experiment,
   //    DecisionStage::WhileHacking).isStillHacking()){

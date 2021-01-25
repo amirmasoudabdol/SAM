@@ -80,6 +80,9 @@ public:
   /// Sets the hacked status of the experiment
   void setHackedStatus(const bool status);
   
+  /// Sets the published status of the experiment
+  void setPublishedStatus(const bool status);
+  
   /// Sets the hacked status of a group of dvs
   void setHackedStatusOf(const std::vector<size_t> &idxs, const bool status);
   
@@ -94,6 +97,12 @@ public:
   
   /// Returns true if there is an candidate in the experiment
   bool hasCandidates() const;
+  
+  /// Returns true if the experiment has been published by the Journal
+  bool isPublished() const;
+  
+  /// Returns the number of candidate DVs
+  size_t nCandidates() const;
 
   Experiment() = default;
 
@@ -104,15 +113,21 @@ public:
   Experiment(ExperimentSetup &e);
 
   /// Directly constructs an Experiment from its components
-  Experiment(ExperimentSetup &e, std::shared_ptr<DataStrategy> &ds,
+  Experiment(ExperimentSetup &e,
+             std::shared_ptr<DataStrategy> &ds,
              std::shared_ptr<TestStrategy> &ts,
-             std::shared_ptr<EffectStrategy> &efs);
+             std::shared_ptr<EffectStrategy> &es);
 
   ///
   /// @todo I think I can avoid this search if I use std::reference_wrapper
   
   /**
    * @name STL-like operators and methods
+   *
+   * @attention begin() and end() operators do not return a sorted list of DVs. This is
+   * due to Policies re-arranging them as they filter them. If you want a sorted list of
+   * DVs, you should use the subscript operators, they make sure that the correct item
+   * is returns every time!
    */
   ///@{
   DependentVariable &operator[](std::size_t idx);
@@ -127,7 +142,7 @@ public:
 
 
   /// Clears and re-initializes the dependent variables
-  void initExperiment();
+  void reset();
 
   /// Uses the DataStrategy to populate every DVs with raw the data.
   void generateData();
@@ -136,12 +151,12 @@ public:
   void calculateStatistics();
   
   /// Uses the TestStrategy to run the statistical test
-  void runTest();
+  void calculateTests();
 
   /// Uses the EffectStrategy to calculates the effect sizes.
   void calculateEffects();
 
-  /// Runs calculateStatistics(), runTest(), and calculateEffects() in order.
+  /// Runs calculateStatistics(), calculateTests(), and calculateEffects() in order.
   void recalculateEverything();
   
   /// Clears the content of the experiment
