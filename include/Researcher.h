@@ -38,10 +38,65 @@ class Researcher {
 
   //! An arbitrary (and optional) name of the Researcher
   std::string name;
+  
+  //! Number of hacking strategies to be chosen from the given list of
+  //! strategies
+  size_t n_hacks;
+  
+  //! Indicates whether the researcher is going to randomize its hacking arsenal for
+  //! every new research
+  bool reselect_hacking_strategies_after_every_simulation{false};
+  
+  //! Indicates order in which hacking strategies are going to be selected
+  //! from the list of given hacking strategies if the Researcher decides has
+  //! to apply a fewer number than the given list
+  std::string hacking_selection_priority;
+  
+  //! Indicates the execution order of selected/given hacking strategies
+  std::string hacking_execution_order;
+  
+  //! Probability of committing to the submission process given everything else is in
+  //! order.
+  double submission_probability{1};
+  
+  //! A Submission record that Researcher is going to submit to the Journal
+  SubmissionPool submissions_from_reps;
+  
+  //! Indicates the probability of a Researcher _deciding_ to go for hacking an
+  //! Experiment
+  Parameter<double> probability_of_being_a_hacker;
+  
+  //! Indicates the probability of a Researcher _actually applying_ a chosen
+  //! hacking strategy
+  std::variant<double, std::string, UnivariateDistribution,
+  std::unique_ptr<HackingProbabilityStrategy>>
+  probability_of_committing_a_hack;
 
 public:
-  Researcher() = default;
-
+  
+  //! Indicates whether the researcher performs any pre-processing on the method or
+  //! not!
+  bool is_pre_processing{false};
+  std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
+  
+  //! Researcher's Experiment
+  std::unique_ptr<Experiment> experiment;
+  
+  //! Researcher's Journal of choice!
+  std::shared_ptr<Journal> journal;
+  
+  //! Researcher's Research Strategy
+  std::unique_ptr<ResearchStrategy> research_strategy;
+  
+  //! Original set of hacking strategies and their Selection→Decision sequences
+  HackingWorkflow original_workflow;
+  
+  //! Researcher's hacking workflow. This is a subset of the #original_workflow, as it
+  //! is being filtered and rearranged by various factors during the initialization.
+  HackingWorkflow hacking_workflow;
+  
+  Researcher()= default;
+  
   ///
   /// Starts the Researcher build process. Use this to build a new instance of
   /// the Researcher.
@@ -50,46 +105,6 @@ public:
   /// @return     An instance of ResearcherBuilder.
   ///
   static ResearcherBuilder create(std::string name);
-
-  std::unique_ptr<Experiment> experiment;
-  std::shared_ptr<Journal> journal;
-  std::unique_ptr<ResearchStrategy> research_strategy;
-  std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
-
-  bool is_pre_processing{false};
-  std::vector<std::unique_ptr<HackingStrategy>> pre_processing_methods;
-
-  //! Number of hacking strategies to be chosen from the given list of
-  //! strategies
-  size_t n_hacks;
-
-  bool reselect_hacking_strategies_after_every_simulation{false};
-
-  //! Indicates order in which hacking strategies are going to be selected
-  //! from the list of given hacking strategies if the Researcher decides has
-  //! to apply a fewer number than the given list
-  std::string hacking_selection_priority;
-
-  //! Indicates the execution order of selected/given hacking strategies
-  std::string hacking_execution_order;
-
-  //! Indicates the probability of a Researcher _deciding_ to go for hacking an
-  //! Experiment
-  Parameter<double> probability_of_being_a_hacker;
-
-  //! Indicates the probability of a Researcher _actually applying_ a chosen
-  //! hacking strategy
-  std::variant<double, std::string, UnivariateDistribution,
-               std::unique_ptr<HackingProbabilityStrategy>>
-      probability_of_committing_a_hack;
-
-  double submission_probability{1};
-
-  //! A Submission record that Researcher is going to submit to the Journal
-  SubmissionPool submissions_from_reps;
-
-  HackingWorkflow original_workflow;
-  HackingWorkflow h_workflow;
 
   /// Applies the pro-processing methods on the Experiment
   void preProcessData();
@@ -122,7 +137,7 @@ public:
     spdlog::trace("{}", *experiment);
   }
 
-  /// @brief Reset the internal state of the Researcher
+  /// Resets the internal state of the Researcher
   void reset() {
     experiment->reset();
     research_strategy->reset();
@@ -130,7 +145,7 @@ public:
   }
 
 private:
-  /// @brief re-order the given workflow according the given priority
+  /// Re-orders the given workflow according the given priority
   void reorderHackingStrategies(HackingWorkflow &hw, std::string &priority);
 
 public:
@@ -264,10 +279,10 @@ public:
     }
 
     // Parsing Hacking Strategies
-    researcher.h_workflow.resize(
+    researcher.hacking_workflow.resize(
         config["researcher_parameters"]["hacking_strategies"].size());
 
-    for (int h{0}; h < researcher.h_workflow.size(); ++h) {
+    for (int h{0}; h < researcher.hacking_workflow.size(); ++h) {
 
       // Basically there are no hacking strategies defined
       if (config["researcher_parameters"]["hacking_strategies"][0] == "") {
@@ -276,34 +291,34 @@ public:
 
       auto &item = config["researcher_parameters"]["hacking_strategies"][h];
 
-      researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
+      researcher.hacking_workflow[h].push_back(HackingStrategy::build(item[0]));
 
-      researcher.h_workflow[h].push_back(
+      researcher.hacking_workflow[h].push_back(
           PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(),
                          researcher.research_strategy->lua});
 
-      researcher.h_workflow[h].push_back(PolicyChain{
+      researcher.hacking_workflow[h].push_back(PolicyChain{
           item[2].get<std::vector<std::string>>(), PolicyChainType::Decision,
           researcher.research_strategy->lua});
     }
 
     /// Copying the original list for later shuffling!
-    researcher.original_workflow = researcher.h_workflow;
+    researcher.original_workflow = researcher.hacking_workflow;
 
     if (config["researcher_parameters"].contains("randomize_strategies")) {
       researcher.reselect_hacking_strategies_after_every_simulation =
           config["researcher_parameters"]["randomize_strategies"].get<bool>();
     }
 
-    researcher.n_hacks = researcher.h_workflow.size();
+    researcher.n_hacks = researcher.hacking_workflow.size();
     if (config["researcher_parameters"].contains("n_hacks")) {
       researcher.n_hacks =
-          std::min(researcher.h_workflow.size(),
+          std::min(researcher.hacking_workflow.size(),
                    config["researcher_parameters"]["n_hacks"].get<size_t>());
     }
 
     //! Selecting between hacking
-    if (researcher.n_hacks < researcher.h_workflow.size() and
+    if (researcher.n_hacks < researcher.hacking_workflow.size() and
         config["researcher_parameters"].contains(
             "hacking_selection_priority")) {
       researcher.hacking_selection_priority =
@@ -312,10 +327,10 @@ public:
 
       /// Reordering hacking strategies based on selection priority
       researcher.reorderHackingStrategies(
-          researcher.h_workflow, researcher.hacking_selection_priority);
+          researcher.hacking_workflow, researcher.hacking_selection_priority);
 
       /// Selecting only n_hacks of those
-      researcher.h_workflow.resize(researcher.n_hacks);
+      researcher.hacking_workflow.resize(researcher.n_hacks);
     }
 
     //! Setting the execution order
@@ -325,14 +340,14 @@ public:
               .get<std::string>();
 
       /// Reorder hacking strategies based on the preferred execution order
-      researcher.reorderHackingStrategies(researcher.h_workflow,
+      researcher.reorderHackingStrategies(researcher.hacking_workflow,
                                           researcher.hacking_execution_order);
     }
 
     /// Sorting the selected hacking strategies based on their stage
     /// The stable_sort has been used because I'd like to keep the given
     /// order in previous stages
-    std::stable_sort(researcher.h_workflow.begin(), researcher.h_workflow.end(),
+    std::stable_sort(researcher.hacking_workflow.begin(), researcher.hacking_workflow.end(),
                      [&](auto &h1, auto &h2) {
                        return std::get<0>(h1[0])->stage() <
                               std::get<0>(h2[0])->stage();
@@ -455,15 +470,15 @@ public:
     return *this;
   }
 
-  ResearcherBuilder &addNewHackingStrategy(HackingStrategy *new_hs) {
-    if (researcher.hacking_strategies.empty()) {
-      researcher.hacking_strategies.resize(1);
-    }
-    //            researcher.hacking_strategies.back().push_back(new_hs);
-
-    //    researcher.is_hacker = true;
-    return *this;
-  }
+//  ResearcherBuilder &addNewHackingStrategy(HackingStrategy *new_hs) {
+//    if (researcher.hacking_strategies.empty()) {
+//      researcher.hacking_strategies.resize(1);
+//    }
+//    //            researcher.hacking_strategies.back().push_back(new_hs);
+//
+//    //    researcher.is_hacker = true;
+//    return *this;
+//  }
 
   /**
    Prepare a set of hacking strategies groups by populating each group from
@@ -509,24 +524,24 @@ public:
   /// @return     Return an instance of itself where hacking_strategies has been
   ///             initialized accordingly.
   ///
-  ResearcherBuilder &pickRandomHackingStrategies(int n_group, int m_method) {
-
-    researcher.isHacker();
-    researcher.hacking_strategies.resize(n_group);
-
-    //    for (auto &group : researcher.hacking_strategies) {
-    //
-    //      for (int i = 0; i < m_method; ++i) {
-    //                            auto h_method =
-    //                            enum_cast<HackingMethod>(Random::get<int>(0,
-    //                            enum_count<HackingMethod>() - 1));
-    //                            group.push_back(HackingStrategy::build(h_method.value()));
-    //      }
-    //    }
-
-    //    researcher.is_hacker = true;
-    return *this;
-  };
+//  ResearcherBuilder &pickRandomHackingStrategies(int n_group, int m_method) {
+//
+//    researcher.isHacker();
+//    researcher.hacking_strategies.resize(n_group);
+//
+//    //    for (auto &group : researcher.hacking_strategies) {
+//    //
+//    //      for (int i = 0; i < m_method; ++i) {
+//    //                            auto h_method =
+//    //                            enum_cast<HackingMethod>(Random::get<int>(0,
+//    //                            enum_count<HackingMethod>() - 1));
+//    //                            group.push_back(HackingStrategy::build(h_method.value()));
+//    //      }
+//    //    }
+//
+//    //    researcher.is_hacker = true;
+//    return *this;
+//  };
 
   ///
   /// Build and return a new Researcher.

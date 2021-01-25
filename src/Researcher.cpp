@@ -37,7 +37,7 @@ bool Researcher::letTheHackBegin() {
   // not.
   bool has_committed;
 
-  for (auto &h_set : h_workflow) {
+  for (auto &h_set : hacking_workflow) {
 
     has_committed = true;
 
@@ -136,18 +136,18 @@ void Researcher::randomizeParameters() {
   if (reselect_hacking_strategies_after_every_simulation) {
 
     // Clearing the list
-    h_workflow.clear();
+    hacking_workflow.clear();
 
     // Shuffling the original list
     Random::shuffle(original_workflow.begin(), original_workflow.end());
-    h_workflow = original_workflow;
+    hacking_workflow = original_workflow;
 
     // Sorting based on the given selection criteria
-    reorderHackingStrategies(h_workflow, hacking_selection_priority);
-    h_workflow.resize(n_hacks);
+    reorderHackingStrategies(hacking_workflow, hacking_selection_priority);
+    hacking_workflow.resize(n_hacks);
 
     // Reordering based on the given execution order
-    reorderHackingStrategies(h_workflow, hacking_execution_order);
+    reorderHackingStrategies(hacking_workflow, hacking_execution_order);
   }
 }
 
