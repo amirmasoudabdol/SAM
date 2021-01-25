@@ -35,50 +35,64 @@ class Submission;
 /// @brief      Experiment encapsulates data and methods needed by the Researcher to
 /// conduct its research.
 ///
-/// Experiment has access to all data-related
-/// strategies, e.g., DataStrategy, TestStrategy, and EffectStrategy. Moreover,
-/// it stores the actual research data in a vector of DependentVariable objects. Researcher's
-/// access to actual data, and other data-related strategies always goes
-/// through an Experiment object.
-///
-/// Moreover, the Experiment stores a copy of the ExperimentSetup where most study parameters
-/// are stored in.
+/// Experiment has a full access to all data-related strategies, e.g., DataStrategy,
+/// TestStrategy, and EffectStrategy. It also contains the raw research data in
+/// the form of list of DependentVariable(s). Moreover, the Experiment stores a copy of
+/// the ExperimentSetup where most study parameters are stored in.
 ///
 /// @ingroup    Experiment
 class Experiment {
+  
+  //! Indicates if any hacking routine has been applied on the experiment
+  bool is_hacked{false};
+  std::vector<int> hacks_history;
+  
+  bool is_published{false};
+  
+  bool has_candidates{false};
 
 public:
   int simid{0};
   int exprid{0};
   int repid{0};
 
-  //! Indicates if any hacking routine has been applied on the experiment
-  bool is_hacked{false};
-  std::vector<int> hacks_history;
-
-  bool is_published{false};
-
   ExperimentSetup setup;
 
   std::shared_ptr<DataStrategy> data_strategy;
   std::shared_ptr<TestStrategy> test_strategy;
   std::shared_ptr<EffectStrategy> effect_strategy;
-
+  
   std::vector<DependentVariable> dvs_;
-  
+
+  //! @brief  List of all possible candidates from this experiment so far!
+  //!
+  //! This is a list of any dvs that has been flagged as submissions during the lifespan
+  //! of this experiment
+  //!
   std::optional<std::vector<Submission>> candidates;
-  void updateCandidatesList(const std::vector<Submission>& subs);
+  void addNewCandidates(const std::vector<Submission>& subs);
   
+  /// Sets the hacked status of the experiment
   void setHackedStatus(const bool status);
+  
+  /// Sets the hacked status of a group of dvs
   void setHackedStatusOf(const std::vector<size_t> &idxs, const bool status);
+  
+  /// Sets the candidate status of a group of dvs
   void setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status);
+  
+  /// Returns true if the experiment is hacked
+  bool isHacked() const;
+  
+  /// Returns true if the experiment has been modified in anyway
+  bool isModified() const;
+  
+  /// Retruns true if there is an candidate in the experiment
+  bool hasCandidates() const;
 
   Experiment() = default;
 
-  /// @brief  Constructing an Experiment object using the given JSON configuration.
-  ///
-  /// Starting by the initialization of an ExperimentSetup, followed by Data, Test, and
-  /// Effect strategies initialization; and finally, all necessary resources will be initialized.
+  /// Constructing an Experiment object using the given JSON configuration.
   Experiment(json &experiment_config);
 
   /// @brief Constructing an Experiment using an already initialized ExperimentSetup

@@ -345,6 +345,11 @@ bool PolicyChain::operator()(const DependentVariable &dv) {
                      [&](auto &policy) -> bool { return policy(dv); });
 }
 
+bool PolicyChain::operator()(DependentVariable &dv) {
+  return std::all_of(pchain.begin(), pchain.end(),
+                     [&](auto &policy) -> bool { return policy(dv); });
+}
+
 ///
 /// This checks whether any of the DependentVariable(s) are satisfying all the
 /// policies of the chain.

@@ -3,8 +3,8 @@
 //
 
 ///
-/// @defgroup   SelectionStrategies Selection Strategies
-/// @brief      List of available Selection Strategies
+/// @defgroup   ReviewStrategies Review Strategies
+/// @brief      List of available Review Strategies
 ///
 /// Description to come!
 ///
@@ -94,7 +94,7 @@ public:
 /// journal's acceptance rate, and publication bias rate.
 ///
 ///
-/// @ingroup  SelectionStrategies
+/// @ingroup  ReviewStrategies
 ///
 ///
 class PolicyBasedSelection final : public ReviewStrategy {
@@ -137,7 +137,7 @@ public:
 /// be tailored toward either positive or negative effect. In this case, the
 /// Journal will only accept Submissions with larger or smaller effects.
 ///
-/// @ingroup  SelectionStrategies
+/// @ingroup  ReviewStrategies
 ///
 class SignificantSelection final : public ReviewStrategy {
 
@@ -180,7 +180,7 @@ public:
 /// @note       This is technically the SignificantSelection with pub_bias set
 /// to 0.
 ///
-/// @ingroup  SelectionStrategies
+/// @ingroup  ReviewStrategies
 ///
 class RandomSelection final : public ReviewStrategy {
 
@@ -204,7 +204,7 @@ public:
 ///             all submissions will be accepted.
 ///
 ///
-/// @ingroup  SelectionStrategies
+/// @ingroup  ReviewStrategies
 ///
 class FreeSelection final : public ReviewStrategy {
 

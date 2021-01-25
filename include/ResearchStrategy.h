@@ -12,8 +12,8 @@
 ///
 //===----------------------------------------------------------------------===//
 ///
-/// @defgroup   DecisionStrategies Decision Strategies
-/// @brief      List of available Decision Strategies
+/// @defgroup   ResearchStrategies Research Strategies
+/// @brief      List of available Research Strategies
 ///
 
 #ifndef SAMPP_RESEARCHSTRATEGY_H
@@ -137,7 +137,7 @@ protected:
 };
 
 ///
-/// @ingroup    DecisionStrategies
+/// @ingroup    ResearchStrategies
 class DefaultResearchStrategy final : public ResearchStrategy {
 
 public:

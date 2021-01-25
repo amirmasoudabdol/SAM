@@ -94,6 +94,9 @@ struct Policy {
   [[nodiscard]] bool operator()(const DependentVariable &dv) const {
     return func(dv);
   }
+  [[nodiscard]] bool operator()(DependentVariable &dv) const {
+    return func(dv);
+  }
 
   /// String operator for the JSON library
   explicit operator std::string() const { return def; }
@@ -156,7 +159,8 @@ struct PolicyChain {
   [[nodiscard]] bool operator()(const Submission &sub);
 
   /// Checks whether the given DependentVariable satisfies __all__ the policies.
-  [[nodiscard]] bool operator()(const DependentVariable &dv);
+  [[nodiscard]] bool operator() (const DependentVariable &dv);
+  [[nodiscard]] bool operator() (DependentVariable &dv);
 
   /// Determines whether the experiment satisfies any of the given policies
   [[nodiscard]] bool operator()(Experiment *experiment);
