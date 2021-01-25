@@ -59,7 +59,7 @@
         }
     },
     "researcher_parameters": {
-        "decision_strategy": {
+        "research_strategy": {
             "name": "DefaultDecisionMaker",
             "initial_selection_policies": [
                 [

@@ -15,7 +15,7 @@
 #include "Researcher.h"
 #include "HackingStrategy.h"
 #include "Journal.h"
-#include "DecisionStrategy.h"
+#include "ResearchStrategy.h"
 #include "PersistenceManager.h"
 
 #include "sam.h"

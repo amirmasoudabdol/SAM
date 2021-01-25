@@ -25,7 +25,7 @@
 #include <string>
 
 #include "Distributions.h"
-#include "DecisionStrategy.h"
+#include "ResearchStrategy.h"
 #include "Experiment.h"
 #include "HackingStrategyTypes.h"
 
@@ -368,7 +368,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
 ///             satisfactory) result.
 ///
 /// @ingroup  HackingStrategies
-/// @sa       DecisionStrategy
+/// @sa       ResearchStrategy
 ///
 class SubjectiveOutlierRemoval final : public HackingStrategy {
 public:

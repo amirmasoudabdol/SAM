@@ -12,7 +12,7 @@ using namespace sam;
 /// Perform Group Pooling on the given Experiment.
 ///
 /// @param      experiment        A pointer to researcher's experiment
-/// @param      decisionStrategy  A pointer to researcher's decision strategy
+/// @param      researchStrategy  A pointer to researcher's research strategy
 ///
 void GroupPooling::perform(Experiment *experiment) {
 
@@ -40,7 +40,7 @@ void GroupPooling::perform(Experiment *experiment) {
   //    experiment->calculateEffects();
   //    experiment->runTest();
   //
-  //    if (!decisionStrategy->verdict(*experiment,
+  //    if (!researchStrategy->verdict(*experiment,
   //    DecisionStage::WhileHacking).isStillHacking()){
   //        return ;
   //    }

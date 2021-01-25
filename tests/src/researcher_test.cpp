@@ -17,7 +17,7 @@
 #include "Researcher.h"
 #include "HackingStrategy.h"
 #include "Journal.h"
-#include "DecisionStrategy.h"
+#include "ResearchStrategy.h"
 
 #include "sam.h"
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( researcher_builder )
 
     Researcher new_researcher = Researcher::create("John")
                                         .createExperiment(setup)
-                                        .createDecisionStrategy(de_s_conf)
+                                        .createResearchStrategy(de_s_conf)
                                         .createJournal(j_conf)
                                         .addNewHackingStrategy(hs)
                                         .build();
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( researcher_builder )
 //    BOOST_TEST((new_researcher.journal->review_strategy->params.alpha == 0.05));
 
         // The same here as well, I've removed the params from the Abstract class and this is the result.
-        // BOOST_TEST((new_researcher.decision_strategy->params.preference == DecisionPreference::PreRegisteredOutcome));
+        // BOOST_TEST((new_researcher.research_strategy->params.preference == DecisionPreference::PreRegisteredOutcome));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

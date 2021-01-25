@@ -9,8 +9,8 @@
 /// Description to come!
 ///
 
-#ifndef SAMPP_SELECTIONSTRATEGIES_H
-#define SAMPP_SELECTIONSTRATEGIES_H
+#ifndef SAMPP_REVIEWSTRATEGIES_H
+#define SAMPP_REVIEWSTRATEGIES_H
 
 #include "Submission.h"
 #include "Distributions.h"
@@ -221,4 +221,4 @@ public:
 
 } // namespace sam
 
-#endif // SAMPP_SELECTIONSTRATEGIES_H
+#endif // SAMPP_REVIEWSTRATEGIES_H

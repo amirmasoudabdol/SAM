@@ -1,4 +1,4 @@
-//===-- DecisionStrategy.h - Decision Strategy Deceleration ---------------===//
+//===-- ResearchStrategy.h - Decision Strategy Deceleration ---------------===//
 //
 // Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-02-01.
@@ -16,8 +16,8 @@
 /// @brief      List of available Decision Strategies
 ///
 
-#ifndef SAMPP_DECISIONSTRATEGY_H
-#define SAMPP_DECISIONSTRATEGY_H
+#ifndef SAMPP_RESEARCHSTRATEGY_H
+#define SAMPP_RESEARCHSTRATEGY_H
 
 #include <spdlog/spdlog.h>
 #include <fmt/core.h>
@@ -31,12 +31,12 @@
 namespace sam {
 
 enum class DecisionMethod {
-  DefaultDecisionMaker
+  DefaultResearchStrategy
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(
     DecisionMethod,
-    {{DecisionMethod::DefaultDecisionMaker, "DefaultDecisionMaker"}})
+    {{DecisionMethod::DefaultResearchStrategy, "DefaultResearchStrategy"}})
 
 using SubmissionPool = std::vector<Submission>;
 
@@ -44,21 +44,21 @@ using SubmissionPool = std::vector<Submission>;
 ///
 /// @brief      Abstract class for different decision strategies.
 ///
-class DecisionStrategy {
+class ResearchStrategy {
 
 public:
   // Lua state
   sol::state lua;
   
-  virtual ~DecisionStrategy() = 0;
-  DecisionStrategy();
+  virtual ~ResearchStrategy() = 0;
+  ResearchStrategy();
   
-  /// DecisionStrategy factory method.
+  /// ResearchStrategy factory method.
   ///
-  /// @param decision_strategy_config    A JSON object containing information
-  /// about each decision strategy.
-  static std::unique_ptr<DecisionStrategy>
-  build(json &decision_strategy_config);
+  /// @param research_strategy_config    A JSON object containing information
+  /// about each research strategy.
+  static std::unique_ptr<ResearchStrategy>
+  build(json &research_strategy_config);
   
   std::optional<SubmissionPool> submission_candidates;
   
@@ -105,7 +105,7 @@ public:
   /// The verdict system is broken, and if reset it after the selectionBetweenSubmission, it's weird
   /// and I cannot just call it in any other methods because then it's hidden
   ///
-  /// Reset the internal state of the decision strategy
+  /// Reset the internal state of the research strategy
   void reset() {
     hacked_submissions.clear();
     stashed_submissions.clear();
@@ -114,10 +114,10 @@ public:
   }
   
   /// @brief      Implementation of decision-making procedure.
-  virtual DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
+  virtual ResearchStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) = 0;
   
-  virtual DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
+  virtual ResearchStrategy &selectOutcomeFromPool(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) = 0;
 
   /// Create and save all possible submissions from an experiment, if they pass
@@ -138,11 +138,11 @@ protected:
 
 ///
 /// @ingroup    DecisionStrategies
-class DefaultDecisionMaker final : public DecisionStrategy {
+class DefaultResearchStrategy final : public ResearchStrategy {
 
 public:
   struct Parameters {
-    DecisionMethod name = DecisionMethod::DefaultDecisionMaker;
+    DecisionMethod name = DecisionMethod::DefaultResearchStrategy;
 
     std::vector<std::vector<std::string>> initial_selection_policies_defs;
     std::vector<std::string> submission_decision_policies_defs;
@@ -158,7 +158,7 @@ public:
 
   Parameters params;
 
-  explicit DefaultDecisionMaker(const Parameters &p) : params{p} {
+  explicit DefaultResearchStrategy(const Parameters &p) : params{p} {
 
     spdlog::trace("Preparing Initial Selection Policies: ");
     initial_selection_policies = PolicyChainSet(p.initial_selection_policies_defs, lua);
@@ -182,10 +182,10 @@ public:
     stashing_policy = PolicyChain(p.stashing_policy_def, PolicyChainType::Selection, lua);
   };
 
-  DecisionStrategy &selectOutcomeFromExperiment(Experiment *experiment,
+  ResearchStrategy &selectOutcomeFromExperiment(Experiment *experiment,
                                     PolicyChainSet &pchain_set) override;
   
-  DecisionStrategy &selectOutcomeFromPool(SubmissionPool &spool,
+  ResearchStrategy &selectOutcomeFromPool(SubmissionPool &spool,
                                     PolicyChainSet &pchain_set) override;
 
   bool willStartHacking() override;
@@ -196,8 +196,8 @@ public:
   bool willContinueReplicating(PolicyChain &pchain) override;
 };
 
-// JSON Parser for DefaultDecisionStrategy::Parameters
-inline void to_json(json &j, const DefaultDecisionMaker::Parameters &p) {
+// JSON Parser for DefaultResearchStrategy::Parameters
+inline void to_json(json &j, const DefaultResearchStrategy::Parameters &p) {
   j = json{{"name", p.name},
            {"initial_selection_policies", p.initial_selection_policies_defs},
            {"submission_decision_policies", p.submission_decision_policies_defs},
@@ -209,7 +209,7 @@ inline void to_json(json &j, const DefaultDecisionMaker::Parameters &p) {
   };
 }
 
-inline void from_json(const json &j, DefaultDecisionMaker::Parameters &p) {
+inline void from_json(const json &j, DefaultResearchStrategy::Parameters &p) {
   j.at("name").get_to(p.name);
   j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
   j.at("submission_decision_policies").get_to(p.submission_decision_policies_defs);
@@ -223,4 +223,4 @@ inline void from_json(const json &j, DefaultDecisionMaker::Parameters &p) {
 
 } // namespace sam
 
-#endif // SAMPP_DECISIONSTRATEGY_H
+#endif // SAMPP_RESEARCHSTRATEGY_H

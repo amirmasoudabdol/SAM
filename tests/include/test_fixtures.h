@@ -92,7 +92,7 @@ struct SampleResearch {
         {"num", 10}
     };
 
-    DecisionStrategy *des;
+    ResearchStrategy *des;
     json de_s_conf = {
         {"name", "PatientDecisionMaker"},
         {"preference", "MinPvalue"}
@@ -138,7 +138,7 @@ struct SampleResearch {
 
 //        researcher = Researcher::create("John")
 //                                    .createExperiment(setup)
-//                                    .createDecisionStrategy(de_s_conf)
+//                                    .createResearchStrategy(de_s_conf)
 //                                    .createJournal(j_conf)
 //                                    .build();
     }

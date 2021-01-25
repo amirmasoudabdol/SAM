@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( simple_constructor ) {
 
 BOOST_AUTO_TEST_SUITE_END() // FIXTURE
 
-  BOOST_AUTO_TEST_SUITE( call_operator_test )
+BOOST_AUTO_TEST_SUITE( call_operator_test )
 
     BOOST_DATA_TEST_CASE_F(PoliciesVariablesAndFunctions,
                            binary_operators_on_stats,

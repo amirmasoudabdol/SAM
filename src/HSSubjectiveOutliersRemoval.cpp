@@ -20,7 +20,7 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
   static arma::vec Ks = arma::regspace<arma::vec>(
       params.range[1], -1. * params.step_size, params.range[0]);
 
-  /// Going through K's in order and return as soon as the decision_strategy is
+  /// Going through K's in order and return as soon as the research_strategy is
   /// satisfied.
   for (const auto k : Ks) {
 

@@ -6,15 +6,12 @@
 //===----------------------------------------------------------------------===//
 ///
 /// @file
-///
+/// This file contains deceleration of Experiment class, and everything connected to it
 ///
 //===----------------------------------------------------------------------===//
-
 ///
 /// @defgroup   Experiment Experiment Modules
 /// @brief      Experiment-related Modules
-///
-/// Description to come!
 ///
 
 #ifndef SAMPP_EXPERIMENT_H

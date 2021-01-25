@@ -12,7 +12,7 @@
 #ifndef SAMPP_RESEARCHER_H
 #define SAMPP_RESEARCHER_H
 
-#include "DecisionStrategy.h"
+#include "ResearchStrategy.h"
 #include "Experiment.h"
 #include "HackingStrategy.h"
 #include "Journal.h"
@@ -52,7 +52,7 @@ public:
 
   std::unique_ptr<Experiment> experiment;
   std::shared_ptr<Journal> journal;
-  std::unique_ptr<DecisionStrategy> decision_strategy;
+  std::unique_ptr<ResearchStrategy> research_strategy;
   std::vector<std::vector<std::unique_ptr<HackingStrategy>>> hacking_strategies;
 
   bool is_pre_processing{false};
@@ -118,7 +118,7 @@ public:
   
   /// @brief Reset the internal state of the Researcher
   void reset() {
-    decision_strategy->reset();
+    research_strategy->reset();
     experiment->clear();
     submissions_from_reps.clear();
   }
@@ -132,19 +132,19 @@ private:
 public: //--- Builder Related Methods
   
   ///
-  /// Set the decisionStrategy of the researcher.
+  /// Set the researchStrategy of the researcher.
   ///
   /// @param      d     The pointer to a Decision Strategy
   ///
-  /// @note       Researcher owns its decision strategy that's why I move the
+  /// @note       Researcher owns its research strategy that's why I move the
   ///             pointer.
   ///
   /// @todo       I think I need to do the `std::move` when I'm calling the
   /// function
   ///             not inside it
   ///
-//  void setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
-//    decision_strategy = std::move(ds);
+//  void setResearchStrategy(std::unique_ptr<ResearchStrategy> ds) {
+//    research_strategy = std::move(ds);
 //  }
 
   ///
@@ -206,8 +206,8 @@ public:
     config["journal_parameters"]["output_prefix"] = config["simulation_parameters"]["output_prefix"];
     researcher.journal = std::make_shared<Journal>(config["journal_parameters"]);
 
-    researcher.decision_strategy = DecisionStrategy::build(
-        config["researcher_parameters"]["decision_strategy"]);
+    researcher.research_strategy = ResearchStrategy::build(
+        config["researcher_parameters"]["research_strategy"]);
 
     researcher.is_pre_processing =
         config["researcher_parameters"]["is_pre_processing"];
@@ -258,9 +258,9 @@ public:
       
       researcher.h_workflow[h].push_back(HackingStrategy::build(item[0]));
 
-      researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.decision_strategy->lua});
+      researcher.h_workflow[h].push_back(PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(), researcher.research_strategy->lua});
 
-      researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), PolicyChainType::Decision, researcher.decision_strategy->lua});
+      researcher.h_workflow[h].push_back(PolicyChain{item[2].get<std::vector<std::string>>(), PolicyChainType::Decision, researcher.research_strategy->lua});
       
     }
     
@@ -323,11 +323,11 @@ public:
   ////////////////////////////
 
   ///
-  /// @brief      Create a new DecisionStrategy for the researcher based on the
+  /// @brief      Create a new ResearchStrategy for the researcher based on the
   /// given configuration.
   ///
-  ResearcherBuilder &createDecisionStrategy(json &ds) {
-    researcher.decision_strategy = DecisionStrategy::build(ds);
+  ResearcherBuilder &createResearchStrategy(json &ds) {
+    researcher.research_strategy = ResearchStrategy::build(ds);
     return *this;
   }
 
@@ -369,8 +369,8 @@ public:
   /// SETTING NEW OBJECT ///
   //////////////////////////
 
-  //        ResearcherBuilder& setDecisionStrategy(const DecisionStrategy &ds){
-  //            researcher.decision_strategy = ds;
+  //        ResearcherBuilder& setResearchStrategy(const ResearchStrategy &ds){
+  //            researcher.research_strategy = ds;
   //            return *this;
   //        };
 
@@ -408,8 +408,8 @@ public:
     return *this;
   };
 
-  ResearcherBuilder &setDecisionStrategy(std::unique_ptr<DecisionStrategy> ds) {
-//    researcher.setDecisionStrategy(std::move(ds));
+  ResearcherBuilder &setResearchStrategy(std::unique_ptr<ResearchStrategy> ds) {
+//    researcher.setResearchStrategy(std::move(ds));
     return *this;
   };
 

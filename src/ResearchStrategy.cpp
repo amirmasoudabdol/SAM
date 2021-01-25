@@ -1,4 +1,4 @@
-//===-- DecisionStrategy.h - Decision Strategy Implementation -------------===//
+//===-- ResearchStrategy.h - Decision Strategy Implementation -------------===//
 //
 // Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-02-01.
@@ -12,24 +12,24 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "DecisionStrategy.h"
+#include "ResearchStrategy.h"
 
 using namespace sam;
 
 ///
-/// Pure destructors of DecisionStrategy. This is necessary for proper
+/// Pure destructors of ResearchStrategy. This is necessary for proper
 /// deconstruction of derived classes.
 ///
-DecisionStrategy::~DecisionStrategy(){
+ResearchStrategy::~ResearchStrategy(){
   // pure destructors
 }
 
 ///
 /// Besides constructing the base class, it also registers the Submission and
 /// DependentVariable in Lua for later use of the derived classes, e.g.,
-/// DefaultDecisionMaker
+/// DefaultResearchStrategy
 ///
-DecisionStrategy::DecisionStrategy() {
+ResearchStrategy::ResearchStrategy() {
 
   // Preparing a Lua instance, and registering my types there
   lua.open_libraries();
@@ -59,17 +59,17 @@ DecisionStrategy::DecisionStrategy() {
 }
 
 
-std::unique_ptr<DecisionStrategy>
-DecisionStrategy::build(json &decision_strategy_config) {
+std::unique_ptr<ResearchStrategy>
+ResearchStrategy::build(json &research_strategy_config) {
 
-  if (decision_strategy_config["name"] == "DefaultDecisionMaker") {
+  if (research_strategy_config["name"] == "DefaultResearchStrategy") {
 
     auto params =
-        decision_strategy_config.get<DefaultDecisionMaker::Parameters>();
-    return std::make_unique<DefaultDecisionMaker>(params);
+        research_strategy_config.get<DefaultResearchStrategy::Parameters>();
+    return std::make_unique<DefaultResearchStrategy>(params);
 
   } else {
-    throw std::invalid_argument("Unknown DecisionStrategy");
+    throw std::invalid_argument("Unknown ResearchStrategy");
   }
 }
 
@@ -85,7 +85,7 @@ DecisionStrategy::build(json &decision_strategy_config) {
 /// @param experiment a reference to an experiment
 /// @param pchain_set a reference to a policy chain set
 ///
-void DecisionStrategy::selectOutcome(Experiment &experiment,
+void ResearchStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
   
   for (auto &pchain : pchain_set) {
@@ -110,7 +110,7 @@ void DecisionStrategy::selectOutcome(Experiment &experiment,
 ///
 /// @param spool a collection of submissions collected in previous stages, e.g., selectOutcome
 /// @param pchain_set a set of policy chains
-void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
+void ResearchStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   
   
@@ -141,7 +141,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 /// @param      experiment  a reference to the experiment
 /// @param      pchain      a policy chain, usually stored in
 ///                         `stashing_policy` in the config file
- void DecisionStrategy::saveOutcomes(Experiment &experiment, PolicyChain &pchain) {
+ void ResearchStrategy::saveOutcomes(Experiment &experiment, PolicyChain &pchain) {
     
    if (not pchain.empty()) {
      
@@ -170,7 +170,7 @@ void DecisionStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 ///
 /// @return     returns `true` if submission will undergo
 ///
-bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submission>>& subs, PolicyChain &pchain) {
+bool ResearchStrategy::willBeSubmitting(const std::optional<std::vector<Submission>>& subs, PolicyChain &pchain) {
   
   if (pchain.empty())
     return true;
@@ -196,7 +196,7 @@ bool DecisionStrategy::willBeSubmitting(const std::optional<std::vector<Submissi
 /// In this case, we only check if the `current_submission` complies with
 /// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
 /// if no, then we will not continue to the hacking procedure
-bool DefaultDecisionMaker::willStartHacking() {
+bool DefaultResearchStrategy::willStartHacking() {
   
   spdlog::trace("Checking whether to start hacking or not...");
 
@@ -242,7 +242,7 @@ bool DefaultDecisionMaker::willStartHacking() {
 /// @todo This probably needs to be replaced by something inside the PolicyChain
 ///
 /// @param pchain a reference to the given policy chain
-bool DefaultDecisionMaker::willContinueHacking(Experiment *experiment,
+bool DefaultResearchStrategy::willContinueHacking(Experiment *experiment,
                                                PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
@@ -263,7 +263,7 @@ bool DefaultDecisionMaker::willContinueHacking(Experiment *experiment,
 }
 
 
-bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
+bool DefaultResearchStrategy::willContinueReplicating(PolicyChain &pchain) {
   
   // Checking whether all policies are returning `true`
   
@@ -286,7 +286,7 @@ bool DefaultDecisionMaker::willContinueReplicating(PolicyChain &pchain) {
   
 }
 
-DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *experiment,
+ResearchStrategy &DefaultResearchStrategy::selectOutcomeFromExperiment(Experiment *experiment,
                                                 PolicyChainSet &pchain_set) {
   selectOutcome(*experiment, pchain_set);
   
@@ -296,7 +296,7 @@ DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromExperiment(Experiment *
   return *this;
 }
 
-DecisionStrategy &DefaultDecisionMaker::selectOutcomeFromPool(SubmissionPool &spool,
+ResearchStrategy &DefaultResearchStrategy::selectOutcomeFromPool(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   selectBetweenSubmissions(spool, pchain_set);
   
