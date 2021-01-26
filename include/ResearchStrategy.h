@@ -1,4 +1,4 @@
-//===-- ResearchStrategy.h - Decision Strategy Deceleration ---------------===//
+//===-- ResearchStrategy.h - Research Strategy Deceleration ---------------===//
 //
 // Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-02-01.
@@ -6,7 +6,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// @file
-/// This files contains the deceleration of the Decision Strategy class which
+/// This files contains the deceleration of the Research Strategy class which
 /// is responsible for almost all the decision making throughout the research
 /// process.
 ///

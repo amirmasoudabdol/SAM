@@ -127,7 +127,8 @@ public:
   //! initialization.
   HackingWorkflow hacking_workflow;
 
-  ///
+  /// This doesn't do anything! But it should! At the moment, I'm relying on the
+  /// ResearcherBuilder to construct the Researcher but this has to change
   Researcher() = default;
 
   ///
@@ -179,7 +180,7 @@ public:
 
 private:
   /// Re-orders the given workflow according the given priority
-  void reorderHackingStrategies(HackingWorkflow &hw, std::string &priority);
+  static void reorderHackingStrategies(HackingWorkflow &hw, std::string &priority);
 
 public:
   //--- Builder Related Methods
@@ -187,7 +188,7 @@ public:
   ///
   /// Set the researchStrategy of the researcher.
   ///
-  /// @param      d     The pointer to a Decision Strategy
+  /// @param      d     The pointer to a Research Strategy
   ///
   /// @note       Researcher owns its research strategy that's why I move the
   ///             pointer.

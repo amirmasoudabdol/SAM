@@ -17,10 +17,12 @@
 
 #include "Researcher.h"
 
+#include <utility>
+
 using namespace sam;
 
 ResearcherBuilder Researcher::create(std::string name) {
-  return ResearcherBuilder(name);
+  return ResearcherBuilder(std::move(name));
 }
 
 /// It uses HackingWorkflow to sequentially apply sets of
@@ -43,14 +45,15 @@ bool Researcher::hackTheResearch() {
   // remaining of the methods
   bool stopped_hacking{false};
 
-  // This is a handy flag to propagate the information out of the std::visit
-  // It indicates whether or not the Researcher has committed to the hack or
-  // not.
-  bool has_committed;
+
+
 
   for (auto &h_set : hacking_workflow) {
 
-    has_committed = true;
+    // This is a handy flag to propagate the information out of the std::visit
+    // It indicates whether or not the Researcher has committed to the hack or
+    // not.
+    bool has_committed{true};
 
     for (auto &step : h_set) {
 
@@ -208,9 +211,9 @@ void Researcher::submitTheResearch(
 
 ///
 /// This technically invokes the #probability_of_being_a_hacker, and
-/// returns the outcome. The value then will be casted to a boolean to determine
-/// whether the Researcher is going to start the hacking procedure or not, ie.,
-/// calling or skipping the hackTheResearch().
+/// returns the outcome. The value then will be cast-ed to a boolean to 
+/// determine whether the Researcher is going to start the hacking procedure or 
+/// not, ie., calling or skipping the hackTheResearch().
 ///
 /// @note Note that the #probability_of_being_a_hacker is called through it's 
 /// call operator. This guarantees that its value is being randomized _only if_ 
@@ -315,18 +318,13 @@ void Researcher::research() {
     // _Will Start Hacking_ Selection → Decision Sequence
     // --------------------------------------------------
 
-    // This shenanigans tries to avoid a scenario that hacking is successful
-    // and SAM has to discard the stashed submissions!
-    bool hacking_succeed;
-
     // If Researcher is a hacker, and it decides to start hacking — based on
     // the current submission candidates list —, then, we are going to the
     // hacking procedure!
     if (isHacker() and research_strategy->willStartHacking()) {
 
-      hacking_succeed = hackTheResearch();
-
-      if (hacking_succeed) {
+      // hackTheResearch() returns true if any of the Decision(s) returns true
+      if (hackTheResearch()) {
 
         spdlog::trace("Selecting between Hacked Submissions: ");
         spdlog::trace("{}", research_strategy->submission_candidates.value());
