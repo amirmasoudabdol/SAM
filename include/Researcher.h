@@ -78,7 +78,11 @@ class Researcher {
 
   //! A list of satisfactory submissions collected by the researcher at the end
   //! of each replications.
-  SubmissionPool submissions_from_reps;
+  std::optional<SubmissionPool> submissions_from_reps;
+
+  std::optional<SubmissionPool> hacked_submissions;
+  std::optional<SubmissionPool> stashed_submissions;
+  std::optional<SubmissionPool> candidate_submissions;
 
   //! Indicates the probability of a Researcher _deciding_ to _go for_ hacking 
   //! an Experiment.
@@ -153,7 +157,7 @@ public:
   void research();
 
   /// Applies the HackingWorkflow on the Experiment
-  bool hackTheResearch();
+  std::optional<SubmissionPool> hackTheResearch();
 
   /// Randomizes the internal state of the Researcher
   void randomizeParameters();
@@ -175,7 +179,10 @@ public:
   void reset() {
     experiment->reset();
     research_strategy->reset();
-    submissions_from_reps.clear();
+    submissions_from_reps.reset();
+    hacked_submissions.reset();
+    stashed_submissions.reset();
+    candidate_submissions.reset();
   }
 
 private:
@@ -450,7 +457,7 @@ public:
   /// SETTING NEW OBJECT ///
   //////////////////////////
 
-  //        ResearcherBuilder& setResearchStrategy(const ResearchStrategy &ds){
+  //        ResearcherBuilder& setResearchStrategy(const Research Strategyds){
   //            researcher.research_strategy = ds;
   //            return *this;
   //        };

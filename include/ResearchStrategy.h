@@ -43,7 +43,19 @@ using SubmissionPool = std::vector<Submission>;
 /// @brief      Abstract class for different decision strategies.
 ///
 class ResearchStrategy {
- public:
+  
+  
+protected:
+  std::optional<SubmissionPool> submission_candidates;
+  
+  //! List of selected submissions collected by the researcher
+  //! using the stashing_policy
+  SubmissionPool stashed_submissions;
+  
+  //! List of submissions selecting during the hacking procedure
+  SubmissionPool hacked_submissions;
+  
+public:
   // Lua state
   sol::state lua;
 
@@ -56,15 +68,6 @@ class ResearchStrategy {
   /// about each research strategy.
   static std::unique_ptr<ResearchStrategy> build(
       json &research_strategy_config);
-
-  std::optional<SubmissionPool> submission_candidates;
-
-  //! List of selected submissions collected by the researcher
-  //! using the stashing_policy
-  SubmissionPool stashed_submissions;
-
-  //! List of submissions selecting during the hacking procedure
-  SubmissionPool hacked_submissions;
 
   /// @todo These guys should move to their own class, I don't have to keep
   /// everything here!
@@ -82,7 +85,7 @@ class ResearchStrategy {
   /// @brief  Indicates whether the researcher will start going to the hacking
   /// procedure. The default here is to not go for hacking if we already have
   /// one candidate; but this can be overridden in different decision strategies
-  virtual bool willStartHacking() { return false; };
+  virtual bool willStartHacking(std::optional<SubmissionPool> &subs) { return false; };
 
   /// @brief  This will be used by `hackTheResearch` and uses the decision
   /// policy to decide whether the next hacking strategy is going to be executed
@@ -98,7 +101,7 @@ class ResearchStrategy {
   bool willBeSubmitting(const std::optional<SubmissionPool> &sub,
                         PolicyChain &pchain);
 
-  virtual bool willContinueReplicating(PolicyChain &pchain) { return false; };
+  virtual bool willContinueReplicating(std::optional<SubmissionPool> &subs) { return false; };
 
   /// @todo This needs to be private but currently, I don't have a good place to
   /// put it. The verdict system is broken, and if reset it after the
@@ -107,18 +110,26 @@ class ResearchStrategy {
   ///
   /// Reset the internal state of the research strategy
   void reset() {
-    hacked_submissions.clear();
-    stashed_submissions.clear();
-    submission_candidates.reset();
+   hacked_submissions.clear();
+   stashed_submissions.clear();
+   submission_candidates.reset();
     //    clear();
   }
+  
+  // @todo this can be improved
+  std::optional<SubmissionPool> stashedSubmissions() {
+    if (stashed_submissions.empty())
+      return std::nullopt;
+    else
+      return std::optional<SubmissionPool>{stashed_submissions};
+  };
 
   /// @brief      Implementation of decision-making procedure.
-  virtual ResearchStrategy &selectOutcomeFromExperiment(
-      Experiment *experiment, PolicyChainSet &pchain_set) = 0;
+ virtual std::optional<SubmissionPool> selectOutcomeFromExperiment(
+     Experiment *experiment, PolicyChainSet &pchain_set) = 0;
 
-  virtual ResearchStrategy &selectOutcomeFromPool(
-      SubmissionPool &spool, PolicyChainSet &pchain_set) = 0;
+ virtual std::optional<SubmissionPool> selectOutcomeFromPool(
+     SubmissionPool &spool, PolicyChainSet &pchain_set) = 0;
 
   /// Create and save all possible submissions from an experiment, if they pass
   /// the given policy predicate
@@ -128,11 +139,13 @@ class ResearchStrategy {
   /// config file
   void saveOutcomes(Experiment &experiment, PolicyChain &pchain);
 
- protected:
-  void selectOutcome(Experiment &experiment, PolicyChainSet &pchain_set);
+// protected:
+  std::optional<SubmissionPool> selectOutcome(Experiment &experiment, 
+    PolicyChainSet &pchain_set);
 
-  void selectBetweenSubmissions(SubmissionPool &spool,
+  std::optional<SubmissionPool> selectBetweenSubmissions(SubmissionPool &spool,
                                 PolicyChainSet &pchain_set);
+  
 };
 
 ///
@@ -190,18 +203,18 @@ class DefaultResearchStrategy final : public ResearchStrategy {
         PolicyChain(p.stashing_policy_def, PolicyChainType::Selection, lua);
   };
 
-  ResearchStrategy &selectOutcomeFromExperiment(
+  std::optional<SubmissionPool> selectOutcomeFromExperiment(
       Experiment *experiment, PolicyChainSet &pchain_set) override;
 
-  ResearchStrategy &selectOutcomeFromPool(SubmissionPool &spool,
+  std::optional<SubmissionPool> selectOutcomeFromPool(SubmissionPool &spool,
                                           PolicyChainSet &pchain_set) override;
 
-  bool willStartHacking() override;
+  bool willStartHacking(std::optional<SubmissionPool> &subs) override;
 
   bool willContinueHacking(Experiment *experiment,
                            PolicyChain &pchain) override;
 
-  bool willContinueReplicating(PolicyChain &pchain) override;
+  bool willContinueReplicating(std::optional<SubmissionPool> &subs) override;
 };
 
 // JSON Parser for DefaultResearchStrategy::Parameters

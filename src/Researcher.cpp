@@ -35,7 +35,8 @@ ResearcherBuilder Researcher::create(std::string name) {
 /// @return     Returns `true` if any of the decision steps passes, otherwise,
 /// it returns `false` indicating that none of the selection → decisions were
 /// successful
-bool Researcher::hackTheResearch() {
+std::optional<SubmissionPool>
+Researcher::hackTheResearch() {
 
   spdlog::debug("Initiate the Hacking Procedure...");
 
@@ -45,15 +46,14 @@ bool Researcher::hackTheResearch() {
   // remaining of the methods
   bool stopped_hacking{false};
 
-
-
-
   for (auto &h_set : hacking_workflow) {
 
     // This is a handy flag to propagate the information out of the std::visit
     // It indicates whether or not the Researcher has committed to the hack or
     // not.
     bool has_committed{true};
+
+    std::optional<SubmissionPool> hacked_subs;
 
     for (auto &step : h_set) {
 
@@ -86,7 +86,7 @@ bool Researcher::hackTheResearch() {
                 // This will overwrite the submission_candidates, and if
                 // stashing, it'll select and stash some of the outcomes to
                 // into stashed_submissions
-                research_strategy->selectOutcomeFromExperiment(
+                hacked_subs = research_strategy->selectOutcomeFromExperiment(
                     &copy_of_experiment, selection_policies);
               },
               [&](PolicyChain &decision_policy) {
@@ -96,21 +96,12 @@ bool Researcher::hackTheResearch() {
                     "Checking whether we are going to continue hacking?");
                 spdlog::trace("Looking for: {}", decision_policy);
 
-                if (!research_strategy->willContinueHacking(&copy_of_experiment,
-                                                            decision_policy)) {
+                if (hacked_subs and !decision_policy(hacked_subs.value()).has_value()) {
                   spdlog::trace("Done Hacking!");
                   stopped_hacking = true;
-                } else {
-                  // Since researcher uses only one research_strategy and uses
-                  // it throughout the research, I need to reset the
-                  // submission_candidates and let it to start fresh with a new
-                  // hacking strategy
-                  //
-                  // @todo this needs to be a more functional implementation.
-
-                  research_strategy->submission_candidates.reset();
-                  spdlog::trace("Continue Hacking...");
                 }
+
+                spdlog::trace("Continue Hacking...");
               }
 
           },
@@ -125,15 +116,17 @@ bool Researcher::hackTheResearch() {
       // We leave the workflow when we have a submission, ie., after successful
       // decision policy
       if (stopped_hacking) {
-        return true;
+        return hacked_subs;
       }
     }
+
+    return std::nullopt;
   }
 
   // All hacking strategies are exhausted, and we didn't find anything, so, we
   // leave and notify the researcher by returning `false`.
   spdlog::trace("No more hacking strategies...");
-  return false;
+  return std::nullopt;
 }
 
 ///
@@ -145,6 +138,7 @@ bool Researcher::hackTheResearch() {
 /// can be randomized only if their parameters are set to be a Parameter<T>.
 ///
 /// @todo I think the name can be more specific
+/// 
 void Researcher::randomizeParameters() {
 
   if (reselect_hacking_strategies_after_every_simulation) {
@@ -201,10 +195,10 @@ void Researcher::submitTheResearch(
   if (subs and research_strategy->willBeSubmitting(
                    subs, research_strategy->submission_decision_policies)) {
     spdlog::trace("To be submitted submission: {}",
-                  research_strategy->submission_candidates.value());
+                  candidate_submissions.value());
 
     if (Random::get<bool>(submission_probability)) {
-      journal->review(research_strategy->submission_candidates.value());
+      journal->review(candidate_submissions.value());
     }
   }
 }
@@ -280,15 +274,13 @@ void Researcher::research() {
   experiment->setup.randomize();
   experiment->reset();
 
-  // Performing maximum `nreps` replications
+  // Looping over the number of replications...
   for (int rep{0}; rep < experiment->setup.nreps(); ++rep) {
 
     experiment->repid = rep;
 
-    {
-      spdlog::trace("–––––––––––––––––––");
-      spdlog::trace("Replication #{} ↓", rep);
-    }
+    spdlog::trace("–––––––––––––––––––");
+    spdlog::trace("Replication #{} ↓", rep);
 
     experiment->generateData();
 
@@ -303,17 +295,12 @@ void Researcher::research() {
     // _Initial_ Selection → Decision Sequence
     // -------------------------------------
     spdlog::trace("→ Checking the INITIAL policies");
-    research_strategy->selectOutcomeFromExperiment(
-        experiment.get(), research_strategy->initial_selection_policies);
 
-    bool init_desc_succeed{false};
-    std::optional<SubmissionPool> init_submissions;
 
-    // Checking whether the Initial Selection was successful or not
-    if (research_strategy->submission_candidates) {
-      init_desc_succeed = true;
-      init_submissions = research_strategy->submission_candidates;
-    }
+    auto init_submissions = 
+      research_strategy->selectOutcomeFromExperiment(
+        experiment.get(), 
+        research_strategy->initial_selection_policies);
 
     // _Will Start Hacking_ Selection → Decision Sequence
     // --------------------------------------------------
@@ -321,25 +308,31 @@ void Researcher::research() {
     // If Researcher is a hacker, and it decides to start hacking — based on
     // the current submission candidates list —, then, we are going to the
     // hacking procedure!
-    if (isHacker() and research_strategy->willStartHacking()) {
+    if (isHacker() and research_strategy->willStartHacking(init_submissions)){
 
-      // hackTheResearch() returns true if any of the Decision(s) returns true
-      if (hackTheResearch()) {
+      hacked_submissions = hackTheResearch();
+      stashed_submissions = research_strategy->stashedSubmissions();
+
+      if (hacked_submissions) {
 
         spdlog::trace("Selecting between Hacked Submissions: ");
-        spdlog::trace("{}", research_strategy->submission_candidates.value());
+        spdlog::trace("{}", hacked_submissions.value());
+        
+        candidate_submissions =
         research_strategy->selectOutcomeFromPool(
-            research_strategy->submission_candidates.value(),
+            hacked_submissions.value(),
             research_strategy->between_stashed_selection_policies);
       } else {
 
         // If stashed is not empty AND hacking was not successful, then we are
         // going to select our candidates from the list of stashes submissions
-        if (!research_strategy->stashed_submissions.empty()) {
+        if (stashed_submissions) {
           spdlog::trace("Selecting between Stashed Submissions: ");
-          spdlog::trace("{}", research_strategy->stashed_submissions);
+          spdlog::trace("{}", stashed_submissions.value());
+        
+          candidate_submissions =
           research_strategy->selectOutcomeFromPool(
-              research_strategy->stashed_submissions,
+              stashed_submissions.value(),
               research_strategy->between_stashed_selection_policies);
         }
       }
@@ -348,13 +341,17 @@ void Researcher::research() {
       // If hacking has failed, or we didn't even go through hacking, we select
       // our submissions from the `init_submissions`, if not, we select from the
       // stashed submissions
-      if (init_desc_succeed) {
-        research_strategy->submission_candidates = init_submissions;
-      } else if (!research_strategy->stashed_submissions.empty()) {
+      
+      stashed_submissions = research_strategy->stashedSubmissions();
+      
+      if (init_submissions) {
+        candidate_submissions = init_submissions;
+      } else if (stashed_submissions) {
         spdlog::trace("Selecting between Stashed Submissions: {}",
-                      research_strategy->stashed_submissions);
-        research_strategy->selectOutcomeFromPool(
-            research_strategy->stashed_submissions,
+                      stashed_submissions.value());
+        
+        candidate_submissions = research_strategy->selectOutcomeFromPool(
+            stashed_submissions.value(),
             research_strategy->between_stashed_selection_policies);
       }
     }
@@ -362,30 +359,36 @@ void Researcher::research() {
     // _Will be Submitting_ Selection → Decision Sequence
     // --------------------------------------------------
     if (research_strategy->willBeSubmitting(
-            research_strategy->submission_candidates,
+            candidate_submissions,
             research_strategy->submission_decision_policies)) {
-      // If we have a submittable candidate, then we collect it
+      // If we have a submit-able candidate, then we collect it
       // Collecting in this case means that selected submissions will be added
       // to the current replication's outcome
 
-      if (research_strategy->submission_candidates) {
+      if (candidate_submissions) {
         spdlog::trace("Final Submission Candidates: {}",
-                      research_strategy->submission_candidates.value());
-
-        submissions_from_reps.insert(
-            submissions_from_reps.end(),
-            research_strategy->submission_candidates.value().begin(),
-            research_strategy->submission_candidates.value().end());
+                      candidate_submissions.value());
+        
+        if (submissions_from_reps){
+          submissions_from_reps.value().insert(
+                   submissions_from_reps.value().end(),
+                   candidate_submissions.value().begin(),
+                   candidate_submissions.value().end());
+        } else {
+          submissions_from_reps = candidate_submissions;
+        }
+        
+        
+        spdlog::trace("Collection of Submissions from Replications: {}",
+                      submissions_from_reps.value());
+        
       }
 
-      spdlog::trace("Collection of Submissions from Replications: {}",
-                    submissions_from_reps);
     }
 
     // _Will Continue Replicating_ Decision
     // ------------------------------------
-    if (!research_strategy->willContinueReplicating(
-            research_strategy->will_continue_replicating_decision_policy)) {
+    if (!research_strategy->willContinueReplicating(submissions_from_reps)) {
       break;
     }
 
@@ -397,12 +400,14 @@ void Researcher::research() {
   // -------------------------------------------------
   spdlog::trace("__________");
   spdlog::trace("→ Choosing Between Replications");
-  research_strategy->selectOutcomeFromPool(
-      submissions_from_reps, research_strategy->between_reps_policies);
+  if (submissions_from_reps) {
+    candidate_submissions = research_strategy->selectOutcomeFromPool(
+        submissions_from_reps.value(), research_strategy->between_reps_policies);
+  }
 
   // Will be Submitting Selection → Decision Sequence
   // ------------------------------------------------
-  submitTheResearch(research_strategy->submission_candidates);
+  submitTheResearch(candidate_submissions);
 
   // Clean up everything, before starting a new research
   this->reset();

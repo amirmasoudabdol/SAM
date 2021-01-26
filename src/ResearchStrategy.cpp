@@ -78,16 +78,18 @@ std::unique_ptr<ResearchStrategy> ResearchStrategy::build(
 /// @param experiment a reference to an experiment
 /// @param pchain_set a reference to a policy chain set
 ///
-void ResearchStrategy::selectOutcome(Experiment &experiment,
+std::optional<SubmissionPool> ResearchStrategy::selectOutcome(Experiment &experiment,
                                      PolicyChainSet &pchain_set) {
   for (auto &pchain : pchain_set) {
     submission_candidates = pchain(experiment);
 
     /// If any of the pchains return something, we ignore the rest, and leave!
     if (submission_candidates) {
-      return;
+      return submission_candidates;
     }
   }
+  
+  return std::nullopt;
 }
 
 /// Select a unique submission from the given pool of submissions. If none of
@@ -101,13 +103,13 @@ void ResearchStrategy::selectOutcome(Experiment &experiment,
 /// @param spool a collection of submissions collected in previous stages, e.g.,
 /// selectOutcome
 /// @param pchain_set a set of policy chains
-void ResearchStrategy::selectBetweenSubmissions(SubmissionPool &spool,
+std::optional<SubmissionPool> ResearchStrategy::selectBetweenSubmissions(SubmissionPool &spool,
                                                 PolicyChainSet &pchain_set) {
   /// If there is no policy defined, then, we don't do any filtering and returns
   /// all of the candidates
   if (pchain_set.empty()) {
-    submission_candidates = spool;
-    return;  // we just don't have anything to work with
+    return spool;
+    // return;  // we just don't have anything to work with
   }
 
   for (auto &pchain : pchain_set) {
@@ -115,9 +117,11 @@ void ResearchStrategy::selectBetweenSubmissions(SubmissionPool &spool,
 
     /// If any of the pchains return something, we ignore the rest, and leave!
     if (submission_candidates) {
-      return;
+      return submission_candidates;
     }
   }
+  
+  return std::nullopt;
 }
 
 /// Create and save all possible submissions from an experiment, if
@@ -176,35 +180,29 @@ bool ResearchStrategy::willBeSubmitting(
 /// In this case, we only check if the `current_submission` complies with
 /// `will_start_hacking_decision_policies` roles; if yes, we will start hacking
 /// if no, then we will not continue to the hacking procedure
-bool DefaultResearchStrategy::willStartHacking() {
+bool DefaultResearchStrategy::willStartHacking(std::optional<SubmissionPool> &subs) {
   spdlog::trace("Checking whether to start hacking or not...");
 
   /// Start hacking if there is no criteria is defined
-  if (will_start_hacking_decision_policies.empty()) return true;
+  if (will_start_hacking_decision_policies.empty()) {return true;}
 
-  if (submission_candidates) {
+  if (subs) {
     spdlog::trace("Looking for: {}", will_start_hacking_decision_policies);
-    spdlog::trace("Submission Candidates: {}", submission_candidates.value());
-    /// @todo this can be replaced by Policy->operator()
+    spdlog::trace("Submission Candidates: {}", subs.value());
 
     /// Basically any of the candidates is good enough, then we're going
     /// to STOP hacking
     bool verdict{false};
-    for (auto &sub : submission_candidates.value())
+    /// @todo this can be replaced by Policy->operator()
+    for (auto &sub : subs.value())
       verdict |= std::any_of(will_start_hacking_decision_policies.begin(),
                              will_start_hacking_decision_policies.end(),
                              [&](auto &policy) -> bool { return policy(sub); });
     return verdict;
-
-    //    return std::any_of(will_start_hacking_decision_policies.begin(),
-    //    will_start_hacking_decision_policies.end(), [this](auto &policy) ->
-    //    bool {
-    //        return policy(this->submission_candidate.value());
-    //        });
-  } else {
-    spdlog::trace("No Candidate is available → Will Start Hacking");
-    return true;
-  }
+  } 
+  
+  spdlog::trace("No Candidate is available → Will Start Hacking");
+  return true;
 }
 
 /// Determines whether the `final_submission_candidates` complies with **any**
@@ -234,15 +232,16 @@ bool DefaultResearchStrategy::willContinueHacking(Experiment *experiment,
   return verdict;
 }
 
-bool DefaultResearchStrategy::willContinueReplicating(PolicyChain &pchain) {
+bool DefaultResearchStrategy::willContinueReplicating(std::optional<SubmissionPool> &subs) {
   // Checking whether all policies are returning `true`
 
-  if (pchain.empty()) return true;
+  if (will_continue_replicating_decision_policy.empty()) {return true;}
 
-  if (submission_candidates) {
+  if (subs) {
     bool verdict{false};
-    for (auto &sub : submission_candidates.value())
-      verdict |= std::any_of(pchain.begin(), pchain.end(),
+    for (auto &sub : subs.value())
+      verdict |= std::any_of(will_continue_replicating_decision_policy.begin(),
+                             will_continue_replicating_decision_policy.end(),
                              [&](auto &policy) -> bool { return policy(sub); });
     return not verdict;
   } else {
@@ -250,19 +249,18 @@ bool DefaultResearchStrategy::willContinueReplicating(PolicyChain &pchain) {
   }
 }
 
-ResearchStrategy &DefaultResearchStrategy::selectOutcomeFromExperiment(
-    Experiment *experiment, PolicyChainSet &pchain_set) {
-  selectOutcome(*experiment, pchain_set);
+std::optional<SubmissionPool> DefaultResearchStrategy::selectOutcomeFromExperiment(
+   Experiment *experiment, PolicyChainSet &pchain_set) {
+ 
+ /// @todo Check if you can implement this a bit nicer
+ saveOutcomes(*experiment, stashing_policy);
 
-  /// @todo this is confusing and I need to change it
-  saveOutcomes(*experiment, stashing_policy);
-
-  return *this;
+ return selectOutcome(*experiment, pchain_set);
 }
 
-ResearchStrategy &DefaultResearchStrategy::selectOutcomeFromPool(
-    SubmissionPool &spool, PolicyChainSet &pchain_set) {
-  selectBetweenSubmissions(spool, pchain_set);
+std::optional<SubmissionPool> DefaultResearchStrategy::selectOutcomeFromPool(
+   SubmissionPool &spool, PolicyChainSet &pchain_set) {
+ return selectBetweenSubmissions(spool, pchain_set);
 
-  return *this;
+ // return *this;
 }
