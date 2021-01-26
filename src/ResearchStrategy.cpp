@@ -232,14 +232,14 @@ bool DefaultResearchStrategy::willContinueHacking(Experiment *experiment,
   return verdict;
 }
 
-bool DefaultResearchStrategy::willContinueReplicating(std::optional<SubmissionPool> &subs) {
+bool DefaultResearchStrategy::willContinueReplicating(SubmissionPool &subs) {
   // Checking whether all policies are returning `true`
 
   if (will_continue_replicating_decision_policy.empty()) {return true;}
 
-  if (subs) {
+  if (not subs.empty()) {
     bool verdict{false};
-    for (auto &sub : subs.value())
+    for (auto &sub : subs)
       verdict |= std::any_of(will_continue_replicating_decision_policy.begin(),
                              will_continue_replicating_decision_policy.end(),
                              [&](auto &policy) -> bool { return policy(sub); });

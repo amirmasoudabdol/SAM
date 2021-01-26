@@ -52,9 +52,6 @@ protected:
   //! using the stashing_policy
   SubmissionPool stashed_submissions;
   
-  //! List of submissions selecting during the hacking procedure
-  SubmissionPool hacked_submissions;
-  
 public:
   // Lua state
   sol::state lua;
@@ -101,7 +98,7 @@ public:
   bool willBeSubmitting(const std::optional<SubmissionPool> &sub,
                         PolicyChain &pchain);
 
-  virtual bool willContinueReplicating(std::optional<SubmissionPool> &subs) { return false; };
+  virtual bool willContinueReplicating(SubmissionPool &subs) { return false; };
 
   /// @todo This needs to be private but currently, I don't have a good place to
   /// put it. The verdict system is broken, and if reset it after the
@@ -110,10 +107,8 @@ public:
   ///
   /// Reset the internal state of the research strategy
   void reset() {
-   hacked_submissions.clear();
    stashed_submissions.clear();
    submission_candidates.reset();
-    //    clear();
   }
   
   // @todo this can be improved
@@ -214,7 +209,7 @@ class DefaultResearchStrategy final : public ResearchStrategy {
   bool willContinueHacking(Experiment *experiment,
                            PolicyChain &pchain) override;
 
-  bool willContinueReplicating(std::optional<SubmissionPool> &subs) override;
+  bool willContinueReplicating(SubmissionPool &subs) override;
 };
 
 // JSON Parser for DefaultResearchStrategy::Parameters

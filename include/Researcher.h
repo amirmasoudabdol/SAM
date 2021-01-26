@@ -78,7 +78,7 @@ class Researcher {
 
   //! A list of satisfactory submissions collected by the researcher at the end
   //! of each replications.
-  std::optional<SubmissionPool> submissions_from_reps;
+  SubmissionPool replication_submissions;
 
   std::optional<SubmissionPool> hacked_submissions;
   std::optional<SubmissionPool> stashed_submissions;
@@ -179,7 +179,7 @@ public:
   void reset() {
     experiment->reset();
     research_strategy->reset();
-    submissions_from_reps.reset();
+    replication_submissions.clear();
     hacked_submissions.reset();
     stashed_submissions.reset();
     candidate_submissions.reset();

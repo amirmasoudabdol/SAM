@@ -7,7 +7,7 @@
                 "means": [
                     0.0,
                     0.0,
-                    0.2,
+                    0.1,
                     0.1
                 ],
                 "sigma": [
@@ -107,7 +107,7 @@
                 "!sig"
             ]
         },
-        "probability_of_being_a_hacker": 1,
+        "probability_of_being_a_hacker": 0,
         "probability_of_committing_a_hack": 1,
         "hacking_strategies": [
             [
