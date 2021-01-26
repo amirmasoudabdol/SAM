@@ -1,6 +1,17 @@
+//===-- Researcher.cpp - Researcher Implementation ------------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of the Researcher class. The majority
+/// of the research is being done though the hackTheResearch() and research()
+/// methods.
+/// 
+///
+//===----------------------------------------------------------------------===// 
 
 #include "spdlog/spdlog.h"
 
@@ -22,7 +33,7 @@ ResearcherBuilder Researcher::create(std::string name) {
 /// @return     Returns `true` if any of the decision steps passes, otherwise,
 /// it returns `false` indicating that none of the selection → decisions were
 /// successful
-bool Researcher::letTheHackBegin() {
+bool Researcher::hackTheResearch() {
 
   spdlog::debug("Initiate the Hacking Procedure...");
 
@@ -122,13 +133,13 @@ bool Researcher::letTheHackBegin() {
   return false;
 }
 
-/// Based on the provided settings, re-select, re-arrange, and shuffle the list
-/// of hacking strategies, and their corresponding parameters.
 ///
-/// @note It worth noting that, this method doesn't randomize the internal
+/// Based on the provided settings, this re-selects, re-arranges, and shuffles 
+/// the list of hacking strategies, and their corresponding parameters.
+///
+/// @note It worth mentioning that, this method doesn't randomize the internal
 /// parameters of individual hacking strategies. Hacking strategies parameters
-/// can be randomized by providing distribution objects as their input
-/// variables.
+/// can be randomized only if their parameters are set to be a Parameter<T>.
 ///
 /// @todo I think the name can be more specific
 void Researcher::randomizeParameters() {
@@ -151,15 +162,18 @@ void Researcher::randomizeParameters() {
   }
 }
 
-/// Iterating over the registered pre_processing_methods, this applies all of
-/// the them to the current experiment. Worth mentioning that pre-processing is
+///
+/// Iterating over the registered #pre_processing_methods, this applies all of
+/// the them to the current experiment. Keep in mind that the pre-processing is 
 /// done before any of the decision/hacking stages, and right after data
 /// generation.
 ///
-/// @note This has a very similar implementation to the `letTheHackBegin()` but
-/// it doesn't perform any of the secondary checks.
+/// @note This has a very similar implementation to the `hackTheResearch()` but
+/// it doesn't perform any of the secondary checks, and it does not incorporates
+/// any of the selection → decision sequences.
 ///
 /// @todo I think this can/need to be replaced with the notion of HackingStage
+/// 
 void Researcher::preProcessData() {
 
   experiment->calculateStatistics();
@@ -169,11 +183,13 @@ void Researcher::preProcessData() {
   }
 }
 
+///
 /// This checks whether there is any submissions at all, if so, it checks
 /// whether `submission_decision_policies` have any hits, if so, it gives a
 /// green light to Researcher to submit the list of submissions; otherwise, it
 /// discards the list.
-void Researcher::checkAndsubmitTheResearch(
+/// 
+void Researcher::submitTheResearch(
     const std::optional<std::vector<Submission>> &subs) {
 
   spdlog::debug("Checking whether the Final Submission is going to be "
@@ -190,23 +206,27 @@ void Researcher::checkAndsubmitTheResearch(
   }
 }
 
+///
 /// This technically invokes the #probability_of_being_a_hacker, and
 /// returns the outcome. The value then will be casted to a boolean to determine
 /// whether the Researcher is going to start the hacking procedure or not, ie.,
-/// call letTheHackBegin().
+/// calling or skipping the hackTheResearch().
 ///
-/// @note Note that probability_of_being_a_hacker is called through it's call
-/// operator. This guarantees that its value is being randomized if it contains
-/// a distribution
+/// @note Note that the #probability_of_being_a_hacker is called through it's 
+/// call operator. This guarantees that its value is being randomized _only if_ 
+/// it contains a distribution
+/// 
 bool Researcher::isHacker() {
   return Random::get<bool>(
       static_cast<double>(probability_of_being_a_hacker()));
 }
 
-/// Similar to isHacker(), this returns a boolean indicating whether or not the
-/// Researcher will commit to the given hacking method. The probability of
-/// commitment to a hacking strategy is being calculated from the value of
-/// #probability_of_committing_a_hack.
+///
+/// Similar to the isHacker() method, this returns a boolean indicating whether 
+/// or not the Researcher will commit to the given hacking method. The 
+/// probability of commitment to a hacking strategy is being calculated from the
+/// value of #probability_of_committing_a_hack.
+/// 
 bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
   return std::visit(
       overload{[&](double &p) { return Random::get<bool>(p); },
@@ -226,6 +246,7 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
       probability_of_committing_a_hack);
 }
 
+///
 /// This is the main routine of the Researcher. It is responsible for a few
 /// things:
 ///
@@ -243,7 +264,9 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
 ///   - Submit the final submissions to the Journal, or discard the Experiment
 ///   - Clean up everything, and start a get ready for a new run
 ///
+///
 /// @todo This needs more doc!
+///
 void Researcher::research() {
 
   spdlog::debug("Executing the Research Workflow!");
@@ -301,7 +324,7 @@ void Researcher::research() {
     // hacking procedure!
     if (isHacker() and research_strategy->willStartHacking()) {
 
-      hacking_succeed = letTheHackBegin();
+      hacking_succeed = hackTheResearch();
 
       if (hacking_succeed) {
 
@@ -381,7 +404,7 @@ void Researcher::research() {
 
   // Will be Submitting Selection → Decision Sequence
   // ------------------------------------------------
-  checkAndsubmitTheResearch(research_strategy->submission_candidates);
+  submitTheResearch(research_strategy->submission_candidates);
 
   // Clean up everything, before starting a new research
   this->reset();
