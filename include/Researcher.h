@@ -346,12 +346,15 @@ public:
 
       auto &item = config["researcher_parameters"]["hacking_strategies"][h];
 
+      // Adding the Hacking Strategy
       researcher.hacking_workflow[h].push_back(HackingStrategy::build(item[0]));
 
+      // Adding the Selection
       researcher.hacking_workflow[h].push_back(
           PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(),
                          researcher.research_strategy->lua});
 
+      // Adding the Decision
       researcher.hacking_workflow[h].push_back(PolicyChain{
           item[2].get<std::vector<std::string>>(), PolicyChainType::Decision,
           researcher.research_strategy->lua});
@@ -360,6 +363,8 @@ public:
     // Making a copy of the original workflow
     researcher.original_workflow = researcher.hacking_workflow;
 
+    // Whether the researcher is going to start with a new set of hacking
+    // strategies every time
     if (config["researcher_parameters"].contains("randomize_strategies")) {
       researcher.reselect_hacking_strategies_after_every_simulation =
           config["researcher_parameters"]["randomize_strategies"].get<bool>();
