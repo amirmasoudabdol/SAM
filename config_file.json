@@ -161,22 +161,16 @@
         "is_pre_processing": false,
         "pre_processing_methods": [
             {
-                "name": "OptionalStopping",
-                "level": "dv",
-                "num": 10,
-                "n_attempts": 1,
-                "max_attempts": 1
-            },
-            {
                 "name": "OutliersRemoval",
-                "level": "dv",
                 "max_attempts": 1,
                 "min_observations": 1,
-                "mode": "Recursive",
                 "multipliers": [
                     2
                 ],
                 "n_attempts": 1,
+                "target": "Both",
+                "prevalence": 0.1,
+                "defensibility": 0.1,
                 "num": 10,
                 "order": "random"
             }

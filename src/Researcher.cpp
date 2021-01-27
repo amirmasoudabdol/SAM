@@ -10,7 +10,6 @@
 /// of the research is being done though the hackTheResearch() and research()
 /// methods.
 /// 
-///
 //===----------------------------------------------------------------------===// 
 
 #include "spdlog/spdlog.h"
@@ -21,20 +20,21 @@
 
 using namespace sam;
 
+///
 ResearcherBuilder Researcher::create(std::string name) {
   return ResearcherBuilder(std::move(name));
 }
 
-/// It uses HackingWorkflow to sequentially apply sets of
+/// This uses HackingWorkflow to sequentially apply sets of
 /// hacking → selection → decision on the available Experiment. Before applying
-/// each hacking strategy, researcher asks isCommittingToTheHack() to decide
+/// each hacking strategy, researcher asks isCommittingToTheHack() to decide on 
 /// whether or not it is going to commit to a hack, if not, the rest of the
 /// set will be ignored, and researcher continues with the next set, if
 /// available.
 ///
-/// @return     Returns `true` if any of the decision steps passes, otherwise,
-/// it returns `false` indicating that none of the selection → decisions were
-/// successful
+/// @return     Returns `true` if any of the decision steps passes, it returns 
+///             `false` indicating that none of the selection → decisions were 
+///             successful.
 std::optional<SubmissionPool>
 Researcher::hackTheResearch() {
 
@@ -137,9 +137,7 @@ Researcher::hackTheResearch() {
 /// parameters of individual hacking strategies. Hacking strategies parameters
 /// can be randomized only if their parameters are set to be a Parameter<T>.
 ///
-/// @todo I think the name can be more specific
-/// 
-void Researcher::randomizeParameters() {
+void Researcher::randomizeHackingStrategies() {
 
   if (reselect_hacking_strategies_after_every_simulation) {
 
@@ -157,6 +155,8 @@ void Researcher::randomizeParameters() {
     // Reordering based on the given execution order
     reorderHackingStrategies(hacking_workflow, hacking_execution_order);
   }
+
+  
 }
 
 ///
@@ -168,8 +168,6 @@ void Researcher::randomizeParameters() {
 /// @note This has a very similar implementation to the `hackTheResearch()` but
 /// it doesn't perform any of the secondary checks, and it does not incorporates
 /// any of the selection → decision sequences.
-///
-/// @todo I think this can/need to be replaced with the notion of HackingStage
 /// 
 void Researcher::preProcessData() {
 
@@ -192,12 +190,16 @@ void Researcher::submitTheResearch(
   spdlog::debug("Checking whether the Final Submission is going to be "
                 "submitted to Journal...");
 
+  // For one last time, researcher checks to see if everything is ok before it 
+  // continue with the submission process
   if (subs and research_strategy->willBeSubmitting(
                    subs, research_strategy->submission_decision_policies)) {
     spdlog::trace("To be submitted submission: {}",
                   candidate_submissions.value());
 
-    if (Random::get<bool>(submission_probability)) {
+    // Decides whether the researcher follows through with the submission or
+    // bails out and put her research into the drawer!
+    if (Random::get<bool>(static_cast<double>(submission_probability()))) {
       journal->review(candidate_submissions.value());
     }
   }
@@ -210,8 +212,8 @@ void Researcher::submitTheResearch(
 /// not, ie., calling or skipping the hackTheResearch().
 ///
 /// @note Note that the #probability_of_being_a_hacker is called through it's 
-/// call operator. This guarantees that its value is being randomized _only if_ 
-/// it contains a distribution
+/// call operator(). This guarantees that its value is being randomized 
+/// _only if_ it contains a distribution.
 /// 
 bool Researcher::isHacker() {
   return Random::get<bool>(
@@ -231,7 +233,6 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
                  if (s == "prevalence") {
                    return Random::get<bool>(hs->prevalence());
                  }
-                 /* else  (s == "defensibility") */
                  return Random::get<bool>(hs->defensibility());
                },
                [&](UnivariateDistribution &dist) {
@@ -260,9 +261,17 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
 ///   - Evaluate the list of final submissions
 ///   - Submit the final submissions to the Journal, or discard the Experiment
 ///   - Clean up everything, and start a get ready for a new run
-///
-///
-/// @todo This needs more doc!
+///   
+/// The internal of the method is based on sequential application of 
+/// selection → decision sequences on the experiment. Throughout the process, 
+/// the researcher keeps the list of candidate 
+/// submissions, #candidate_submissions, up-to-date. This starts by the initial
+/// selection, and following though with the hacking, and stashing selection. At
+/// the end of each replication, if any, researcher collects the last submission
+/// candidate and head to perform a new experiment. After performing all the 
+/// replications (or skipping some), researcher perform a final selection → 
+/// decision on the list of #replicated_submissions and select his final 
+/// submission to be submitted to the Journal.
 ///
 void Researcher::research() {
 
@@ -378,6 +387,12 @@ void Researcher::research() {
   this->reset();
 }
 
+///
+/// Based on the given priority randomizes the hacking workflow.
+///
+/// @param      hw        The hacking workflow
+/// @param      priority  The sorting priority
+///
 void Researcher::reorderHackingStrategies(HackingWorkflow &hw,
                                           std::string &priority) {
   if (priority.empty()) {

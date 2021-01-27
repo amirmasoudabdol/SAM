@@ -258,7 +258,7 @@ void runSimulation(json &sim_configs) {
     // trial before collecting `k` publications...
     researcher.experiment->exprid = 0;
 
-    researcher.randomizeParameters();
+    researcher.randomizeHackingStrategies();
 
     // Performing research until Journal doesn't accept anything
     while (researcher.journal->isStillAccepting()) {

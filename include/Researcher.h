@@ -25,8 +25,11 @@
 #include "HackingProbabilityStrategy.h"
 #include "HackingStrategy.h"
 #include "Journal.h"
+#include "Parameter.h"
 #include "ResearchStrategy.h"
 #include "Submission.h"
+#include <algorithm>
+#include <utility>
 
 using Random = effolkronium::random_static;
 
@@ -34,7 +37,15 @@ namespace sam {
 
 class ResearcherBuilder;
 
-/// A helper typedef representing selection → decision sequence
+//! The representation of the Hacking Workflow
+//!
+//! This is defined to capture a sequence of _hacking → selection → decision_.
+//! While it looks rather strange, it allows for some nice and flexible setup 
+//! using the std::visit(). 
+//! 
+//! @sa Researcher::hackTheResearch()
+//! 
+//! @ingroup HackingStrategies Policies
 using HackingWorkflow =
     std::vector<std::vector<std::variant<std::shared_ptr<HackingStrategy>,
                                          PolicyChain, PolicyChainSet>>>;
@@ -55,26 +66,46 @@ class Researcher {
 
   //! Number of hacking strategies to be chosen from the given list of
   //! strategies
-  size_t n_hacks;
+  size_t n_hacks{};
 
   //! Indicates whether the researcher is going to randomize its hacking arsenal
   //! for every new research
   bool reselect_hacking_strategies_after_every_simulation{false};
 
   //! Indicates the order in which hacking strategies are going to be selected
-  //! from the list of given hacking strategies.
+  //! from the list of given hacking strategies. A list of possible options are:
+  //! 
+  //! - `"random"`, random order
+  //! - `"asc(prevalence)"`, ascending prevalence
+  //! - `"desc(prevalence)"`, descending prevalence
+  //! - `"asc(defensibly)"`, ascending defensibly
+  //! - `"desc(defensibly)"`, descending defensibly
+  //! 
+  //! **If not specified the given order will be used.**
   //!
-  //! @note This has effect only if researcher decides to select fewer 
+  //! @note This only has effect if researcher decides to select fewer 
   //! strategies than the number of hacking strategies provided, 
   //! #n_hacks < #original_workflow.size()
   std::string hacking_selection_priority;
 
-  //! Indicates the execution order of the selected/given hacking strategies
+  //! Indicates the _execution order_ of the selected/given hacking strategies
+  //! 
+  //! Similar to the #hacking_selection_priority, it can be used with the 
+  //! following settings:
+  //! 
+  //! - `"random"`, random order
+  //! - `"asc(prevalence)"`, ascending prevalence
+  //! - `"desc(prevalence)"`, descending prevalence
+  //! - `"asc(defensibly)"`, ascending defensibly
+  //! - `"desc(defensibly)"`, descending defensibly
+  //! 
+  //! **If not specified the given order will be used.**
+  //! 
   std::string hacking_execution_order;
 
   //! Indicates the probability of committing to the submission process given 
   //! the availability of submissions
-  double submission_probability{1};
+  Parameter<double> submission_probability{1};
 
   //! A list of satisfactory submissions collected by the researcher at the end
   //! of each replications.
@@ -160,7 +191,7 @@ public:
   std::optional<SubmissionPool> hackTheResearch();
 
   /// Randomizes the internal state of the Researcher
-  void randomizeParameters();
+  void randomizeHackingStrategies();
 
   /// Evaluating the candidates and submitting them to the Journal
   void
@@ -186,81 +217,54 @@ public:
   }
 
 private:
-  /// Re-orders the given workflow according the given priority
+  /// Re-orders the given workflow based on the given priority
   static void reorderHackingStrategies(HackingWorkflow &hw, std::string &priority);
-
-public:
-  //--- Builder Related Methods
-
-  ///
-  /// Set the researchStrategy of the researcher.
-  ///
-  /// @param      d     The pointer to a Research Strategy
-  ///
-  /// @note       Researcher owns its research strategy that's why I move the
-  ///             pointer.
-  ///
-  /// @todo       I think I need to do the `std::move` when I'm calling the
-  /// function
-  ///             not inside it
-  ///
-  //  void setResearchStrategy(std::unique_ptr<ResearchStrategy> ds) {
-  //    research_strategy = std::move(ds);
-  //  }
-
-  ///
-  /// Set the experiment. This can be used to setup several researchers with one
-  /// experiment.
-  ///
-  /// @param      e     The pointer to an Experiment
-  ///
-  //  void setExperiment(Experiment *e) { experiment = e; };
-
-  ///
-  /// @brief      Set the Journal
-  ///
-  /// @param      j     The pointer to a Journal instance
-  ///
-  //  void setJournal(Journal *j) { journal = j; };
 };
 
 ///
 /// ResearcherBuilder class for Researcher. This takes care of everything and
 /// return a fully initialized Researcher after calling `.build()` method.
+/// 
+/// @note At this moment, ResearcherBuilder is a very limited and can only 
+/// initialize the Researcher from a config file.
 ///
 /// @ingroup AbstractBuilders
 class ResearcherBuilder {
 
   Researcher researcher;
 
-  json config;
-  bool build_from_config = false;
-
 public:
   ResearcherBuilder() = default;
   ;
 
-  ResearcherBuilder(std::string name) { researcher.name = name; };
+  explicit ResearcherBuilder(std::string name) { researcher.name = std::move(name); };
 
   ///
-  /// Build a researcher entirely based on the given config file. This is not
-  /// the best implementation still but I think it's more readable and
+  /// @brief Building the Researcher using the JSON configuration file.
+  ///
+  /// This builds a researcher entirely based on the given config file. This is 
+  /// not the best implementation yet but I think it's more readable and
   /// reasonable for some use-cases.
   ///
   /// @param      config  A JSON object
   /// @return     Return an instance of itself
   ///
   /// @todo This needs to be split into different pieces
+  /// 
   ResearcherBuilder &fromConfigFile(json &config) {
 
-    this->config = config;
-
-    /// @todo I can technically replace all these direct calls with calls
-    /// to their counterpart in the Builder!
-
+    // Build the Experiment
+    // --------------------
     researcher.experiment =
         std::make_unique<Experiment>(config["experiment_parameters"]);
 
+
+    // Build the Journal
+    // -----------------
+
+    // Temporarily passing some of the higher level IO settings to the 
+    // Journal parameters to allow the Journal for setting up its IO 
+    // related stuff!
     config["journal_parameters"]["save_meta"] =
         config["simulation_parameters"]["save_meta"];
     config["journal_parameters"]["save_pubs_per_sim_summaries"] =
@@ -275,23 +279,32 @@ public:
     researcher.journal =
         std::make_shared<Journal>(config["journal_parameters"]);
 
+
+    // Build the ResearchStrategy
+    // --------------------------
     researcher.research_strategy = ResearchStrategy::build(
         config["researcher_parameters"]["research_strategy"]);
 
+
+    // Setting up the Pre-processing Methods
+    // -------------------------------------
     researcher.is_pre_processing =
         config["researcher_parameters"]["is_pre_processing"];
     if (researcher.is_pre_processing) {
-      for (auto &item :
-           config["researcher_parameters"]["pre_processing_methods"]) {
+      auto &methods = config["researcher_parameters"]["pre_processing_methods"];
 
-        researcher.pre_processing_methods.push_back(
-            HackingStrategy::build(item));
-      }
+      std::transform(methods.begin(), methods.end(),
+                     std::back_inserter(researcher.pre_processing_methods),
+                     HackingStrategy::build);
     }
 
+    // Setting up the Probability of Being a Hacker
+    // -------------------------------------------- 
     researcher.probability_of_being_a_hacker = Parameter<double>(
         config["researcher_parameters"]["probability_of_being_a_hacker"], 1);
 
+    // Setting up the Probability of Committing to a Hack
+    // -------------------------------------------------
     auto prob_of_committing_a_hack =
         config["researcher_parameters"]["probability_of_committing_a_hack"];
     switch (prob_of_committing_a_hack.type()) {
@@ -319,7 +332,8 @@ public:
       break;
     }
 
-    // Parsing Hacking Strategies
+    // Setting up Hacking Workflow / Strategies
+    // ----------------------------------------
     researcher.hacking_workflow.resize(
         config["researcher_parameters"]["hacking_strategies"].size());
 
@@ -343,7 +357,7 @@ public:
           researcher.research_strategy->lua});
     }
 
-    /// Copying the original list for later shuffling!
+    // Making a copy of the original workflow
     researcher.original_workflow = researcher.hacking_workflow;
 
     if (config["researcher_parameters"].contains("randomize_strategies")) {
@@ -351,6 +365,7 @@ public:
           config["researcher_parameters"]["randomize_strategies"].get<bool>();
     }
 
+    // Checking whether specific number of hacking strategies should be used
     researcher.n_hacks = researcher.hacking_workflow.size();
     if (config["researcher_parameters"].contains("n_hacks")) {
       researcher.n_hacks =
@@ -358,7 +373,7 @@ public:
                    config["researcher_parameters"]["n_hacks"].get<size_t>());
     }
 
-    //! Selecting between hacking
+    // Deciding on how hacking strategies should be filtered, if necessary
     if (researcher.n_hacks < researcher.hacking_workflow.size() and
         config["researcher_parameters"].contains(
             "hacking_selection_priority")) {
@@ -366,49 +381,48 @@ public:
           config["researcher_parameters"]["hacking_selection_priority"]
               .get<std::string>();
 
-      /// Reordering hacking strategies based on selection priority
-      researcher.reorderHackingStrategies(
+      // Reordering hacking strategies based on selection priority
+      sam::Researcher::reorderHackingStrategies(
           researcher.hacking_workflow, researcher.hacking_selection_priority);
 
-      /// Selecting only n_hacks of those
+      // Selecting only n_hacks of those
       researcher.hacking_workflow.resize(researcher.n_hacks);
     }
 
-    //! Setting the execution order
+    // Setting up the execution order
     if (config["researcher_parameters"].contains("hacking_execution_order")) {
       researcher.hacking_execution_order =
           config["researcher_parameters"]["hacking_execution_order"]
               .get<std::string>();
 
-      /// Reorder hacking strategies based on the preferred execution order
-      researcher.reorderHackingStrategies(researcher.hacking_workflow,
+      // Reorder hacking strategies based on the preferred execution order
+      sam::Researcher::reorderHackingStrategies(researcher.hacking_workflow,
                                           researcher.hacking_execution_order);
     }
 
-    /// Sorting the selected hacking strategies based on their stage
-    /// The stable_sort has been used because I'd like to keep the given
-    /// order in previous stages
+    // Sorting the selected hacking strategies based on their stage
+    // The stable_sort has been used because I'd like to keep the given
+    // order if there is any
     std::stable_sort(
         researcher.hacking_workflow.begin(), researcher.hacking_workflow.end(),
         [&](auto &h1, auto &h2) {
           return std::get<0>(h1[0])->stage() < std::get<0>(h2[0])->stage();
         });
 
-    /// Indicate what percentage of Researcher's work is going to be submitted
+    // Setting up the change of researcher following through with this 
+    // researcher and submit it to the Journal, instead of putting it to the
+    // drawer.
     if (config["researcher_parameters"].contains("submission_probability")) {
-      researcher.submission_probability =
-          config["researcher_parameters"]["submission_probability"]
-              .get<double>();
+      researcher.submission_probability = Parameter<double>(
+          config["researcher_parameters"]["submission_probability"], 1);
     }
-
-    build_from_config = true;
 
     return *this;
   }
 
-  ////////////////////////////
-  /// CREATEING NEW OBJECT ///
-  ////////////////////////////
+  /////////////////////////////
+  /// CREATING A NEW OBJECT ///
+  /////////////////////////////
 
   ///
   /// @brief      Create a new ResearchStrategy for the researcher based on the
@@ -420,186 +434,14 @@ public:
   }
 
   ///
-  /// @brief      Create a new Journal for the researcher based on the given
-  ///             configuration.
-  ///
-  /// @note       The configuration needs to include information about the
-  ///             SelectionStrategy as well.
-  ///
-  //  ResearcherBuilder &createJournal(json &journal_config) {
-  //    researcher.journal = new Journal(journal_config);
-  //    return *this;
-  //  }
-
-  ///
-  /// @brief      Create a new Experiment based on the given ExperimentSetup.
-  ///
-  /// @note       : This assumes that the experiment setup is correctly
-  /// initiated.
-  ///
-  //  ResearcherBuilder &createExperiment(ExperimentSetup es) {
-  //    researcher.experiment = new Experiment(es);
-  //    return *this;
-  //  }
-
-  ResearcherBuilder &
-  createNewHackingStrategyGroup(json &hacking_strategy_group_config) {
-
-    return *this;
-  }
-
-  ResearcherBuilder &createNewHackingStrategy(json &hacking_strategy_config) {
-
-    return *this;
-  }
-
-  //////////////////////////
-  /// SETTING NEW OBJECT ///
-  //////////////////////////
-
-  //        ResearcherBuilder& setResearchStrategy(const Research Strategyds){
-  //            researcher.research_strategy = ds;
-  //            return *this;
-  //        };
-
-  //  ResearcherBuilder &setExperiment(Experiment *expr) {
-  //    researcher.experiment = expr;
-  //    return *this;
-  //  }
-  //
-  //  ResearcherBuilder &setExperimentSetup(ExperimentSetup es) {
-  //    researcher.experiment = new Experiment(es);
-  //    return *this;
-  //  };
-
-  // I'm not sure if I should leave these here
-  ResearcherBuilder &setDataStrategy(std::shared_ptr<DataStrategy> ds) {
-    researcher.experiment->data_strategy = ds;
-    return *this;
-  }
-
-  // I'm not sure if I should leave these here
-  ResearcherBuilder &setTestStrategy(std::shared_ptr<TestStrategy> &ts) {
-    researcher.experiment->test_strategy = ts;
-    return *this;
-  };
-
-  //  ResearcherBuilder &setJournal(Journal *j) {
-  //    researcher.journal = j;
-  //    return *this;
-  //  };
-
-  ResearcherBuilder &
-  setJournalSelectionStrategy(std::unique_ptr<ReviewStrategy> ss) {
-
-    researcher.journal->setSelectionStrategy(std::move(ss));
-    return *this;
-  };
-
-  ResearcherBuilder &setResearchStrategy(std::unique_ptr<ResearchStrategy> ds) {
-    //    researcher.setResearchStrategy(std::move(ds));
-    return *this;
-  };
-
-  ResearcherBuilder &setHackingStrategy(HackingStrategy *hs);
-  ResearcherBuilder &
-      setHackingStrategy(std::vector<std::vector<HackingStrategy *>>);
-
-  ResearcherBuilder &
-  addHackingStrategyGroup(std::vector<HackingStrategy *> hsg) {
-    //            researcher.hacking_strategies.push_back(hsg);
-    return *this;
-  }
-
-  //  ResearcherBuilder &addNewHackingStrategy(HackingStrategy *new_hs) {
-  //    if (researcher.hacking_strategies.empty()) {
-  //      researcher.hacking_strategies.resize(1);
-  //    }
-  //    //            researcher.hacking_strategies.back().push_back(new_hs);
-  //
-  //    //    researcher.is_hacker = true;
-  //    return *this;
-  //  }
-
-  /**
-   Prepare a set of hacking strategies groups by populating each group from
-   the given `hacking_strategies_pool`
-
-   @param hacking_strategies_pool A set of hacking strategy methods use to
-   prepare researcher's hacking strategies
-   @param n_group The number of hacking strategies groups
-   @param m_strategies The number of hacking strategies in each group
-   @return Return an instance of itself where hacking_strategies has been
-   initialized accordingly.
-   */
-  ResearcherBuilder &
-  chooseHackingStrategies(std::vector<HackingMethod> hacking_strategies_pool,
-                          int n_group, int m_strategies) {
-
-    //            for (auto &group : researcher.hacking_strategies) {
-    //
-    //                for (int i = 0; i < m_strategies; ++i) {
-    //                    // TEST ME!
-    //                    // TODO: I'm not sure if I want to have this builder
-    ////                    auto h_method =
-    /// enum_cast<HackingMethod>(Random::get<int>(0,
-    /// hacking_strategies_pool.size() - 1));
-    //                    // I think this should use the index from the list!
-    //                    Test it!
-    //// group.push_back(HackingStrategy::build(h_method.value()));
-    //                }
-    //
-    //            }
-
-    //    researcher.is_hacker = true;
-    return *this;
-  };
-
-  ///
-  /// Constructs `n_group`'s of hacking strategies, each consisting of maximum
-  /// `m_strategies`'s or steps. Each strategy is being selected randomly
-  /// between all available strategies.
-  ///
-  /// @param      n_group       Number of groups of hacking strategies
-  /// @param      m_strategies  Number of hacking strategies in each group
-  /// @return     Return an instance of itself where hacking_strategies has been
-  ///             initialized accordingly.
-  ///
-  //  ResearcherBuilder &pickRandomHackingStrategies(int n_group, int m_method)
-  //  {
-  //
-  //    researcher.isHacker();
-  //    researcher.hacking_strategies.resize(n_group);
-  //
-  //    //    for (auto &group : researcher.hacking_strategies) {
-  //    //
-  //    //      for (int i = 0; i < m_method; ++i) {
-  //    //                            auto h_method =
-  //    // enum_cast<HackingMethod>(Random::get<int>(0,
-  //    //                            enum_count<HackingMethod>() - 1));
-  //    // group.push_back(HackingStrategy::build(h_method.value()));
-  //    //      }
-  //    //    }
-  //
-  //    //    researcher.is_hacker = true;
-  //    return *this;
-  //  };
-
-  ///
   /// Build and return a new Researcher.
   ///
   /// @note       Be aware that this needs to be called after you set all
-  /// aspects of
-  ///             the Researcher
+  /// aspects of the Researcher
   ///
   /// @return     A new Researcher
   ///
   Researcher build() {
-
-    // TODO: Check if everything is setup carefully. I think I need several
-    // flags like is_hacking_strat_set, is_hacker, etc. to make sure that the
-    // Researcher is completely being constructed.
-
     return std::move(researcher);
   };
 
