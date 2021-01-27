@@ -113,10 +113,11 @@ public:
   
   // @todo this can be improved
   std::optional<SubmissionPool> stashedSubmissions() {
-    if (stashed_submissions.empty())
+    if (stashed_submissions.empty()) {
       return std::nullopt;
-    else
-      return std::optional<SubmissionPool>{stashed_submissions};
+    }
+
+    return std::optional<SubmissionPool>{stashed_submissions};
   };
 
   /// @brief      Implementation of decision-making procedure.

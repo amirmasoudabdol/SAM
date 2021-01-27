@@ -62,9 +62,9 @@ std::unique_ptr<ResearchStrategy> ResearchStrategy::build(
         research_strategy_config.get<DefaultResearchStrategy::Parameters>();
     return std::make_unique<DefaultResearchStrategy>(params);
 
-  } else {
-    throw std::invalid_argument("Unknown ResearchStrategy");
-  }
+  } 
+
+  throw std::invalid_argument("Unknown ResearchStrategy");
 }
 
 ///
@@ -159,20 +159,22 @@ void ResearchStrategy::saveOutcomes(Experiment &experiment,
 ///
 bool ResearchStrategy::willBeSubmitting(
     const std::optional<std::vector<Submission>> &subs, PolicyChain &pchain) {
-  if (pchain.empty())
+  
+  if (pchain.empty()) {
     return true;
-  else {
-    // Checking whether all policies are returning `true`
-    if (subs) {
-      bool check{false};
-      for (const auto &sub : subs.value()) {
-        check |= std::all_of(pchain.begin(), pchain.end(),
-                             [&](auto &policy) -> bool { return policy(sub); });
-      }
-      return check;
-    } else
-      return false;
   }
+  
+    // Checking whether all policies are returning `true`
+  if (subs) {
+    bool check{false};
+    for (const auto &sub : subs.value()) {
+      check |= std::all_of(pchain.begin(), pchain.end(),
+                           [&](auto &policy) -> bool { return policy(sub); });
+    }
+    return check;
+  } 
+  
+  return false;
 }
 
 /// @brief  Decides whether Researcher is going to hacking the Experiment
@@ -194,10 +196,11 @@ bool DefaultResearchStrategy::willStartHacking(std::optional<SubmissionPool> &su
     /// to STOP hacking
     bool verdict{false};
     /// @todo this can be replaced by Policy->operator()
-    for (auto &sub : subs.value())
+    for (auto &sub : subs.value()) {
       verdict |= std::any_of(will_start_hacking_decision_policies.begin(),
                              will_start_hacking_decision_policies.end(),
                              [&](auto &policy) -> bool { return policy(sub); });
+    }
     return verdict;
   } 
   
@@ -218,7 +221,7 @@ bool DefaultResearchStrategy::willContinueHacking(Experiment *experiment,
                                                   PolicyChain &pchain) {
   // Checking whether all policies are returning `true`
 
-  if (pchain.empty()) return true;
+  if (pchain.empty()) { return true; }
 
   bool verdict{true};
   for (int i{experiment->setup.nd()}, d{0}; i < experiment->setup.ng();
@@ -239,14 +242,15 @@ bool DefaultResearchStrategy::willContinueReplicating(SubmissionPool &subs) {
 
   if (not subs.empty()) {
     bool verdict{false};
-    for (auto &sub : subs)
+    for (auto &sub : subs) {
       verdict |= std::any_of(will_continue_replicating_decision_policy.begin(),
                              will_continue_replicating_decision_policy.end(),
                              [&](auto &policy) -> bool { return policy(sub); });
+    }
     return not verdict;
-  } else {
-    return true;
-  }
+  } 
+    
+  return true;
 }
 
 std::optional<SubmissionPool> DefaultResearchStrategy::selectOutcomeFromExperiment(
