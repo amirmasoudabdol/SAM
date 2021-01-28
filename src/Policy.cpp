@@ -388,6 +388,9 @@ bool PolicyChain::operator()(Experiment *experiment) {
 /// submissions (constructed from dependent variables of the experiment) that
 /// are satisfying all the available policies.
 ///
+/// @note       Only dependent variables of the treatment group will be
+///             considered.
+///
 /// @param      expr  The experiment
 ///
 /// @return     An optional list of submissions

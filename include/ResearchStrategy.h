@@ -15,7 +15,7 @@
 /// @defgroup   ResearchStrategies Research Strategies
 /// @brief      List of available Research Strategies
 ///
-/// @defgroup ResearchStrategyParameters Parameters of the Research Strategies
+/// @defgroup   ResearchStrategyParameters Parameters of the Research Strategies
 ///
 
 #ifndef SAMPP_RESEARCHSTRATEGY_H
@@ -43,10 +43,11 @@ using SubmissionPool = std::vector<Submission>;
 
 ///
 /// @brief      Abstract class for different research strategies.
-/// 
-/// @note This is being implemented as abstract class due to historical reasons.
-/// There is only one research strategy at the moment, but I'm considering the
-/// possibility of adding more and maybe redesigning this again.
+///
+/// @note       This is being implemented as abstract class due to historical
+///             reasons. There is only one research strategy at the moment, but
+///             I'm considering the possibility of adding more and maybe
+///             redesigning this again.
 ///
 class ResearchStrategy {
  protected:
@@ -64,12 +65,6 @@ class ResearchStrategy {
   ResearchStrategy();
 
   /// ResearchStrategy factory method.
-  ///
-  /// @param      research_strategy_config  A JSON object containing information
-  ///                                       about each research strategy.
-  ///
-  /// @return     Returns a unique pointer to the newly build ResearchStrategy.
-  ///
   static std::unique_ptr<ResearchStrategy> build(
       json &research_strategy_config);
 
@@ -116,7 +111,8 @@ class ResearchStrategy {
     return false;
   };
 
-  /// Submission
+  /// Indicates whether the Researcher is going to submit the given
+  /// set of submissions or not.
   bool willBeSubmitting(const std::optional<SubmissionPool> &sub,
                         PolicyChain &pchain);
 
@@ -152,8 +148,8 @@ class ResearchStrategy {
   };
 
   ///
-  /// @brief      Returns an optional result of applying the PolicyChainSet on 
-  /// the given Experiment
+  /// @brief      Returns an optional result of applying the PolicyChainSet on
+  ///             the given Experiment
   ///
   /// @param      experiment  The experiment
   /// @param      pchain_set  The policy chain set
@@ -165,7 +161,7 @@ class ResearchStrategy {
 
   ///
   /// @brief      Returns an optional result of applying the PolicyChainSet on
-  /// the given list of submissions
+  ///             the given list of submissions
   ///
   /// @param      spool       The submission pool
   /// @param      pchain_set  The policy chain set
@@ -195,8 +191,8 @@ class ResearchStrategy {
                                               PolicyChainSet &pchain_set);
 
   ///
-  /// @brief      Returns the result of applying the PolicyChainSet on the 
-  /// submission pool
+  /// @brief      Returns the result of applying the PolicyChainSet on the
+  ///             submission pool
   ///
   /// @param      spool       The spool
   /// @param      pchain_set  The policy chain set

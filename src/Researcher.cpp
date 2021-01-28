@@ -9,7 +9,7 @@
 /// This file contains the implementation of the Researcher class. The majority
 /// of the research is being done though the hackTheResearch() and research()
 /// methods.
-/// 
+///
 //===----------------------------------------------------------------------===// 
 
 #include "spdlog/spdlog.h"
