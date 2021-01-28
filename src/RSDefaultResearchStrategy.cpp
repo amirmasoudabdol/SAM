@@ -18,9 +18,9 @@
 using namespace sam;
 
 ///
-/// In this case, researcher only checks if the `current_submission` complies
-/// with `will_start_hacking_decision_policies`; if so, it will start hacking if
-/// not, then it will not continue to the hacking procedure, and proceed to
+/// In this case, researcher checks if the list of current submissions complies
+/// with `will_start_hacking_decision_policies`; if so, it will NOT start
+/// hacking; otherwise, then it WILL start the hacking procedure, and proceed to
 /// either stashing or replicating.
 ///
 /// @param      subs  A list of submission candidates
@@ -31,7 +31,6 @@ using namespace sam;
 bool DefaultResearchStrategy::willStartHacking(
     std::optional<SubmissionPool> &subs) {
   spdlog::trace("Checking whether to start hacking or not...");
-  spdlog::trace("Looking for {}", will_start_hacking_decision_policies);
 
   // Start hacking if there is no criteria is defined
   if (will_start_hacking_decision_policies.empty()) {
@@ -42,20 +41,15 @@ bool DefaultResearchStrategy::willStartHacking(
     spdlog::trace("Looking for: {}", will_start_hacking_decision_policies);
     spdlog::trace("Submission Candidates: {}", subs.value());
 
-    // Basically any of the candidates is good enough, then we're going
-    // to STOP hacking
-    bool verdict{false};
+    // Checking if any of the subs satisfying any of the policies, if so, then,
+    // we have to continue hacking...
+    return std::any_of(subs.value().begin(), subs.value().end(),
+                       [&](auto &s) -> bool {
+      return std::all_of(will_start_hacking_decision_policies.begin(),
+                         will_start_hacking_decision_policies.end(),
+                         [&](auto &policy) -> bool { return policy(s); });
+    });
     
-    auto ss = will_start_hacking_decision_policies(subs.value());
-    if (ss)
-      spdlog::trace("subs: {}", ss.value());
-
-    for (auto &sub : subs.value()) {
-      verdict |= std::any_of(will_start_hacking_decision_policies.begin(),
-                             will_start_hacking_decision_policies.end(),
-                             [&](auto &policy) -> bool { return policy(sub); });
-    }
-    return verdict;
   }
 
   spdlog::trace("No Candidate is available → Will Start Hacking");
@@ -106,20 +100,24 @@ bool DefaultResearchStrategy::willContinueHacking(Experiment *experiment,
 ///
 /// @todo       I need to rethink these
 bool DefaultResearchStrategy::willContinueReplicating(SubmissionPool &subs) {
-  // Checking whether all policies are returning `true`
+  
+  spdlog::trace("Checking whether to continue replicating or not...");
 
   if (will_continue_replicating_decision_policy.empty()) {
     return true;
   }
 
   if (not subs.empty()) {
-    bool verdict{false};
-    for (auto &sub : subs) {
-      verdict |= std::any_of(will_continue_replicating_decision_policy.begin(),
-                             will_continue_replicating_decision_policy.end(),
-                             [&](auto &policy) -> bool { return policy(sub); });
-    }
-    return not verdict;
+    
+    spdlog::trace("Looking for: {}", will_continue_replicating_decision_policy);
+    spdlog::trace("Submission Candidates: {}", subs);
+    
+    return std::any_of(subs.begin(), subs.end(),
+                       [&](auto &s) -> bool {
+      return std::all_of(will_continue_replicating_decision_policy.begin(),
+                         will_continue_replicating_decision_policy.end(),
+                         [&](auto &policy) -> bool { return policy(s); });
+    });
   }
 
   return true;

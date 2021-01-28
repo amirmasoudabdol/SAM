@@ -10,32 +10,8 @@
                     0.1,
                     0.1
                 ],
-                "sigma": [
-                    [
-                        1.0,
-                        0.5,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        0.5,
-                        1.0,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        0.0,
-                        0.0,
-                        1.0,
-                        0.5
-                    ],
-                    [
-                        0.0,
-                        0.0,
-                        0.5,
-                        1.0
-                    ]
-                ]
+                "covs": 0.5,
+                "stddevs": 1
             }
         },
         "effect_strategy": {
@@ -43,11 +19,7 @@
         },
         "n_conditions": 2,
         "n_dep_vars": 2,
-        "n_obs": {
-            "dist": "normal_distribution",
-            "mean": 20,
-            "stddev": 2
-        },
+        "n_obs": 20,
         "n_reps": 5,
         "test_strategy": {
             "name": "TTest",
@@ -66,7 +38,7 @@
         "research_strategy": {
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
-                ["sig"]
+                ["id != 2"]
             ],
             "between_stashed_selection_policies": [
                 [
@@ -100,14 +72,13 @@
                 ""
             ],
             "will_continue_replicating_decision_policy": [
-                ""
+                "id != 3"
             ],
             "will_start_hacking_decision_policies": [
-                "effect < 0",
-                "!sig"
+                "id != 2", "nobs < 30"
             ]
         },
-        "probability_of_being_a_hacker": 0,
+        "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 1,
         "hacking_strategies": [
             [
