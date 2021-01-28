@@ -119,8 +119,6 @@ Researcher::hackTheResearch() {
         return hacked_subs;
       }
     }
-
-    return std::nullopt;
   }
 
   // All hacking strategies are exhausted, and we didn't find anything, so, we
