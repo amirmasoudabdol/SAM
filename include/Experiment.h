@@ -126,10 +126,11 @@ public:
   /**
    * @name STL-like operators and methods
    *
-   * @attention begin() and end() operators do not return a sorted list of DVs. This is
-   * due to Policies re-arranging them as they filter them. If you want a sorted list of
-   * DVs, you should use the subscript operators, they make sure that the correct item
-   * is returns every time!
+   * @attention begin() and end() operators do not return a sorted list of DVs. 
+   * This is due to Policies re-arranging them as they filter them. If you want 
+   * a sorted list of DVs, you should use the subscript operators, they make 
+   * sure that the correct item is returns every time! 
+   * 
    */
   ///@{
   DependentVariable &operator[](std::size_t idx);

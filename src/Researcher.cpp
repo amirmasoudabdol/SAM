@@ -94,9 +94,10 @@ Researcher::hackTheResearch() {
 
                 spdlog::trace(
                     "Checking whether we are going to continue hacking?");
-                spdlog::trace("Looking for: {}", decision_policy);
+//                spdlog::trace("Will NOT continue hacking if: {}", decision_policy);
 
-                if (hacked_subs and !decision_policy(hacked_subs.value()).has_value()) {
+                if (hacked_subs and
+                    !research_strategy->willContinueHacking(hacked_subs, decision_policy)) {
                   spdlog::trace("Done Hacking!");
                   stopped_hacking = true;
                 }
@@ -259,7 +260,7 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
 ///   - Evaluate the list of final submissions
 ///   - Submit the final submissions to the Journal, or discard the Experiment
 ///   - Clean up everything, and start a get ready for a new run
-///   
+///
 /// The internal of the method is based on sequential application of 
 /// selection → decision sequences on the experiment. Throughout the process, 
 /// the researcher keeps the list of candidate 

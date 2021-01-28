@@ -7,6 +7,10 @@
                 "means": [
                     0.0,
                     0.0,
+                    0.0,
+                    0.0,
+                    0.1,
+                    0.1,
                     0.1,
                     0.1
                 ],
@@ -18,7 +22,7 @@
             "name": "StandardizedMeanDifference"
         },
         "n_conditions": 2,
-        "n_dep_vars": 2,
+        "n_dep_vars": 4,
         "n_obs": 20,
         "n_reps": 5,
         "test_strategy": {
@@ -38,7 +42,7 @@
         "research_strategy": {
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
-                ["id != 2"]
+                ["id >= 4"]
             ],
             "between_stashed_selection_policies": [
                 [
@@ -71,11 +75,11 @@
             "submission_decision_policies": [
                 ""
             ],
-            "will_continue_replicating_decision_policy": [
-                "id != 3"
+            "will_not_start_hacking_decision_policies": [
+                "pvalue < 0.5"
             ],
-            "will_start_hacking_decision_policies": [
-                "id != 2", "nobs < 30"
+            "will_not_continue_replicating_decision_policy": [
+                "pvalue < 0.1"
             ]
         },
         "probability_of_being_a_hacker": 1,
@@ -98,8 +102,8 @@
                     ]
                 ],
                 [
-                    "effect < 0",
-                    "!sig"
+                    "effect > 0",
+                    "sig"
                 ]
             ],
             [
@@ -124,8 +128,8 @@
                     ]
                 ],
                 [
-                    "effect < 0",
-                    "!sig"
+                    "effect > 0",
+                    "sig"
                 ]
             ]
         ],

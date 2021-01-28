@@ -96,10 +96,10 @@
             "submission_decision_policies": [
                 ""
             ],
-            "will_continue_replicating_decision_policy": [
+            "will_not_continue_replicating_decision_policy": [
                 ""
             ],
-            "will_start_hacking_decision_policies": [
+            "will_not_start_hacking_decision_policies": [
                 "effect < 0",
                 "!sig"
             ]

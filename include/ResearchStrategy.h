@@ -75,9 +75,9 @@ class ResearchStrategy {
   PolicyChainSet between_stashed_selection_policies;
   PolicyChainSet between_reps_policies;
 
-  PolicyChain will_start_hacking_decision_policies;
+  PolicyChain will_not_start_hacking_decision_policies;
 
-  PolicyChain will_continue_replicating_decision_policy;
+  PolicyChain will_not_continue_replicating_decision_policy;
 
   PolicyChain stashing_policy;
 
@@ -108,6 +108,11 @@ class ResearchStrategy {
   /// @param      experiment  A reference to the experiment
   virtual bool willContinueHacking(Experiment *experiment,
                                    PolicyChain &pchain) {
+    return false;
+  };
+
+  virtual bool willContinueHacking(std::optional<SubmissionPool> &sub,
+                                    PolicyChain &pchain) {
     return false;
   };
 
@@ -231,14 +236,14 @@ class DefaultResearchStrategy final : public ResearchStrategy {
     std::vector<std::vector<std::string>> initial_selection_policies_defs;
 
     //! Will Start Hacking Decision Policy
-    std::vector<std::string> will_start_hacking_decision_policies_def;
+    std::vector<std::string> will_not_start_hacking_decision_policies_def;
 
     //! Between Stashed Selection Policy
     std::vector<std::vector<std::string>>
         between_stashed_selection_policies_defs;
 
     //! Will Continue Replicating Decision Policy
-    std::vector<std::string> will_continue_replicating_decision_policy_def;
+    std::vector<std::string> will_not_continue_replicating_decision_policy_def;
 
     //! Between Replication Selection Policy
     std::vector<std::vector<std::string>>
@@ -260,8 +265,8 @@ class DefaultResearchStrategy final : public ResearchStrategy {
         PolicyChainSet(p.initial_selection_policies_defs, lua);
 
     spdlog::trace("Preparing Will Start Hacking Decision Policies: ");
-    will_start_hacking_decision_policies =
-        PolicyChain(p.will_start_hacking_decision_policies_def,
+    will_not_start_hacking_decision_policies =
+        PolicyChain(p.will_not_start_hacking_decision_policies_def,
                     PolicyChainType::Decision, lua);
 
     spdlog::trace("Preparing Between Stashed Selection Policies: ");
@@ -275,8 +280,8 @@ class DefaultResearchStrategy final : public ResearchStrategy {
 
 
     spdlog::trace("Preparing Will Continue Replicating Decision Policies: ");
-    will_continue_replicating_decision_policy =
-        PolicyChain(p.will_continue_replicating_decision_policy_def,
+    will_not_continue_replicating_decision_policy =
+        PolicyChain(p.will_not_continue_replicating_decision_policy_def,
                     PolicyChainType::Decision, lua);
 
     spdlog::trace("Preparing Stashing Policies: ");
@@ -305,6 +310,10 @@ class DefaultResearchStrategy final : public ResearchStrategy {
   bool willContinueHacking(Experiment *experiment,
                            PolicyChain &pchain) override;
 
+  /// Determines whether or not the researcher is going to continue hacking
+  bool willContinueHacking(std::optional<SubmissionPool> &subs,
+                           PolicyChain &pchain) override;
+
   /// Determines whether or not the replication procedure is going to place
   bool willContinueReplicating(SubmissionPool &subs) override;
 };
@@ -319,10 +328,10 @@ inline void to_json(json &j, const DefaultResearchStrategy::Parameters &p) {
        p.between_stashed_selection_policies_defs},
       {"between_replications_selection_policies",
        p.between_replications_selection_policies_defs},
-      {"will_start_hacking_decision_policies",
-       p.will_start_hacking_decision_policies_def},
-      {"will_continue_replicating_decision_policy",
-       p.will_continue_replicating_decision_policy_def},
+      {"will_not_start_hacking_decision_policies",
+       p.will_not_start_hacking_decision_policies_def},
+      {"will_not_continue_replicating_decision_policy",
+       p.will_not_continue_replicating_decision_policy_def},
       {"stashing_policy", p.stashing_policy_def}};
 }
 
@@ -335,10 +344,10 @@ inline void from_json(const json &j, DefaultResearchStrategy::Parameters &p) {
       .get_to(p.between_stashed_selection_policies_defs);
   j.at("between_replications_selection_policies")
       .get_to(p.between_replications_selection_policies_defs);
-  j.at("will_start_hacking_decision_policies")
-      .get_to(p.will_start_hacking_decision_policies_def);
-  j.at("will_continue_replicating_decision_policy")
-      .get_to(p.will_continue_replicating_decision_policy_def);
+  j.at("will_not_start_hacking_decision_policies")
+      .get_to(p.will_not_start_hacking_decision_policies_def);
+  j.at("will_not_continue_replicating_decision_policy")
+      .get_to(p.will_not_continue_replicating_decision_policy_def);
   j.at("stashing_policy").get_to(p.stashing_policy_def);
 }
 

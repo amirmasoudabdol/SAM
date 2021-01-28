@@ -42,13 +42,16 @@ class ResearcherBuilder;
 //! This is defined to capture a sequence of _hacking → selection → decision_.
 //! While it looks rather strange, it allows for some nice and flexible setup 
 //! using the std::visit(). 
-//! 
+//!
 //! @sa Researcher::hackTheResearch()
-//! 
+//!
 //! @ingroup HackingStrategies Policies
 using HackingWorkflow =
-    std::vector<std::vector<std::variant<std::shared_ptr<HackingStrategy>,
-                                         PolicyChain, PolicyChainSet>>>;
+    std::vector<
+      std::vector<
+        std::variant<std::shared_ptr<HackingStrategy>,
+                     PolicyChain,
+                     PolicyChainSet>>>;
 
 ///
 /// @brief      This class describes a researcher

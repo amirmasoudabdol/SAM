@@ -155,12 +155,13 @@ void ResearchStrategy::saveOutcomes(Experiment &experiment,
 
 ///
 /// Usually `submission_decision_policies` will be used to evaluate the quality
-/// of the submission pool
+/// of the submission pool. This checks if _at least one_ of the submissions 
+/// satisfy all of the given policies.
 ///
 /// @param[in]  subs    A list of Submission(s)
 /// @param      pchain  A policy chain
 ///
-/// @return     returns `true` if submission will undergo
+/// @return     returns `true` if submission should be submitted to the Journal.
 ///
 bool ResearchStrategy::willBeSubmitting(
     const std::optional<std::vector<Submission>> &subs, PolicyChain &pchain) {
@@ -170,14 +171,18 @@ bool ResearchStrategy::willBeSubmitting(
 
   // Checking whether all policies are returning `true`
   if (subs) {
-    bool check{false};
-    for (const auto &sub : subs.value()) {
-      check |= std::all_of(pchain.begin(), pchain.end(),
-                           [&](auto &policy) -> bool { return policy(sub); });
-    }
-    return check;
-  }
 
+    return std::any_of(subs.value().begin(), 
+      subs.value().end(), 
+      [&](auto &s) -> bool { 
+        return std::all_of(pchain.begin(), pchain.end(),
+                           [&](auto &policy) -> bool { return policy(s); });
+    });
+
+  }
+  
   return false;
+
+
 }
 
