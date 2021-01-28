@@ -165,7 +165,8 @@ void ResearchStrategy::saveOutcomes(Experiment &experiment,
 ///
 bool ResearchStrategy::willBeSubmitting(
     const std::optional<std::vector<Submission>> &subs, PolicyChain &pchain) {
-  if (pchain.empty()) {
+  
+  if (pchain.empty() and subs) {
     return true;
   }
 

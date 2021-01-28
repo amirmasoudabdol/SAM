@@ -45,7 +45,8 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const 
 
   arma::rowvec standardized;
   
-  int begin {0}, end {0};
+  int begin {0};
+  int end {0};
   std::tie(begin, end) = getTargetBounds(experiment, params.target);
 
   /// Removing outliers only from the original groups, see #104

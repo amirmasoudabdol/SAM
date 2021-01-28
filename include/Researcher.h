@@ -337,34 +337,48 @@ public:
 
     // Setting up Hacking Workflow / Strategies
     // ----------------------------------------
-    researcher.hacking_workflow.resize(
-        config["researcher_parameters"]["hacking_strategies"].size());
+    if (config["researcher_parameters"].contains("hacking_strategies")) {
 
-    for (int h{0}; h < researcher.hacking_workflow.size(); ++h) {
+      researcher.hacking_workflow.resize(
+          config["researcher_parameters"]["hacking_strategies"].size());
 
-      // Basically there are no hacking strategies defined
-      if (config["researcher_parameters"]["hacking_strategies"][0] == "") {
-        break;
+      for (int h{0}; h < researcher.hacking_workflow.size(); ++h) {
+
+        auto &item = config["researcher_parameters"]["hacking_strategies"][h];
+
+        // Adding the Hacking Strategy
+        researcher.hacking_workflow[h].push_back(HackingStrategy::build(item[0]));
+
+        // Adding the Selection
+        if (item.size() > 1) {
+          if (item[1][0].type() == nlohmann::detail::value_t::array) {
+            researcher.hacking_workflow[h].push_back(PolicyChainSet{
+                item[1].get<std::vector<std::vector<std::string>>>(),
+                researcher.research_strategy->lua});
+          } else {
+            throw std::domain_error(
+                "You must provide a Selection policy, otherwise, the researcher "
+                "doesn't know what to do!");
+          }
+        }
+
+        // Adding the Decision
+        if (item.size() > 2) {
+          researcher.hacking_workflow[h].push_back(PolicyChain{
+            item[2].get<std::vector<std::string>>(), PolicyChainType::Decision,
+            researcher.research_strategy->lua});
+        }
       }
 
-      auto &item = config["researcher_parameters"]["hacking_strategies"][h];
+      // Making a copy of the original workflow
+      researcher.original_workflow = researcher.hacking_workflow;
 
-      // Adding the Hacking Strategy
-      researcher.hacking_workflow[h].push_back(HackingStrategy::build(item[0]));
-
-      // Adding the Selection
-      researcher.hacking_workflow[h].push_back(
-          PolicyChainSet{item[1].get<std::vector<std::vector<std::string>>>(),
-                         researcher.research_strategy->lua});
-
-      // Adding the Decision
-      researcher.hacking_workflow[h].push_back(PolicyChain{
-          item[2].get<std::vector<std::string>>(), PolicyChainType::Decision,
-          researcher.research_strategy->lua});
+    } else {
+      // If the Researcher a hacker, it has to have some methods
+      if (researcher.isHacker()) {
+        throw std::domain_error("You defined a hacker, but didn't provide any hacking strategies.");
+      }
     }
-
-    // Making a copy of the original workflow
-    researcher.original_workflow = researcher.hacking_workflow;
 
     // Whether the researcher is going to start with a new set of hacking
     // strategies every time

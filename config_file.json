@@ -42,7 +42,7 @@
         "research_strategy": {
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
-                ["id >= 4"]
+                ["id == 4"]
             ],
             "between_stashed_selection_policies": [
                 [
@@ -68,71 +68,10 @@
                     "effect < 0",
                     "max(pvalue)"
                 ]
-            ],
-            "stashing_policy": [
-                "all"
-            ],
-            "submission_decision_policies": [
-                ""
-            ],
-            "will_not_start_hacking_decision_policies": [
-                "pvalue < 0.5"
-            ],
-            "will_not_continue_replicating_decision_policy": [
-                "pvalue < 0.1"
             ]
         },
-        "probability_of_being_a_hacker": 1,
+        "probability_of_being_a_hacker": 0,
         "probability_of_committing_a_hack": 1,
-        "hacking_strategies": [
-            [
-                {
-                    "name": "OptionalStopping",
-                    "max_attempts": 1,
-                    "n_attempts": 1,
-                    "target": "Both",
-                    "prevalence": 0.1,
-                    "defensibility": 0.1,
-                    "num": 10
-                },
-                [
-                    [
-                        "effect > 0",
-                        "min(pvalue)"
-                    ]
-                ],
-                [
-                    "effect > 0",
-                    "sig"
-                ]
-            ],
-            [
-                {
-                    "name": "OutliersRemoval",
-                    "max_attempts": 1,
-                    "min_observations": 1,
-                    "multipliers": [
-                        2
-                    ],
-                    "n_attempts": 1,
-                    "target": "Both",
-                    "prevalence": 0.1,
-                    "defensibility": 0.1,
-                    "num": 10,
-                    "order": "random"
-                },
-                [
-                    [
-                        "effect > 0",
-                        "min(pvalue)"
-                    ]
-                ],
-                [
-                    "effect > 0",
-                    "sig"
-                ]
-            ]
-        ],
         "is_pre_processing": false,
         "pre_processing_methods": [
             {

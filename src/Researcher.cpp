@@ -94,7 +94,6 @@ Researcher::hackTheResearch() {
 
                 spdlog::trace(
                     "Checking whether we are going to continue hacking?");
-//                spdlog::trace("Will NOT continue hacking if: {}", decision_policy);
 
                 if (hacked_subs and
                     !research_strategy->willContinueHacking(hacked_subs, decision_policy)) {
