@@ -315,6 +315,11 @@ PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
       continue;
     }
     pchain.emplace_back(pchain_defs[i], lua);
+    
+    if (type_ == PolicyChainType::Decision and
+        pchain.back().type != PolicyType::Comp) {
+      throw std::domain_error("Decision policies could only contain comparative operators;");
+    }
 
     // Checking whether there is any formula after the first non-comparative
     // formula
