@@ -1,21 +1,27 @@
+//===-- ReviewStrategy.h - Review Strategy Deceleration -------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
-
+//===----------------------------------------------------------------------===//
+///
+/// @file
+///
+///
+//===----------------------------------------------------------------------===//
 ///
 /// @defgroup   ReviewStrategies Review Strategies
 /// @brief      List of available Review Strategies
 ///
-/// Description to come!
-///
 
-#ifndef SAMPP_REVIEWSTRATEGIES_H
-#define SAMPP_REVIEWSTRATEGIES_H
+#ifndef SAMPP_REVIEWSTRATEGY_H
+#define SAMPP_REVIEWSTRATEGY_H
 
-#include "Submission.h"
-#include "Distributions.h"
 #include <sol/sol.hpp>
+
+#include "Distributions.h"
 #include "Policy.h"
+#include "Submission.h"
 
 namespace sam {
 
@@ -33,8 +39,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
     {{SelectionMethod::PolicyBasedSelection, "PolicyBasedSelection"},
      {SelectionMethod::SignificantSelection, "SignificantSelection"},
      {SelectionMethod::RandomSelection, "RandomSelection"},
-     {SelectionMethod::FreeSelection, "FreeSelection"}
-})
+     {SelectionMethod::FreeSelection, "FreeSelection"}})
 
 ///
 /// @brief      Abstract class for Journal's selection strategies.
@@ -46,18 +51,15 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 ///
 class ReviewStrategy {
 
-protected:
-  UnivariateDistribution dist;
-
-public:
+ public:
   ///
   /// @brief      Pure destructors of the base class
   ///
   virtual ~ReviewStrategy() = 0;
-  
+
   sol::state lua;
 
-  SelectionMethod name;
+  SelectionMethod name{};
   ReviewStrategy();
 
   ///
@@ -69,8 +71,7 @@ public:
   ///
   /// @return     A new SelectionStrategy
   ///
-  static std::unique_ptr<ReviewStrategy>
-  build(json &selection_straregy_config);
+  static std::unique_ptr<ReviewStrategy> build(json &selection_strategy_config);
 
   ///
   /// @brief      Review the Submission and decides if it's going to be accepted
@@ -79,11 +80,11 @@ public:
   ///
   /// @param[in]  s     A reference to a Submission
   ///
-  /// @return     A boolean indicating whether the Submission should be accepted.
+  /// @return     A boolean indicating whether the Submission should be
+  /// accepted.
   ///
   virtual bool review(const std::vector<Submission> &s) = 0;
 };
-
 
 ///
 /// @brief Policy-based Selection Strategy
@@ -98,34 +99,35 @@ public:
 ///
 ///
 class PolicyBasedSelection final : public ReviewStrategy {
-  
-public:
+ public:
   struct Parameters {
     SelectionMethod name = SelectionMethod::PolicyBasedSelection;
-    
+
     //! Publication Bias Rate
-    double pub_bias {0.5};
-    
+    double pub_bias{};
+
     //! Acceptance Rate
-    double acceptance_rate {0.5};
-    
-    //! Definition of the selection policy used by Journal to evaluate a given submission
-    std::vector<std::string> selection_policy_defs {"sig"};
-    
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name, pub_bias, acceptance_rate, selection_policy_defs);
+    double acceptance_rate{};
+
+    //! Definition of the selection policy used by Journal to evaluate a given
+    //! submission
+    std::vector<std::string> selection_policy_defs{"sig"};
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name,
+                                   pub_bias, acceptance_rate,
+                                   selection_policy_defs);
   };
-  
+
   Parameters params;
   PolicyChain selection_policy;
-  
-  PolicyBasedSelection(Parameters &p) : params{p} {
-    selection_policy = PolicyChain(params.selection_policy_defs, PolicyChainType::Decision, lua);
+
+  explicit PolicyBasedSelection(Parameters &p) : params{p} {
+    selection_policy = PolicyChain(params.selection_policy_defs,
+                                   PolicyChainType::Decision, lua);
   }
-  
-  virtual bool review(const std::vector<Submission> &s) override;
+
+  bool review(const std::vector<Submission> &s) override;
 };
-
-
 
 ///
 /// @brief      Significant-based Selection Strategy
@@ -140,10 +142,9 @@ public:
 /// @ingroup  ReviewStrategies
 ///
 class SignificantSelection final : public ReviewStrategy {
-
-public:
+ public:
   ///
-  /// A type keeping the parameters of the Significat Seleciton strategy.
+  /// A type keeping the parameters of the Significant Selection strategy.
   ///
   struct Parameters {
     //! Selection strategy name
@@ -151,23 +152,24 @@ public:
 
     //! The \alpha at which the _review strategy_ decides the significance
     //! of a publication
-    double alpha {0.05};
+    double alpha{};
 
     //! Publication bias rate
-    double pub_bias {0.5};
+    double pub_bias{};
 
-    //! Indicates the _selection stratgy_'s preference toward positive, `1`,
+    //! Indicates the _selection strategy_'s preference toward positive, `1`,
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
-    int side {1};
-    
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(SignificantSelection::Parameters, name, alpha, pub_bias, side);
+    int side{1};
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(SignificantSelection::Parameters, name,
+                                   alpha, pub_bias, side);
   };
 
   Parameters params;
 
-  SignificantSelection(const Parameters &p) : params{p} {};
+  explicit SignificantSelection(const Parameters &p) : params{p} {};
 
-  virtual bool review(const std::vector<Submission> &s) override;
+  bool review(const std::vector<Submission> &s) override;
 };
 
 ///
@@ -183,21 +185,19 @@ public:
 /// @ingroup  ReviewStrategies
 ///
 class RandomSelection final : public ReviewStrategy {
-
-public:
+ public:
   struct Parameters {
     SelectionMethod name = SelectionMethod::RandomSelection;
-    
+
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomSelection::Parameters, name);
   };
 
   Parameters params;
 
-  RandomSelection(const Parameters &p) : params{p} {};
+  explicit RandomSelection(const Parameters &p) : params{p} {};
 
-  virtual bool review(const std::vector<Submission> &s) override;
+  bool review(const std::vector<Submission> &s) override;
 };
-
 
 ///
 /// @brief      FreeSelection doesn't pose any restriction on the submission and
@@ -207,18 +207,19 @@ public:
 /// @ingroup  ReviewStrategies
 ///
 class FreeSelection final : public ReviewStrategy {
-
-public:
+ public:
   struct Parameters {};
 
   Parameters params;
 
-  FreeSelection(){};
+  FreeSelection()= default;;
 
   /// Accepting anything!
-  virtual bool review(const std::vector<Submission> &s) override { return true; };
+  bool review(const std::vector<Submission> &s) override {
+    return true;
+  };
 };
 
-} // namespace sam
+}  // namespace sam
 
-#endif // SAMPP_REVIEWSTRATEGIES_H
+#endif  // SAMPP_REVIEWSTRATEGY_H
