@@ -75,7 +75,8 @@ public:
   //!
   //! This is a list of any dvs that has been flagged as submissions during the lifespan
   //! of this experiment
-  //!
+  //! 
+  //! @note This is not yet in use!
   std::optional<std::vector<Submission>> candidates;
   
   /// Default constructor
@@ -109,19 +110,19 @@ public:
   void setCandidateStatusOf(const std::vector<size_t> &idxs, const bool status);
   
   /// Returns true if the experiment is hacked
-  bool isHacked() const;
+  [[nodiscard]] bool isHacked() const;
   
   /// Returns true if the experiment has been modified in anyway
-  bool isModified() const;
+  [[nodiscard]] bool isModified() const;
   
   /// Returns true if there is an candidate in the experiment
-  bool hasCandidates() const;
+  [[nodiscard]] bool hasCandidates() const;
   
   /// Returns true if the experiment has been published by the Journal
-  bool isPublished() const;
+  [[nodiscard]] bool isPublished() const;
   
   /// Returns the number of candidate DVs
-  size_t nCandidates() const;
+  [[nodiscard]] size_t nCandidates() const;
   
   /**
    * @name STL-like operators and methods
@@ -139,8 +140,8 @@ public:
   auto begin() { return dvs_.begin(); };
   auto end() { return dvs_.end(); };
   
-  auto begin() const { return dvs_.begin(); };
-  auto end() const { return dvs_.end(); };
+  [[nodiscard]] auto begin() const { return dvs_.begin(); };
+  [[nodiscard]] auto end() const { return dvs_.end(); };
   ///@}
 
 

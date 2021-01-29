@@ -340,29 +340,35 @@ inline void from_json(const json &j, DefaultResearchStrategy::Parameters &p) {
 
   // This one is not optional, but the rest can be!
   j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
-  
-  if (j.contains("submission_decision_policies"))
+
+  if (j.contains("submission_decision_policies")) {
     j.at("submission_decision_policies")
-      .get_to(p.submission_decision_policies_defs);
-  
-  if (j.contains("between_stashed_selection_policies"))
+        .get_to(p.submission_decision_policies_defs);
+  }
+
+  if (j.contains("between_stashed_selection_policies")) {
     j.at("between_stashed_selection_policies")
-      .get_to(p.between_stashed_selection_policies_defs);
-  
-  if (j.contains("between_replications_selection_policies"))
+        .get_to(p.between_stashed_selection_policies_defs);
+  }
+
+  if (j.contains("between_replications_selection_policies")) {
     j.at("between_replications_selection_policies")
-      .get_to(p.between_replications_selection_policies_defs);
-  
-  if (j.contains("will_not_start_hacking_decision_policies"))
+        .get_to(p.between_replications_selection_policies_defs);
+  }
+
+  if (j.contains("will_not_start_hacking_decision_policies")) {
     j.at("will_not_start_hacking_decision_policies")
-      .get_to(p.will_not_start_hacking_decision_policies_def);
-  
-  if (j.contains("will_not_continue_replicating_decision_policy"))
+        .get_to(p.will_not_start_hacking_decision_policies_def);
+  }
+
+  if (j.contains("will_not_continue_replicating_decision_policy")) {
     j.at("will_not_continue_replicating_decision_policy")
-      .get_to(p.will_not_continue_replicating_decision_policy_def);
-  
-  if (j.contains("stashing_policy"))
+        .get_to(p.will_not_continue_replicating_decision_policy_def);
+  }
+
+  if (j.contains("stashing_policy")) {
     j.at("stashing_policy").get_to(p.stashing_policy_def);
+  }
 }
 
 }  // namespace sam

@@ -77,33 +77,33 @@ class Researcher {
 
   //! Indicates the order in which hacking strategies are going to be selected
   //! from the list of given hacking strategies. A list of possible options are:
-  //! 
+  //!
   //! - `"random"`, random order
   //! - `"asc(prevalence)"`, ascending prevalence
   //! - `"desc(prevalence)"`, descending prevalence
   //! - `"asc(defensibly)"`, ascending defensibly
   //! - `"desc(defensibly)"`, descending defensibly
-  //! 
+  //!
   //! **If not specified the given order will be used.**
   //!
-  //! @note This only has effect if researcher decides to select fewer 
-  //! strategies than the number of hacking strategies provided, 
-  //! #n_hacks < #original_workflow.size()
+  //! @note       This only has effect if researcher decides to select fewer
+  //!             strategies than the number of hacking strategies provided,
+  //!             #n_hacks < #original_workflow.size()
   std::string hacking_selection_priority;
 
   //! Indicates the _execution order_ of the selected/given hacking strategies
-  //! 
-  //! Similar to the #hacking_selection_priority, it can be used with the 
+  //!
+  //! Similar to the #hacking_selection_priority, it can be used with the
   //! following settings:
-  //! 
+  //!
   //! - `"random"`, random order
   //! - `"asc(prevalence)"`, ascending prevalence
   //! - `"desc(prevalence)"`, descending prevalence
   //! - `"asc(defensibly)"`, ascending defensibly
   //! - `"desc(defensibly)"`, descending defensibly
-  //! 
+  //!
   //! **If not specified the given order will be used.**
-  //! 
+  //!
   std::string hacking_execution_order;
 
   //! Indicates the probability of committing to the submission process given 
@@ -127,15 +127,15 @@ class Researcher {
 
   //! Indicates the probability of a Researcher _actually applying_ a chosen
   //! hacking strategy.
-  //! 
+  //!
   //! This can have any of the given numbers:
   //! - A fixed value
-  //! - A string indicating whether the decision should be make based on the 
-  //! defensibly or prevalence of the method
+  //! - A string indicating whether the decision should be make based on the
+  //!   defensibly or prevalence of the method
   //! - A univariate distribution returning a value between 0 and 1.
   //! - One of the HackingProbabilityStrategy classes, which will be used by the
-  //! researcher to base her decision based on characteristic of individual 
-  //! experiment.
+  //!   researcher to base her decision based on characteristic of individual
+  //!   experiment.
   std::variant<double, std::string, UnivariateDistribution,
                std::unique_ptr<HackingProbabilityStrategy>>
       probability_of_committing_a_hack;
@@ -251,8 +251,6 @@ public:
   ///
   /// @param      config  A JSON object
   /// @return     Return an instance of itself
-  ///
-  /// @todo This needs to be split into different pieces
   /// 
   ResearcherBuilder &fromConfigFile(json &config) {
 
