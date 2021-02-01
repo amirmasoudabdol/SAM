@@ -12,14 +12,15 @@
 //===----------------------------------------------------------------------===//
 ///
 /// @defgroup   ReviewStrategies Review Strategies
-/// @brief      List of available Review Strategies
 ///
+/// @defgroup   ReviewStrategiesParameters Parameters of Review Strategies
 
 #ifndef SAMPP_REVIEWSTRATEGY_H
 #define SAMPP_REVIEWSTRATEGY_H
 
 #include <sol/sol.hpp>
 
+#include "DataStrategy.h"
 #include "Distributions.h"
 #include "Policy.h"
 #include "Submission.h"
@@ -28,6 +29,9 @@ namespace sam {
 
 class Journal;
 
+///
+/// @brief      List of available review strategies
+///
 enum class SelectionMethod {
   PolicyBasedSelection,
   SignificantSelection,
@@ -45,10 +49,12 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 ///
 /// @brief      Abstract class for Journal's selection strategies.
 ///
-/// A Journal will decide if a Submission is going to be accepted or rejected.
-/// This decision can be made based on different criteria or formula. A
-/// SelectionStrategy provides an interface for implementing different selection
-/// strategies.
+///             A Journal will decide if a Submission is going to be accepted or
+///             rejected. This decision can be made based on different criteria
+///             or formula. A SelectionStrategy provides an interface for
+///             implementing different selection strategies.
+///
+/// @ingroup    ReviewStrategies
 ///
 class ReviewStrategy {
 
@@ -58,48 +64,71 @@ class ReviewStrategy {
   ///
   virtual ~ReviewStrategy() = 0;
 
+  /// Lua state
   sol::state lua;
 
   SelectionMethod name{};
+
+  /// Constructs the Review Strategy
   ReviewStrategy();
 
-  ///
-  /// @brief      Factory method for building a SelectionStrategy
-  ///
-  /// @param      config  A reference to `json["journal_parameters"]. Usually
-  ///                     Researcher::Builder is responsible for passing the
-  ///                     object correctly.
-  ///
-  /// @return     A new SelectionStrategy
-  ///
+  /// Factory method for building a SelectionStrategy
   static std::unique_ptr<ReviewStrategy> build(json &selection_strategy_config);
 
   ///
-  /// @brief      Review the Submission and decides if it's going to be accepted
-  ///             or rejected. When deriving from SelectionStrategy, `review` is
-  ///             the main interface and `Journal` relies on its output
+  /// @brief      The abstract _review_ method
+  ///
+  ///             It reviews the submissions and decides if it's going to be
+  ///             accepted or rejected. When deriving from SelectionStrategy,
+  ///             `review` is the main interface and `Journal` relies on its
+  ///             output
   ///
   /// @param[in]  s     A reference to a Submission
   ///
-  /// @return     A boolean indicating whether the Submission should be
-  /// accepted.
+  /// @return     Returns 'true' if the any of the submissions are going to be
+  ///             accepted.
   ///
   virtual bool review(const std::vector<Submission> &s) = 0;
+
+  ///
+  /// @brief      The abstract _review_ method.
+  ///
+  ///             Like the method above, but this one reviews the entire
+  ///             Experiment instead.
+  ///
+  /// @note       It's not yet been used anywhere though SAM, but it will
+  ///             eventually replace the submission review method.
+  ///
+  /// @param[in]  expr  The experiment
+  ///
+  /// @return     Returns `true` if the Experiment is going to be accepted.
+  ///
+  virtual bool review(const Experiment &expr) = 0;
 };
 
 ///
-/// @brief Policy-based Selection Strategy
+/// @brief      Policy-based Selection Strategy
 ///
-/// Policy-based review strategy accepts a submission if it passes
-/// a criteria specified in `selection_policy_defs`. In addition to the
-/// output of selection policy, a submission might get rejected based on
-/// journal's acceptance rate, and publication bias rate.
+///             Policy-based review strategy accepts a submission if any of the
+///             submissions pass all the criteria specified by the
+///             `selection_policy_defs`. In addition to the output of selection
+///             policy, a submission might get rejected based on journal's
+///             acceptance rate, and publication bias rate.
 ///
+/// @note       This is a very flexible method, and it can technically be used
+///             to setup wide variety of review strategies, including
+///             traditional publication biased journal.
 ///
-/// @ingroup  ReviewStrategies
+/// @ingroup    ReviewStrategies
 ///
 class PolicyBasedSelection final : public ReviewStrategy {
  public:
+
+  ///
+  /// @brief      Parameters of the Policy-based Selection
+  /// 
+  /// @ingroup    ReviewStrategiesParameters
+  ///
   struct Parameters {
     SelectionMethod name = SelectionMethod::PolicyBasedSelection;
 
@@ -111,7 +140,7 @@ class PolicyBasedSelection final : public ReviewStrategy {
 
     //! Definition of the selection policy used by Journal to evaluate a given
     //! submission
-    std::vector<std::string> selection_policy_defs{"sig"};
+    std::vector<std::string> selection_policy_defs{};
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name,
                                    pub_bias_rate, acceptance_rate,
@@ -127,25 +156,30 @@ class PolicyBasedSelection final : public ReviewStrategy {
   }
 
   bool review(const std::vector<Submission> &s) override;
+
+  bool review(const Experiment &expr) override { return false; }
 };
 
 ///
 /// @brief      Significant-based Selection Strategy
 ///
-/// Significant-based review strategy accepts a publication if the given
-/// *p*-value is significant. Certain degree of *publication bias*, can be
-/// specified. In this case, a Submission has a chance of being published even
-/// if the statistics is not significant. Moreover, the SignificantSelection can
-/// be tailored toward either positive or negative effect. In this case, the
-/// Journal will only accept Submissions with larger or smaller effects.
+///             Significant-based review strategy accepts a publication if the
+///             given *p*-value is significant. Certain degree of *publication
+///             bias*, can be specified. In this case, a Submission has a chance
+///             of being published even if the statistics is not significant.
+///             Moreover, the SignificantSelection can be tailored toward either
+///             positive or negative effect. In this case, the Journal will only
+///             accept Submissions with larger or smaller effects.
 ///
-/// @ingroup  ReviewStrategies
+/// @ingroup    ReviewStrategies
 ///
 class SignificantSelection final : public ReviewStrategy {
  public:
   ///
   /// A type keeping the parameters of the Significant Selection strategy.
   ///
+  /// @ingroup    ReviewStrategiesParameters
+  /// 
   struct Parameters {
     //! Selection strategy name
     SelectionMethod name = SelectionMethod::SignificantSelection;
@@ -170,26 +204,34 @@ class SignificantSelection final : public ReviewStrategy {
   explicit SignificantSelection(const Parameters &p) : params{p} {};
 
   bool review(const std::vector<Submission> &s) override;
+
+  bool review(const Experiment &expr) override { return false; }
 };
 
 ///
 /// @brief      Random Selection Strategy
 ///
-/// In this method, Journal does not check any criteria for accepting or
-/// rejecting a submission. Each submission has 50% chance of being accepted or
-/// not.
+///             In this method, Journal does not check any criteria for
+///             accepting or rejecting a submission. The `acceptance_rate` will
+///             decide the acceptance or rejection of a list of submissions.
 ///
-/// @note       This is technically the SignificantSelection with pub_bias_rate set
-/// to 0.
-///
-/// @ingroup  ReviewStrategies
+/// @ingroup    ReviewStrategies
 ///
 class RandomSelection final : public ReviewStrategy {
  public:
+
+  ///
+  /// @brief      Parameter of _Random Selection_ review strategy
+  /// 
+  /// @ingroup    ReviewStrategiesParameters
+  ///
   struct Parameters {
     SelectionMethod name = SelectionMethod::RandomSelection;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomSelection::Parameters, name);
+    //! Indicates the acceptance rate of the Journal
+    double acceptance_rate{};
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomSelection::Parameters, name, acceptance_rate);
   };
 
   Parameters params;
@@ -197,6 +239,8 @@ class RandomSelection final : public ReviewStrategy {
   explicit RandomSelection(const Parameters &p) : params{p} {};
 
   bool review(const std::vector<Submission> &s) override;
+
+  bool review(const Experiment &expr) override { return false; }
 };
 
 ///
@@ -208,16 +252,28 @@ class RandomSelection final : public ReviewStrategy {
 ///
 class FreeSelection final : public ReviewStrategy {
  public:
+
+  ///
+  /// @brief      Parameters of free selection
+  ///
+  ///             Free selection doesn't have any paramters, but this is here
+  ///             for consistency.
+  ///
+  /// @ingroup    ReviewStrategiesParameters
+  ///
   struct Parameters {};
 
   Parameters params;
 
   FreeSelection()= default;;
 
-  /// Accepting anything!
+  /// It accepts everything
   bool review(const std::vector<Submission> &s) override {
     return true;
   };
+
+  /// It accepts everything
+  bool review(const Experiment &expr) override { return true; }
 };
 
 }  // namespace sam

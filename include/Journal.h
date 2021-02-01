@@ -165,16 +165,6 @@ class Journal {
   //! Journal's Selection Model/Strategy
   std::unique_ptr<ReviewStrategy> review_strategy;
   
-
-  struct Parameters {
-    std::string name;
-    int max_pubs;
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Journal::Parameters, name, max_pubs);
-  };
-
-  Parameters params;
-
   Journal() = default;
 
   ~Journal() = default;

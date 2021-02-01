@@ -22,6 +22,8 @@ ReviewStrategy::~ReviewStrategy() {
   // Pure destructors
 }
 
+/// Similarly to ResearchStrategy::ResearchStrategy(), it will constructs the
+/// abstract class. It also registers DependentVariable and Submission in Lua.
 ReviewStrategy::ReviewStrategy() {
   lua.open_libraries();
 
@@ -45,6 +47,13 @@ ReviewStrategy::ReviewStrategy() {
       sol::property([](Submission &s) { return s.dv_.is_candidate_; }));
 }
 
+///
+/// @param      config  A reference to `json["journal_parameters"]. Usually
+///                     Researcher::Builder is responsible for passing the
+///                     object correctly.
+///
+/// @return     A new SelectionStrategy
+///
 std::unique_ptr<ReviewStrategy> ReviewStrategy::build(
     json &selection_strategy_config) {
   
@@ -72,26 +81,29 @@ std::unique_ptr<ReviewStrategy> ReviewStrategy::build(
   throw std::invalid_argument("Unknown Selection Strategy.");
 }
 
-/// @brief  Reviewing the list of submissions based on the user-defined policy
+/// Reviews the list of submissions based on the user-defined policy
 ///
-/// Check whether the selection_policy passes, if so, and a
-/// random draw from U(0, 1) is true, then the submission will
-/// be accepted; otherwise, it will be rejected
+/// Check whether at least one of the submissions passes all criteria of the
+/// selection_policy, if so, a random number decides whether the publication
+/// bias will affect the decision. If not, a random draw from U(0, 1) decides
+/// whether the acceptance rate affects the decision, and if not, submissions
+/// will be accepted.
 ///
 bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
   /// Checks selection policy returns anything
   /// @todo I don't really like the const_cast here, maybe I need to find a way
   /// to remove it!
   auto check = selection_policy(const_cast<std::vector<Submission> &>(subs));
-  return check and Random::get<bool>(params.acceptance_rate) and
-      Random::get<bool>(1 - params.pub_bias_rate);
+  return Random::get<bool>(params.acceptance_rate) and (check or
+      Random::get<bool>(1 - params.pub_bias_rate));
 }
 
 ///
-/// Check if `p-value` of the Submission is less than the specified
+/// Check if the _p_-value of any of the Submissions are less than the specified
 /// \f$\alpha\f$. If true, it will accept the submission, if not, a random
-/// number decide whether the submission is going to be accepted. The
-/// drawn random number, \f$r\f$ will be compared to `pub_bias_rate` of the journal.
+/// number decide whether or not the submission is going to be accepted. The
+/// drawn random number, \f$r\f$ will be compared to `pub_bias_rate` of the 
+/// journal.
 ///
 /// @param      s     A reference to the Submission
 /// @return     a boolean indicating whether the Submission is accepted.
@@ -112,12 +124,12 @@ bool SignificantSelection::review(const std::vector<Submission> &subs) {
 }
 
 ///
-/// Draw a random number between \f$ r \in [0, 1] \f$, reject the submission if
-/// \f$ r < 0.5 \f$.
+/// Based on a draw from \f$ r \in [0, 1] \f$, it accepts the submission if
+/// \f$r\f$ < `acceptance_rate`.
 ///
 /// @param      s     corresponding submission
 /// @return     a boolean indicating whether the Submission is accepted.
 ///
 bool RandomSelection::review(const std::vector<Submission> &subs) {
-  return Random::get<bool>(0.5);
+  return Random::get<bool>(params.acceptance_rate);
 }
