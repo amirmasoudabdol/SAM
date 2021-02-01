@@ -52,7 +52,7 @@ ReviewStrategy::ReviewStrategy() {
 ///                     Researcher::Builder is responsible for passing the
 ///                     object correctly.
 ///
-/// @return     A new SelectionStrategy
+/// @return     A new ReviewStrategy
 ///
 std::unique_ptr<ReviewStrategy> ReviewStrategy::build(
     json &selection_strategy_config) {

@@ -7,7 +7,7 @@
 ///
 /// @file
 /// This file contains the deceleration of Review Strategy abstract class, and
-/// some of its derivitives, e.g., FreeSelection, RandomSelection.
+/// some of its derivatives, e.g., FreeSelection, RandomSelection.
 ///
 //===----------------------------------------------------------------------===//
 ///
@@ -51,7 +51,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
 ///
 ///             A Journal will decide if a Submission is going to be accepted or
 ///             rejected. This decision can be made based on different criteria
-///             or formula. A SelectionStrategy provides an interface for
+///             or formula. A ReviewStrategy provides an interface for
 ///             implementing different selection strategies.
 ///
 /// @ingroup    ReviewStrategies
@@ -64,22 +64,23 @@ class ReviewStrategy {
   ///
   virtual ~ReviewStrategy() = 0;
 
-  /// Lua state
+  //! Lua's state
   sol::state lua;
 
+  //! Selection method's name
   SelectionMethod name{};
 
   /// Constructs the Review Strategy
   ReviewStrategy();
 
-  /// Factory method for building a SelectionStrategy
+  /// Factory method for building a ReviewStrategy
   static std::unique_ptr<ReviewStrategy> build(json &selection_strategy_config);
 
   ///
   /// @brief      The abstract _review_ method
   ///
   ///             It reviews the submissions and decides if it's going to be
-  ///             accepted or rejected. When deriving from SelectionStrategy,
+  ///             accepted or rejected. When deriving from ReviewStrategy,
   ///             `review` is the main interface and `Journal` relies on its
   ///             output
   ///
@@ -256,7 +257,7 @@ class FreeSelection final : public ReviewStrategy {
   ///
   /// @brief      Parameters of free selection
   ///
-  ///             Free selection doesn't have any paramters, but this is here
+  ///             Free selection doesn't have any parameters, but this is here
   ///             for consistency.
   ///
   /// @ingroup    ReviewStrategiesParameters

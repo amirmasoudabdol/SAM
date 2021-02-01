@@ -116,9 +116,9 @@ class Journal {
   //! AGGREGATE RUNNER ↓
   
   //! A group of stat runners aggregating information of every meta-analysis
-  //! method choosen
+  //! method chosen
   std::map<std::string, arma::running_stat_vec<arma::Row<double>>>
-  meta_stat_runners;
+  meta_stats_runners;
   
   //! A group of csv headers for each meta-analysis aggregated method
   std::map<std::string, std::vector<std::string>> meta_stats_columns;
@@ -186,28 +186,38 @@ class Journal {
     return n_accepted < max_pubs;
   }
   
-  [[nodiscard]] bool nStudies() const {
+  /// Returns the number of studies
+  [[nodiscard]] size_t nStudies() const {
     return n_studies;
   }
   
-  [[nodiscard]] bool nSubmissions() const {
+  /// Returns the number of publications
+  [[nodiscard]] size_t nSubmissions() const {
     return n_accepted;
   }
   
-  [[nodiscard]] bool nRejected() const {
+  /// Returns the number of rejected publications
+  [[nodiscard]] size_t nRejected() const {
     return n_rejected;
   }
 
+  /// Saves MetaAnalysis Results
   void saveMetaAnalysis();
-  void saveSummaries();
-  void saveMetaStatsOf(std::string method);
-  
-  void updateMetaAnalysis(const MetaAnalysisOutcome &res);
 
+  /// Saves Overall Summaries
+  void saveSummaries();
+
+  /// Adds the input MetaAnalysisOutcome to the list of meta analysis metrics  
+  void storeMetaAnalysisResult(const MetaAnalysisOutcome &res);
+
+  /// Saves the Per Simulation summary of Publications
   void savePublicationsPerSimSummaries();
 
-  /// Clears the publications_list vector.
+  /// Clear the Journal
   void clear();
+
+  /// Completely resets the Journal
+  void reset();
 
   /// Prepares the Journal for running meta-analysis
   void prepareForMetaAnalysis();
@@ -215,7 +225,8 @@ class Journal {
   /// Runs the meta-analysis methods
   void runMetaAnalysis();
   
-  void updateTheOverallRunner();
+  /// Updates the overall stats runners
+  void updateMetaStatsRunners();
   
   //! Returns Journal's CSV header
   static std::vector<std::string> Columns();
@@ -225,7 +236,7 @@ class Journal {
       std::to_string(n_sigs)};
   }
   
-  explicit operator arma::Row<double>() {
+  explicit operator arma::Row<double>() const {
     return {static_cast<double>(n_accepted), static_cast<double>(n_rejected),
       static_cast<double>(n_sigs)};
   }

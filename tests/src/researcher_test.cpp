@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( researcher_builder )
                                         .build();
 
     // Aha! This is where the open-close principle shows itself. I cannot access
-    // alpha here because SelectionStrategy abstract class doesn't have a `params`
+    // alpha here because ReviewStrategy abstract class doesn't have a `params`
     // instance, and even if it had, it would not be the same as the one that I
     // created via the factory.
 //    BOOST_TEST((new_researcher.journal->review_strategy->params.alpha == 0.05));

@@ -100,7 +100,7 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
 void FixedEffectEstimator::estimate(Journal *journal) {
   spdlog::debug("Computing Fixed Effect Estimate...");
   
-  journal->updateMetaAnalysis(FixedEffect(journal->yi, journal->vi));
+  journal->storeMetaAnalysisResult(FixedEffect(journal->yi, journal->vi));
 }
 
 void RandomEffectEstimator::estimate(Journal *journal) {
@@ -116,7 +116,7 @@ void RandomEffectEstimator::estimate(Journal *journal) {
 //    tau2 = RandomEffectEstimator::PM(journal->yi, journal->vi, tau2);
   }
   
-  journal->updateMetaAnalysis(RandomEffect(journal->yi, journal->vi, tau2));
+  journal->storeMetaAnalysisResult(RandomEffect(journal->yi, journal->vi, tau2));
 }
 
 
@@ -124,7 +124,7 @@ void EggersTestEstimator::estimate(Journal *journal) {
   
   spdlog::debug("Computing Eggers Estimate...");
   
-  journal->updateMetaAnalysis(EggersTest(journal->yi, journal->vi, params.alpha));
+  journal->storeMetaAnalysisResult(EggersTest(journal->yi, journal->vi, params.alpha));
 }
 
 
@@ -305,7 +305,7 @@ void TestOfObsOverExptSig::estimate(Journal *journal) {
   });
   
   
-  journal->updateMetaAnalysis(TestOfObsOverExptSig::TES(sigs, ni, beta, 0.05));
+  journal->storeMetaAnalysisResult(TestOfObsOverExptSig::TES(sigs, ni, beta, 0.05));
 }
 
 void TrimAndFill::estimate(Journal *journal) {
@@ -317,7 +317,7 @@ void TrimAndFill::estimate(Journal *journal) {
     return journal->publications_list[i++].dv_.nobs_;
   });
   
-  journal->updateMetaAnalysis(TrimAndFill::TF(journal->yi, journal->vi, ni, params));
+  journal->storeMetaAnalysisResult(TrimAndFill::TF(journal->yi, journal->vi, ni, params));
 }
 
 TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni, const Parameters &params) {
@@ -732,6 +732,6 @@ RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma:
 }
 
 void RankCorrelation::estimate(sam::Journal *journal) { 
-  journal->updateMetaAnalysis(RankCorrelation::RankCor(journal->yi, journal->vi, params));
+  journal->storeMetaAnalysisResult(RankCorrelation::RankCor(journal->yi, journal->vi, params));
 }
 
