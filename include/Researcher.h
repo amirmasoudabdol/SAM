@@ -273,6 +273,9 @@ public:
     config["journal_parameters"]["save_overall_summaries"] =
         config["simulation_parameters"]["save_overall_summaries"];
 
+    config["journal_parameters"]["save_rejected"] =
+        config["simulation_parameters"]["save_rejected"];
+
     config["journal_parameters"]["output_path"] =
         config["simulation_parameters"]["output_path"];
     config["journal_parameters"]["output_prefix"] =

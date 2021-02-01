@@ -26,6 +26,8 @@ Journal::Journal(json &journal_config) {
 
   max_pubs = journal_config["max_pubs"];
 
+  is_saving_rejected = journal_config["save_rejected"];
+
   // Setting up the SelectionStrategy
   this->review_strategy =
       ReviewStrategy::build(journal_config["review_strategy"]);
@@ -81,13 +83,13 @@ Journal::Journal(json &journal_config) {
     }
   }
 
-  submission_columns = Submission::Columns();
+  pubs_columns = Submission::Columns();
 
-  for (auto &col : submission_columns) {
-    stats_columns.push_back("mean_" + col);
-    stats_columns.push_back("min_" + col);
-    stats_columns.push_back("max_" + col);
-    stats_columns.push_back("var_" + col);
+  for (auto &col : pubs_columns) {
+    pubs_stats_columns.push_back("mean_" + col);
+    pubs_stats_columns.push_back("min_" + col);
+    pubs_stats_columns.push_back("max_" + col);
+    pubs_stats_columns.push_back("var_" + col);
     //    stats_columns.push_back("stddev_" + col);
   }
 
@@ -109,7 +111,7 @@ Journal::Journal(json &journal_config) {
         journal_config["output_path"].get<std::string>() +
             journal_config["output_prefix"].get<std::string>() +
             "_Publications_Summaries.csv",
-        stats_columns);
+        pubs_stats_columns);
   }
 
   if (is_saving_pubs_per_sim_summaries) {
@@ -120,7 +122,7 @@ Journal::Journal(json &journal_config) {
         journal_config["output_path"].get<std::string>() +
             journal_config["output_prefix"].get<std::string>() +
             "_Publications_Per_Sim_Summaries.csv",
-        stats_columns);
+        pubs_stats_columns);
   }
 
   /// Removing the higher level information because I don't want
@@ -128,8 +130,20 @@ Journal::Journal(json &journal_config) {
   journal_config.erase("output_path");
   journal_config.erase("output_prefix");
   journal_config.erase("save_overall_summaries");
+  journal_config.erase("save_rejected");
+  journal_config.erase("save_meta");
+  journal_config.erase("save_pubs_per_sim_summaries");
 }
 
+///
+/// Sends the submission to the review strategy, and based on its verdict it
+/// either accept() or reject() the submission.
+///
+/// @param      subs  A list of submissions
+///
+/// @return     Returns `true` if the submission is accepted, otherwise it
+///             returns false.
+///
 bool Journal::review(std::vector<Submission> &subs) {
   bool decision = this->review_strategy->review(subs);
 
@@ -137,17 +151,16 @@ bool Journal::review(std::vector<Submission> &subs) {
     accept(subs);
 
     // Stats runner over all publications of this journal
-    // @todo BRING US BACK! #multi-subs-transition
     if (is_saving_pubs_per_sim_summaries) {
       for (auto &s : subs) {
-        pubs_per_sim_stat_runner(static_cast<arma::rowvec>(s));
+        pubs_per_sim_stats_runner(static_cast<arma::rowvec>(s));
       }
     }
 
     // Stat runner over all simulations
     if (is_saving_summaries) {
       for (auto &s : subs) {
-        pubs_stat_runner(static_cast<arma::rowvec>(s));
+        pubs_stats_runner(static_cast<arma::rowvec>(s));
       }
     }
 
@@ -158,6 +171,13 @@ bool Journal::review(std::vector<Submission> &subs) {
   return decision;
 }
 
+///
+/// Adds the accepted submission to the list of publications, and updates some
+/// of the necessary internals of the Journal to be able to keep track of the
+/// number of publications, studies, etc.
+///
+/// @param[in]  subs  A list of submissions
+///
 void Journal::accept(const std::vector<Submission> &subs) {
   //  publications_list.push_back(subs);
   publications_list.insert(publications_list.end(), subs.begin(), subs.end());
@@ -165,34 +185,22 @@ void Journal::accept(const std::vector<Submission> &subs) {
 
   n_studies++;
 
-  //  spdlog::trace("Accepted Submissions:");
   spdlog::trace("Accepted Submissions: {}", subs);
 
-  //  if (s.isSig()) {
-  //    n_sigs++;
-  //    sum_sig_pvalue += s.group_.pvalue_;
-  //    sum_sig_effect += s.group_.effect_;
-  //  }
-
-  // @todo Maybe I should calculate the publications stats here
-
-  // @todo #multi-subs-transition
-  // @todo collecting multiple items changes the meaning of publication! so
-  // far, max_pubs was basically `max_subs` but now I have to change this!
-  if (publications_list.size() >= max_pubs) {
-    still_accepting = false;
-
-    // Updating journal's info
-    //    mean_sig_pvalue = sum_sig_pvalue / n_sigs;
-    //    mean_sig_effect = sum_sig_effect / n_sigs;
-
-    // Adding current info to the stat runner
-    //    journal_stat_runner(static_cast<arma::rowvec>(*this));
-  }
 }
 
+///
+/// Adds the rejected submissions to the list of rejected submissions, and keeps
+/// the internal of the Journal up-to-date.
+///
+/// @param[in]  subs  A list of submissions
+///
 void Journal::reject(const std::vector<Submission> &subs) {
-  rejection_list.insert(rejection_list.end(), subs.begin(), subs.end());
+
+  if (is_saving_rejected) {
+    rejection_list.insert(rejection_list.end(), subs.begin(), subs.end());
+  }
+
   n_rejected += subs.size();
 }
 
@@ -209,6 +217,55 @@ void Journal::runMetaAnalysis() {
     }
   }
 }
+
+
+void Journal::updateMetaAnalysis(const MetaAnalysisOutcome &res) {
+  meta_analysis_submissions.push_back(res);
+}
+
+
+void Journal::prepareForMetaAnalysis() {
+  auto n = publications_list.size();
+  
+  yi.resize(n);
+  vi.resize(n);
+  wi.resize(n);
+  
+  for (int i{0}; i < n; ++i) {
+    yi[i] = publications_list[i].dv_.effect_;
+    vi[i] = publications_list[i].dv_.var_;
+  }
+  
+  wi = 1. / vi;
+  
+  // This makes sure that no study with zero variance passes to meta-analysis
+  if (!wi.is_finite()) {
+    arma::uvec nans = arma::find_nonfinite(wi);
+    yi.shed_cols(nans);
+    vi.shed_cols(nans);
+    wi.shed_cols(nans);
+    spdlog::warn(
+                 "{} study(-ies) have been removed from meta-analysis pool due to "
+                 "unavailability of variance",
+                 nans.n_elem);
+  }
+}
+
+
+void Journal::clear() {
+  publications_list.clear();
+  rejection_list.clear();
+  meta_analysis_submissions.clear();
+  
+  n_studies = 0;
+  n_accepted = 0;
+  n_rejected = 0;
+  n_sigs = 0;
+  
+  pubs_per_sim_stats_runner.reset();
+}
+
+
 
 void Journal::updateTheOverallRunner() {
   auto record = meta_analysis_submissions.back();
@@ -276,8 +333,11 @@ void Journal::saveSummaries() {
   spdlog::info("Saving Overall Statistics Summaries...");
 
   static std::map<std::string, std::string> record;
+  
+  // This is because of the static definition of the record
+  record.clear();
 
-  /// Preparing and writing the summary of every meta-analysis method
+  // Preparing and writing the summary of every meta-analysis method
   for (auto &item : meta_stat_runners) {
     for (int c{0}; c < meta_columns[item.first].size(); ++c) {
       record["mean_" + meta_columns[item.first][c]] =
@@ -302,40 +362,24 @@ void Journal::saveSummaries() {
   // Cleaning record since I'd need a new set of key-values
   record.clear();
 
-  /// Preparing the summary of all publications
-  for (int c{0}; c < submission_columns.size(); ++c) {
-    record["mean_" + submission_columns[c]] =
-        std::to_string(pubs_stat_runner.mean()[c]);
-    record["min_" + submission_columns[c]] =
-        std::to_string(pubs_stat_runner.min()[c]);
-    record["max_" + submission_columns[c]] =
-        std::to_string(pubs_stat_runner.max()[c]);
-    record["var_" + submission_columns[c]] =
-        std::to_string(pubs_stat_runner.var()[c]);
+  // Preparing the summary of all publications
+  for (int c{0}; c < pubs_columns.size(); ++c) {
+    record["mean_" + pubs_columns[c]] =
+        std::to_string(pubs_stats_runner.mean()[c]);
+    record["min_" + pubs_columns[c]] =
+        std::to_string(pubs_stats_runner.min()[c]);
+    record["max_" + pubs_columns[c]] =
+        std::to_string(pubs_stats_runner.max()[c]);
+    record["var_" + pubs_columns[c]] =
+        std::to_string(pubs_stats_runner.var()[c]);
 
     //    if (pubs_stat_runner.stddev().empty())
-    //      record["stddev_" + submission_columns[c]] = "0";
+    //      record["stddev_" + pubs_columns[c]] = "0";
     //    else
-    //      record["stddev_" + submission_columns[c]] =
+    //      record["stddev_" + pubs_columns[c]] =
     //      std::to_string(pubs_stat_runner.stddev()[c]);
   }
 
-  // Preparing the summary of journal's info by
-  // adding it to the end of publication's record
-  //  for (int c{0}; c < Columns().size(); ++c) {
-  //    record["mean_" + Columns()[c]] =
-  //    std::to_string(journal_stat_runner.mean()[c]); record["min_" +
-  //    Columns()[c]] = std::to_string(journal_stat_runner.min()[c]);
-  //    record["max_" + Columns()[c]] =
-  //    std::to_string(journal_stat_runner.max()[c]); record["var_" +
-  //    Columns()[c]] = std::to_string(journal_stat_runner.var()[c]);
-  //
-  ////    if (journal_stat_runner.stddev().empty())
-  ////      record["stddev_" + Columns()[c]] = "0";
-  ////    else
-  ////      record["stddev_" + Columns()[c]] =
-  ///std::to_string(journal_stat_runner.stddev()[c]);
-  //  }
 
   pubs_stats_writer->write(record);
 }
@@ -346,32 +390,25 @@ void Journal::saveSummaries() {
 void Journal::savePublicationsPerSimSummaries() {
   static std::map<std::string, std::string> record;
 
-  for (int c{0}; c < submission_columns.size(); ++c) {
-    record["mean_" + submission_columns[c]] =
-        std::to_string(pubs_per_sim_stat_runner.mean()[c]);
-    record["min_" + submission_columns[c]] =
-        std::to_string(pubs_per_sim_stat_runner.min()[c]);
-    record["max_" + submission_columns[c]] =
-        std::to_string(pubs_per_sim_stat_runner.max()[c]);
-    record["var_" + submission_columns[c]] =
-        std::to_string(pubs_per_sim_stat_runner.var()[c]);
+  for (int c{0}; c < pubs_columns.size(); ++c) {
+    record["mean_" + pubs_columns[c]] =
+        std::to_string(pubs_per_sim_stats_runner.mean()[c]);
+    record["min_" + pubs_columns[c]] =
+        std::to_string(pubs_per_sim_stats_runner.min()[c]);
+    record["max_" + pubs_columns[c]] =
+        std::to_string(pubs_per_sim_stats_runner.max()[c]);
+    record["var_" + pubs_columns[c]] =
+        std::to_string(pubs_per_sim_stats_runner.var()[c]);
 
     //    if (pubs_per_sim_stat_runner.stddev().empty())
-    //      record["stddev_" + submission_columns[c]] = "0";
+    //      record["stddev_" + pubs_columns[c]] = "0";
     //    else
-    //      record["stddev_" + submission_columns[c]] =
+    //      record["stddev_" + pubs_columns[c]] =
     //      std::to_string(pubs_per_sim_stat_runner.stddev()[c]);
   }
-
-  // Adding Journal's Info
-  //  record["n_accepted"] = std::to_string(n_accepted);
-  //  record["n_rejected"] = std::to_string(n_rejected);
-  //  record["n_sigs"] = std::to_string(n_sigs);
-  //  record["mean_sig_pvalue"] = std::to_string(mean_sig_pvalue);
-  //  record["mean_sig_effect"] = std::to_string(mean_sig_effect);
 
   pubs_per_sim_stats_writer->write(record);
 
   /// Resetting the runner statistics
-  pubs_per_sim_stat_runner.reset();
+  pubs_per_sim_stats_runner.reset();
 }

@@ -26,97 +26,128 @@ namespace sam {
 
 class MetaAnalysis;
 
+//! A std::variant containing all different meta-analysis result type
+using MetaAnalysisOutcome = std::variant<
+FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType,
+EggersTestEstimator::ResultType, TestOfObsOverExptSig::ResultType,
+TrimAndFill::ResultType, RankCorrelation::ResultType>;
+
 //! @brief      A list of meta-analysis results.
 //!
 //! The `std::variant` allows me to don't worry about the method of choice, and 
 //! iterate over any arbitrary methods using a `std::visit`.
 //!
-using MetaAnalysisResults = std::vector<std::variant<
-    FixedEffectEstimator::ResultType, RandomEffectEstimator::ResultType,
-    EggersTestEstimator::ResultType, TestOfObsOverExptSig::ResultType,
-    TrimAndFill::ResultType, RankCorrelation::ResultType>>;
+using MetaAnalysisResults = std::vector<MetaAnalysisOutcome>;
 
 ///
 /// @brief      Journal Class
-/// 
+///
 /// The Journal class mimics the behavior of a Journal. It deals with 
 /// new publications as they are being submitted for review. It is equipped with
 /// a review strategy which is used to make a decision over the destiny of the 
 /// newly submitted manuscript, ie., being accepted or rejected.
-/// 
+///
 /// Additionally, it handles the meta-analysis calculation and reporting of 
 /// those at the end of the simulation.
 ///
 class Journal {
-  //! Indicates whether the Journal is still accepting new manuscripts or not!
-  bool still_accepting {true};
-
+  
   //! Number of accepted submissions, ie., outcomes.
   int n_accepted{0};
 
-  //! Number of rejected submissions, i.e., outcomes
+  //! Number of rejected submissions, i.e., outcomes.
   int n_rejected{0};
+  bool is_saving_rejected{false};
 
-  double sum_sig_pvalue{0};
-  double mean_sig_pvalue{0};
-  double sum_sig_effect{0};
-  double mean_sig_effect{0};
-
-  /** @name IO Flags
-   */
-  ///@{
-  //! Indicates whether the Journal is saving the aggregated results
-  bool is_saving_summaries;
-
-  //! Indicates whether the Journal is saving the aggregated meta-analyses
-  bool is_saving_meta;
-  bool is_saving_pubs_per_sim_summaries;
-  ///@}
-
-  /** @name Meta-analyses Running Statistics Engines.
-   */
-  ///@{
-  std::map<std::string, std::vector<std::string>> meta_columns;
-  std::map<std::string, std::vector<std::string>> meta_stats_columns;
-
-  std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
-  std::map<std::string, arma::running_stat_vec<arma::Row<double>>>
-      meta_stat_runners;
-  std::map<std::string, PersistenceManager::Writer> meta_writers;
-  std::map<std::string, PersistenceManager::Writer> meta_stats_writers;
-  ///@}
-
-  /** @name Publication Running Statistics Engines.
-   */
-  ///@{
-
-  // Runner statistics of each simulation, this resets after each Journal's
-  // clean
-  arma::running_stat_vec<arma::Row<double>> pubs_per_sim_stat_runner;
-  std::unique_ptr<PersistenceManager::Writer> pubs_per_sim_stats_writer;
-
-  arma::running_stat_vec<arma::Row<double>> pubs_stat_runner;
-  std::unique_ptr<PersistenceManager::Writer> pubs_stats_writer;
-  ///@}
-
-  //! Indicates the maximum number of manuscripts to be accepted by the Journal.
-  double max_pubs{};
-
+  //! Number of significant submissions
+  int n_sigs{0};
+  
   //! Number of accepted studies.
   //!
   //! @note       Studies are different from submissions. A study is an entire
   //!             Experiment that has been submitted and accepted by the
   //!             Journal.
   int n_studies{0};
+  
+  //! Indicates the maximum number of submissions to be accepted by the Journal.
+  double max_pubs{};
 
-  //! Number of significant submissions
-  int n_sigs{0};
+  /** @name Publication Runner Statistic
+   */
+  ///@{
+  //! Indicates whether the Journal is collecting and saving the aggregated
+  //! statistics over _Publications.
+  bool is_saving_summaries{false};
+  
+  //! Submissions CSV header
+  std::vector<std::string> pubs_columns;
+  
+  //! Runner
+  std::vector<std::string> pubs_stats_columns;
+  
+  //! Runner statistics for _Publications_.
+  arma::running_stat_vec<arma::Row<double>> pubs_stats_runner;
+  
+  //! CSV writer for _Publications_.
+  std::unique_ptr<PersistenceManager::Writer> pubs_stats_writer;
+  //! @}
+
+  
+  //! List of registered meta-analysis strategies
+  std::vector<std::unique_ptr<MetaAnalysis>> meta_analysis_strategies;
+  
+  
+  /** @name Meta-analysis Runner Statistic
+   */
+  ///@{
+  //! Indicates whether the Journal is saving the aggregated meta-analyses
+  bool is_saving_meta{false};
+  
+  //! A vector of variants containing the outcome of each meta-analysis
+  MetaAnalysisResults meta_analysis_submissions;
+  
+  //! A group of csv headers for each meta-analysis method
+  std::map<std::string, std::vector<std::string>> meta_columns;
+  
+  //! A group of CSV writers each dealing with IO of one selected meta-analysis
+  //! method
+  std::map<std::string, PersistenceManager::Writer> meta_writers;
+  
+  //! AGGREGATE RUNNER ↓
+  
+  //! A group of stat runners aggregating information of every meta-analysis
+  //! method choosen
+  std::map<std::string, arma::running_stat_vec<arma::Row<double>>>
+  meta_stat_runners;
+  
+  //! A group of csv headers for each meta-analysis aggregated method
+  std::map<std::string, std::vector<std::string>> meta_stats_columns;
+  
+  //! A group of CSv writers each writing the *aggregated* statistics of one
+  //! meta-analysis method over the entire simulation
+  std::map<std::string, PersistenceManager::Writer> meta_stats_writers;
+  ///@}
+
+  /** @name Submissions Per Simulation Running Statistics Engines.
+   */
+  ///@{
+  
+  //! Indicates whether the Journal will save the aggregated statistics of
+  //! submissions after each run. This basically represents the aggregate of
+  //! each run.
+  bool is_saving_pubs_per_sim_summaries{false};
+  
+  //! Runner statistics engine
+  arma::running_stat_vec<arma::Row<double>> pubs_per_sim_stats_runner;
+  
+  //! CSV writer for pubs_per_sim_stats
+  std::unique_ptr<PersistenceManager::Writer> pubs_per_sim_stats_writer;
+  ///@}
 
  public:
 
   //! List of all accepted submissions, i.e., outcomes
   std::vector<Submission> publications_list;
-
 
   //! Rejected Submissions
   std::vector<Submission> rejection_list;
@@ -131,31 +162,9 @@ class Journal {
   //! The weight of the accepted submissions, computed as 1./vi;
   arma::Row<double> wi;
 
-
-  static std::vector<std::string> Columns();
-
-  explicit operator std::vector<std::string>() const {
-    return {std::to_string(n_accepted), std::to_string(n_rejected),
-            std::to_string(n_sigs), std::to_string(mean_sig_pvalue),
-            std::to_string(mean_sig_effect)};
-  }
-
-  explicit operator arma::Row<double>() {
-    return {static_cast<double>(n_accepted), static_cast<double>(n_rejected),
-            static_cast<double>(n_sigs), mean_sig_pvalue, mean_sig_effect};
-  }
-
   //! Journal's Selection Model/Strategy
   std::unique_ptr<ReviewStrategy> review_strategy;
-
-
-
-  //  arma::running_stat_vec<arma::Row<double>> journal_stat_runner;
-
-  // Instrument of the stats writer...
-  std::vector<std::string> submission_columns;
-  std::vector<std::string> stats_columns;
-  MetaAnalysisResults meta_analysis_submissions;
+  
 
   struct Parameters {
     std::string name;
@@ -173,94 +182,63 @@ class Journal {
   /// Constructs a Journal from a JSON object
   explicit Journal(json &journal_config);
 
-  ///
-  /// @brief      Review the Submission by calling
-  ///             `SelectionStrategy::review()`.
-  ///
-  /// @param[in]  s     A reference to the Submission
-  ///
-  /// @return     A boolean indicating whether the Submission should be accepted
-  ///             or not.
-  ///
+  /// Review the Submission
   bool review(std::vector<Submission> &s);
 
-  ///
-  /// @brief      Accept the Submission by adding it to the `publicationList`.
-  ///
-  /// @param[in]  s     A copy of the Submission
-  ///
+  /// Accepts the Submission
   void accept(const std::vector<Submission> &s);
 
-  ///
-  /// @brief      Rejecting the Submission!
-  ///
-  /// @param[in]  s     A reference to the Submission
-  ///
+  /// Rejects the Submission
   void reject(const std::vector<Submission> &s);
 
-  [[nodiscard]] bool isStillAccepting() const { return still_accepting; }
-
-  ///
-  /// Save entries of publications_list to a CSV file.
-  ///
-  /// @param      simid   The index to be used for the given set.
-  /// @param      writer  The output file.
-  ///
-  void saveSubmissions(int simid, std::ofstream &writer);
+  /// Indicates whether the Journal is still accepting outcomes or not
+  [[nodiscard]] bool isStillAccepting() const {
+    return n_accepted < max_pubs;
+  }
+  
+  [[nodiscard]] bool nStudies() const {
+    return n_studies;
+  }
+  
+  [[nodiscard]] bool nSubmissions() const {
+    return n_accepted;
+  }
+  
+  [[nodiscard]] bool nRejected() const {
+    return n_rejected;
+  }
 
   void saveMetaAnalysis();
   void saveSummaries();
   void saveMetaStatsOf(std::string method);
+  
+  void updateMetaAnalysis(const MetaAnalysisOutcome &res);
 
   void savePublicationsPerSimSummaries();
 
   /// Clears the publications_list vector.
-  void clear() {
-    publications_list.clear();
-    rejection_list.clear();
-    meta_analysis_submissions.clear();
-    still_accepting = true;
-
-    n_accepted = 0;
-    n_rejected = 0;
-    n_sigs = 0;
-    sum_sig_pvalue = 0;
-    sum_sig_pvalue = 0;
-
-    pubs_per_sim_stat_runner.reset();
-    //    journal_per_sim_stat_runner.reset();
-  }
+  void clear();
 
   /// Prepares the Journal for running meta-analysis
-  void prepareForMetaAnalysis() {
-    auto n = publications_list.size();
+  void prepareForMetaAnalysis();
 
-    yi.resize(n);
-    vi.resize(n);
-    wi.resize(n);
-
-    for (int i{0}; i < n; ++i) {
-      yi[i] = publications_list[i].dv_.effect_;
-      vi[i] = publications_list[i].dv_.var_;
-    }
-
-    wi = 1. / vi;
-
-    // This makes sure that no study with zero variance passes to meta-analysis
-    if (!wi.is_finite()) {
-      arma::uvec nans = arma::find_nonfinite(wi);
-      yi.shed_cols(nans);
-      vi.shed_cols(nans);
-      wi.shed_cols(nans);
-      spdlog::warn(
-          "{} study(-ies) have been removed from meta-analysis pool due to "
-          "unavailability of variance",
-          nans.n_elem);
-    }
-  }
-
+  /// Runs the meta-analysis methods
   void runMetaAnalysis();
+  
   void updateTheOverallRunner();
+  
+  //! Returns Journal's CSV header
+  static std::vector<std::string> Columns();
+  
+  explicit operator std::vector<std::string>() const {
+    return {std::to_string(n_accepted), std::to_string(n_rejected),
+      std::to_string(n_sigs)};
+  }
+  
+  explicit operator arma::Row<double>() {
+    return {static_cast<double>(n_accepted), static_cast<double>(n_rejected),
+      static_cast<double>(n_sigs)};
+  }
 };
 
 }  // namespace sam

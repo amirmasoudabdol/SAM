@@ -212,7 +212,7 @@ void Researcher::submitTheResearch(
 /// @note Note that the #probability_of_being_a_hacker is called through it's 
 /// call operator(). This guarantees that its value is being randomized 
 /// _only if_ it contains a distribution.
-/// 
+///
 bool Researcher::isHacker() {
   return Random::get<bool>(
       static_cast<double>(probability_of_being_a_hacker()));

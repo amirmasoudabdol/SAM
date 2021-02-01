@@ -6,7 +6,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// @file
-///
+/// This file contains the deceleration of Review Strategy abstract class, and
+/// some of its derivitives, e.g., FreeSelection, RandomSelection.
 ///
 //===----------------------------------------------------------------------===//
 ///
@@ -65,7 +66,7 @@ class ReviewStrategy {
   ///
   /// @brief      Factory method for building a SelectionStrategy
   ///
-  /// @param      config  A reference to `json['Journal Parameters']. Usually
+  /// @param      config  A reference to `json["journal_parameters"]. Usually
   ///                     Researcher::Builder is responsible for passing the
   ///                     object correctly.
   ///
@@ -97,14 +98,13 @@ class ReviewStrategy {
 ///
 /// @ingroup  ReviewStrategies
 ///
-///
 class PolicyBasedSelection final : public ReviewStrategy {
  public:
   struct Parameters {
     SelectionMethod name = SelectionMethod::PolicyBasedSelection;
 
     //! Publication Bias Rate
-    double pub_bias{};
+    double pub_bias_rate{};
 
     //! Acceptance Rate
     double acceptance_rate{};
@@ -114,7 +114,7 @@ class PolicyBasedSelection final : public ReviewStrategy {
     std::vector<std::string> selection_policy_defs{"sig"};
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(PolicyBasedSelection::Parameters, name,
-                                   pub_bias, acceptance_rate,
+                                   pub_bias_rate, acceptance_rate,
                                    selection_policy_defs);
   };
 
@@ -155,14 +155,14 @@ class SignificantSelection final : public ReviewStrategy {
     double alpha{};
 
     //! Publication bias rate
-    double pub_bias{};
+    double pub_bias_rate{};
 
     //! Indicates the _selection strategy_'s preference toward positive, `1`,
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
     int side{1};
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(SignificantSelection::Parameters, name,
-                                   alpha, pub_bias, side);
+                                   alpha, pub_bias_rate, side);
   };
 
   Parameters params;
@@ -179,7 +179,7 @@ class SignificantSelection final : public ReviewStrategy {
 /// rejecting a submission. Each submission has 50% chance of being accepted or
 /// not.
 ///
-/// @note       This is technically the SignificantSelection with pub_bias set
+/// @note       This is technically the SignificantSelection with pub_bias_rate set
 /// to 0.
 ///
 /// @ingroup  ReviewStrategies

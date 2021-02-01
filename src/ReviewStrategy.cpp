@@ -84,14 +84,14 @@ bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
   /// to remove it!
   auto check = selection_policy(const_cast<std::vector<Submission> &>(subs));
   return check and Random::get<bool>(params.acceptance_rate) and
-      Random::get<bool>(1 - params.pub_bias);
+      Random::get<bool>(1 - params.pub_bias_rate);
 }
 
 ///
 /// Check if `p-value` of the Submission is less than the specified
 /// \f$\alpha\f$. If true, it will accept the submission, if not, a random
 /// number decide whether the submission is going to be accepted. The
-/// drawn random number, \f$r\f$ will be compared to `pub_bias` of the journal.
+/// drawn random number, \f$r\f$ will be compared to `pub_bias_rate` of the journal.
 ///
 /// @param      s     A reference to the Submission
 /// @return     a boolean indicating whether the Submission is accepted.
@@ -108,7 +108,7 @@ bool SignificantSelection::review(const std::vector<Submission> &subs) {
   return std::any_of(
              subs.begin(), subs.end(),
              [&](auto &s) -> bool { return s.dv_.pvalue_ < params.alpha; }) or
-         Random::get<bool>(1 - params.pub_bias);
+         Random::get<bool>(1 - params.pub_bias_rate);
 }
 
 ///
