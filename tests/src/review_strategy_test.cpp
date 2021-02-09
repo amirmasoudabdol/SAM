@@ -24,12 +24,15 @@ using namespace arma;
 using namespace sam;
 using namespace std;
 
-bool FLAGS::VERBOSE = false;
-bool FLAGS::PROGRESS = false;
-bool FLAGS::DEBUG = false;
-bool FLAGS::UPDATECONFIG = false;
+BOOST_AUTO_TEST_SUITE( journal );
 
-BOOST_AUTO_TEST_SUITE( constructors );
+BOOST_AUTO_TEST_CASE( constructor ) {
+
+}
+
+BOOST_AUTO_TEST_CASE( general_setter_getter_methods ) {
+
+}
 
 BOOST_AUTO_TEST_SUITE_END();
 

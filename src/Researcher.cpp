@@ -268,7 +268,7 @@ bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
 /// the end of each replication, if any, researcher collects the last submission
 /// candidate and head to perform a new experiment. After performing all the 
 /// replications (or skipping some), researcher perform a final selection → 
-/// decision on the list of #replicated_submissions and select his final 
+/// decision on the list of #replicated_submissions and select her final 
 /// submission to be submitted to the Journal.
 ///
 void Researcher::research() {

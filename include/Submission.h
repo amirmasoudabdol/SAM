@@ -1,6 +1,16 @@
+//===-- Submission.h - Deceleration of Submission -------------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2019-01-25.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the deceleration of Submission class which is technically
+/// a wrapper around DependentVariable. It's being used to pass an outcome
+/// around between Researcher and Journal.
+///
+//===----------------------------------------------------------------------===//
 
 #ifndef SAMPP_SUBMISSION_H
 #define SAMPP_SUBMISSION_H

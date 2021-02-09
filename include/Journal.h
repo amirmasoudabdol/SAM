@@ -207,7 +207,7 @@ class Journal {
   /// Saves Overall Summaries
   void saveSummaries();
 
-  /// Adds the input MetaAnalysisOutcome to the list of meta analysis metrics  
+  /// Stores the MetaAnalysisOutcome
   void storeMetaAnalysisResult(const MetaAnalysisOutcome &res);
 
   /// Saves the Per Simulation summary of Publications
