@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(SAMpp
+project(SAM
         LANGUAGES CXX
         VERSION 0.1.0.0)
 
@@ -81,6 +81,8 @@ if (${BUILD_SAM_EXEC})
                                       ${NLOHMANN_JSON_LIBRARIES}
                                       Threads::Threads
                                       mlpack::mlpack)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sample_config_file.json
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include

@@ -76,7 +76,7 @@ int main(int argc, const char **argv) {
 
   json configs;
 
-  std::filesystem::path config_file_name{"/Users/amabdol/Projects/SAMpp/config_file.json"};
+  std::filesystem::path config_file_name{"sample_config_file.json"};
   if (vm.count("config")) {
     config_file_name = vm["config"].as<string>();
     if (!exists(config_file_name)){
