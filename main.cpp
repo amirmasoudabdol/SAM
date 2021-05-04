@@ -22,6 +22,7 @@
 #include "effolkronium/random.hpp"
 #include "nlohmann/json.hpp"
 #include "spdlog/spdlog.h"
+#include "rang/rang.hpp"
 
 #include "indicators/indicators.hpp"
 
@@ -89,12 +90,16 @@ int main(int argc, const char **argv) {
 
   json configs;
 
-  std::filesystem::path config_file_name{"sample_config_file.json"};
+  std::filesystem::path config_file_name{};
   if (vm.count("config")) {
     config_file_name = vm["config"].as<string>();
     if (!exists(config_file_name)){
-      throw std::invalid_argument(config_file_name.native() + " does not exist.");
+      std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "config file does not exist." << std::endl;
+      return(1);
     }
+  }else{
+    std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "no configuration file." << std::endl;
+    return 1;
   }
 
   std::ifstream config_file(config_file_name);
@@ -134,8 +139,8 @@ int main(int argc, const char **argv) {
     try {
       create_directory(output_path);
     } catch (std::filesystem::filesystem_error &e) {
+      std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "cannot create a directory in the given path.\n";
       std::cerr << e.what();
-      std::cerr << "\nSAM cannot create a directory in the given path.";
       exit(1);
     }
   }

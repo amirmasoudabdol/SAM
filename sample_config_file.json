@@ -95,7 +95,7 @@
         "master_seed": 3919712220,
         "n_sims": 1,
         "output_path": "../outputs/",
-        "output_prefix": "0c16a9b8-b1a2-446f-81c8-0a6879220268",
+        "output_prefix": "sample_simulation",
         "update_config": true,
         "progress": false,
         "save_all_pubs": true,
