@@ -19,7 +19,7 @@
 
 #include "effolkronium/random.hpp"
 #include "sam.h"
-#include "baaraan.hpp"
+#include "baaraan/random.h"
 
 namespace sam {
 
