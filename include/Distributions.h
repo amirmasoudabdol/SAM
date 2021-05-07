@@ -19,7 +19,10 @@
 
 #include "effolkronium/random.hpp"
 #include "sam.h"
-#include "baaraan/random.h"
+
+#include "baaraan/dists/mvnorm_distribution.h"
+#include "baaraan/dists/truncated_normal_distribution.h"
+#include "baaraan/dists/truncated_mvnorm_distribution.h"
 
 namespace sam {
 
