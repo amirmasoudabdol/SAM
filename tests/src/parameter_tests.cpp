@@ -23,8 +23,8 @@
 using namespace sam;
 using json = nlohmann::ordered_json;
 
-typedef boost::mpl::list<int, float, double> test_types;
-typedef boost::mpl::list<float, double> dist_test_types;
+typedef boost::mpl::list<int, float, float> test_types;
+typedef boost::mpl::list<float, float> dist_test_types;
 
 
 BOOST_AUTO_TEST_CASE_TEMPLATE( parameter_type_test, T, test_types) {

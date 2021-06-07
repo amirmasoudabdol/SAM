@@ -55,8 +55,8 @@ namespace sam {
 /// @param      Sd    Sample Standard Deviation.
 /// @param      Sn    Sample Size.
 ///
-std::pair<double, double>
-confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
+std::pair<float, float>
+confidence_limits_on_mean(float Sm, float Sd, unsigned Sn, float alpha,
                           TestStrategy::TestAlternative alternative) {
 
   using namespace sam;
@@ -64,11 +64,11 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
   students_t dist(Sn - 1);
 
   // calculate T
-  double T =
+  float T =
       quantile(complement(dist, alpha / 2)); // TODO: Implement the side!./sa
 
   // Calculate width of interval (one sided):
-  double w = T * Sd / sqrt(double(Sn));
+  float w = T * Sd / sqrt(float(Sn));
 
   // Calculate and return the interval
   return std::make_pair(Sm - w, Sm + w);
@@ -82,13 +82,13 @@ confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
 /// @param      Sm    Sample Mean.
 /// @param      Sd    Sample Standard Deviation.
 ///
-double single_sample_find_df(double M, double Sm, double Sd, double alpha,
+float single_sample_find_df(float M, float Sm, float Sd, float alpha,
                              TestStrategy::TestAlternative alternative) {
   using namespace sam;
   using boost::math::students_t;
 
   // calculate df for one-sided or two-sided test:
-  double df = students_t::find_degrees_of_freedom(
+  float df = students_t::find_degrees_of_freedom(
       fabs(M - Sm),
       (alternative == TestStrategy::TestAlternative::Greater) ? alpha
                                                               : alpha / 2.,
@@ -102,43 +102,43 @@ double single_sample_find_df(double M, double Sm, double Sd, double alpha,
 
 
 
-double win_var(const arma::Row<double> &x, const double trim) {
+float win_var(const arma::Row<float> &x, const float trim) {
   return arma::var(win_val(x, trim));
 }
 
-std::pair<double, double> win_cor_cov(const arma::Row<double> &x,
-                                      const arma::Row<double> &y,
-                                      const double trim) {
+std::pair<float, float> win_cor_cov(const arma::Row<float> &x,
+                                      const arma::Row<float> &y,
+                                      const float trim) {
 
-  arma::rowvec xvec{win_val(x, trim)};
-  arma::rowvec yvec{win_val(y, trim)};
+  arma::Row<float> xvec{win_val(x, trim)};
+  arma::Row<float> yvec{win_val(y, trim)};
 
-  arma::mat wcor{arma::cor(xvec, yvec)};
-  double vwcor{wcor.at(0, 0)};
+  arma::Mat<float> wcor{arma::cor(xvec, yvec)};
+  float vwcor{static_cast<float>(wcor.at(0, 0))};
 
-  arma::mat wcov{arma::cov(xvec, yvec)};
-  double vwcov{wcov.at(0, 0)};
+  arma::Mat<float> wcov{arma::cov(xvec, yvec)};
+  float vwcov{static_cast<float>(wcov.at(0, 0))};
 
   return std::make_pair(vwcor, vwcov);
 }
 
-arma::Row<double> win_val(const arma::Row<double> &x, double trim) {
+arma::Row<float> win_val(const arma::Row<float> &x, float trim) {
 
-  arma::rowvec y{arma::sort(x)};
+  arma::Row<float> y{arma::sort(x)};
 
   auto ibot = floor(trim * x.n_elem) + 1;
   auto itop = x.n_elem - ibot + 1;
 
-  double xbot{y.at(ibot - 1)};
-  double xtop{y.at(itop - 1)};
+  float xbot{y.at(ibot - 1)};
+  float xtop{y.at(itop - 1)};
 
   return arma::clamp(x, xbot, xtop);
 }
 
 // TODO: this can be an extention to arma, something like I did for
 // nlohmann::json I should basically put it into arma's namespace
-double trim_mean(const arma::Row<double> &x, double trim) {
-  arma::rowvec y{arma::sort(x)};
+float trim_mean(const arma::Row<float> &x, float trim) {
+  arma::Row<float> y{arma::sort(x)};
 
   auto ibot = floor(trim * x.n_elem) + 1;
   auto itop = x.n_elem - ibot + 1;
@@ -148,9 +148,9 @@ double trim_mean(const arma::Row<double> &x, double trim) {
 
 
 
-double tie_correct(const arma::vec &rankvals) {
+float tie_correct(const arma::Col<float> &rankvals) {
 
-  arma::vec arr = arma::sort(rankvals);
+  arma::Col<float> arr = arma::sort(rankvals);
 
   arma::uvec vindx = arma::join_cols(
       arma::uvec({1}), arr.tail(arr.n_elem - 1) != arr.head(arr.n_elem - 1));
@@ -170,7 +170,7 @@ double tie_correct(const arma::vec &rankvals) {
   return 1.0 - arma::accu(arma::pow(cnt, 3) - cnt) / (std::pow(size, 3) - size);
 }
 
-arma::vec rankdata(const arma::Row<double> &arr,
+arma::Col<float> rankdata(const arma::Row<float> &arr,
                    const std::string method = "average") {
 
   // if method not in ('average', 'min', 'max', 'dense', 'ordinal'):
@@ -192,7 +192,7 @@ arma::vec rankdata(const arma::Row<double> &arr,
   //        if (method == "ordinal")
   //            return inv + 1;
 
-  arma::vec arr_sorted(arr.n_elem);
+  arma::Col<float> arr_sorted(arr.n_elem);
   arr_sorted = arr(sorter);
 
   // obs = np.r_[True, arr[1:] != arr[:-1]]
@@ -206,7 +206,7 @@ arma::vec rankdata(const arma::Row<double> &arr,
   dense_sorted = dense(inv);
 
   if (method == "dense")
-    return arma::conv_to<arma::vec>::from(dense_sorted);
+    return arma::conv_to<arma::Col<float>>::from(dense_sorted);
 
   // cumulative counts of each unique value
   // count = [np.r_[np.nonzero(obs)[0], len(obs)]]
@@ -220,7 +220,7 @@ arma::vec rankdata(const arma::Row<double> &arr,
   //            return count(dense_sorted - 1) + 1;
 
   // average method
-  return .5 * arma::conv_to<arma::vec>::from(
+  return .5 * arma::conv_to<arma::Col<float>>::from(
                   (count(dense_sorted) + count(dense_sorted - 1) + 1));
 }
 

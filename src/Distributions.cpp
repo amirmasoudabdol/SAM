@@ -79,18 +79,18 @@ UnivariateDistribution makeUnivariateDistribution(json const &j) {
 
   // Continuous Distributions
   generate_univariate_distribution_factory(uniform_int_distribution, int, "a", "b")
-  generate_univariate_distribution_factory(uniform_real_distribution, double, "a", "b")
+  generate_univariate_distribution_factory(uniform_real_distribution, float, "a", "b")
   generate_univariate_distribution_factory(binomial_distribution, int, "p", "t")
-  generate_univariate_distribution_factory(exponential_distribution, double, "lambda")
-  generate_univariate_distribution_factory(gamma_distribution, double, "alpha", "beta")
-  generate_univariate_distribution_factory(weibull_distribution, double, "a", "b")
-  generate_univariate_distribution_factory(extreme_value_distribution, double, "a", "b")
-  generate_univariate_distribution_factory(normal_distribution, double, "mean", "stddev")
-  generate_univariate_distribution_factory(lognormal_distribution, double, "m", "s")
-  generate_univariate_distribution_factory(chi_squared_distribution, double, "n")
-  generate_univariate_distribution_factory(cauchy_distribution, double, "a", "b")
-  generate_univariate_distribution_factory(fisher_f_distribution, double, "m", "n")
-  generate_univariate_distribution_factory(student_t_distribution, double, "n")
+  generate_univariate_distribution_factory(exponential_distribution, float, "lambda")
+  generate_univariate_distribution_factory(gamma_distribution, float, "alpha", "beta")
+  generate_univariate_distribution_factory(weibull_distribution, float, "a", "b")
+  generate_univariate_distribution_factory(extreme_value_distribution, float, "a", "b")
+  generate_univariate_distribution_factory(normal_distribution, float, "mean", "stddev")
+  generate_univariate_distribution_factory(lognormal_distribution, float, "m", "s")
+  generate_univariate_distribution_factory(chi_squared_distribution, float, "n")
+  generate_univariate_distribution_factory(cauchy_distribution, float, "a", "b")
+  generate_univariate_distribution_factory(fisher_f_distribution, float, "m", "n")
+  generate_univariate_distribution_factory(student_t_distribution, float, "n")
 
   // Discrete distributions
   generate_univariate_distribution_factory(negative_binomial_distribution, int, "p", "k")
@@ -118,17 +118,17 @@ MultivariateDistribution makeMultivariateDistribution(json const &j) {
   auto const &distributionName = j.at("dist");
 
   if (distributionName == "mvnorm_distribution") {
-    return j.get<baaraan::mvnorm_distribution<double>>();
+    return j.get<baaraan::mvnorm_distribution<float>>();
   }
 
   if (distributionName == "truncated_mvnorm_distribution") {
-    return j.get<baaraan::truncated_mvnorm_distribution<double>>();
+    return j.get<baaraan::truncated_mvnorm_distribution<float>>();
   }
 
 ///
 /// A macro generating different functions calls based on the given
 /// distribution. The main difference here is the fact that the `std::function`
-/// has the form of `std::function<arma::mat<double>(Generator &)>`.
+/// has the form of `std::function<arma::Mat<float><float>(Generator &)>`.
 ///
 /// @param      name_  The distribution name
 /// @param      type_  The distribution type
@@ -144,9 +144,9 @@ MultivariateDistribution makeMultivariateDistribution(json const &j) {
     return make_multivariate_distribution_impl<name_<type_>>(j, ##__VA_ARGS__);
 
   generate_multivariate_distribution_factory(baaraan::mvnorm_distribution,
-                                             double, "means", "sigma")
+                                             float, "means", "sigma")
   generate_multivariate_distribution_factory(
-      baaraan::truncated_mvnorm_distribution, double, "means", "sigma", "lowers",
+      baaraan::truncated_mvnorm_distribution, float, "means", "sigma", "lowers",
       "uppers")
 
 #undef generate_multivariate_distribution_factory
@@ -162,10 +162,10 @@ MultivariateDistribution makeMultivariateDistribution(json const &j) {
 /// @param[in]  n       The size of the diagonal matrix
 ///
 /// @return     The covariance matrix
-arma::Mat<double> constructCovMatrix(const double stddev,
-                                     const double cov,
+arma::Mat<float> constructCovMatrix(const float stddev,
+                                     const float cov,
                                      const int n) {
-  arma::Row<double> stddevs(n);
+  arma::Row<float> stddevs(n);
   stddevs.fill(stddev);
   return constructCovMatrix(stddevs, cov, n);
 }
@@ -177,22 +177,22 @@ arma::Mat<double> constructCovMatrix(const double stddev,
 /// @param[in]  n        The size of the diagonal matrix
 ///
 /// @return     The covariance matrix
-arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     const arma::Row<double> &covs,
+arma::Mat<float> constructCovMatrix(const arma::Row<float> &stddevs,
+                                     const arma::Row<float> &covs,
                                      int n) {
   using namespace arma;
 
   assert(covs.size() == (n * (n - 1) / 2));
 
-  arma::rowvec vars = arma::pow(stddevs, 2);
+  arma::Row<float> vars = arma::pow(stddevs, 2);
 
-  mat temp(n, n);
+  arma::Mat<float> temp(n, n);
   temp.fill(-1);
 
-  mat L = trimatl(temp, -1);
+  arma::Mat<float> L = trimatl(temp, -1);
 
-  mat::row_iterator row_it = L.begin_row(1);       // start of rownum 1
-  mat::row_iterator row_it_end = L.end_row(n - 1); //   end of rownum 3
+  Mat<float>::row_iterator row_it = L.begin_row(1);       // start of rownum 1
+  Mat<float>::row_iterator row_it_end = L.end_row(n - 1); //   end of rownum 3
 
   for (int i = 0; row_it != row_it_end; ++row_it) {
     if ((*row_it) == -1) {
@@ -200,7 +200,7 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
     }
   }
 
-  mat sigma = symmatl(L);
+  arma::Mat<float> sigma = symmatl(L);
   sigma.diag() = vars;
 
   return sigma;
@@ -213,10 +213,10 @@ arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
 /// @param[in]  n        The size of the diagonal matrix
 ///
 /// @return     The covariance matrix
-arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     const double cov,
+arma::Mat<float> constructCovMatrix(const arma::Row<float> &stddevs,
+                                     const float cov,
                                      int n) {
-  arma::Mat<double> cov_matrix(n, n);
+  arma::Mat<float> cov_matrix(n, n);
   
   cov_matrix.fill(cov);
   cov_matrix.diag() = arma::pow(stddevs, 2);

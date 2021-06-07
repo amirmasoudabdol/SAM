@@ -134,10 +134,10 @@ class PolicyBasedSelection final : public ReviewStrategy {
     SelectionMethod name = SelectionMethod::PolicyBasedSelection;
 
     //! Publication Bias Rate
-    double pub_bias_rate{};
+    float pub_bias_rate{};
 
     //! Acceptance Rate
-    double acceptance_rate{};
+    float acceptance_rate{};
 
     //! Definition of the selection policy used by Journal to evaluate a given
     //! submission
@@ -187,10 +187,10 @@ class SignificantSelection final : public ReviewStrategy {
 
     //! The \alpha at which the _review strategy_ decides the significance
     //! of a publication
-    double alpha{};
+    float alpha{};
 
     //! Publication bias rate
-    double pub_bias_rate{};
+    float pub_bias_rate{};
 
     //! Indicates the _selection strategy_'s preference toward positive, `1`,
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
@@ -230,7 +230,7 @@ class RandomSelection final : public ReviewStrategy {
     SelectionMethod name = SelectionMethod::RandomSelection;
 
     //! Indicates the acceptance rate of the Journal
-    double acceptance_rate{};
+    float acceptance_rate{};
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(RandomSelection::Parameters, name, acceptance_rate);
   };

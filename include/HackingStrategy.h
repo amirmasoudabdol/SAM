@@ -46,9 +46,9 @@ public:
   
   sol::state lua;
   
-  double defensibility_;
+  float defensibility_;
   
-  double prevalence_;
+  float prevalence_;
   
   HackingStage stage_;
   
@@ -73,11 +73,11 @@ public:
     perform(experiment);
   };
   
-  [[nodiscard]] double defensibility() const {
+  [[nodiscard]] float defensibility() const {
     return defensibility_;
   }
 
-  [[nodiscard]] double prevalence() const {
+  [[nodiscard]] float prevalence() const {
     return prevalence_;
   }
 
@@ -126,7 +126,7 @@ public:
     HackingTarget target {HackingTarget::Both};
     
     //! If not 0., `ratio` * n_obs will be added to the experiment.
-    Parameter<double> ratio;
+    Parameter<float> ratio;
 
     //! Number of times that Researcher add `num` observations to each group
     Parameter<int> n_attempts {1};
@@ -134,9 +134,9 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    double defensibility {0.1};
+    float defensibility {0.1};
     
-    double prevalence {0.7};
+    float prevalence {0.7};
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -195,7 +195,7 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   if (j.contains("num"))
     p.num = Parameter<int>(j.at("num"), 1);
   else if (j.contains("ratio"))
-    p.ratio = Parameter<double>(j.at("ratio"), 1);
+    p.ratio = Parameter<float>(j.at("ratio"), 1);
   else
     throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
   
@@ -286,14 +286,14 @@ public:
     int min_observations{15};
 
     //! A list of standard deviation multipliers for identifying outliers
-    std::vector<double> multipliers = {3};
+    std::vector<float> multipliers = {3};
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    double defensibility {0.5};
+    float defensibility {0.5};
     
-    double prevalence {0.7};
+    float prevalence {0.7};
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -320,7 +320,7 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
-  bool removeOutliers(Experiment *experiment, const int n, const double k);
+  bool removeOutliers(Experiment *experiment, const int n, const float k);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -404,7 +404,7 @@ public:
     std::vector<int> range{2, 4};
 
     //! Indicates the step size of walking through K's
-    double step_size{0.1};
+    float step_size{0.1};
 
     //! Indicates minimum number of observations
     int min_observations{5};
@@ -412,9 +412,9 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {{"sig"}};
     
-    double prevalence {0.1};
+    float prevalence {0.1};
     
-    double defensibility {0.1};
+    float defensibility {0.1};
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -570,7 +570,7 @@ public:
     
     //! Indicates the distance between the pvalue and alpha by which the researcher
     //! considers to round the pvalue to significance
-    double threshold {0.005};
+    float threshold {0.005};
     
     /// Rounding Method
     /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
@@ -581,9 +581,9 @@ public:
     /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
     std::string rounding_method = "diff";
     
-    double prevalence {0.9};
+    float prevalence {0.9};
     
-    double defensibility {0.7};
+    float defensibility {0.7};
     
     HackingStage stage {HackingStage::Reporting};
     
@@ -658,7 +658,7 @@ public:
     int min_observations{15};
     
     //! A list of standard deviation multipliers for identifying outliers
-    std::vector<double> multipliers = {3};
+    std::vector<float> multipliers = {3};
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
@@ -666,9 +666,9 @@ public:
     //! Removing if
     std::vector<std::string> whether_to_save_cond_defs;
     
-    double prevalence {0.9};
+    float prevalence {0.9};
     
-    double defensibility {0.7};
+    float defensibility {0.7};
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -689,7 +689,7 @@ public:
   void perform(Experiment *experiment) override;
   
 private:
-  bool removeOutliers(Experiment *experiment, const int n, const double k);
+  bool removeOutliers(Experiment *experiment, const int n, const float k);
 };
 
 inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
@@ -796,9 +796,9 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    double defensibility {0.05};
+    float defensibility {0.05};
 
-    double prevalence {0.1};
+    float prevalence {0.1};
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -922,9 +922,9 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
       
-    double defensibility {0.05};
+    float defensibility {0.05};
     
-    double prevalence {0.1};
+    float prevalence {0.1};
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -1029,9 +1029,9 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {"sig"};
     
-    double defensibility {0.05};
+    float defensibility {0.05};
     
-    double prevalence {0.1};
+    float prevalence {0.1};
     
     HackingStage stage {HackingStage::DataCollection};
   };

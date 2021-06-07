@@ -37,15 +37,15 @@ void TTest::run(Experiment *experiment) {
   }
 }
 
-TTest::ResultType TTest::t_test(const arma::Row<double> &dt1,
-                                const arma::Row<double> &dt2, double alpha,
+TTest::ResultType TTest::t_test(const arma::Row<float> &dt1,
+                                const arma::Row<float> &dt2, float alpha,
                                 TestStrategy::TestAlternative alternative) {
   return t_test(arma::mean(dt1), arma::stddev(dt1), dt1.size(), arma::mean(dt2),
                 arma::stddev(dt2), dt2.size(), alpha, alternative, true);
 }
 
-TTest::ResultType TTest::t_test(double Sm1, double Sd1, double Sn1, double Sm2,
-                                double Sd2, double Sn2, double alpha,
+TTest::ResultType TTest::t_test(float Sm1, float Sd1, float Sn1, float Sm2,
+                                float Sd2, float Sn2, float alpha,
                                 TestStrategy::TestAlternative alternative,
                                 bool equal_var = false) {
 
@@ -62,14 +62,14 @@ TTest::ResultType TTest::t_test(double Sm1, double Sd1, double Sn1, double Sm2,
   }
 }
 
-std::pair<double, bool>
-TTest::compute_pvalue(double t_stat, double df, double alpha, TestStrategy::TestAlternative alternative) {
+std::pair<float, bool>
+TTest::compute_pvalue(float t_stat, float df, float alpha, TestStrategy::TestAlternative alternative) {
   
   using boost::math::students_t;
   students_t dist(df);
   
-  double p;
-  double sig;
+  float p;
+  float sig;
   
   if (alternative == TestStrategy::TestAlternative::TwoSided) {
     // Mean != M
@@ -118,26 +118,26 @@ TTest::compute_pvalue(double t_stat, double df, double alpha, TestStrategy::Test
 /// @return     TTest::ResultType
 ///
 TTest::ResultType
-TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
-                            double alpha,
+TTest::single_sample_t_test(float M, float Sm, float Sd, unsigned Sn,
+                            float alpha,
                             TestStrategy::TestAlternative alternative) {
 
   bool sig = false;
 
   // Difference in means:
-  double diff = Sm - M;
+  float diff = Sm - M;
 
   // Degrees of freedom:
-  double df = Sn - 1;
+  float df = Sn - 1;
 
   // t-statistic:
-  double t_stat = diff * sqrt(double(Sn)) / Sd;
+  float t_stat = diff * sqrt(float(Sn)) / Sd;
 
   //
   // Finally define our distribution, and get the probability:
   //
   students_t dist(df);
-  double p = 0;
+  float p = 0;
 
   //
   // Finally print out results of alternative hypothesis:
@@ -193,33 +193,33 @@ TTest::single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
 /// @return     TTest::ResultType
 ///
 TTest::ResultType TTest::two_samples_t_test_equal_sd(
-    double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2,
-    double alpha, TestStrategy::TestAlternative alternative) {
+    float Sm1, float Sd1, unsigned Sn1, float Sm2, float Sd2, unsigned Sn2,
+    float alpha, TestStrategy::TestAlternative alternative) {
 
   bool sig = false;
 
   // Degrees of freedom:
-  double df = Sn1 + Sn2 - 2;
+  float df = Sn1 + Sn2 - 2;
 
   // Pooled variance and hence standard deviation:
-  double sp = sqrt(((Sn1 - 1) * Sd1 * Sd1 + (Sn2 - 1) * Sd2 * Sd2) / df);
+  float sp = sqrt(((Sn1 - 1) * Sd1 * Sd1 + (Sn2 - 1) * Sd2 * Sd2) / df);
 
   // NOTE: I had to do this, I don't want my simulations fail.
   // While this is not perfect, it allows me to handle an edge case
   // SAM should not throw and should continue working.
   if (!(isgreater(sp, 0) or isless(sp, 0))) {
     // Samples are almost equal and elements are constant
-    sp += std::numeric_limits<double>::epsilon();
+    sp += std::numeric_limits<float>::epsilon();
   }
 
   // t-statistic:
-  double t_stat = (Sm1 - Sm2) / (sp * sqrt(1.0 / Sn1 + 1.0 / Sn2));
+  float t_stat = (Sm1 - Sm2) / (sp * sqrt(1.0 / Sn1 + 1.0 / Sn2));
 
   //
   // Define our distribution, and get the probability:
   //
   students_t dist(df);
-  double p = 0;
+  float p = 0;
 
   //
   // Finally print out results of alternative hypothesis:
@@ -276,30 +276,30 @@ TTest::ResultType TTest::two_samples_t_test_equal_sd(
 /// @return     TTest::ResultType
 ///
 TTest::ResultType TTest::two_samples_t_test_unequal_sd(
-    double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2, unsigned Sn2,
-    double alpha, TestStrategy::TestAlternative alternative) {
+    float Sm1, float Sd1, unsigned Sn1, float Sm2, float Sd2, unsigned Sn2,
+    float alpha, TestStrategy::TestAlternative alternative) {
 
   bool sig = false;
 
   // Degrees of freedom:
-  double df = Sd1 * Sd1 / Sn1 + Sd2 * Sd2 / Sn2;
+  float df = Sd1 * Sd1 / Sn1 + Sd2 * Sd2 / Sn2;
   df *= df;
-  double t1 = Sd1 * Sd1 / Sn1;
+  float t1 = Sd1 * Sd1 / Sn1;
   t1 *= t1;
   t1 /= (Sn1 - 1);
-  double t2 = Sd2 * Sd2 / Sn2;
+  float t2 = Sd2 * Sd2 / Sn2;
   t2 *= t2;
   t2 /= (Sn2 - 1);
   df /= (t1 + t2);
 
   // t-statistic:
-  double t_stat = (Sm1 - Sm2) / sqrt(Sd1 * Sd1 / Sn1 + Sd2 * Sd2 / Sn2);
+  float t_stat = (Sm1 - Sm2) / sqrt(Sd1 * Sd1 / Sn1 + Sd2 * Sd2 / Sn2);
 
   //
   // Define our distribution, and get the probability:
   //
   students_t dist(df);
-  double p = 0;
+  float p = 0;
 
   //
   // Finally print out results of alternative hypothesis:

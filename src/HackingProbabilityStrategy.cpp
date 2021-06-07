@@ -22,7 +22,7 @@ HackingProbabilityStrategy::build(json &config) {
 }
 
 
-double
+float
 FrankenbachStrategy::estimate(Experiment *experiment) {
   
   if ((params.base_hp - 0.) < 0.00001) {
@@ -45,7 +45,7 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
       int d = experiment->setup.nd();
       int g = experiment->setup.ng();
       
-      arma::rowvec dangers(g - d);
+      arma::Row<float> dangers(g - d);
       
       dangers.imbue([&, i = d]() mutable {
         return this->border(experiment->dvs_[i++].se_effect_);
@@ -55,8 +55,8 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
       probabilities.imbue([&, i = d]() mutable {
         if (experiment->dvs_[i].effect_ > dangers[i - 1]) {
           
-          double d_sig = experiment->dvs_[i].se_effect_ * 1.959964;
-          arma::rowvec danger_breaks = arma::linspace<arma::rowvec>(dangers[i - 1], d_sig, 11);
+          float d_sig = experiment->dvs_[i].se_effect_ * 1.959964;
+          arma::Row<float> danger_breaks = arma::linspace<arma::Row<float>>(dangers[i - 1], d_sig, 11);
           
           /// If the hacking probability is 1, then everything in this range is going to be
           /// hacked, a.k.a, hp = 1;
@@ -64,13 +64,13 @@ FrankenbachStrategy::estimate(Experiment *experiment) {
           /// everything, while it should only be assigned to those studies that are passing
           /// the effect test in the first place
           if ((params.base_hp - 1.) < 0.00001) {
-            return 1.;
+            return static_cast<float>(1);
           }
           
           return arma::as_scalar(hp_range.at(arma::max(find(danger_breaks < experiment->dvs_[i++].effect_))));
           
         }else{
-          return 0.;
+          return static_cast<float>(0);
         }
       });
       

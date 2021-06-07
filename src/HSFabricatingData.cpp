@@ -59,8 +59,8 @@ bool FabricatingData::duplicate(Experiment *experiment, const int n) {
   
   for (int i = begin; i < end; ++i) {
     
-    arma::Row<double> row = arma::shuffle((*experiment)[i].measurements());
-    arma::Row<double> copy_candidates = row.head(n);
+    arma::Row<float> row = arma::shuffle((*experiment)[i].measurements());
+    arma::Row<float> copy_candidates = row.head(n);
     
     experiment->dvs_[i].addNewMeasurements(copy_candidates);
     

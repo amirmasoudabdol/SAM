@@ -31,7 +31,7 @@ enum class HackingMethod;
 class DependentVariable {
 
   //! Raw Measurements
-  arma::Row<double> measurements_;
+  arma::Row<float> measurements_;
 
 public:
   //! Dependent variable's ID. This is being used by Policy to perform some
@@ -42,9 +42,9 @@ public:
    *  These are determined by the DataStrategy
    */
   ///@{
-  double true_nobs_{0};
-  double true_mean_{0};
-  double true_std_{0};
+  float true_nobs_{0};
+  float true_mean_{0};
+  float true_std_{0};
   ///@}
 
   /** @name Descriptive Statistics
@@ -52,18 +52,18 @@ public:
    */
   ///@{
   int nobs_{0};
-  double mean_{0};
-  double var_{0};
-  double stddev_{0};
-  double sei_{0};
+  float mean_{0};
+  float var_{0};
+  float stddev_{0};
+  float sei_{0};
   ///@}
 
   /** @name Test Statistics
    *  These will be calculated (and kept updated) by the TestStrategy.
    */
   ///@{
-  double stats_{0};
-  double pvalue_{0};
+  float stats_{0};
+  float pvalue_{0};
   bool sig_{false};
   ///@}
   
@@ -71,9 +71,9 @@ public:
    *  These will be calculated (and kept updated) by the EffectStrategy.
    */
   ///@{
-  double effect_{0};
-  double var_effect_{0};
-  double se_effect_{0};
+  float effect_{0};
+  float var_effect_{0};
+  float se_effect_{0};
   int eff_side_{0};
   ///@}
 
@@ -92,7 +92,7 @@ public:
 
   DependentVariable() = default;
 
-  explicit DependentVariable(const arma::Row<double> &data) : measurements_{data} {
+  explicit DependentVariable(const arma::Row<float> &data) : measurements_{data} {
     updateStats();
     true_nobs_ = nobs_;
   };
@@ -128,11 +128,11 @@ public:
 
   /// Getter / Setter
 
-  arma::Row<double> &measurements() { return measurements_; };
-  const arma::Row<double> &measurements() const { return measurements_; };
+  arma::Row<float> &measurements() { return measurements_; };
+  const arma::Row<float> &measurements() const { return measurements_; };
 
   /// Sets the raw measurements values
-  void setMeasurements(const arma::Row<double>& meas) {
+  void setMeasurements(const arma::Row<float>& meas) {
     measurements_ = meas;
     nobs_ = meas.size();
     
@@ -141,7 +141,7 @@ public:
   }
 
   /// Adds new measurements to the currently available data
-  void addNewMeasurements(const arma::Row<double>& new_meas) {
+  void addNewMeasurements(const arma::Row<float>& new_meas) {
     measurements_.insert_cols(nobs_, new_meas);
     n_added_obs += new_meas.n_elem;
     
@@ -170,7 +170,7 @@ public:
   auto begin() { return measurements_.begin(); };
   auto end() { return measurements_.end(); };
   
-  double &operator[](std::size_t idx) {
+  float &operator[](std::size_t idx) {
     if (idx > measurements_.size()) {
       throw std::invalid_argument("Index out of bound.");
     }
@@ -178,7 +178,7 @@ public:
     return measurements_(idx);
   }
   
-  const double &operator[](std::size_t idx) const {
+  const float &operator[](std::size_t idx) const {
     if (idx > measurements_.size()) {
       throw std::invalid_argument("Index out of bound.");
     }
@@ -191,7 +191,7 @@ public:
   /// @brief List the name of all avaliable variables
   static std::vector<std::string> Columns();
   explicit operator std::map<std::string, std::string>() const;
-  explicit operator arma::Row<double>();
+  explicit operator arma::Row<float>();
 };
 
 } // namespace sam

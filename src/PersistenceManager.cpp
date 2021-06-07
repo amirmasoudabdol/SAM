@@ -77,7 +77,7 @@ PersistenceManager::Reader::Reader(const std::filesystem::path &filename)
 
 PersistenceManager::Reader::~Reader() {}
 
-void PersistenceManager::Writer::write(std::vector<arma::Row<double>> &data,
+void PersistenceManager::Writer::write(std::vector<arma::Row<float>> &data,
                                        int sid) {
 
   static std::vector<std::string> cols(data.size());

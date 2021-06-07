@@ -108,7 +108,7 @@ class Researcher {
 
   //! Indicates the probability of committing to the submission process given 
   //! the availability of submissions
-  Parameter<double> submission_probability{1};
+  Parameter<float> submission_probability{1};
 
   //! A list of satisfactory submissions collected by the researcher at the end
   //! of each replications.
@@ -123,7 +123,7 @@ class Researcher {
   //! 
   //! This being a Parameter allows it to be randomized at each run if necessary
   //! 
-  Parameter<double> probability_of_being_a_hacker;
+  Parameter<float> probability_of_being_a_hacker;
 
   //! Indicates the probability of a Researcher _actually applying_ a chosen
   //! hacking strategy.
@@ -136,7 +136,7 @@ class Researcher {
   //! - One of the HackingProbabilityStrategy classes, which will be used by the
   //!   researcher to base her decision based on characteristic of individual
   //!   experiment.
-  std::variant<double, std::string, UnivariateDistribution,
+  std::variant<float, std::string, UnivariateDistribution,
                std::unique_ptr<HackingProbabilityStrategy>>
       probability_of_committing_a_hack;
 
@@ -304,7 +304,7 @@ public:
 
     // Setting up the Probability of Being a Hacker
     // -------------------------------------------- 
-    researcher.probability_of_being_a_hacker = Parameter<double>(
+    researcher.probability_of_being_a_hacker = Parameter<float>(
         config["researcher_parameters"]["probability_of_being_a_hacker"], 1);
 
     // Setting up the Probability of Committing to a Hack
@@ -316,7 +316,7 @@ public:
     case nlohmann::detail::value_t::number_unsigned:
     case nlohmann::detail::value_t::number_float:
       researcher.probability_of_committing_a_hack =
-          prob_of_committing_a_hack.get<double>();
+          prob_of_committing_a_hack.get<float>();
       break;
     case nlohmann::detail::value_t::string:
       researcher.probability_of_committing_a_hack =
@@ -332,7 +332,7 @@ public:
       }
     } break;
     default:
-      researcher.probability_of_committing_a_hack = 0.;
+      researcher.probability_of_committing_a_hack = static_cast<float>(0);
       break;
     }
 
@@ -436,7 +436,7 @@ public:
     // researcher and submit it to the Journal, instead of putting it to the
     // drawer.
     if (config["researcher_parameters"].contains("submission_probability")) {
-      researcher.submission_probability = Parameter<double>(
+      researcher.submission_probability = Parameter<float>(
           config["researcher_parameters"]["submission_probability"], 1);
     }
 

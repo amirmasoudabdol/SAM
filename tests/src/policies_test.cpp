@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_SUITE( call_operator_test )
                            bdata::xrange(1, 4),
                            mean, nobs, status, i) {
       
-      arma::rowvec data(nobs);
+      arma::Row<float> data(nobs);
       data.randn(); data += mean;
       
       DependentVariable dv{data};

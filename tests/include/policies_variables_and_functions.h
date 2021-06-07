@@ -14,7 +14,7 @@ using namespace sam;
 
 struct PoliciesVariablesAndFunctions {
   
-  std::vector<double> values {
+  std::vector<float> values {
     0, -0, .0, -.0, 0.0, -0.0,
     .1, -.1, 0.1, -0.1,
     1, -1

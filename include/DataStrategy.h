@@ -62,7 +62,7 @@ public:
   /// @param n_new_obs The number of new observations to be generated
   ///
   /// @return An array of new observations
-  virtual std::vector<arma::Row<double>>
+  virtual std::vector<arma::Row<float>>
   genNewObservationsForAllGroups(Experiment *experiment, int n_new_obs) = 0;
 
   ///
@@ -73,7 +73,7 @@ public:
   /// @param n_new_obs The number of new observations
   ///
   /// @return An array of new observations for group `g`
-//  virtual arma::Row<double> genNewObservationsFor(Experiment *experiment, int g,
+//  virtual arma::Row<float> genNewObservationsFor(Experiment *experiment, int g,
 //                                                  int n_new_obs) = 0;
 };
 
@@ -112,7 +112,7 @@ public:
 
   void genData(Experiment *experiment) override;
 
-  std::vector<arma::Row<double>>
+  std::vector<arma::Row<float>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
@@ -187,7 +187,7 @@ public:
 
   void genData(Experiment *experiment) override;
 
-  std::vector<arma::Row<double>>
+  std::vector<arma::Row<float>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
@@ -244,7 +244,7 @@ public:
 
   void genData(Experiment *experiment) override;
 
-  std::vector<arma::Row<double>>
+  std::vector<arma::Row<float>>
   genNewObservationsForAllGroups(Experiment *experiment,
                                  int n_new_obs) override;
 
@@ -256,17 +256,17 @@ private:
   /// test it first.
   UnivariateDistribution uniform_dist = std::uniform_real_distribution<>{};
 
-  arma::mat poa;        //! probability of answering
+  arma::Mat<float> poa;        //! probability of answering
   arma::umat responses; //! responses to items, binary
-  arma::vec scores;     //! scores of each item
+  arma::Col<float> scores;     //! scores of each item
 
-  arma::mat urand;
+  arma::Mat<float> urand;
 
   //! Item difficulties
-  arma::mat betas;
+  arma::Mat<float> betas;
 
   //! Participants abilities
-  arma::mat thetas;
+  arma::Mat<float> thetas;
   
   ///
   /// @brief      [Rasch Response Function](https://en.wikipedia.org/wiki/Rasch_model)
@@ -275,7 +275,7 @@ private:
   ///
   /// @return     Sum score of `j`th participant over all items
   ///
-  double rasch_score(const double theta);
+  float rasch_score(const float theta);
 };
 
 // JSON Parser for GRMDataStrategy::Parameters

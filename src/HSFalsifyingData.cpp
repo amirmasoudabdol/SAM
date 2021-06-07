@@ -54,7 +54,7 @@ bool FalsifyingData::perturb(Experiment *experiment) {
     arma::uvec shuffled_indices = arma::shuffle(arma::regspace<arma::uvec>(0, 1, row.n_elem - 1));
     arma::uvec candidate_indices = shuffled_indices.head(num);
     
-    static arma::Row<double> noise(num, arma::fill::zeros);
+    static arma::Row<float> noise(num, arma::fill::zeros);
     noise.imbue([&](){
       return Random::get(params.noise_dist.value());
     });
@@ -93,11 +93,11 @@ bool FalsifyingData::swapGroups(Experiment *experiment) {
                                                        experiment->dvs_[i].measurements().n_elem)));
         
     // Candidates from Control group
-    arma::rowvec C_cand_values = experiment->dvs_[d].measurements().head(num);
+    arma::Row<float> C_cand_values = experiment->dvs_[d].measurements().head(num);
     experiment->dvs_[d].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
 
     // Candidates from Treatment group
-    arma::rowvec T_cand_values = experiment->dvs_[i].measurements().head(num);
+    arma::Row<float> T_cand_values = experiment->dvs_[i].measurements().head(num);
     experiment->dvs_[i].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
 
     // --- Actual swapping
@@ -129,7 +129,7 @@ bool FalsifyingData::switchGroups(Experiment *experiment) {
       // Making sure that there is enough elements to select. Only concerned about one group
       size_t num = std::min(params.num, static_cast<size_t>(experiment->dvs_[d].measurements().n_elem));
 
-      arma::rowvec C_cand_values = experiment->dvs_[d].measurements().head(num);
+      arma::Row<float> C_cand_values = experiment->dvs_[d].measurements().head(num);
       experiment->dvs_[d].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
       experiment->dvs_[i].addNewMeasurements(C_cand_values);
       
@@ -144,7 +144,7 @@ bool FalsifyingData::switchGroups(Experiment *experiment) {
       // Making sure that there is enough elements to select. Only concerned about one group
       size_t num = std::min(params.num, static_cast<size_t>(experiment->dvs_[i].measurements().n_elem));
 
-      arma::rowvec T_cand_values = experiment->dvs_[i].measurements().head(num);
+      arma::Row<float> T_cand_values = experiment->dvs_[i].measurements().head(num);
       experiment->dvs_[i].removeMeasurements(arma::regspace<arma::uvec>(0, 1, num - 1));
       experiment->dvs_[d].addNewMeasurements(T_cand_values);
 

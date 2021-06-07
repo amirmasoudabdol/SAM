@@ -210,11 +210,11 @@ BOOST_AUTO_TEST_SUITE_END()
 //            BOOST_CHECK_SMALL(expr.vars[i] - v_vars[i], 0.1);
 //
 //        // Checking covariance ----------------------------
-//        arma::mat dt(nobs, ng);
+//        arma::Mat<float> dt(nobs, ng);
 //        for (int i = 0; i < expr.setup.ng(); ++i)
 //            dt.col(i) = expr.measurements[i].as_col();
 //
-//        arma::mat corr = arma::cor(dt);
+//        arma::Mat<float> corr = arma::cor(dt);
 //        for (int i = 0; i < setup.ng(); ++i)
 //            for (int j = 0; j < setup.ng(); ++j)
 //                BOOST_CHECK_SMALL(corr(i, j) - v_sigma(i, j), 0.1);

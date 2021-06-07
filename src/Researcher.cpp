@@ -197,7 +197,7 @@ void Researcher::submitTheResearch(
 
     // Decides whether the researcher follows through with the submission or
     // bails out and put her research into the drawer!
-    if (Random::get<bool>(static_cast<double>(submission_probability()))) {
+    if (Random::get<bool>(static_cast<float>(submission_probability()))) {
       journal->review(candidate_submissions.value());
     }
   }
@@ -215,7 +215,7 @@ void Researcher::submitTheResearch(
 ///
 bool Researcher::isHacker() {
   return Random::get<bool>(
-      static_cast<double>(probability_of_being_a_hacker()));
+      static_cast<float>(probability_of_being_a_hacker()));
 }
 
 ///
@@ -226,7 +226,7 @@ bool Researcher::isHacker() {
 /// 
 bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
   return std::visit(
-      overload{[&](double &p) { return Random::get<bool>(p); },
+      overload{[&](float &p) { return Random::get<bool>(p); },
                [&](std::string &s) {
                  if (s == "prevalence") {
                    return Random::get<bool>(hs->prevalence());

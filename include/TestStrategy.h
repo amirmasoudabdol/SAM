@@ -57,8 +57,8 @@ public:
   virtual void run(DependentVariable &group_1, DependentVariable &group_2) = 0;
   
   // A tiny wrapper for accessing test alpha
-  double alpha_;
-  virtual double alpha() {
+  float alpha_;
+  virtual float alpha() {
     return alpha_;
   }
 };
@@ -81,16 +81,16 @@ public:
   struct Parameters {
     TestMethod name = TestMethod::TTest;
     TestAlternative alternative = TestAlternative::TwoSided;
-    double alpha;
+    float alpha;
     bool var_equal {true};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(TTest::Parameters, name, alternative, alpha, var_equal);
   };
 
   struct ResultType {
-    double tstat;
-    double df;
-    double pvalue;
+    float tstat;
+    float df;
+    float pvalue;
     int side;
     bool sig;
 
@@ -121,30 +121,30 @@ public:
 
   virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
-  static ResultType t_test(const arma::Row<double> &d1,
-                           const arma::Row<double> &d2, double alpha,
+  static ResultType t_test(const arma::Row<float> &d1,
+                           const arma::Row<float> &d2, float alpha,
                            TestStrategy::TestAlternative alternative);
 
-  static ResultType t_test(double Sm1, double Sd1, double Sn1, double Sm2,
-                           double Sd2, double Sn2, double alpha,
+  static ResultType t_test(float Sm1, float Sd1, float Sn1, float Sm2,
+                           float Sd2, float Sn2, float alpha,
                            TestStrategy::TestAlternative alternative,
                            bool equal_var);
   
-  static std::pair<double, bool> compute_pvalue(double tstat, double df, double alpha,
+  static std::pair<float, bool> compute_pvalue(float tstat, float df, float alpha,
                                                 TestStrategy::TestAlternative alternative);
 
   static ResultType
-  single_sample_t_test(double M, double Sm, double Sd, unsigned Sn,
-                       double alpha, TestStrategy::TestAlternative alternative);
+  single_sample_t_test(float M, float Sm, float Sd, unsigned Sn,
+                       float alpha, TestStrategy::TestAlternative alternative);
 
   static ResultType
-  two_samples_t_test_equal_sd(double Sm1, double Sd1, unsigned Sn1, double Sm2,
-                              double Sd2, unsigned Sn2, double alpha,
+  two_samples_t_test_equal_sd(float Sm1, float Sd1, unsigned Sn1, float Sm2,
+                              float Sd2, unsigned Sn2, float alpha,
                               TestStrategy::TestAlternative alternative);
 
   static ResultType two_samples_t_test_unequal_sd(
-      double Sm1, double Sd1, unsigned Sn1, double Sm2, double Sd2,
-      unsigned Sn2, double alpha, TestStrategy::TestAlternative alternative);
+      float Sm1, float Sd1, unsigned Sn1, float Sm2, float Sd2,
+      unsigned Sn2, float alpha, TestStrategy::TestAlternative alternative);
 };
 
 ///
@@ -155,16 +155,16 @@ class FTest final : public TestStrategy {
 public:
   struct Parameters {
     TestMethod name = TestMethod::FTest;
-    double alpha;
+    float alpha;
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(FTest::Parameters, name, alpha);
   };
 
   struct ResultType {
-    double fstat;
+    float fstat;
     unsigned df1;
     unsigned df2;
-    double pvalue;
+    float pvalue;
     bool sig;
 
     operator std::map<std::string, std::string>() {
@@ -194,8 +194,8 @@ public:
 
   virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
-  static ResultType f_test(double Sd1, unsigned Sn1, double Sd2, unsigned Sn2,
-                    double alpha);
+  static ResultType f_test(float Sd1, unsigned Sn1, float Sd2, unsigned Sn2,
+                    float alpha);
 };
 
 ///
@@ -207,17 +207,17 @@ public:
   struct Parameters {
     TestMethod name = TestMethod::YuenTest;
     TestAlternative alternative = TestAlternative::TwoSided;
-    double alpha {0.05};
-    double trim {0.20};
+    float alpha {0.05};
+    float trim {0.20};
     bool paired {false};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(YuenTest::Parameters, name, alternative, alpha, trim, paired);
   };
 
   struct ResultType {
-    double tstat;
-    double df;
-    double pvalue;
+    float tstat;
+    float df;
+    float pvalue;
     int side;
     bool sig;
 
@@ -249,17 +249,17 @@ public:
   virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType
-  yuen_t_test_one_sample(const arma::Row<double> &x, double alpha,
+  yuen_t_test_one_sample(const arma::Row<float> &x, float alpha,
                          const TestStrategy::TestAlternative alternative,
-                         double trim, double mu);
+                         float trim, float mu);
 
   static ResultType yuen_t_test_paired(
-      const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
-      const TestStrategy::TestAlternative alternative, double trim, double mu);
+      const arma::Row<float> &x, const arma::Row<float> &y, float alpha,
+      const TestStrategy::TestAlternative alternative, float trim, float mu);
 
   static ResultType yuen_t_test_two_samples(
-      const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
-      const TestStrategy::TestAlternative alternative, double trim, double mu);
+      const arma::Row<float> &x, const arma::Row<float> &y, float alpha,
+      const TestStrategy::TestAlternative alternative, float trim, float mu);
 };
 
 ///
@@ -271,16 +271,16 @@ public:
   struct Parameters {
     TestMethod name = TestMethod::WilcoxonTest;
     TestAlternative alternative = TestAlternative::TwoSided;
-    double alpha = 0.95;
+    float alpha = 0.95;
     bool use_continuity{true};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(WilcoxonTest::Parameters, name, alternative, alpha, use_continuity);
   };
 
   struct ResultType {
-    double zstat;
-    double wstat;
-    double pvalue;
+    float zstat;
+    float wstat;
+    float pvalue;
     int side;
     bool sig;
 
@@ -312,8 +312,8 @@ public:
   virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType
-  wilcoxon_test(const arma::Row<double> &x, const arma::Row<double> &y,
-                double alpha, double use_continuity,
+  wilcoxon_test(const arma::Row<float> &x, const arma::Row<float> &y,
+                float alpha, float use_continuity,
                 const TestStrategy::TestAlternative alternative);
 };
 
@@ -331,27 +331,27 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {TestStrategy::TestAlternative::TwoSided, "TwoSided"}})
 
 /// Stats Utility
-double single_sample_find_df(double M, double Sm, double Sd, double alpha,
+float single_sample_find_df(float M, float Sm, float Sd, float alpha,
                              TestStrategy::TestAlternative alternative);
 
-std::pair<double, double>
-confidence_limits_on_mean(double Sm, double Sd, unsigned Sn, double alpha,
+std::pair<float, float>
+confidence_limits_on_mean(float Sm, float Sd, unsigned Sn, float alpha,
                           TestStrategy::TestAlternative alternative);
 
 /// Stats Utility
-double win_var(const arma::Row<double> &x, const double trim);
+float win_var(const arma::Row<float> &x, const float trim);
 
-std::pair<double, double> win_cor_cov(const arma::Row<double> &x,
-                                      const arma::Row<double> &y,
-                                      const double trim);
+std::pair<float, float> win_cor_cov(const arma::Row<float> &x,
+                                      const arma::Row<float> &y,
+                                      const float trim);
 
-arma::Row<double> win_val(const arma::Row<double> &x, double trim);
+arma::Row<float> win_val(const arma::Row<float> &x, float trim);
 
-double trim_mean(const arma::Row<double> &x, double trim);
+float trim_mean(const arma::Row<float> &x, float trim);
 
-double tie_correct(const arma::vec &rankval);
+float tie_correct(const arma::Col<float> &rankval);
 
-arma::vec rankdata(const arma::Row<double> &arr, const std::string method);
+arma::Col<float> rankdata(const arma::Row<float> &arr, const std::string method);
 
 template <typename T> arma::uvec nonzeros_index(const T &x) {
 

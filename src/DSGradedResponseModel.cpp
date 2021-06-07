@@ -35,7 +35,7 @@ void GRMDataStrategy::genData(Experiment *experiment) {
   
   for (int g{0}; g < experiment->setup.ng(); ++g) {
 
-    arma::Row<double> data(experiment->setup.nobs()[g]);
+    arma::Row<float> data(experiment->setup.nobs()[g]);
 
     data.imbue([&, i = 0]() mutable {
       return rasch_score(thetas.at(i++, g));
@@ -46,13 +46,13 @@ void GRMDataStrategy::genData(Experiment *experiment) {
 }
 
 // Generate persons j answer to all items
-double GRMDataStrategy::rasch_score(const double theta) {
+float GRMDataStrategy::rasch_score(const float theta) {
 
   poa = arma::exp(theta - betas);
   poa = poa / (1 + poa);
 
   // This is a super slow process, and it's been replaced by `arma::randu()`.
-  // urand.imbue([&]() { return Random::get<double>(0., 1.); });
+  // urand.imbue([&]() { return Random::get<float>(0., 1.); });
   
   // this is much better but then I'm out of my RNG chain, which should kind of be fine,
   // because they are just some random values for evaluation,
@@ -70,11 +70,11 @@ double GRMDataStrategy::rasch_score(const double theta) {
   return arma::accu(scores);
 }
 
-std::vector<arma::Row<double>>
+std::vector<arma::Row<float>>
 GRMDataStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                                                 int n_new_obs) {
 
-  std::vector<arma::Row<double>> new_values(experiment->setup.ng());
+  std::vector<arma::Row<float>> new_values(experiment->setup.ng());
 
   for (int g{0}; g < experiment->setup.ng(); ++g) {
     new_values[g].resize(n_new_obs);

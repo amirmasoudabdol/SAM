@@ -27,28 +27,28 @@ void FTest::run(Experiment *experiment) {
   }
 }
 
-FTest::ResultType FTest::f_test(double Sd1,   // Sample 1 std deviation
+FTest::ResultType FTest::f_test(float Sd1,   // Sample 1 std deviation
                                 unsigned Sn1, // Sample 1 size
-                                double Sd2,   // Sample 2 std deviation
+                                float Sd2,   // Sample 2 std deviation
                                 unsigned Sn2, // Sample 2 size
-                                double alpha) // Significance level
+                                float alpha) // Significance level
 {
 
   bool sig{false};
 
   // F-statistic:
-  double f_stats = (Sd1 / Sd2);
+  float f_stats = (Sd1 / Sd2);
 
   //
   // Finally define our distribution, and get the probability:
   //
   fisher_f dist(Sn1 - 1, Sn2 - 1);
-  double p = cdf(dist, f_stats);
+  float p = cdf(dist, f_stats);
 
-  double ucv = quantile(complement(dist, alpha));
-  double ucv2 = quantile(complement(dist, alpha / 2));
-  double lcv = quantile(dist, alpha);
-  double lcv2 = quantile(dist, alpha / 2);
+  float ucv = quantile(complement(dist, alpha));
+  float ucv2 = quantile(complement(dist, alpha / 2));
+  float lcv = quantile(dist, alpha);
+  float lcv2 = quantile(dist, alpha / 2);
 
   //
   // Finally print out results of null and alternative hypothesis:

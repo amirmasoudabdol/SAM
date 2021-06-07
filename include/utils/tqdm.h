@@ -18,7 +18,7 @@ class tqdm {
         std::chrono::time_point<std::chrono::system_clock> t_first = std::chrono::system_clock::now();
         std::chrono::time_point<std::chrono::system_clock> t_old = std::chrono::system_clock::now();
         int n_old = 0;
-        std::vector<double> deq_t;
+        std::vector<float> deq_t;
         std::vector<int> deq_n;
         int nupdates = 0;
         int total_ = 0;
@@ -107,8 +107,8 @@ class tqdm {
                 total_ = tot;
                 nupdates++;
                 auto now = std::chrono::system_clock::now();
-                double dt = ((std::chrono::duration<double>)(now - t_old)).count();
-                double dt_tot = ((std::chrono::duration<double>)(now - t_first)).count();
+                float dt = ((std::chrono::duration<float>)(now - t_old)).count();
+                float dt_tot = ((std::chrono::duration<float>)(now - t_first)).count();
                 int dn = curr - n_old;
                 n_old = curr;
                 t_old = now;
@@ -117,15 +117,15 @@ class tqdm {
                 deq_t.push_back(dt);
                 deq_n.push_back(dn);
 
-                double avgrate = 0.;
+                float avgrate = 0.;
                 if (use_ema) {
                     avgrate = deq_n[0] / deq_t[0];
                     for (unsigned int i = 1; i < deq_t.size(); i++) {
-                        double r = 1.0*deq_n[i]/deq_t[i];
+                        float r = 1.0*deq_n[i]/deq_t[i];
                         avgrate = alpha_ema*r + (1.0-alpha_ema)*avgrate;
                     }
                 } else {
-                    double dtsum = std::accumulate(deq_t.begin(),deq_t.end(),0.);
+                    float dtsum = std::accumulate(deq_t.begin(),deq_t.end(),0.);
                     int dnsum = std::accumulate(deq_n.begin(),deq_n.end(),0.);
                     avgrate = dnsum/dtsum;
                 }
@@ -136,8 +136,8 @@ class tqdm {
                     period = (int)( std::min(std::max((1.0/25)*curr/dt_tot,1.0), 5e5));
                     smoothing = 25*3;
                 }
-                double peta = (tot-curr)/avgrate;
-                double pct = (double)curr/(tot*0.01);
+                float peta = (tot-curr)/avgrate;
+                float pct = (float)curr/(tot*0.01);
                 if( ( tot - curr ) <= period ) {
                     pct = 100.0;
                     avgrate = tot/dt_tot;
@@ -145,7 +145,7 @@ class tqdm {
                     peta = 0;
                 }
 
-                double fills = ((double)curr / tot * width);
+                float fills = ((float)curr / tot * width);
                 int ifills = (int)fills;
 
                 printf("\015 ");
@@ -168,7 +168,7 @@ class tqdm {
                 if (use_colors) printf("\033[34m");
 
                 std::string unit = "Hz";
-                double div = 1.;
+                float div = 1.;
                 if (avgrate > 1e6) {
                     unit = "MHz"; div = 1.0e6;
                 } else if (avgrate > 1e3) {

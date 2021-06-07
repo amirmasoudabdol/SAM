@@ -68,7 +68,7 @@ public:
 
   /// Write each groups' data to a file, or a database
   /// @param data A reference to the Experiment->measurements
-  void write(std::vector<arma::Row<double>> &data, int sid = 0);
+  void write(std::vector<arma::Row<float>> &data, int sid = 0);
 
   /// Write part of the Experiment to a file, or a database
   /// @param A constance reference to the Experiment

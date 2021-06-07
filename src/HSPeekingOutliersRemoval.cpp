@@ -56,9 +56,9 @@ void PeekingOutliersRemoval::perform(Experiment *experiment) {
   
 }
 
-bool PeekingOutliersRemoval::removeOutliers(Experiment *experiment, const int n, const double k) {
+bool PeekingOutliersRemoval::removeOutliers(Experiment *experiment, const int n, const float k) {
   
-  arma::rowvec standardized;
+  arma::Row<float> standardized;
   
   /// Removing outliers only from the original groups, see #104
   /// This is addressing the GroupPooling, and it doesn't have to do anything

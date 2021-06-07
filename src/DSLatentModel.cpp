@@ -66,7 +66,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   //
   //    gsl_matrix* allScores = gsl_matrix_calloc(nrows, nobs);
 
-  //   arma::Mat<double> allScores(nrows, nobs);
+  //   arma::Mat<float> allScores(nrows, nobs);
 
   // allScores = experiment->setup.getTrueValueOf("means.)]() +
 
@@ -103,7 +103,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   //    gsl_vector* scoreRow = gsl_vector_alloc(nobs);
   //    for (int r = 0; r < nrows; r++) {
   //        gsl_matrix_get_row(scoreRow, allScores, r);
-  //        experiment->items.push_back(std::vector<double>(scoreRow->data,
+  //        experiment->items.push_back(std::vector<float>(scoreRow->data,
   //        scoreRow->data + scoreRow->size));
   //    }
   //
@@ -117,7 +117,7 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   ////    }
   //
   //    for (int g = 0; g < ng; g++) {
-  //        experiment->measurements.push_back(std::vector<double>(nobs));
+  //        experiment->measurements.push_back(std::vector<float>(nobs));
   //    }
   //
   //    int rowOffset = 0;
@@ -157,12 +157,12 @@ void LatentDataStrategy::genData(Experiment *experiment) {
   // return measurements;
 }
 
-std::vector<arma::Row<double>>
+std::vector<arma::Row<float>>
 LatentDataStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                                                    int n_new_obs) {
   //    return
   //    this->secRngStream->mvnorm(experiment->setup.getTrueValueOf("mean"),
   //    experiment->setup.getTrueValueOf("sigm"), n_new_obs);
-  return std::vector<arma::Row<double>>();
+  return std::vector<arma::Row<float>>();
 }
 

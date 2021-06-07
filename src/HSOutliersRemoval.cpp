@@ -41,9 +41,9 @@ void OutliersRemoval::perform(Experiment *experiment) {
   }
 }
 
-bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const double k) {
+bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const float k) {
 
-  arma::rowvec standardized;
+  arma::Row<float> standardized;
   
   int begin {0};
   int end {0};

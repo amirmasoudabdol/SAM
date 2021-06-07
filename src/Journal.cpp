@@ -77,7 +77,7 @@ Journal::Journal(json &journal_config) {
     // we register their column names to the column database
     if (is_saving_summaries) {
       meta_stats_runners.try_emplace(
-          method_name, arma::running_stat_vec<arma::Row<double>>());
+          method_name, arma::running_stat_vec<arma::Row<float>>());
 
       // Prepare the column names for each aggregated method
       std::vector<std::string> meta_stats_cols;
@@ -157,14 +157,14 @@ bool Journal::review(std::vector<Submission> &subs) {
     // Stats runner over all publications of this journal
     if (is_saving_pubs_per_sim_summaries) {
       for (auto &s : subs) {
-        pubs_per_sim_stats_runner(static_cast<arma::rowvec>(s));
+        pubs_per_sim_stats_runner(static_cast<arma::Row<float>>(s));
       }
     }
 
     // Stat runner over all simulations
     if (is_saving_summaries) {
       for (auto &s : subs) {
-        pubs_stats_runner(static_cast<arma::rowvec>(s));
+        pubs_stats_runner(static_cast<arma::Row<float>>(s));
       }
     }
 
@@ -300,27 +300,27 @@ void Journal::updateMetaStatsRunners() {
 
   std::visit(overload{[&](FixedEffectEstimator::ResultType &res) {
                         meta_stats_runners["FixedEffectEstimator"](
-                            static_cast<arma::rowvec>(res));
+                            static_cast<arma::Row<float>>(res));
                       },
                       [&](RandomEffectEstimator::ResultType &res) {
                         meta_stats_runners["RandomEffectEstimator"](
-                            static_cast<arma::rowvec>(res));
+                            static_cast<arma::Row<float>>(res));
                       },
                       [&](EggersTestEstimator::ResultType &res) {
                         meta_stats_runners["EggersTestEstimator"](
-                            static_cast<arma::rowvec>(res));
+                            static_cast<arma::Row<float>>(res));
                       },
                       [&](TestOfObsOverExptSig::ResultType &res) {
                         meta_stats_runners["TestOfObsOverExptSig"](
-                            static_cast<arma::rowvec>(res));
+                            static_cast<arma::Row<float>>(res));
                       },
                       [&](TrimAndFill::ResultType &res) {
                         meta_stats_runners["TrimAndFill"](
-                            static_cast<arma::rowvec>(res));
+                            static_cast<arma::Row<float>>(res));
                       },
                       [&](RankCorrelation::ResultType &res) {
                         meta_stats_runners["RankCorrelation"](
-                            static_cast<arma::rowvec>(res));
+                            static_cast<arma::Row<float>>(res));
                       }},
              record);
 }

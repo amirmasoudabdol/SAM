@@ -74,7 +74,7 @@ void GroupPooling::pool(Experiment *experiment, int r) {
       for_each_reversible_circular_permutation(v.begin(), v.begin() + r,
                                                v.end(), collector());
 
-  std::vector<arma::Row<double>> pooled_groups;
+  std::vector<arma::Row<float>> pooled_groups;
 
   // Extending the measurements to avoid over-pooling, see #104
   //    experiment->measurements.resize(experiment->setup.ng() +
@@ -85,9 +85,9 @@ void GroupPooling::pool(Experiment *experiment, int r) {
   //        for (int d = 0; d < experiment->setup.nd(); d++) {
   //
   //            // Creating an empty new group
-  ////            experiment->measurements.push_back(arma::Row<double>());
+  ////            experiment->measurements.push_back(arma::Row<float>());
   //
-  ////            arma::Row<double> new_group{experiment->measurements[per[0]]};
+  ////            arma::Row<float> new_group{experiment->measurements[per[0]]};
   //
   //            for (int i = 0; i < r ; i++){
   //

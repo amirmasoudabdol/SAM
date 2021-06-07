@@ -29,7 +29,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 50,
+        "max_pubs": 5000,
         "review_strategy": {
             "name": "FreeSelection"
         }
@@ -89,7 +89,7 @@
     "simulation_parameters": {
         "log_level": "trace",
         "master_seed": 3919712220,
-        "n_sims": 1,
+        "n_sims": 100000,
         "output_path": "../outputs/",
         "output_prefix": "sample_simulation",
         "update_config": true,

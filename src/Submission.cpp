@@ -53,15 +53,15 @@ Submission::operator std::map<std::string, std::string>() {
   return record;
 }
 
-Submission::operator arma::Row<double>() {
+Submission::operator arma::Row<float>() {
   
-  arma::Row<double> row {
-    static_cast<double>(simid),
-    static_cast<double>(exprid),
-    static_cast<double>(repid),
-    static_cast<double>(pubid)};
+  arma::Row<float> row {
+    static_cast<float>(simid),
+    static_cast<float>(exprid),
+    static_cast<float>(repid),
+    static_cast<float>(pubid)};
   
-  row.insert_cols(row.n_elem, static_cast<arma::Row<double>>(dv_));
+  row.insert_cols(row.n_elem, static_cast<arma::Row<float>>(dv_));
   
   return row;
 }

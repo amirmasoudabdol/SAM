@@ -25,7 +25,7 @@ void OptionalStopping::perform(Experiment *experiment) {
   if (params.num.is_empty()) {
     
     /// Getting one random number since I want each group to have the same number of observations
-    double fraction {params.ratio};
+    float fraction {params.ratio};
     
     ns.imbue([&, i = 0]() mutable {
       return std::floor(fraction * experiment->dvs_[i++].nobs_);
