@@ -1,0 +1,1 @@
+This product uses [Armadillo C++ Library](http://arma.sourceforge.net) which is distributed under Apache 2.0 license.

@@ -1,9 +1,0 @@
-{
-    "name": "OptionalStopping",
-    "max_attempts": 1,
-    "n_attempts": 1,
-    "target": "Both",
-    "prevalence": 0.1,
-    "defensibility": 0.1,
-    "num": 10
-}
