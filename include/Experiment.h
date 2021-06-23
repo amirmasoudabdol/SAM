@@ -94,6 +94,15 @@ public:
              std::shared_ptr<TestStrategy> &ts,
              std::shared_ptr<EffectStrategy> &es);
   
+  /// Adds a new condition
+  void addNewCondition();
+  
+  /// Adds a new condition
+  void addNewCondition(const std::vector<DependentVariable>& dvs);
+  
+  /// Adds a new dependent variable to the list
+  void addNewDependentVariable(const DependentVariable& dv);
+  
   /// Adds new submissions to the list of submissions
   void addNewCandidates(const std::vector<Submission>& subs);
   

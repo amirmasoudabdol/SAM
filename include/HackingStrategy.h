@@ -149,6 +149,8 @@ public:
 
   OptionalStopping(const Parameters &p)
       : params{p} {
+        spdlog::debug("Preparing the Optional Stopping...");
+        
         stopping_condition = PolicyChain{p.stopping_cond_defs, PolicyChainType::Decision, lua};
         
         prevalence_ = params.prevalence;
@@ -474,7 +476,8 @@ class GroupPooling final : public HackingStrategy {
 public:
   struct Parameters {
     HackingMethod name = HackingMethod::GroupPooling;
-    std::vector<int> num = {2};
+//    std::vector<int> num = {2};
+    std::vector<std::vector<int>> pooled_conditions;
   };
 
   Parameters params;
@@ -483,17 +486,22 @@ public:
 
   GroupPooling(const Parameters &p)
       : params{p} {
-        
-        };
+        spdlog::debug("Preparing the Group Pooling...");
+  };
 
   void perform(Experiment *experiment) override;
 
 private:
   void pool(Experiment *experiment, int r);
+  
+  std::vector<DependentVariable> pool(Experiment *experiment, std::vector<int>& conds, int ng);
+  
+  DependentVariable pool(Experiment *experiment, std::vector<int>& gs);
 };
 
 inline void to_json(json &j, const GroupPooling::Parameters &p) {
-  j = json{{"name", p.name}, {"num", p.num}};
+  j = json{{"name", p.name},
+            {"pooled_conditions", p.pooled_conditions}};
 }
 
 inline void from_json(const json &j, GroupPooling::Parameters &p) {
@@ -502,7 +510,7 @@ inline void from_json(const json &j, GroupPooling::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  j.at("num").get_to(p.num);
+  j.at("pooled_conditions").get_to(p.pooled_conditions);
 }
 
 class ConditionDropping : public HackingStrategy {

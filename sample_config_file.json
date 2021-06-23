@@ -1,6 +1,6 @@
 {
     "experiment_parameters": {
-        "n_conditions": 2,
+        "n_conditions": 3,
         "n_dep_vars": 2,
         "n_obs": 20,
         "n_reps": 1,
@@ -11,6 +11,8 @@
                 "means": [
                     0.0,
                     0.0,
+                    0.0,
+                    0.25,
                     0.25,
                     0.25
                 ],
@@ -29,7 +31,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 5000,
+        "max_pubs": 25,
         "review_strategy": {
             "name": "FreeSelection"
         }
@@ -38,7 +40,7 @@
         "research_strategy": {
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
-                ["id == 2"]
+                ["min(pvalue)"]
             ],
             "between_stashed_selection_policies": [
                 [
@@ -66,30 +68,33 @@
                 ]
             ]
         },
-        "probability_of_being_a_hacker": 0,
+        "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 1,
+        "hacking_strategies": [
+            [
+                {
+                    "name": "GroupPooling",
+                    "pooled_conditions": [[1, 2], [0, 1, 2]]
+                },
+                [
+                    [
+                        "min(pvalue)"
+                    ]
+                ],
+                [
+                    "!sig"
+                ]
+            ]
+        ],
         "is_pre_processing": false,
         "pre_processing_methods": [
-            {
-                "name": "OutliersRemoval",
-                "max_attempts": 1,
-                "min_observations": 1,
-                "multipliers": [
-                    2
-                ],
-                "n_attempts": 1,
-                "target": "Both",
-                "prevalence": 0.1,
-                "defensibility": 0.1,
-                "num": 10,
-                "order": "random"
-            }
+            ""
         ]
     },
     "simulation_parameters": {
         "log_level": "trace",
         "master_seed": 3919712220,
-        "n_sims": 100000,
+        "n_sims": 1,
         "output_path": "../outputs/",
         "output_prefix": "sample_simulation",
         "update_config": true,

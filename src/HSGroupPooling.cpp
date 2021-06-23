@@ -2,9 +2,12 @@
 // Created by Amir Masoud Abdol on 18/03/2020.
 //
 
+#include "DependentVariable.h"
 #include "utils/permutation.h"
 
 #include "HackingStrategy.h"
+#include <algorithm>
+#include <vector>
 
 using namespace sam;
 
@@ -15,35 +18,66 @@ using namespace sam;
 /// @param      researchStrategy  A pointer to researcher's research strategy
 ///
 void GroupPooling::perform(Experiment *experiment) {
+  
+  spdlog::debug("Group Pooling");
+  
+  // Pooling groups together
+  
+  // we add a new condition for every new pooled group
+  for (auto &conds : params.pooled_conditions){
+    
+    
+    // keeping the original ng_ to be able to calculate the iD of the new dvs_
+    int ng = experiment->setup.ng();
+    
+    /// @todo this can be replaced by addNewDependentVariable
+    auto pooled_dv = pool(experiment, conds, ng);
+    
+    /// adding a new group
+    /// @todo This can be replaced by addNewCondition
+    experiment->setup.setNC(experiment->setup.nc() + 1);
+    experiment->dvs_.insert(experiment->dvs_.end(), pooled_dv.begin(), pooled_dv.end());
+    
+  }
+  
+  experiment->recalculateEverything();
+  
+  spdlog::trace("{}", *experiment);
+}
 
-  //    spdlog::debug("Group Pooling");
-  //
-  //    if (experiment->setup.nc() < 2){
-  //        /// TODO: This should probably not be a throw and just a
-  //        /// message. It's not a big deal after all, and I don't want to stop
-  //        the program from running throw std::domain_error("There is not
-  //        enough groups for pooling.");
-  //    }
-  //
-  //    // Pooling groups together
-  //    for (auto &r : params.nums){
-  //        pool(experiment, r);
-  //    }
-  //
-  //    // TODO: Improve me! This is very ugly and prune to error
-  //    int new_ng = experiment->setup.ng();
-  //
-  //    std::logic_error("I'm broken! Don't use me yet!");
-  //    experiment->initResources();
-  //
-  //    experiment->calculateStatistics();
-  //    experiment->calculateEffects();
-  //    experiment->calculateTests();
-  //
-  //    if (!researchStrategy->verdict(*experiment,
-  //    DecisionStage::WhileHacking).isStillHacking()){
-  //        return ;
-  //    }
+std::vector<DependentVariable> GroupPooling::pool(Experiment *experiment, std::vector<int>& conds, int ng) {
+  
+  std::vector<DependentVariable> pooled_dvs;
+  std::vector<std::vector<int>> gs(experiment->setup.nd());
+  
+  /// @todo this can be replaced by std::algorithm
+  
+  // generating a table of indices for dvs that are going to be pooled together
+  for (int i{0}; i < experiment->setup.nd(); ++i) {
+    for (auto &c : conds) {
+      gs[i].push_back(experiment->setup.nd() * c + i);
+    }
+  }
+  
+  /// actually pooling the dvs together
+  for (auto &g : gs) {
+    pooled_dvs.push_back(pool(experiment, g));
+    pooled_dvs.back().id_ = ng++;
+  }
+  
+  return pooled_dvs;
+  
+}
+
+DependentVariable GroupPooling::pool(Experiment *experiment, std::vector<int>& gs) {
+  
+  DependentVariable grouped_dv;
+  for (auto &g : gs) {
+    grouped_dv.addNewMeasurements(experiment->dvs_[g].measurements());
+  }
+  
+  return grouped_dv;
+  
 }
 
 /// Create a new group by pooling (adding) data from `r` groups together.
@@ -56,30 +90,30 @@ void GroupPooling::perform(Experiment *experiment) {
 void GroupPooling::pool(Experiment *experiment, int r) {
   // Length of each permutation
   //    const int r = _num;
-
+  
   // Original number of conditions
   const int n = experiment->setup.nc();
-
+  
   // List of groups participating in the pool.
   std::vector<int> v(n);
-
+  
   /// Note: This starts from `1` because the first group is the control group
   /// and it should not be included in the pooling. See #194. This is a bit
   /// different than before where I was using population parameters to run the
   /// t-test.
   std::iota(v.begin(), v.end(), 1); // Filling v with range(1, n)
-
+  
   // Gets the list of all permutation
   std::vector<std::vector<int>> permutations =
-      for_each_reversible_circular_permutation(v.begin(), v.begin() + r,
-                                               v.end(), collector());
-
+  for_each_reversible_circular_permutation(v.begin(), v.begin() + r,
+                                           v.end(), collector());
+  
   std::vector<arma::Row<float>> pooled_groups;
-
+  
   // Extending the measurements to avoid over-pooling, see #104
   //    experiment->measurements.resize(experiment->setup.ng() +
   //    permutations.size() * experiment->setup.nd());
-
+  
   //    for (auto &per : permutations) {
   //
   //        for (int d = 0; d < experiment->setup.nd(); d++) {
