@@ -17,7 +17,7 @@
                     0.25
                 ],
                 "covs": 0.5,
-                "stddevs": 1
+                "stddevs": 5
             }
         },
         "effect_strategy": {
@@ -71,6 +71,33 @@
         "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 1,
         "hacking_strategies": [
+            [
+                {
+                    "name": "OutliersRemoval",
+                    "max_attempts": 1,
+                    "min_observations": 1,
+                    "multipliers": [
+                        2
+                    ],
+                    "side": -1,
+                    "n_attempts": 1,
+                    "target": "Both",
+                    "prevalence": 0.1,
+                    "defensibility": 0.1,                           
+                    "num": 5,
+                    "order": "random"
+                },
+                [
+                    [
+                        "effect > 0",
+                        "min(pvalue)"
+                    ]
+                ],
+                [
+                    "effect < 0",
+                    "!sig"
+                ]
+            ],
             [
                 {
                     "name": "GroupPooling",

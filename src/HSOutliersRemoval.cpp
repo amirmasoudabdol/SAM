@@ -24,7 +24,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
     /// more observations left to be removed
     for (int t = 0; t < params.n_attempts && res; ++t) {
 
-      res = this->removeOutliers(experiment, params.num, k);
+      res = this->removeOutliers(experiment, params.num, k, params.side);
       
       experiment->recalculateEverything();
       
@@ -41,9 +41,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
   }
 }
 
-bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const float k) {
-
-  arma::Row<float> standardized;
+bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const float k, const int side) {
   
   int begin {0};
   int end {0};
@@ -57,22 +55,30 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n, const 
     auto &row = (*experiment)[i].measurements();
 
     // At least one row has less than `min_observations`
-    if (row.size() <= params.min_observations)
+    if (row.size() <= params.min_observations) {
       return false; // Unsuccessful return, nothing has removed.
+    }
 
     // This trick makes finding the largest outlier easier. I'll see if I can
     // find a better way
-    if (params.order == "max first")
+    if (params.order == "max first") {
       row = sort(row);
+    }
 
-    standardized =
-        arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_;
-
+    arma::uvec inx;
+    
     // Finding the outliers, returning only `n` of them
-    arma::uvec inx = arma::find(standardized > k, n, "first");
+    if (side == 0) {
+      inx = arma::find(arma::abs(row - (*experiment)[i].mean_) / (*experiment)[i].stddev_ > k, n, "first");
+    }else if (side > 0){
+      inx = arma::find((row - (*experiment)[i].mean_) / (*experiment)[i].stddev_ > k, n, "first");
+    }else{
+      inx = arma::find((row - (*experiment)[i].mean_) / (*experiment)[i].stddev_ < -1 * k, n, "first");
+    }
 
-    if ((row.n_elem - inx.n_elem) <= params.min_observations)
+    if ((row.n_elem - inx.n_elem) <= params.min_observations) {
       inx = inx.head(row.n_elem - params.min_observations);
+    }
 
     (*experiment)[i].removeMeasurements(inx);
   }

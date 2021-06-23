@@ -290,6 +290,12 @@ public:
     //! A list of standard deviation multipliers for identifying outliers
     std::vector<float> multipliers = {3};
     
+    //! Indicates the side where the outliers should be removed from,
+    //!   - side == 0 → |Z| < k
+    //!   - side == 1 →   Z > k
+    //!   - side == -1 →  Z < k
+    int side{0};
+    
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
@@ -322,7 +328,7 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
-  bool removeOutliers(Experiment *experiment, const int n, const float k);
+  bool removeOutliers(Experiment *experiment, const int n, const float k, const int side);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -333,6 +339,7 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
+           {"side", p.side},
            {"prevalence", p.prevalence},
            {"defensibility", p.defensibility},
            {"stage", p.stage},
@@ -351,6 +358,8 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
+  if (j.contains("side"))
+    j.at("side").get_to(p.side);
   
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
