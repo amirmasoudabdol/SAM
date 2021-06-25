@@ -35,6 +35,9 @@ Experiment::Experiment(json &experiment_config) {
   // Setup Effect Strategy
   this->effect_strategy =
       EffectStrategy::build(experiment_config["effect_strategy"]);
+  
+  // Preparing the covariant info
+  n_covariants = experiment_config["n_covariants"];
 
   // Initializing the memory
   initResources();
@@ -89,6 +92,24 @@ void Experiment::addNewCandidates(const std::vector<Submission>& subs) {
 
 void Experiment::generateData() {
   data_strategy->genData(this);
+}
+
+
+void Experiment::generateCovariants() {
+  
+  if (!is_covariants_generated) {
+  
+    /// @Todo Check if all groups are the same size
+    covariants.resize(setup.nobs().max(), n_covariants);
+    covariants.fill(0);
+    
+    for (int i = 0; i < n_covariants; ++i) {
+      covariants.col(i).head(dvs_[i].nobs_ / 2).fill(1);
+      covariants.col(i) = arma::shuffle(covariants.col(i));
+    }
+    
+    is_covariants_generated = true;
+  }
 }
 
 void Experiment::calculateTests() {
@@ -257,6 +278,14 @@ bool Experiment::hasCandidates() const {
 ///
 size_t Experiment::nCandidates() const {
   return std::count_if(dvs_.begin(), dvs_.end(), [](auto &dv){return dv.isCandidate();});
+}
+
+int Experiment::nCovariants() const {
+  return n_covariants;
+}
+
+bool Experiment::hasCovariants() const {
+  return (n_covariants != 0);
 }
 
 ///

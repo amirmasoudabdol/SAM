@@ -1151,9 +1151,6 @@ public:
     //! @todo To be implemented
     //    PolicyChain target_policy;
     
-    //! Number of observations to be perturbed
-    int n_covariants;
-    
     //! List of condition groups to be used for the dropping procedure
     std::vector<std::vector<int>> pooled;
     
@@ -1179,7 +1176,6 @@ public:
   Parameters params;
   PolicyChain stopping_condition;
   
-  
   OptionalDropping() = default;
   
   OptionalDropping(const Parameters &p) : params{p} {
@@ -1196,9 +1192,6 @@ public:
   
 private:
   
-  bool is_initialized{false};
-  arma::Mat<int> covariants;
-  
   std::vector<DependentVariable> split(Experiment *experiment, std::vector<int> &conds, std::vector<int> &by, int ng);
   DependentVariable split(Experiment *experiment, std::vector<int>& gs, arma::uvec cov);
   
@@ -1206,7 +1199,6 @@ private:
 
 inline void to_json(json &j, const OptionalDropping::Parameters &p) {
   j = json{{"name", p.name},
-    {"n_covariants", p.n_covariants},
     {"pooled", p.pooled},
     {"split_by", p.split_by},
     {"prevalence", p.prevalence},
@@ -1221,7 +1213,6 @@ inline void from_json(const json &j, OptionalDropping::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
   
-  j.at("n_covariants").get_to(p.n_covariants);
   j.at("pooled").get_to(p.pooled);
   j.at("split_by").get_to(p.split_by);
   

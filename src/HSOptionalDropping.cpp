@@ -6,36 +6,27 @@
 
 using namespace sam;
 
+
 void OptionalDropping::perform(Experiment *experiment) {
   spdlog::debug("Optional Dropping: ");
   
   
-  if (!is_initialized) {
-
-    /// @todo check if groups are all the same size
-    /// @todo This needs to be moved to the experiment
-
-    covariants.resize(experiment->setup.nobs().max(), params.n_covariants);
-    covariants.fill(0);
-    
-    for (int i = 0; i < params.n_covariants; ++i) {
-      covariants.col(i).head(experiment->dvs_[i].nobs_ / 2).fill(1);
-      covariants.col(i) = arma::shuffle(covariants.col(i));
-    }
-    
-    is_initialized = false;
+  if (experiment->hasCovariants()) {
+    // This generates covariants only if it's not already been generated!
+    experiment->generateCovariants();
   }
   
-  
   for (auto &conds : params.pooled) {
-    int ng = experiment->setup.ng();
     
     for (auto &by : params.split_by) {
+      int ng = experiment->setup.ng();
       
       auto splitted_dvs = split(experiment, conds, by, ng);
       
-      experiment->setup.setNC(experiment->setup.nc() + 1);
+      experiment->setup.setNC(experiment->setup.nc() + conds.size());
       experiment->dvs_.insert(experiment->dvs_.end(), splitted_dvs.begin(), splitted_dvs.end());
+      
+      spdlog::trace("{}", *experiment);
       
       experiment->recalculateEverything();
       
@@ -69,7 +60,7 @@ std::vector<DependentVariable> OptionalDropping::split(Experiment *experiment, s
   }
   
   /// Getting the right indices for splitting
-  arma::uvec indices = arma::find(covariants.col(by[0]) == by[1]);
+  arma::uvec indices = arma::find(experiment->covariants.col(by[0]) == by[1]);
   
   /// actually pooling the dvs together
   for (auto &gs : dv_pairs) {

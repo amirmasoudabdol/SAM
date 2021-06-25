@@ -4,6 +4,7 @@
         "n_dep_vars": 2,
         "n_obs": 20,
         "n_reps": 1,
+        "n_covariants": 3,
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
@@ -31,7 +32,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 50,
+        "max_pubs": 14,
         "review_strategy": {
             "name": "FreeSelection"
         }
@@ -74,20 +75,17 @@
             [
                 {
                     "name": "OptionalDropping",
-                    "pooled": [[1, 2]],
-                    "n_covariants": 3,
+                    "pooled": [[1]],
                     "split_by": [[0, 0], [0, 1]],
                     "stopping_condition": ["sig"]
                 },
                 [
                     [
-                        "effect > 0",
                         "min(pvalue)"
                     ]
                 ],
                 [
-                    "effect < 0",
-                    "!sig"
+                    "effect > 0"
                 ]
             ]
         ],
