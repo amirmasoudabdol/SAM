@@ -96,9 +96,7 @@ private:
 
 class NoHack final : public HackingStrategy {
 public:
-  NoHack(){
-
-  };
+  NoHack()= default;
 
 private:
   void perform(Experiment *experiment) override{};
@@ -147,7 +145,7 @@ public:
 
   OptionalStopping() = default;
 
-  OptionalStopping(const Parameters &p)
+  explicit OptionalStopping(const Parameters &p)
       : params{p} {
         spdlog::debug("Preparing the Optional Stopping...");
         
@@ -316,7 +314,7 @@ public:
 
   OutliersRemoval() = default;
 
-  OutliersRemoval(const Parameters &p)
+  explicit OutliersRemoval(const Parameters &p)
       : params{p} {
         stopping_condition = PolicyChain(params.stopping_cond_defs,
                                          PolicyChainType::Decision,
@@ -441,7 +439,7 @@ public:
 
   SubjectiveOutlierRemoval() = default;
 
-  SubjectiveOutlierRemoval(const Parameters &p)
+  explicit SubjectiveOutlierRemoval(const Parameters &p)
       : params(p) {
           stopping_condition = PolicyChain(params.stopping_cond_defs,
                                            PolicyChainType::Decision,
@@ -507,7 +505,7 @@ public:
 
   GroupPooling() = default;
 
-  GroupPooling(const Parameters &p)
+  explicit GroupPooling(const Parameters &p)
       : params{p} {
         spdlog::debug("Preparing the Group Pooling...");
   };
@@ -549,7 +547,7 @@ public:
 
   Parameters params;
 
-  ConditionDropping(const Parameters &p)
+  explicit ConditionDropping(const Parameters &p)
       : params{p} {
         std::cerr << "To Be Implemented!";
         exit(1);
@@ -634,7 +632,7 @@ public:
   
   QuestionableRounding() = default;
   
-  QuestionableRounding(const Parameters &p) : params{p} {
+  explicit QuestionableRounding(const Parameters &p) : params{p} {
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
@@ -715,7 +713,7 @@ public:
   
   PeekingOutliersRemoval() = default;
   
-  PeekingOutliersRemoval(const Parameters &p) : params{p} {
+  explicit PeekingOutliersRemoval(const Parameters &p) : params{p} {
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
@@ -843,7 +841,7 @@ public:
   
   FalsifyingData() = default;
   
-  FalsifyingData(const Parameters &p) : params{p} {
+  explicit FalsifyingData(const Parameters &p) : params{p} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -973,7 +971,7 @@ public:
   
   FabricatingData() = default;
   
-  FabricatingData(const Parameters &p) : params{p} {
+  explicit FabricatingData(const Parameters &p) : params{p} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1082,7 +1080,7 @@ public:
   
   StoppingDataCollection() = default;
   
-  StoppingDataCollection(const Parameters &p) : params{p} {
+  explicit StoppingDataCollection(const Parameters &p) : params{p} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1119,11 +1117,13 @@ inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
     
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 
@@ -1190,7 +1190,7 @@ public:
   
   OptionalDropping() = default;
   
-  OptionalDropping(const Parameters &p) : params{p} {
+  explicit OptionalDropping(const Parameters &p) : params{p} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);

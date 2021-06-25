@@ -65,7 +65,7 @@ public:
   int repid{0};
   
   //! Indicates the number of covariants
-  int n_covariants;
+  int n_covariants{0};
   arma::Mat<int> covariants;
 
   //! An instance of the ExperimentSetup. All other strategies can access and query it
