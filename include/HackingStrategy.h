@@ -1103,6 +1103,130 @@ inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
 }
 
 
+/// Optional Dropping Hacking Strategy
+///
+/// @ingroup HackingStrategies
+class OptionalDropping final : public HackingStrategy {
+  
+public:
+  
+  /// Optional Dropping Collection Parameters
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "OptionalDropping",
+  ///    "n_covariants": 3,
+  ///    "stopping_condition": ["sig"]
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::OptionalDropping;
+    
+    //! Indicates which outcome variables are going to be targeted,
+    //!   - control
+    //!   - treatment
+    //!   - both
+    //! @todo to be implemented
+    HackingTarget target {HackingTarget::Both};
+    
+    //! Indicates a set of rule that is going to be used to select the target group
+    //! @todo To be implemented
+    //    PolicyChain target_policy;
+    
+    //! Number of observations to be perturbed
+    int n_covariants;
+    
+    //! List of condition groups to be used for the dropping procedure
+    std::vector<std::vector<int>> pooled;
+    
+    std::vector<std::vector<int>> split_by;
+    
+    //! Covariants Distribution
+    std::optional<UnivariateDistribution> covariant_dist = makeUnivariateDistribution({
+      {"dist", "bernoulli_distribution"},
+      {"p", 0.5}
+    });
+    
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs {"sig"};
+    
+    float defensibility {0.05};
+    
+    float prevalence {0.1};
+    
+    HackingStage stage {HackingStage::PostProcessing};
+    
+  };
+  
+  Parameters params;
+  PolicyChain stopping_condition;
+  
+  
+  OptionalDropping() = default;
+  
+  OptionalDropping(const Parameters &p) : params{p} {
+    stopping_condition = PolicyChain(params.stopping_cond_defs,
+                                     PolicyChainType::Decision,
+                                     lua);
+    
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
+  
+  void perform(Experiment *experiment) override;
+  
+private:
+  
+  bool is_initialized{false};
+  arma::Mat<int> covariants;
+  
+  std::vector<DependentVariable> split(Experiment *experiment, std::vector<int> &conds, std::vector<int> &by, int ng);
+  DependentVariable split(Experiment *experiment, std::vector<int>& gs, arma::uvec cov);
+  
+};
+
+inline void to_json(json &j, const OptionalDropping::Parameters &p) {
+  j = json{{"name", p.name},
+    {"n_covariants", p.n_covariants},
+    {"pooled", p.pooled},
+    {"split_by", p.split_by},
+    {"prevalence", p.prevalence},
+    {"defensibility", p.defensibility},
+    {"stage", p.stage},
+    {"stopping_condition", p.stopping_cond_defs}};
+}
+
+inline void from_json(const json &j, OptionalDropping::Parameters &p) {
+  
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  
+  j.at("n_covariants").get_to(p.n_covariants);
+  j.at("pooled").get_to(p.pooled);
+  j.at("split_by").get_to(p.split_by);
+  
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+  
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
+  
+  if (j.contains("stage"))
+    j.at("stage").get_to(p.stage);
+  
+  if (j.contains("stopping_condition"))
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+}
+
+
 } // namespace sam
 
 #endif // SAMPP_HACKINGSTRATEGIES_H

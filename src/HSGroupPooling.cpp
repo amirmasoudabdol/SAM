@@ -62,6 +62,8 @@ std::vector<DependentVariable> GroupPooling::pool(Experiment *experiment, std::v
   /// actually pooling the dvs together
   for (auto &g : gs) {
     pooled_dvs.push_back(pool(experiment, g));
+    
+    // updating the id; otherwise, it's Lua would have problem with filtering
     pooled_dvs.back().id_ = ng++;
   }
   

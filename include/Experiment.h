@@ -95,9 +95,11 @@ public:
              std::shared_ptr<EffectStrategy> &es);
   
   /// Adds a new condition
+  /// @TODO TO BE IMPLEMENTED!
   void addNewCondition();
   
   /// Adds a new condition
+  /// @TODO TO BE IMPLEMENTED!
   void addNewCondition(const std::vector<DependentVariable>& dvs);
   
   /// Adds a new dependent variable to the list

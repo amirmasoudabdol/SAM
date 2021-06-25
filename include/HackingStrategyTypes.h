@@ -23,6 +23,7 @@ enum class HackingMethod {
   FalsifyingData,
   FabricatingData,
   StoppingDataCollection,
+  OptionalDropping,
   NoHack = -1   /// @todo I probably don't need this!
 };
 
@@ -38,6 +39,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {HackingMethod::FalsifyingData, "FalsifyingData"},
      {HackingMethod::FabricatingData, "FabricatingData"},
      {HackingMethod::StoppingDataCollection, "StoppingDataCollection"},
+     {HackingMethod::OptionalDropping, "OptionalDropping"},
      {HackingMethod::NoHack, "NoHack"}})
 
 ///

@@ -112,6 +112,12 @@ HackingStrategy::build(json &hacking_strategy_config) {
     hacking_strategy_config.get<StoppingDataCollection::Parameters>();
     return std::make_unique<StoppingDataCollection>(params);
     
+  } else if (hacking_strategy_config["name"] == "OptionalDropping") {
+    
+    auto params =
+    hacking_strategy_config.get<OptionalDropping::Parameters>();
+    return std::make_unique<OptionalDropping>(params);
+    
   } else if (hacking_strategy_config["name"] == "NoHack") {
 
     return std::make_unique<NoHack>();

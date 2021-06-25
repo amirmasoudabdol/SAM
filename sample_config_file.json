@@ -17,7 +17,7 @@
                     0.25
                 ],
                 "covs": 0.5,
-                "stddevs": 5
+                "stddevs": 1
             }
         },
         "effect_strategy": {
@@ -31,7 +31,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 25,
+        "max_pubs": 50,
         "review_strategy": {
             "name": "FreeSelection"
         }
@@ -73,19 +73,11 @@
         "hacking_strategies": [
             [
                 {
-                    "name": "OutliersRemoval",
-                    "max_attempts": 1,
-                    "min_observations": 1,
-                    "multipliers": [
-                        2
-                    ],
-                    "side": -1,
-                    "n_attempts": 1,
-                    "target": "Both",
-                    "prevalence": 0.1,
-                    "defensibility": 0.1,                           
-                    "num": 5,
-                    "order": "random"
+                    "name": "OptionalDropping",
+                    "pooled": [[1, 2]],
+                    "n_covariants": 3,
+                    "split_by": [[0, 0], [0, 1]],
+                    "stopping_condition": ["sig"]
                 },
                 [
                     [
@@ -95,20 +87,6 @@
                 ],
                 [
                     "effect < 0",
-                    "!sig"
-                ]
-            ],
-            [
-                {
-                    "name": "GroupPooling",
-                    "pooled_conditions": [[1, 2], [0, 1, 2]]
-                },
-                [
-                    [
-                        "min(pvalue)"
-                    ]
-                ],
-                [
                     "!sig"
                 ]
             ]
