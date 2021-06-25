@@ -194,12 +194,13 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  if (j.contains("num"))
+  if (j.contains("num")) {
     p.num = Parameter<int>(j.at("num"), 1);
-  else if (j.contains("ratio"))
+  } else if (j.contains("ratio")) {
     p.ratio = Parameter<float>(j.at("ratio"), 1);
-  else
+  } else {
     throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
+  }
   
   j.at("target").get_to(p.target);
   
@@ -208,11 +209,13 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
   
 }
 
@@ -358,17 +361,20 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
-  if (j.contains("side"))
+  if (j.contains("side")) {
     j.at("side").get_to(p.side);
+  }
   
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 ///
@@ -473,11 +479,13 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 class GroupPooling final : public HackingStrategy {
@@ -871,21 +879,25 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
-  if (j.contains("switching_direction"))
+  if (j.contains("switching_direction")) {
     j.at("switching_direction").get_to(p.switching_direction);
+  }
 
-  if (j.contains("selection_method"))
+  if (j.contains("selection_method")) {
     j.at("selection_method").get_to(p.selection_method);
+  }
 
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
   if (j.contains("noise")) {
     p.noise_dist = makeUnivariateDistribution(j["noise"]);
   }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 
@@ -994,15 +1006,17 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   j.at("prevalence").get_to(p.prevalence);
   j.at("defensibility").get_to(p.defensibility);
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
   if (j.contains("dist")) {
     p.dist = makeUnivariateDistribution(j["dist"]);
   }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
         
@@ -1219,11 +1233,13 @@ inline void from_json(const json &j, OptionalDropping::Parameters &p) {
     j.at("defensibility").get_to(p.defensibility);
   }
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 
