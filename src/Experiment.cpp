@@ -37,7 +37,9 @@ Experiment::Experiment(json &experiment_config) {
       EffectStrategy::build(experiment_config["effect_strategy"]);
   
   // Preparing the covariant info
-  n_covariants = experiment_config["n_covariants"];
+  if (experiment_config.contains("n_covariants")) {
+    n_covariants = experiment_config["n_covariants"];
+  }
 
   // Initializing the memory
   initResources();

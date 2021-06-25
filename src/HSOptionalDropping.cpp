@@ -11,9 +11,12 @@ void OptionalDropping::perform(Experiment *experiment) {
   spdlog::debug("Optional Dropping: ");
   
   
+  // This generates covariants only if it's not already been generated!
   if (experiment->hasCovariants()) {
-    // This generates covariants only if it's not already been generated!
     experiment->generateCovariants();
+  } else {
+    spdlog::critical("Covariants are not defined! Use `n_covariants` to define the number of covariants.");
+    exit(1);
   }
   
   for (auto &conds : params.pooled) {
@@ -25,8 +28,6 @@ void OptionalDropping::perform(Experiment *experiment) {
       
       experiment->setup.setNC(experiment->setup.nc() + conds.size());
       experiment->dvs_.insert(experiment->dvs_.end(), splitted_dvs.begin(), splitted_dvs.end());
-      
-      spdlog::trace("{}", *experiment);
       
       experiment->recalculateEverything();
       
