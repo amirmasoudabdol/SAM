@@ -488,12 +488,18 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
   }
 }
 
+/// Declaration of GroupPooling hacking strategy
+///
+/// @ingroup  HackingStrategies
+///
 class GroupPooling final : public HackingStrategy {
 
 public:
   struct Parameters {
+    //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::GroupPooling;
-//    std::vector<int> num = {2};
+    
+    //! List of paired indices indicating which groups should be pooled together.
     std::vector<std::vector<int>> pooled_conditions;
   };
 
@@ -511,8 +517,12 @@ public:
 private:
   void pool(Experiment *experiment, int r);
   
+  /// Goes through all set of group pairs defined in `pooled_conditions`, pooled their
+  /// DVs together, and adds them to the Experiment.
   std::vector<DependentVariable> pool(Experiment *experiment, std::vector<int>& conds, int ng);
   
+  /// Pools the values of two dependent variables together, and generates a new
+  /// DependentVariable object
   DependentVariable pool(Experiment *experiment, std::vector<int>& gs);
 };
 
@@ -1119,6 +1129,9 @@ inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
 
 /// Optional Dropping Hacking Strategy
 ///
+/// The _Optional Dropping_ algorithm uses the covariant values to split the dataset, and
+/// generates new condition groups.
+///
 /// @ingroup HackingStrategies
 class OptionalDropping final : public HackingStrategy {
   
@@ -1126,11 +1139,16 @@ public:
   
   /// Optional Dropping Collection Parameters
   ///
+  /// Indicates the indicies of groups that you like to be used for splitting in `pooled`
+  /// variable, e.g. [[1]], the first treatment group; and then use the `split_by`
+  /// parameters to define the [index, value] of the covariants.
+  ///
   /// Example usage:
   /// ```json
   ///  {
   ///    "name": "OptionalDropping",
-  ///    "n_covariants": 3,
+  ///    "pooled": [[1]],
+  ///    "split_by": [[0, 1]],
   ///    "stopping_condition": ["sig"]
   ///  }
   /// ```
@@ -1147,20 +1165,14 @@ public:
     //! @todo to be implemented
     HackingTarget target {HackingTarget::Both};
     
-    //! Indicates a set of rule that is going to be used to select the target group
-    //! @todo To be implemented
-    //    PolicyChain target_policy;
-    
     //! List of condition groups to be used for the dropping procedure
     std::vector<std::vector<int>> pooled;
     
+    //! Lists of covariants index, and their value pairs, e.g., [[0, 0], [0, 1]],
+    //! that is going to be used by the algorithm to split the dependent variables.
+    //! In this case, the data will be splitted by the first covariants (level == 0), and
+    //! then by the second covariants (level == 1).
     std::vector<std::vector<int>> split_by;
-    
-    //! Covariants Distribution
-    std::optional<UnivariateDistribution> covariant_dist = makeUnivariateDistribution({
-      {"dist", "bernoulli_distribution"},
-      {"p", 0.5}
-    });
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {"sig"};
