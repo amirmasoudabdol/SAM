@@ -73,6 +73,24 @@
         "probability_of_committing_a_hack": 1,
         "hacking_strategies": [
             [
+                        {
+                            "name": "OptionalStopping",
+                            "target": "Both",
+                            "max_attempts": 1,
+                            "n_attempts": 1,
+                            "num": 0,
+                            "ratio": 0.3
+                        },
+                        [
+                            [
+                                "min(pvalue)"
+                            ]
+                        ],
+                        [
+                            "!sig"
+                        ]
+            ],
+            [
                 {
                     "name": "OptionalDropping",
                     "pooled": [[1]],

@@ -132,10 +132,13 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    float defensibility {0.1};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
-    float prevalence {0.7};
-    
+    //! The prevalence factor of the strategy
+    float prevalence;
+
+    //! Execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
     
   };
@@ -199,13 +202,20 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   } else {
     throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
   }
-  
-  j.at("target").get_to(p.target);
+
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
   
   p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
@@ -220,7 +230,11 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
 
 
 
-
+///
+///
+/// @param experiment a pointer to the Experiment object
+/// @param target
+/// @return
 static std::pair<int, int>
 getTargetBounds(Experiment *experiment, HackingTarget &target) {
   static int s, e;
@@ -279,17 +293,17 @@ public:
     std::string order {"max first"};
 
     //! Indicates the number of outliers to be removed in each iteration
-    int num{3};
+    int num;
 
     //! Indicates the total number of attempts, i.e., _iterations_, to remove
     //! outliers
-    int n_attempts{1};
+    int n_attempts {1};
 
     //! Indicates the minimum number of observations allowed during the process
-    int min_observations{15};
+    int min_observations;
 
     //! A list of standard deviation multipliers for identifying outliers
-    std::vector<float> multipliers = {3};
+    std::vector<float> multipliers;
     
     //! Indicates the side where the outliers should be removed from,
     //!   - side == 0 → |Z| < k
@@ -300,9 +314,11 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    float defensibility {0.5};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
-    float prevalence {0.7};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -353,7 +369,10 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  j.at("target").get_to(p.target);
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
@@ -362,9 +381,14 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   if (j.contains("side")) {
     j.at("side").get_to(p.side);
   }
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
@@ -416,20 +440,22 @@ public:
     HackingTarget target {HackingTarget::Both};
 
     //! A vector of `{min, max}`, defining the range of `K`.
-    std::vector<int> range{2, 4};
+    std::vector<int> range;
 
     //! Indicates the step size of walking through K's
-    float step_size{0.1};
+    float step_size;
 
     //! Indicates minimum number of observations
-    int min_observations{5};
+    int min_observations;
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {{"sig"}};
     
-    float prevalence {0.1};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
-    float defensibility {0.1};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -473,9 +499,14 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
   j.at("range").get_to(p.range);
   j.at("step_size").get_to(p.step_size);
   j.at("min_observations").get_to(p.min_observations);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
@@ -603,7 +634,7 @@ public:
     
     //! Indicates the distance between the pvalue and alpha by which the researcher
     //! considers to round the pvalue to significance
-    float threshold {0.005};
+    float threshold;
     
     /// Rounding Method
     /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
@@ -614,9 +645,11 @@ public:
     /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
     std::string rounding_method = "diff";
     
-    float prevalence {0.9};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
-    float defensibility {0.7};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
     HackingStage stage {HackingStage::Reporting};
     
@@ -681,17 +714,17 @@ public:
     std::string order {"max first"};
     
     //! Indicates the number of outliers to be removed in each iteration
-    int num{3};
+    int num;
     
     //! Indicates the total number of attempts, i.e., _iterations_, to remove
     //! outliers
-    int n_attempts{1};
+    int n_attempts {1};
     
     //! Indicates the minimum number of observations allowed during the process
-    int min_observations{15};
+    int min_observations;
     
     //! A list of standard deviation multipliers for identifying outliers
-    std::vector<float> multipliers = {3};
+    std::vector<float> multipliers;
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
@@ -699,9 +732,11 @@ public:
     //! Removing if
     std::vector<std::string> whether_to_save_cond_defs;
     
-    float prevalence {0.9};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
-    float defensibility {0.7};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -746,16 +781,24 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
   
-  j.at("target").get_to(p.target);
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
   j.at("whether_to_save_condition").get_to(p.whether_to_save_cond_defs);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("stage"))
     j.at("stage").get_to(p.stage);
@@ -817,21 +860,23 @@ public:
     int n_attempts {1};
     
     //! Number of observations to be perturbed
-    size_t num {5};
+    size_t num;
     
     //! Distribution of noise
     std::optional<UnivariateDistribution> noise_dist = makeUnivariateDistribution({
       {"dist", "normal_distribution"},
       {"mean", 0},
-      {"stddev", 0.1}
+      {"stddev", 1}
     });
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
     
-    float defensibility {0.05};
+    //! The defensibility factor of the strategy
+    float defensibility;
 
-    float prevalence {0.1};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -883,9 +928,18 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("num").get_to(p.num);
-  j.at("target").get_to(p.target);
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("switching_direction")) {
     j.at("switching_direction").get_to(p.switching_direction);
@@ -949,7 +1003,7 @@ public:
     int n_attempts {1};
     
     //! Number of observations to be perturbed
-    int num {5};
+    int num;
     
     //! Distribution of fabricated data
     //! @todo Check if this is even necessary, I think in most cases, we
@@ -958,10 +1012,12 @@ public:
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-      
-    float defensibility {0.05};
     
-    float prevalence {0.1};
+    //! The defensibility factor of the strategy  
+    float defensibility;
+    
+    //! The prevalence factor of the strategy
+    float prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -1010,9 +1066,18 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("num").get_to(p.num);
-  j.at("target").get_to(p.target);
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+  
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
@@ -1063,14 +1128,16 @@ public:
     //    PolicyChain target_policy;
         
     //! Number of observations to be perturbed
-    int batch_size {5};
+    int batch_size;
     
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {"sig"};
     
-    float defensibility {0.05};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
-    float prevalence {0.1};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
     HackingStage stage {HackingStage::DataCollection};
   };
@@ -1114,8 +1181,13 @@ inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
   
   j.at("batch_size").get_to(p.batch_size);
 
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
+  if (j.contains("prevalence")) {
+    j.at("prevalence").get_to(p.prevalence);
+  }
+
+  if (j.contains("defensibility")) {
+    j.at("defensibility").get_to(p.defensibility);
+  }
   
   if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
@@ -1177,9 +1249,11 @@ public:
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs {"sig"};
     
-    float defensibility {0.05};
+    //! The defensibility factor of the strategy
+    float defensibility;
     
-    float prevalence {0.1};
+    //! The prevalence factor of the strategy
+    float prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
     
