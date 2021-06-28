@@ -71,6 +71,8 @@
         },
         "probability_of_being_a_hacker": 1,
         "probability_of_committing_a_hack": 1,
+        "hacking_selection_priority": "asc(defensibility)",
+        "hacking_execution_order": "asc(defensibility)",
         "hacking_strategies": [
             [
                         {
@@ -78,6 +80,7 @@
                             "target": "Both",
                             "max_attempts": 1,
                             "n_attempts": 1,
+                            "defensibility": 0.1,
                             "num": 0,
                             "ratio": 0.3
                         },

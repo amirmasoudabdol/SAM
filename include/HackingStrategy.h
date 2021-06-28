@@ -22,6 +22,7 @@
 #define SAMPP_HACKINGSTRATEGIES_H
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "Distributions.h"
@@ -46,9 +47,9 @@ public:
   
   sol::state lua;
   
-  float defensibility_;
+  std::optional<float> defensibility_;
   
-  float prevalence_;
+  std::optional<float> prevalence_;
   
   HackingStage stage_;
   
@@ -74,11 +75,11 @@ public:
   };
   
   [[nodiscard]] float defensibility() const {
-    return defensibility_;
+    return defensibility_.value();
   }
 
   [[nodiscard]] float prevalence() const {
-    return prevalence_;
+    return prevalence_.value();
   }
 
   [[nodiscard]] HackingStage stage() const {
@@ -133,10 +134,10 @@ public:
     std::vector<std::string> stopping_cond_defs;
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
 
     //! Execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
@@ -182,11 +183,16 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"target", p.target},
            {"ratio", p.ratio},
-           {"defensibility", p.defensibility},
-           {"prevalence", p.prevalence},
            {"stage", p.stage},
-           {"stopping_condition", p.stopping_cond_defs}
-  };
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, OptionalStopping::Parameters &p) {
@@ -210,11 +216,11 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage")) {
@@ -315,10 +321,10 @@ public:
     std::vector<std::string> stopping_cond_defs;
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -357,10 +363,16 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
            {"side", p.side},
-           {"prevalence", p.prevalence},
-           {"defensibility", p.defensibility},
            {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
@@ -383,11 +395,11 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   }
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage")) {
@@ -452,10 +464,10 @@ public:
     std::vector<std::string> stopping_cond_defs {{"sig"}};
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -485,10 +497,16 @@ inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
            {"range", p.range},
            {"step_size", p.step_size},
            {"min_observations", p.min_observations},
-            {"prevalence", p.prevalence},
-            {"defensibility", p.defensibility},
             {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
@@ -501,11 +519,11 @@ inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
   j.at("min_observations").get_to(p.min_observations);
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage")) {
@@ -631,6 +649,8 @@ public:
   ///
   struct Parameters {
     HackingMethod name = HackingMethod::QuestionableRounding;
+
+    HackingTarget target {HackingTarget::Treatment};
     
     //! Indicates the distance between the pvalue and alpha by which the researcher
     //! considers to round the pvalue to significance
@@ -646,19 +666,13 @@ public:
     std::string rounding_method = "diff";
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     HackingStage stage {HackingStage::Reporting};
-    
-    /// This is a helper macro that generates from/to_json methods for this struct.
-    /// @note While this mostly works fine, there is one drawback that it cannot handle missing
-    /// argument. The change is in nlohmann list and when released, I can use optional and this
-    /// macro will handle everything just fine
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold,  rounding_method,
-                                   prevalence, defensibility, stage);
+
   };
   
   Parameters params;
@@ -673,6 +687,40 @@ public:
   
   void perform(Experiment *experiment) override;
 };
+
+inline void to_json(json &j, const QuestionableRounding::Parameters &p) {
+  j = json{{"name", p.name},
+            {"threshold", p.threshold},
+            {"rounding_method", p.rounding_method},
+            {"stage", p.stage}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
+}
+
+inline void from_json(const json &j, QuestionableRounding::Parameters &p) {
+
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  j.at("threshold").get_to(p.threshold);
+  j.at("rounding_method").get_to(p.rounding_method);
+  j.at("stage").get_to(p.stage);
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+}
+
 
 
 /// PeekingOutliersRemoval Hacking Strategy
@@ -733,10 +781,10 @@ public:
     std::vector<std::string> whether_to_save_cond_defs;
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -768,11 +816,17 @@ inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
     {"n_attempts", p.n_attempts},
     {"min_observations", p.min_observations},
     {"multipliers", p.multipliers},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
     {"stage", p.stage},
     {"whether_to_save_condition", p.whether_to_save_cond_defs},
     {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
@@ -793,11 +847,11 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
   j.at("whether_to_save_condition").get_to(p.whether_to_save_cond_defs);
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage"))
@@ -873,10 +927,10 @@ public:
     std::vector<std::string> stopping_cond_defs;
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
 
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -913,10 +967,16 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
     {"switching_direction", p.switching_direction},
     {"selection_method", p.selection_method},
 //    {"noise_dist", p.noise_dist},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
     {"stage", p.stage},
     {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, FalsifyingData::Parameters &p) {
@@ -934,11 +994,11 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   }
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("switching_direction")) {
@@ -1014,10 +1074,10 @@ public:
     std::vector<std::string> stopping_cond_defs;
     
     //! The defensibility factor of the strategy  
-    float defensibility;
+    std::optional<float> defensibility;
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
   };
@@ -1051,10 +1111,16 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
     {"num", p.num},
     {"target", p.target},
     //    {"dist", p.dist},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
     {"stage", p.stage},
     {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, FabricatingData::Parameters &p) {
@@ -1072,11 +1138,11 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   }
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage")) {
@@ -1134,10 +1200,10 @@ public:
     std::vector<std::string> stopping_cond_defs {"sig"};
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     HackingStage stage {HackingStage::DataCollection};
   };
@@ -1167,10 +1233,16 @@ public:
 inline void to_json(json &j, const StoppingDataCollection::Parameters &p) {
   j = json{{"name", p.name},
     {"batch_size", p.batch_size},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
     {"stage", p.stage},
     {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
@@ -1182,11 +1254,11 @@ inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
   j.at("batch_size").get_to(p.batch_size);
 
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
 
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage")) {
@@ -1250,10 +1322,10 @@ public:
     std::vector<std::string> stopping_cond_defs {"sig"};
     
     //! The defensibility factor of the strategy
-    float defensibility;
+    std::optional<float> defensibility;
     
     //! The prevalence factor of the strategy
-    float prevalence;
+    std::optional<float> prevalence;
     
     HackingStage stage {HackingStage::PostProcessing};
     
@@ -1287,10 +1359,16 @@ inline void to_json(json &j, const OptionalDropping::Parameters &p) {
   j = json{{"name", p.name},
     {"pooled", p.pooled},
     {"split_by", p.split_by},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
     {"stage", p.stage},
     {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, OptionalDropping::Parameters &p) {
@@ -1303,11 +1381,11 @@ inline void from_json(const json &j, OptionalDropping::Parameters &p) {
   j.at("split_by").get_to(p.split_by);
   
   if (j.contains("prevalence")) {
-    j.at("prevalence").get_to(p.prevalence);
+    p.prevalence = j.at("prevalence");
   }
   
   if (j.contains("defensibility")) {
-    j.at("defensibility").get_to(p.defensibility);
+    p.defensibility = j.at("defensibility");
   }
   
   if (j.contains("stage")) {
