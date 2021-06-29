@@ -15,7 +15,7 @@
 
 using namespace sam;
 
-/// Implementation of Optional Stopping method
+/// @brief      Implementation of Optional Stopping method
 ///
 /// Iterates for maximum `n_attempts` and add new observations to experiment's
 /// groups. The number of new observations to be added to each group is

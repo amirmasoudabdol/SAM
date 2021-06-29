@@ -24,6 +24,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "Distributions.h"
 #include "ResearchStrategy.h"
@@ -102,15 +103,28 @@ private:
 class OptionalStopping final : public HackingStrategy {
 
 public:
-  /// Parameter of optional stopping method.
-  ///
+  /// Parameter of optional stopping strategy.
+  /// 
+  /// For example, the below parameters configures an optional stopping strategy
+  /// where the Researcher adds only 10 new observations to the experiment. If 
+  /// we would like to allow the researcher to try more than once, we can use 
+  /// the `n_attempts` parameters to adjust the number of attempts.
+  /// 
+  ///  ```json
+  /// {
+  ///     "name": "OptionalStopping",
+  ///     "num": 10
+  /// }
+  /// 
   /// @ingroup  HackingStrategiesParameters
-  ///
+  /// 
   struct Parameters {
     //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::OptionalStopping;
 
-    //! Number of new observations to be added to each group
+    //! Number of new observations to be added to each group. It can be a fixed
+    //! value or a univariate distribution that is being used to generate a new
+    //! value for each experiment.
     Parameter<int> num;
     
     //! Indicates which groups are going to be targets
@@ -255,41 +269,49 @@ getTargetBounds(Experiment *experiment, HackingTarget &target) {
 
 
 ///
-/// @brief      Declaration of Outlier Removal hacking method based on items'
-///             distance from their sample mean.
-///
+/// @brief      Declaration of Outlier Removal hacking strategy based on items'
+///             distance from the sample mean.
 ///
 /// @ingroup    HackingStrategies
+/// 
 class OutliersRemoval final : public HackingStrategy {
 public:
   
   /// Parameters of Outliers Removal Strategy
-  ///
+  /// 
+  /// 
+  /// As an example, the below declaration configures an outliers removal 
+  /// startegy that leads the Researcher to remove the outliers of the dataset 
+  /// in 3 consecutive attempts, while removing at most 5 observations in each
+  /// trial. In addition, the Researcher stops as soon as there are less than 5 
+  /// observations left in the dataset.
+  /// 
   ///  ```json
   /// {
   ///     "name": "OutliersRemoval",
-  ///     "level": "dv",
-  ///     "min_observations": 10,
+  ///     "num": 5,
+  ///     "n_attempts": 3,
+  ///     "min_observations": 5,
   ///     "multipliers": [
-  ///         0.5
-  ///     ],
-  ///     "n_attempts": 1000,
-  ///     "num": 1000,
-  ///     "order": "random"
+  ///         2.5
+  ///     ]
   /// }
   /// ```
   ///
   /// @ingroup HackingStrategiesParameters
+  /// 
   struct Parameters {
     HackingMethod name = HackingMethod::OutliersRemoval;
 
-    //! TO BE IMPLEMENTED!
+    //! Indicates which groups are going to be targets
     HackingTarget target {HackingTarget::Both};
 
     //! Indicates the order where outliers are going to be removed from the
-    //! experiment. \li `max first`, removes the biggest outlier first \li
-    //! `random`, removes the first outlier first, this is as a random outlier
-    //! is being removed
+    //! experiment. 
+    //! 
+    //! \li `max first`, removes the biggest outlier first 
+    //! \li `random`, removes the first outlier first, this is as a random 
+    //! outlier is being removed
     std::string order {"max first"};
 
     //! Indicates the number of outliers to be removed in each iteration
@@ -306,9 +328,9 @@ public:
     std::vector<float> multipliers;
     
     //! Indicates the side where the outliers should be removed from,
-    //!   - side == 0 → |Z| < k
-    //!   - side == 1 →   Z > k
-    //!   - side == -1 →  Z < k
+    //!   \li side == 0 → |Z| < k
+    //!   \li side == 1 →   Z > k
+    //!   \li side == -1 →  Z < k
     int side{0};
     
     //! Stopping condition PolicyChain definitions
@@ -330,8 +352,8 @@ public:
 
   OutliersRemoval() = default;
 
-  explicit OutliersRemoval(const Parameters &p)
-      : params{p} {
+  explicit OutliersRemoval(Parameters p)
+      : params{std::move(p)} {
         stopping_condition = PolicyChain(params.stopping_cond_defs,
                                          PolicyChainType::Decision,
                                          lua);
@@ -471,8 +493,8 @@ public:
 
   SubjectiveOutlierRemoval() = default;
 
-  explicit SubjectiveOutlierRemoval(const Parameters &p)
-      : params(p) {
+  explicit SubjectiveOutlierRemoval(Parameters p)
+      : params(std::move(p)) {
           stopping_condition = PolicyChain(params.stopping_cond_defs,
                                            PolicyChainType::Decision,
                                            lua);
@@ -548,8 +570,8 @@ public:
 
   GroupPooling() = default;
 
-  explicit GroupPooling(const Parameters &p)
-      : params{p} {
+  explicit GroupPooling(Parameters p)
+      : params{std::move(p)} {
         spdlog::debug("Preparing the Group Pooling...");
   };
 
@@ -673,7 +695,7 @@ public:
   
   QuestionableRounding() = default;
   
-  explicit QuestionableRounding(const Parameters &p) : params{p} {
+  explicit QuestionableRounding(Parameters p) : params{std::move(p)} {
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
@@ -790,7 +812,7 @@ public:
   
   PeekingOutliersRemoval() = default;
   
-  explicit PeekingOutliersRemoval(const Parameters &p) : params{p} {
+  explicit PeekingOutliersRemoval(Parameters p) : params{std::move(p)} {
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
@@ -848,11 +870,13 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
     p.defensibility = j.at("defensibility");
   }
   
-  if (j.contains("stage"))
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
+  }
   
-  if (j.contains("stopping_condition"))
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 
@@ -934,7 +958,7 @@ public:
   
   FalsifyingData() = default;
   
-  explicit FalsifyingData(const Parameters &p) : params{p} {
+  explicit FalsifyingData(Parameters p) : params{std::move(p)} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1081,7 +1105,7 @@ public:
   
   FabricatingData() = default;
   
-  explicit FabricatingData(const Parameters &p) : params{p} {
+  explicit FabricatingData(Parameters p) : params{std::move(p)} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1208,7 +1232,7 @@ public:
   
   StoppingDataCollection() = default;
   
-  explicit StoppingDataCollection(const Parameters &p) : params{p} {
+  explicit StoppingDataCollection(Parameters p) : params{std::move(p)} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1331,7 +1355,7 @@ public:
   
   OptionalDropping() = default;
   
-  explicit OptionalDropping(const Parameters &p) : params{p} {
+  explicit OptionalDropping(Parameters p) : params{std::move(p)} {
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);

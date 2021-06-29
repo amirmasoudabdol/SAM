@@ -1,16 +1,24 @@
+//===-- HSOutliersRemoval.cpp - Outliers Removal Implementation -----------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 18/03/2020.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of the Outliers Removal hacking 
+/// strategy class, and all its dependencies.
+///
+//===----------------------------------------------------------------------===//
 
 #include "HackingStrategy.h"
 
 using namespace sam;
 
+/// @brief      Implementation of Outliers Removal
 ///
-/// @brief      Implementation of Outliers Removal based on an item's distance
-/// from
-///             the \mu.
-///
+/// Iterates for maximum of `n_attempts` and remove observations from the 
+/// experiment based on the defined parameters. 
 void OutliersRemoval::perform(Experiment *experiment) {
 
   spdlog::debug("Outliers Removal: ");
