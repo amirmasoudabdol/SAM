@@ -118,10 +118,6 @@ HackingStrategy::build(json &hacking_strategy_config) {
     hacking_strategy_config.get<OptionalDropping::Parameters>();
     return std::make_unique<OptionalDropping>(params);
     
-  } else if (hacking_strategy_config["name"] == "NoHack") {
-
-    return std::make_unique<NoHack>();
-
   } else {
     throw std::invalid_argument("Unknown Hacking Strategies.");
   }

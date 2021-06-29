@@ -95,14 +95,6 @@ private:
   virtual void perform(Experiment *experiment) = 0;
 };
 
-class NoHack final : public HackingStrategy {
-public:
-  NoHack()= default;
-
-private:
-  void perform(Experiment *experiment) override{};
-};
-
 /// Declaration of OptionalStopping hacking strategy
 ///
 /// @ingroup  HackingStrategies
@@ -159,19 +151,12 @@ public:
         defensibility_ = params.defensibility;
         stage_ = params.stage;
   };
-  
-  /// Adds `n` observations to all groups
-  ///
-  /// @param experiment A pointer to the experiment
-  /// @param n number of new observations to be added
-  void addObservations(Experiment *experiment, const int n);
-  
-  
+    
   /// Adds `ns[i]` new items to `i`th group
   ///
   /// @param experiment A pointer to an experiment
   /// @param ns An array indicating how many new items should be added to each group
-  void addObservations(Experiment *experiment, const arma::Row<int> ns);
+  void addObservations(Experiment *experiment, const arma::Row<int>& ns);
 
 private:
   void perform(Experiment *experiment) override;

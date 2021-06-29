@@ -1,6 +1,15 @@
+//===-- HSOptionalStopping.cpp - Optional Stopping Implementation ---------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 18/03/2020.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of the Optional Stopping hacking
+/// strategy class, and all their dependent routines.
+///
+//===----------------------------------------------------------------------===//
 
 #include "HackingStrategy.h"
 
@@ -8,7 +17,7 @@ using namespace sam;
 
 /// Implementation of Optional Stopping method
 ///
-/// Iterates for maximum `n_attempts` and add new obversations to experiment's
+/// Iterates for maximum `n_attempts` and add new observations to experiment's
 /// groups. The number of new observations to be added to each group is deducted
 /// either a fixed number indicated by `params.num` or a variable number for each
 /// group, calculated as a fraction of already existing observations, `params.ratio`.
@@ -28,7 +37,7 @@ void OptionalStopping::perform(Experiment *experiment) {
     float fraction {params.ratio};
     
     ns.imbue([&, i = 0]() mutable {
-      return std::floor(fraction * experiment->dvs_[i++].nobs_);
+      return static_cast<int>(std::floor(fraction * static_cast<float>(experiment->dvs_[i++].nobs_)));
     });
   }else{
     ns.fill(static_cast<int>(params.num));
@@ -55,30 +64,15 @@ void OptionalStopping::perform(Experiment *experiment) {
 
 }
 
-void OptionalStopping::addObservations(Experiment *experiment, const int n) {
-
-  // Get the new observations
-  auto new_observations =
-      experiment->data_strategy->genNewObservationsForAllGroups(experiment, n);
-  
-  
-  int begin {0}, end {0};
-  std::tie(begin, end) = getTargetBounds(experiment, params.target);
-  
-  for (int i = begin; i < end; ++i) {
-    (*experiment)[i].addNewMeasurements(new_observations[i]);
-  }
-  
-}
-
-void OptionalStopping::addObservations(Experiment *experiment, const arma::Row<int> ns) {
+void OptionalStopping::addObservations(Experiment *experiment, const arma::Row<int>& ns) {
   
   // Getting max(ns) observations, sending max to the method is necessary due to the possibility
   // of dealing with multivariate distribution
   auto new_observations = experiment->data_strategy->genNewObservationsForAllGroups(experiment,
                                                                                     ns.max());
   
-  int begin {0}, end {0};
+  int begin {0};
+  int end {0};
   std::tie(begin, end) = getTargetBounds(experiment, params.target);
   
   // Distributing new items according to the requested size
