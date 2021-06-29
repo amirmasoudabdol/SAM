@@ -24,7 +24,7 @@ using namespace sam;
 /// `params.ratio`.
 ///
 /// After each optional stopping step, all statistics will be recalculated and
-/// experiment will be passed to the `letTheHackBegin` for further
+/// experiment will be passed to the `hackTheResearch` for further
 /// Selection → Decision sequence.
 void OptionalStopping::perform(Experiment *experiment) {
 

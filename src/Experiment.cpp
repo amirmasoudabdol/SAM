@@ -102,13 +102,20 @@ void Experiment::generateCovariants() {
   if (!is_covariants_generated) {
   
     /// @Todo Check if all groups are the same size
-    covariants.resize(setup.nobs().max(), n_covariants);
+    auto max_nobs_ = std::max_element(dvs_.begin(), dvs_.end(),
+                                       [](auto &a, auto &b) { return a.nobs_ < b.nobs_; });
+    covariants.resize((*max_nobs_).nobs_, n_covariants);
     covariants.fill(0);
     
     for (int i = 0; i < n_covariants; ++i) {
+      std::cout << dvs_[i].nobs_ << ", " << dvs_[i].nobs_ / 2 << std::endl;
       covariants.col(i).head(dvs_[i].nobs_ / 2).fill(1);
       covariants.col(i) = arma::shuffle(covariants.col(i));
     }
+
+    covariants.print();
+    std::cout << arma::size(arma::find(covariants == 0)) << std::endl;
+    std::cout << arma::size(arma::find(covariants == 1)) << std::endl;
     
     is_covariants_generated = true;
   }
