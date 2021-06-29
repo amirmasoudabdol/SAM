@@ -41,7 +41,7 @@
         "research_strategy": {
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
-                ["min(pvalue)"]
+                ["sig", "min(pvalue)"]
             ],
             "between_stashed_selection_policies": [
                 [
@@ -76,9 +76,6 @@
                         {
                             "name": "OptionalStopping",
                             "target": "Both",
-                            "max_attempts": 1,
-                            "n_attempts": 1,
-                            "defensibility": 0.1,
                             "ratio": 0.3
                         },
                         [

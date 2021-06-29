@@ -24,19 +24,21 @@ using namespace sam;
 /// `params.ratio`.
 ///
 /// After each optional stopping step, all statistics will be recalculated and
-/// experiment will be passed to the `research` method.
+/// experiment will be passed to the `letTheHackBegin` for further
+/// Selection → Decision sequence.
 void OptionalStopping::perform(Experiment *experiment) {
 
   spdlog::debug("Optional Stopping: ");
 
-  /// Determining the number of new observations to be added to each group
+  // Determining the number of new observations to be added to each group
   arma::Row<int> ns(experiment->setup.ng());
   if (params.num.is_empty()) {
 
-    /// Getting one random number since I want each group to have the same
-    /// number of observations
+    // Getting one random number since I want each group to have the same
+    // number of observations
     float fraction{params.ratio};
 
+    // Filling up a vector of n_new_obs for each group
     ns.imbue([&, i = 0]() mutable {
       return static_cast<int>(std::floor(
           fraction * static_cast<float>(experiment->dvs_[i++].nobs_)));
@@ -45,7 +47,10 @@ void OptionalStopping::perform(Experiment *experiment) {
     ns.fill(static_cast<int>(params.num));
   }
 
+  // n_attempts is a Parameter<int> therefore, I need to ask for a value instead
+  // of using it directly
   int n_at{params.n_attempts};
+
   for (int t = 0; t < n_at; ++t) {
     spdlog::trace("\t #{} attempt(s)", t + 1);
 
@@ -55,8 +60,9 @@ void OptionalStopping::perform(Experiment *experiment) {
 
     if (!params.stopping_cond_defs.empty()) {
       if (stopping_condition(experiment)) {
-        spdlog::trace("⚠️ Stopping the hacking procedure, stopping condition "
-                      "has been met!");
+        spdlog::trace(
+            "⚠️ Stopping the hacking procedure, stopping condition "
+            "has been met!");
         return;
       }
     }
@@ -65,11 +71,20 @@ void OptionalStopping::perform(Experiment *experiment) {
   spdlog::trace("{}", *experiment);
 }
 
+///
+/// @brief      Adds new observations to every group
+///
+/// @param      experiment  The pointer to the Experiment
+/// @param[in]  ns          Indicates the number of new observations to be added
+///                         to each group.
+///
 void OptionalStopping::addObservations(Experiment *experiment,
                                        const arma::Row<int> &ns) {
 
-  // Getting max(ns) observations, sending max to the method is necessary due to
-  // the possibility of dealing with multivariate distribution
+  // Getting max(ns) observations. Sending max to the method is necessary due to
+  // the possibility of dealing with multivariate distribution. After getting
+  // enough observations, I will only add what I need based on ns[i] to each
+  // group
   auto new_observations =
       experiment->data_strategy->genNewObservationsForAllGroups(experiment,
                                                                 ns.max());

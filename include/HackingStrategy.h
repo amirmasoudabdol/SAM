@@ -131,7 +131,7 @@ public:
     //! The prevalence factor of the strategy
     std::optional<float> prevalence;
 
-    //! Execution stage of the strategy
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
     
   };
@@ -143,7 +143,7 @@ public:
 
   explicit OptionalStopping(const Parameters &p)
       : params{p} {
-        spdlog::debug("Preparing the Optional Stopping...");
+        spdlog::debug("Initializing the Optional Stopping strategy...");
         
         stopping_condition = PolicyChain{p.stopping_cond_defs, PolicyChainType::Decision, lua};
         
@@ -208,7 +208,9 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
     j.at("target").get_to(p.target);
   }
   
-  p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
+  if (j.contains("n_attempts")) {
+    p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
+  }
 
   if (j.contains("prevalence")) {
     p.prevalence = j.at("prevalence");
@@ -1200,6 +1202,7 @@ public:
     //! The prevalence factor of the strategy
     std::optional<float> prevalence;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::DataCollection};
   };
   
