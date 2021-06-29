@@ -79,7 +79,6 @@
                             "max_attempts": 1,
                             "n_attempts": 1,
                             "defensibility": 0.1,
-                            "num": 0,
                             "ratio": 0.3
                         },
                         [

@@ -187,8 +187,18 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   j.at("name").get_to(p.name);
 
   if (j.contains("num")) {
+
+    if (j.at("num") < 1.) {
+      spdlog::critical("The `num` parameter should be greater than 1.");
+      exit(1);
+    }
+
     p.num = Parameter<int>(j.at("num"), 1);
   } else if (j.contains("ratio")) {
+    if (j.at("ratio") < 0. or j.at("ratio") > 1.) {
+      spdlog::critical("The `ratio` parameter should be between 0 and 1.");
+      exit(1);
+    }
     p.ratio = Parameter<float>(j.at("ratio"), 1);
   } else {
     throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
