@@ -251,16 +251,20 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
 /// @return
 static std::pair<int, int>
 getTargetBounds(Experiment *experiment, HackingTarget &target) {
-  static int s, e;
+  int s{0};
+  int e{0};
   switch (target) {
     case HackingTarget::Control: {
-      s = 0; e = experiment->setup.nd();
+      s = 0; 
+      e = experiment->setup.nd();
     } break;
     case HackingTarget::Treatment: {
-      s = experiment->setup.nd(); e = experiment->setup.ng();
+      s = experiment->setup.nd(); 
+      e = experiment->setup.ng();
     } break;
     case HackingTarget::Both: {
-      s = 0; e = experiment->setup.ng();
+      s = 0; 
+      e = experiment->setup.ng();
     } break;
   }
   return std::make_pair(s, e);
@@ -342,6 +346,7 @@ public:
     //! The prevalence factor of the strategy
     std::optional<float> prevalence;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
     
   };
@@ -354,6 +359,9 @@ public:
 
   explicit OutliersRemoval(Parameters p)
       : params{std::move(p)} {
+
+        spdlog::debug("Initializing the Outliers Removal strategy...");
+
         stopping_condition = PolicyChain(params.stopping_cond_defs,
                                          PolicyChainType::Decision,
                                          lua);
@@ -367,7 +375,8 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
-  bool removeOutliers(Experiment *experiment, const int n, const float k, const int side);
+  /// @brief      Implementation of the outliers removal
+  bool removeOutliers(Experiment *experiment, int n, float k, int side);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -468,7 +477,7 @@ public:
     HackingTarget target {HackingTarget::Both};
 
     //! A vector of `{min, max}`, defining the range of `K`.
-    std::vector<int> range;
+    std::vector<float> range;
 
     //! Indicates the step size of walking through K's
     float step_size;
@@ -485,6 +494,7 @@ public:
     //! The defensibility factor of the strategy
     std::optional<float> defensibility;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
   };
 
@@ -495,7 +505,10 @@ public:
 
   explicit SubjectiveOutlierRemoval(Parameters p)
       : params(std::move(p)) {
-          stopping_condition = PolicyChain(params.stopping_cond_defs,
+
+        spdlog::debug("Initializing the Subjective Outliers Removal strategy...");
+
+        stopping_condition = PolicyChain(params.stopping_cond_defs,
                                            PolicyChainType::Decision,
                                            lua);
         
@@ -572,7 +585,8 @@ public:
 
   explicit GroupPooling(Parameters p)
       : params{std::move(p)} {
-        spdlog::debug("Preparing the Group Pooling...");
+
+        spdlog::debug("Initializing the Group Pooling strategy...");
   };
 
   void perform(Experiment *experiment) override;
@@ -687,6 +701,7 @@ public:
     //! The defensibility factor of the strategy
     std::optional<float> defensibility;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::Reporting};
 
   };
@@ -696,6 +711,9 @@ public:
   QuestionableRounding() = default;
   
   explicit QuestionableRounding(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Questionable Rounding strategy...");
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
@@ -802,6 +820,7 @@ public:
     //! The defensibility factor of the strategy
     std::optional<float> defensibility;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
     
   };
@@ -813,6 +832,9 @@ public:
   PeekingOutliersRemoval() = default;
   
   explicit PeekingOutliersRemoval(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Peeking Outliers Removal strategy...");
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
@@ -821,7 +843,7 @@ public:
   void perform(Experiment *experiment) override;
   
 private:
-  bool removeOutliers(Experiment *experiment, const int n, const float k);
+  bool removeOutliers(Experiment *experiment, int n, float k);
 };
 
 inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
@@ -950,6 +972,7 @@ public:
     //! The prevalence factor of the strategy
     std::optional<float> prevalence;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
   };
   
@@ -959,6 +982,9 @@ public:
   FalsifyingData() = default;
   
   explicit FalsifyingData(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Falsifying Data strategy...");
+
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1097,6 +1123,7 @@ public:
     //! The prevalence factor of the strategy
     std::optional<float> prevalence;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
   };
   
@@ -1106,6 +1133,9 @@ public:
   FabricatingData() = default;
   
   explicit FabricatingData(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Fabricating Data strategy...");
+
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1118,8 +1148,8 @@ public:
   void perform(Experiment *experiment) override;
   
 private:
-  bool generate(Experiment *experiment, const int n);
-  bool duplicate(Experiment *experiment, const int n);
+  bool generate(Experiment *experiment, int n);
+  bool duplicate(Experiment *experiment, int n);
 };
 
 inline void to_json(json &j, const FabricatingData::Parameters &p) {
@@ -1233,6 +1263,9 @@ public:
   StoppingDataCollection() = default;
   
   explicit StoppingDataCollection(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Stopping Data Collection strategy...");
+
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);
@@ -1346,6 +1379,7 @@ public:
     //! The prevalence factor of the strategy
     std::optional<float> prevalence;
     
+    //! The default execution stage of the strategy
     HackingStage stage {HackingStage::PostProcessing};
     
   };
@@ -1356,6 +1390,9 @@ public:
   OptionalDropping() = default;
   
   explicit OptionalDropping(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Optional Dropping strategy...");
+
     stopping_condition = PolicyChain(params.stopping_cond_defs,
                                      PolicyChainType::Decision,
                                      lua);

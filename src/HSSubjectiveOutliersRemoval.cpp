@@ -35,8 +35,9 @@ void SubjectiveOutlierRemoval::perform(Experiment *experiment) {
       arma::uvec inx = arma::find(standardized > k);
 
       /// Keeping at least `min_observations`
-      if ((row.n_elem - inx.n_elem) <= params.min_observations)
+      if ((row.n_elem - inx.n_elem) <= params.min_observations) {
         inx = inx.head(row.n_elem - params.min_observations);
+      }
 
       (*experiment)[i].removeMeasurements(inx);
     }
