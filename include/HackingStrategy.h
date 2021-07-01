@@ -468,7 +468,7 @@ public:
         PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
   };
 
-  void perform(Experiment *c_id) override;
+  void perform(Experiment *experiment) override;
 
 private:
 
