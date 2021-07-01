@@ -203,8 +203,8 @@ EggersTestEstimator::EggersTest(const arma::Row<float> &yi, const arma::Row<floa
   
   using boost::math::students_t;
   
-  arma::Row<double> Yi = arma::conv_to<arma::Row<double>>::from(Yi);
-  arma::Row<double> Vi = arma::conv_to<arma::Row<double>>::from(Vi);
+  arma::Row<double> Yi = arma::conv_to<arma::Row<double>>::from(yi);
+  arma::Row<double> Vi = arma::conv_to<arma::Row<double>>::from(vi);
   
   auto n = Yi.n_elem;
   auto p = 2;
