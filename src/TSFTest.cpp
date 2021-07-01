@@ -33,40 +33,36 @@ FTest::ResultType FTest::f_test(float Sd1,   // Sample 1 std deviation
                                 unsigned Sn2, // Sample 2 size
                                 float alpha) // Significance level
 {
-
-  bool sig{false};
-
   // F-statistic:
-  float f_stats = (Sd1 / Sd2);
+  double f_stats = (Sd1 / Sd2);
 
   //
   // Finally define our distribution, and get the probability:
   //
   fisher_f dist(Sn1 - 1, Sn2 - 1);
-  float p = cdf(dist, f_stats);
+  double p = cdf(dist, f_stats);
 
-  float ucv = quantile(complement(dist, alpha));
-  float ucv2 = quantile(complement(dist, alpha / 2));
-  float lcv = quantile(dist, alpha);
-  float lcv2 = quantile(dist, alpha / 2);
+  double ucv = quantile(complement(dist, alpha));
+  double ucv2 = quantile(complement(dist, alpha / 2));
+  double lcv = quantile(dist, alpha);
+  double lcv2 = quantile(dist, alpha / 2);
 
   //
   // Finally print out results of null and alternative hypothesis:
   //
-  if ((ucv2 < f_stats) || (lcv2 > f_stats)) // Alternative "NOT REJECTED"
-    sig = true;
-  else // Alternative "REJECTED"
-    sig = false;
+  if ((ucv2 < f_stats) || (lcv2 > f_stats)) { // Alternative "NOT REJECTED"
+    return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = true};
+  }
 
-  if (lcv > f_stats) // Alternative "NOT REJECTED"
-    sig = true;
-  else // Alternative "REJECTED"
-    sig = false;
+  if (lcv > f_stats) {// Alternative "NOT REJECTED"
+    return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = true};
+  }
 
-  if (ucv < f_stats) // Alternative "NOT REJECTED"
-    sig = true;
-  else // Alternative "REJECTED"
-    sig = false;
+  if (ucv < f_stats) { // Alternative "NOT REJECTED"
+    return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = true};
+  }
 
-  return {.fstat = f_stats, .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = p, .sig = sig};
+  // Alternative "Rejected"
+  return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = false};
+
 }
