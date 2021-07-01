@@ -76,12 +76,6 @@ HackingStrategy::build(json &hacking_strategy_config) {
     auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
     return std::make_unique<ConditionDropping>(params);
 
-  } else if (hacking_strategy_config["name"] == "SubjectiveOutlierRemoval") {
-
-    auto params =
-        hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
-    return std::make_unique<SubjectiveOutlierRemoval>(params);
-
   } else if (hacking_strategy_config["name"] == "QuestionableRounding") {
     
     auto params =

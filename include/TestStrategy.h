@@ -307,9 +307,9 @@ public:
     alpha_ = p.alpha;
   };
 
-  virtual void run(Experiment *experiment) override;
+  void run(Experiment *experiment) override;
 
-  virtual void run(DependentVariable &group_1, DependentVariable &group_2) override{};
+  void run(DependentVariable &group_1, DependentVariable &group_2) override{};
 
   static ResultType
   wilcoxon_test(const arma::Row<float> &x, const arma::Row<float> &y,

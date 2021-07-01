@@ -40,7 +40,8 @@ bool FalsifyingData::perturb(Experiment *experiment) {
   
   spdlog::debug(" → Perturbing some data points...");
   
-  int begin {0}, end {0};
+  int begin {0};
+  int end {0};
   std::tie(begin, end) = getTargetBounds(experiment, params.target);
   
   for (int i = begin; i < end; ++i) {

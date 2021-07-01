@@ -258,8 +258,14 @@ static std::pair<int, int> getTargetBounds(Experiment *experiment,
 }
 
 ///
-/// @brief      Declaration of Outlier Removal hacking strategy based on items'
+/// @brief      Declaration of Outliers Removal hacking strategy based on items'
 ///             distance from the sample mean.
+///             
+/// @note       Note that you can use the Outliers Removal hacking strategy to
+///             achieve much more elaborate outliers removal by simply defining 
+///             a `stopping_condition` parameter. For instance, using {{"sig"}} 
+///             as the stopping condition will simulate a more greedy version of
+///             the Outliers Removal knows as Subjective Outliers Removal.
 ///
 /// @ingroup    HackingStrategies
 ///
@@ -399,130 +405,6 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   if (j.contains("side")) {
     j.at("side").get_to(p.side);
   }
-
-  if (j.contains("prevalence")) {
-    p.prevalence = j.at("prevalence");
-  }
-
-  if (j.contains("defensibility")) {
-    p.defensibility = j.at("defensibility");
-  }
-
-  if (j.contains("stage")) {
-    j.at("stage").get_to(p.stage);
-  }
-
-  if (j.contains("stopping_condition")) {
-    j.at("stopping_condition").get_to(p.stopping_cond_defs);
-  }
-}
-
-///
-/// @brief      The subjective outlier removal refers to a type of outliers
-/// removal
-///             where the researcher continuously lowers the threshold of
-///             identifying an outlier, `k`, until it finds a significant (or
-///             satisfactory) result.
-///
-/// @ingroup  HackingStrategies
-/// @sa       ResearchStrategy
-///
-class SubjectiveOutlierRemoval final : public HackingStrategy {
-public:
-  /// @brief SubjectiveOutlierRemoval's parameters.
-  ///
-  /// These are parameters specific to this hacking strategy. You can set them
-  /// either pragmatically when you are constructing a new
-  /// SubjectiveOutlierRemoval, e.g., `SubjectiveOutlierRemoval sor{<name>,
-  /// {min, max}, ssize};`.
-  ///
-  /// Or, when you are using `Frodo` to run your simulation. In this case,
-  /// your JSON variable must comply with the name and type of parameters here.
-  /// For example, the following JSON defines the default subjective outliers
-  /// removal.
-  ///
-  /// ```json
-  /// {
-  ///    "name": "SubjectiveOutlierRemoval",
-  ///    "range": [2, 4],
-  ///    "step_size": 0.1,
-  ///    "min_observations": 5
-  /// }
-  /// ```
-  /// @ingroup HackingStrategiesParameters
-  struct Parameters {
-    //! A placeholder for the name
-    HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
-
-    //! @todo TO BE IMPLEMENTED
-    HackingTarget target{HackingTarget::Both};
-
-    //! A vector of `{min, max}`, defining the range of `K`.
-    std::vector<float> range;
-
-    //! Indicates the step size of walking through K's
-    float step_size;
-
-    //! Indicates minimum number of observations
-    int min_observations;
-
-    //! Stopping condition PolicyChain definitions
-    std::vector<std::string> stopping_cond_defs{{"sig"}};
-
-    //! The prevalence factor of the strategy
-    std::optional<float> prevalence;
-
-    //! The defensibility factor of the strategy
-    std::optional<float> defensibility;
-
-    //! The default execution stage of the strategy
-    HackingStage stage{HackingStage::PostProcessing};
-  };
-
-  Parameters params;
-  PolicyChain stopping_condition;
-
-  SubjectiveOutlierRemoval() = default;
-
-  explicit SubjectiveOutlierRemoval(Parameters p) : params(std::move(p)) {
-
-    spdlog::debug("Initializing the Subjective Outliers Removal strategy...");
-
-    stopping_condition =
-        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
-
-    prevalence_ = params.prevalence;
-    defensibility_ = params.defensibility;
-    stage_ = params.stage;
-  };
-
-private:
-  void perform(Experiment *experiment) override;
-};
-
-inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
-  j = json{
-      {"name", p.name},           {"range", p.range},
-      {"step_size", p.step_size}, {"min_observations", p.min_observations},
-      {"stage", p.stage},         {"stopping_condition", p.stopping_cond_defs}};
-
-  if (p.prevalence) {
-    j["prevalence"] = p.prevalence.value();
-  }
-
-  if (p.defensibility) {
-    j["defensibility"] = p.defensibility.value();
-  }
-}
-
-inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
-
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("range").get_to(p.range);
-  j.at("step_size").get_to(p.step_size);
-  j.at("min_observations").get_to(p.min_observations);
 
   if (j.contains("prevalence")) {
     p.prevalence = j.at("prevalence");

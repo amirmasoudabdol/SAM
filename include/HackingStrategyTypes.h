@@ -33,7 +33,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(
      {HackingMethod::OutliersRemoval, "OutliersRemoval"},
      {HackingMethod::GroupPooling, "GroupPooling"},
      {HackingMethod::ConditionDropping, "ConditionDropping"},
-     {HackingMethod::SubjectiveOutlierRemoval, "SubjectiveOutlierRemoval"},
      {HackingMethod::QuestionableRounding, "QuestionableRounding"},
      {HackingMethod::PeekingOutliersRemoval, "PeekingOutliersRemoval"},
      {HackingMethod::FalsifyingData, "FalsifyingData"},
