@@ -271,7 +271,7 @@ public:
   struct Parameters {
     TestMethod name = TestMethod::WilcoxonTest;
     TestAlternative alternative = TestAlternative::TwoSided;
-    float alpha = 0.95;
+    float alpha {0.95};
     bool use_continuity{true};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(WilcoxonTest::Parameters, name, alternative, alpha, use_continuity);
@@ -339,11 +339,11 @@ confidence_limits_on_mean(float Sm, float Sd, unsigned Sn, float alpha,
                           TestStrategy::TestAlternative alternative);
 
 /// Stats Utility
-float win_var(const arma::Row<float> &x, const float trim);
+float win_var(const arma::Row<float> &x, float trim);
 
 std::pair<float, float> win_cor_cov(const arma::Row<float> &x,
                                       const arma::Row<float> &y,
-                                      const float trim);
+                                      float trim);
 
 arma::Row<float> win_val(const arma::Row<float> &x, float trim);
 

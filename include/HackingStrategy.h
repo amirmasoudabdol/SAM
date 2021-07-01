@@ -358,11 +358,10 @@ public:
     stage_ = params.stage;
   };
 
-  // Submission hackedSubmission;
   void perform(Experiment *experiment) override;
 
 private:
-  /// @brief      Implementation of the outliers removal
+  /// Implementation of the outliers removal
   bool removeOutliers(Experiment *experiment, int n, float k, int side);
 };
 
@@ -423,48 +422,67 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   }
 }
 
-/// Declaration of GroupPooling hacking strategy
-///
-/// @ingroup  HackingStrategies
+/// Declaration of GroupPooling hacking strategy. 
+/// 
+/// This strategy pools two treatments groups together, and creates a new 
+/// treatment groups. In this process, the data from related DVs will be pooled 
+/// to create a twice as big of a DV with the same property.
+/// 
+/// @note       It is even possible to pool a control group into the treatment 
+///             group to create a new group!
+///             
+/// @ingroup    HackingStrategies
 ///
 class GroupPooling final : public HackingStrategy {
 
 public:
+
+  ///
+  /// @brief      Parameters of the Group Pooling hacking strategy
+  ///
   struct Parameters {
     //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::GroupPooling;
 
     //! List of paired indices indicating which groups should be pooled
-    //! together.
+    //! together. The Group Pooling algorithm can be used to pool more than one
+    //! condition together.
     std::vector<std::vector<int>> pooled_conditions;
+
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs;
+
+    
   };
 
   Parameters params;
+  PolicyChain stopping_condition;
 
   GroupPooling() = default;
 
   explicit GroupPooling(Parameters p) : params{std::move(p)} {
 
     spdlog::debug("Initializing the Group Pooling strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
   };
 
-  void perform(Experiment *experiment) override;
+  void perform(Experiment *c_id) override;
 
 private:
-  void pool(Experiment *experiment, int r);
 
-  /// Goes through all set of group pairs defined in `pooled_conditions`, pooled
-  /// their DVs together, and adds them to the Experiment.
+  /// Pools two conditions together, and returns all the pooled dvs
   std::vector<DependentVariable> pool(Experiment *experiment,
-                                      std::vector<int> &conds, int ng);
+                                      std::vector<int> &conds_inx, int ng);
 
-  /// Pools the values of two dependent variables together, and generates a new
-  /// DependentVariable object
-  DependentVariable pool(Experiment *experiment, std::vector<int> &gs);
+  /// Pools the data from two pained DVs together, and returns a new DV
+  DependentVariable pool(Experiment *experiment, std::vector<int> &dvs_inx);
 };
 
 inline void to_json(json &j, const GroupPooling::Parameters &p) {
-  j = json{{"name", p.name}, {"pooled_conditions", p.pooled_conditions}};
+  j = json{{"name", p.name}, {"pooled_conditions", p.pooled_conditions},
+            {"stopping_condition", p.stopping_cond_defs}};
 }
 
 inline void from_json(const json &j, GroupPooling::Parameters &p) {
@@ -474,6 +492,10 @@ inline void from_json(const json &j, GroupPooling::Parameters &p) {
   j.at("name").get_to(p.name);
 
   j.at("pooled_conditions").get_to(p.pooled_conditions);
+
+  if (j.contains("stopping_condition")) {
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 class ConditionDropping : public HackingStrategy {

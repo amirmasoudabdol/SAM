@@ -14,12 +14,13 @@ void FalsifyingData::perform(Experiment *experiment) {
   
   for (int t = 0; t < params.n_attempts && res; ++t) {
     
-    if (params.approach == "perturbation")
+    if (params.approach == "perturbation") {
       res = this->perturb(experiment);
-    else if (params.approach == "swapping")
+    } else if (params.approach == "swapping") {
       res = this->swapGroups(experiment);
-    else if (params.approach == "switching")
+    } else if (params.approach == "switching") {
       res = this->switchGroups(experiment);
+    }
     
     experiment->recalculateEverything();
     
