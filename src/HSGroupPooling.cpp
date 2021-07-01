@@ -1,6 +1,15 @@
+//===-- HSGroupPooling.cpp - Implementation of Group Pooling --------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 18/03/2020.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation details of Group Pooling hacking 
+/// strategy and its related routines.
+///
+//===----------------------------------------------------------------------===//
 
 #include "DependentVariable.h"
 
