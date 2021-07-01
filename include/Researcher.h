@@ -81,8 +81,8 @@ class Researcher {
   //! - `"random"`, random order
   //! - `"asc(prevalence)"`, ascending prevalence
   //! - `"desc(prevalence)"`, descending prevalence
-  //! - `"asc(defensibly)"`, ascending defensibly
-  //! - `"desc(defensibly)"`, descending defensibly
+  //! - `"asc(defensibility)"`, ascending defensibility
+  //! - `"desc(defensibility)"`, descending defensibility
   //!
   //! **If not specified the given order will be used.**
   //!
@@ -99,8 +99,8 @@ class Researcher {
   //! - `"random"`, random order
   //! - `"asc(prevalence)"`, ascending prevalence
   //! - `"desc(prevalence)"`, descending prevalence
-  //! - `"asc(defensibly)"`, ascending defensibly
-  //! - `"desc(defensibly)"`, descending defensibly
+  //! - `"asc(defensibility)"`, ascending defensibility
+  //! - `"desc(defensibility)"`, descending defensibility
   //!
   //! **If not specified the given order will be used.**
   //!
