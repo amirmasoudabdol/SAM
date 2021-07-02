@@ -118,7 +118,10 @@ public:
     //! value for each experiment.
     Parameter<int> num;
 
-    //! Indicates which groups are going to be targets
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     HackingTarget target{HackingTarget::Both};
 
     //! If not 0., `ratio` * n_obs will be added to the experiment.
@@ -297,7 +300,10 @@ public:
   struct Parameters {
     HackingMethod name = HackingMethod::OutliersRemoval;
 
-    //! Indicates which groups are going to be targets
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     HackingTarget target{HackingTarget::Both};
 
     //! Indicates the order where outliers are going to be removed from the
@@ -558,6 +564,10 @@ public:
   struct Parameters {
     HackingMethod name = HackingMethod::QuestionableRounding;
 
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     HackingTarget target{HackingTarget::Treatment};
 
     //! Indicates the distance between the p-value and alpha by which the
@@ -565,14 +575,14 @@ public:
     float threshold;
 
     /// Rounding Method
-    /// - diff: Setting the rounded p-value to the difference between p-value
+    /// \li diff: Setting the rounded p-value to the difference between p-value
     /// and threshold
-    /// - alpha: Setting the rounded p-value to the value of alpha
+    /// \li alpha: Setting the rounded p-value to the value of alpha
     ///
-    /// @todo I cna possibly add more methods here, e.g.,
-    /// - rounding, where I just round the value down
-    /// - random_rounding, where I generate a threshold, then round the `p-value
-    /// - threshold` value
+    /// @todo I can possibly add more methods here, e.g.,
+    /// \li rounding, where I just round the value down
+    /// \li random_rounding, where I generate a threshold, then round the `p-value
+    /// \li threshold` value
     std::string rounding_method = "diff";
 
     //! The prevalence factor of the strategy
@@ -662,13 +672,18 @@ public:
   struct Parameters {
     HackingMethod name = HackingMethod::PeekingOutliersRemoval;
 
-    //! TO BE IMPLEMENTED!
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     HackingTarget target{HackingTarget::Both};
 
     //! Indicates the order where outliers are going to be removed from the
-    //! experiment. \li `max first`, removes the biggest outlier first \li
-    //! `random`, removes the first outlier first, this is as a random outlier
-    //! is being removed
+    //! experiment. 
+    //! 
+    //! \li `max first`, removes the biggest outlier first 
+    //! \li `random`, removes the first outlier first, this is as a random 
+    //! outlier is being removed
     std::string order{"max first"};
 
     //! Indicates the number of outliers to be removed in each iteration
@@ -813,9 +828,9 @@ public:
     std::string selection_method{"random"};
 
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     HackingTarget target{HackingTarget::Both};
 
     //! Indicates a set of rule that is going to be used to select the target
@@ -962,9 +977,9 @@ public:
     std::string approach{"generating"};
 
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     HackingTarget target{HackingTarget::Both};
 
     //! Indicates a set of rule that is going to be used to select the target
@@ -1097,9 +1112,9 @@ public:
     HackingMethod name = HackingMethod::StoppingDataCollection;
 
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     //! @todo to be implemented
     HackingTarget target{HackingTarget::Both};
 
@@ -1219,9 +1234,9 @@ public:
     HackingMethod name = HackingMethod::OptionalDropping;
 
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     //! @todo to be implemented
     HackingTarget target{HackingTarget::Both};
 
