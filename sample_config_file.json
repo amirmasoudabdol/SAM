@@ -74,8 +74,8 @@
         "hacking_strategies": [
             [
                 {
-                    "name": "OptionalStopping",
-                    "num": 10
+                    "name": "GroupPooling",
+                    "pooled_conditions": [[1, 2], [0, 1]]
                 },
                 [
                     [
@@ -84,22 +84,6 @@
                 ],
                 [
                     "!sig"
-                ]
-            ],
-            [
-                {
-                    "name": "OptionalDropping",
-                    "pooled": [[1]],
-                    "split_by": [[0, 0], [0, 1]],
-                    "stopping_condition": ["sig"]
-                },
-                [
-                    [
-                        "min(pvalue)"
-                    ]
-                ],
-                [
-                    "effect > 0"
                 ]
             ]
         ],

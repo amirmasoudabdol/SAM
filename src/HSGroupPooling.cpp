@@ -36,6 +36,8 @@ void GroupPooling::perform(Experiment *experiment) {
   // we add a new condition for every new pooled group
   for (auto &conds_inx : params.pooled_conditions) {
 
+    spdlog::trace("Pooling {} conditions...", fmt::join(conds_inx.begin(), conds_inx.end(), ", "));
+
     // Checking to see whether the pooling is possible
     if (std::any_of(conds_inx.begin(), conds_inx.end(), [&](auto &c_id) {
           return c_id > experiment->setup.nc();
@@ -60,6 +62,8 @@ void GroupPooling::perform(Experiment *experiment) {
 
     experiment->recalculateEverything();
 
+    spdlog::trace("{}", *experiment);
+
     // Stops the pooling as soon as the stopping condition has meet
     if (!params.stopping_cond_defs.empty()) {
       if (stopping_condition(experiment)) {
@@ -71,7 +75,7 @@ void GroupPooling::perform(Experiment *experiment) {
     }
   }
 
-  spdlog::trace("{}", *experiment);
+
 }
 
 ///

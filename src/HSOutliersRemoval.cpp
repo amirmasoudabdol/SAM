@@ -35,7 +35,9 @@ void OutliersRemoval::perform(Experiment *experiment) {
     /// more observations left to be removed
     for (int t = 0; t < params.n_attempts && res; ++t) {
 
-      res = this->removeOutliers(experiment, params.num, k, params.side);
+      res = this->removeOutliers(experiment, params.num, k, params.side,
+                                  params.target, params.order, 
+                                  params.min_observations);
 
       experiment->recalculateEverything();
 
@@ -64,30 +66,32 @@ void OutliersRemoval::perform(Experiment *experiment) {
 /// be selected, and removed from the dataset.
 ///
 /// @return     Returns `false` if the number of observations is less than the
-/// `min_observations` dedicated by the user. This is a signal to `perform` to
+/// `min_n` dedicated by the user. This is a signal to `perform` to
 /// stop its execution.
 ///
 bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
-                                     const float k, const int side) {
+                                     const float k, const int side, 
+                                     HackingTarget &target, std::string &order, 
+                                     int min_n) {
 
   // Getting the boundary of the targeted group
   int begin{0};
   int end{0};
-  std::tie(begin, end) = getTargetBounds(experiment, params.target);
+  std::tie(begin, end) = getTargetBounds(experiment, target);
 
   // Removing the outliers from the targeted groups
   for (int i = begin; i < end; ++i) {
 
     auto &row = (*experiment)[i].measurements();
 
-    // At least one row has less than `min_observations`
-    if (row.size() <= params.min_observations) {
+    // At least one row has less than `min_n`
+    if (row.size() <= min_n) {
       return false; // Unsuccessful return, nothing can be removed!
     }
 
     // This trick makes finding the largest outlier easier. I'll see if I can
     // find a better way
-    if (params.order == "max first") {
+    if (order == "max first") {
       row = sort(row);
     }
 
@@ -112,10 +116,10 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
     }
 
     // If removing all the detected outliers lead to selected group having less
-    // observations than `min_observations`, then the algorithm removes the
+    // observations than `min_n`, then the algorithm removes the
     // portion of the detected outliers
-    if ((row.n_elem - inx.n_elem) <= params.min_observations) {
-      inx = inx.head(row.n_elem - params.min_observations);
+    if ((row.n_elem - inx.n_elem) <= min_n) {
+      inx = inx.head(row.n_elem - min_n);
     }
 
     // actually removing them from the group

@@ -366,9 +366,9 @@ public:
 
   void perform(Experiment *experiment) override;
 
-private:
   /// Implementation of the outliers removal
-  bool removeOutliers(Experiment *experiment, int n, float k, int side);
+  static bool removeOutliers(Experiment *experiment, int n, float k, int side,
+                             HackingTarget &target, std::string &order, int min_n);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -430,7 +430,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
 
 /// Declaration of GroupPooling hacking strategy. 
 /// 
-/// This strategy pools two treatments groups together, and creates a new 
+/// This strategy pools two or more treatments groups together, and creates a new 
 /// treatment groups. In this process, the data from related DVs will be pooled 
 /// to create a twice as big of a DV with the same property.
 /// 
@@ -451,8 +451,9 @@ public:
     HackingMethod name = HackingMethod::GroupPooling;
 
     //! List of paired indices indicating which groups should be pooled
-    //! together. The Group Pooling algorithm can be used to pool more than one
-    //! condition together.
+    //! together, e.g., [[1, 2], [1, 3], [1, 2, 3]]. The stopping condition will
+    //! be checked between each pair, and the pooling will stop as soon as the 
+    //! condition is met.
     std::vector<std::vector<int>> pooled_conditions;
 
     //! Stopping condition PolicyChain definitions
@@ -644,7 +645,11 @@ inline void from_json(const json &j, QuestionableRounding::Parameters &p) {
   }
 }
 
-/// PeekingOutliersRemoval Hacking Strategy
+/// @brief Declaration of the Peeking Outliers Removal Hacking Strategy
+/// 
+/// In this strategy, the Researcher performs the outliers removal on the copy 
+/// of the Experiment to peek into its effect. If the result is satisfactory, 
+/// she then saves the altered dataset, and registers the outliers removal.
 ///
 /// @ingroup HackingStrategies
 class PeekingOutliersRemoval final : public HackingStrategy {
@@ -659,10 +664,10 @@ public:
   ///     "level": "dv",
   ///     "min_observations": 10,
   ///     "multipliers": [
-  ///         0.5
+  ///         2.5
   ///     ],
-  ///     "n_attempts": 1000,
-  ///     "num": 1000,
+  ///     "n_attempts": 2,
+  ///     "num": 5,
   ///     "order": "random"
   ///  }
   /// ```
@@ -699,10 +704,19 @@ public:
     //! A list of standard deviation multipliers for identifying outliers
     std::vector<float> multipliers;
 
+    //! Indicates the side where the outliers should be removed from,
+    //!   \li side == 0 → |Z| < k
+    //!   \li side == 1 →   Z > k
+    //!   \li side == -1 →  Z < k
+    int side{0};
+
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
 
-    //! Removing if
+    //! A decision policy used to evaluate the status of the experiment after
+    //! performing the outliers removal. The Researcher only commits to the
+    //! outliers removal only if this condition passes, otherwise, she will
+    //! ignore the step, and the peeking will be unsuccessful.
     std::vector<std::string> whether_to_save_cond_defs;
 
     //! The prevalence factor of the strategy
@@ -744,6 +758,7 @@ inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
+           {"side", p.side},
            {"stage", p.stage},
            {"whether_to_save_condition", p.whether_to_save_cond_defs},
            {"stopping_condition", p.stopping_cond_defs}};
@@ -773,6 +788,10 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
   j.at("whether_to_save_condition").get_to(p.whether_to_save_cond_defs);
+
+  if (j.contains("side")) {
+    j.at("side").get_to(p.side);
+  }
 
   if (j.contains("prevalence")) {
     p.prevalence = j.at("prevalence");
@@ -1310,7 +1329,6 @@ inline void from_json(const json &j, OptionalDropping::Parameters &p) {
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-
   j.at("pooled").get_to(p.pooled);
   j.at("split_by").get_to(p.split_by);
 
