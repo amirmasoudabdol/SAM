@@ -745,9 +745,7 @@ public:
   };
 
   void perform(Experiment *experiment) override;
-
-private:
-  bool removeOutliers(Experiment *experiment, int n, float k);
+  
 };
 
 inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
@@ -811,8 +809,19 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
 }
 
 /// Falsifying Data Hacking Strategy
-///
+/// 
+/// This algorithm falsifies the available datasets using different means, e.g., 
+/// *perturbation*, *swapping* or *switching*. 
+/// 
+/// \li Perturbation, a selected number of data points will be perturbed by 
+/// adding some noise to them. 
+/// \li Group Swapping, a selected number of data points will be swapped between
+/// two groups.
+/// \li Group Switching, a selected number of data points will be moved from 
+/// one group to another. 
+/// 
 /// @ingroup HackingStrategies
+///
 class FalsifyingData final : public HackingStrategy {
 
 public:
@@ -822,6 +831,8 @@ public:
   /// ```json
   ///  {
   ///    "name": "FalsifyingData",
+  ///    "approach": "perturbation",
+  ///    "num": 5,
   ///  }
   /// ```
   ///
@@ -831,19 +842,19 @@ public:
     HackingMethod name = HackingMethod::FalsifyingData;
 
     //! Falsification approach. We've discussed two possible way of doing this
-    //!   - perturbation, perturbing a value
-    //!   - group swapping, swapping values between groups
-    //!   - group switching, moving values between groups
+    //!   \li Perturbation, perturbing a value
+    //!   \li Group Swapping, swapping values between groups
+    //!   \li Group Switching, moving values between groups
     std::string approach{"perturbation"};
 
     //! Switching direction
-    //!   - control-to-treatment
-    //!   - treatment-to-control
+    //!   \li  control-to-treatment
+    //!   \li  treatment-to-control
     std::string switching_direction{"control-to-treatment"};
 
     //! Swapping Method
-    //!   - random
-    //!   - smart
+    //!   \li random
+    //!   \li smart, selecting the 
     std::string selection_method{"random"};
 
     //! Indicates which outcome variables are going to be targeted,
@@ -854,17 +865,17 @@ public:
 
     //! Indicates a set of rule that is going to be used to select the target
     //! group
-    //! @todo To be implemented
+    //! @todo To be implemented, @maybe
     //    PolicyChain target_policy;
 
     //! Number of trials
     int n_attempts{1};
 
-    //! Number of observations to be perturbed
+    //! Number of observations that are going to be affected/used
     size_t num;
 
-    //! Distribution of noise
-    std::optional<UnivariateDistribution> noise_dist =
+    //! Distribution of noise. Default: e ~ N(0, 1)
+    std::optional<UnivariateDistribution> noise =
         makeUnivariateDistribution(
             {{"dist", "normal_distribution"}, {"mean", 0}, {"stddev", 1}});
 
@@ -901,8 +912,13 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
+  /// Perturbs a set of observations by adding noise to them
   bool perturb(Experiment *experiment);
+
+  /// Swaps a set of observations between two groups
   bool swapGroups(Experiment *experiment);
+
+  /// Switches a set of observations from one group to another
   bool switchGroups(Experiment *experiment);
 };
 
@@ -914,7 +930,6 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
            {"target", p.target},
            {"switching_direction", p.switching_direction},
            {"selection_method", p.selection_method},
-           //    {"noise_dist", p.noise_dist},
            {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
 
@@ -925,6 +940,9 @@ inline void to_json(json &j, const FalsifyingData::Parameters &p) {
   if (p.defensibility) {
     j["defensibility"] = p.defensibility.value();
   }
+
+  // @todo this is not possible at the moment, but it'd be nice to have it
+  // j["noise"] = p.noise.value();
 }
 
 inline void from_json(const json &j, FalsifyingData::Parameters &p) {
@@ -949,12 +967,19 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
     p.defensibility = j.at("defensibility");
   }
 
-  if (j.contains("switching_direction")) {
+  if (j["approach"] == "switching" and (not j.contains("switching_direction"))) {
     j.at("switching_direction").get_to(p.switching_direction);
+  } else {
+    spdlog::critical("The switching direction is not defined, see \
+      `switching_direction` parameter.");
+    exit(1);
   }
 
-  if (j.contains("selection_method")) {
+  if ((j["approach"] == "switching" or j["approach"] == "swapping") and (not j.contains("selection_method"))) {
     j.at("selection_method").get_to(p.selection_method);
+  } else {
+    spdlog::critical("The selection method is not defined, see \
+      `selection_method` parameter.");
   }
 
   if (j.contains("stage")) {
@@ -962,7 +987,7 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
   }
 
   if (j.contains("noise")) {
-    p.noise_dist = makeUnivariateDistribution(j["noise"]);
+    p.noise = makeUnivariateDistribution(j["noise"]);
   }
 
   if (j.contains("stopping_condition")) {

@@ -37,6 +37,14 @@ void FalsifyingData::perform(Experiment *experiment) {
 
 }
 
+///
+/// By cycling through the experiment's target, the algorithm first _randomly_ selects and
+/// then perturbs the selected observations based on the given noise distribution.
+///
+/// @param      experiment  The pointer to the experiment
+///
+/// @return     `true` if the process is successful
+///
 bool FalsifyingData::perturb(Experiment *experiment) {
   
   spdlog::debug(" → Perturbing some data points...");
@@ -50,6 +58,7 @@ bool FalsifyingData::perturb(Experiment *experiment) {
     auto &row = (*experiment)[i].measurements();
     
     // Making sure that there is enough elements to select
+    // If there is not enough elements, it uses whatever is available
     size_t num = std::min(params.num, static_cast<size_t>(experiment->dvs_[i].measurements().n_elem));
     
     // Selecting n indices randomly
@@ -58,7 +67,7 @@ bool FalsifyingData::perturb(Experiment *experiment) {
     
     static arma::Row<float> noise(num, arma::fill::zeros);
     noise.imbue([&](){
-      return Random::get(params.noise_dist.value());
+      return Random::get(params.noise.value());
     });
     
     row.elem(candidate_indices) += noise;
@@ -69,7 +78,19 @@ bool FalsifyingData::perturb(Experiment *experiment) {
   return true;
 }
 
-
+///
+/// The algorithm first selects a set of observations from all groups, based on the selection 
+/// method; then swaps them with each others. For instance, swapping 5 observations
+/// between target and treatment will results in swapping 5 observations between 
+/// all DVs of the target and treatments.
+///
+/// @param      experiment  The pointer to the experiment
+///
+/// @return     Return `true` if the process is successful
+/// 
+/// @todo @improvement I need to have a parameter for selecting groups, for instance
+/// I should be able to say, swap between group 1 and 2, or 1 and 3.
+///
 bool FalsifyingData::swapGroups(Experiment *experiment) {
   
   spdlog::debug(" → Swapping some data points...");
@@ -84,7 +105,7 @@ bool FalsifyingData::swapGroups(Experiment *experiment) {
       // Shuffling the data because I don't know its status. Better safe than sorry!
       Random::shuffle(experiment->dvs_[d].measurements());
       Random::shuffle(experiment->dvs_[i].measurements());
-    } else {
+    } else { // smart
       experiment->dvs_[d].measurements() = arma::sort(experiment->dvs_[d].measurements(), "descend");
       experiment->dvs_[i].measurements() = arma::sort(experiment->dvs_[i].measurements(), "ascend");
     }
@@ -112,7 +133,15 @@ bool FalsifyingData::swapGroups(Experiment *experiment) {
   return true;
 }
 
-
+///
+/// The algorithm first selects a set of observations from all groups, based on the selection 
+/// method; then moves them from the target group to the treatment group, or the 
+/// other way around.
+///
+/// @param      experiment  The pointer to the experiment
+///
+/// @return     Returns `true` if the process is successful
+///
 bool FalsifyingData::switchGroups(Experiment *experiment) {
   
   spdlog::debug(" → Switching some data points...");
