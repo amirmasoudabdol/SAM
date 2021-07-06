@@ -21,6 +21,7 @@
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
 
+#include <cstdlib>
 #include <map>
 #include <optional>
 #include <string>
@@ -839,19 +840,19 @@ public:
     HackingMethod name = HackingMethod::FalsifyingData;
 
     //! Falsification approach. We've discussed two possible way of doing this
-    //!   \li Perturbation, perturbing a value
-    //!   \li Group Swapping, swapping values between groups
-    //!   \li Group Switching, moving values between groups
+    //!   \li `perturbation`, perturbing a value
+    //!   \li `swapping`, swapping values between groups
+    //!   \li `switching`, moving values between groups
     std::string approach{"perturbation"};
 
     //! Switching direction
-    //!   \li  control-to-treatment
-    //!   \li  treatment-to-control
+    //!   \li  `control-to-treatment`
+    //!   \li  `treatment-to-control`
     std::string switching_direction{"control-to-treatment"};
 
     //! Swapping Method
-    //!   \li random
-    //!   \li smart, selecting the
+    //!   \li `random`
+    //!   \li `smart`
     std::string selection_method{"random"};
 
     //! Indicates which outcome variables are going to be targeted,
@@ -963,21 +964,24 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
     p.defensibility = j.at("defensibility");
   }
 
+  // Making sure that the correct parameter is available
   if (j["approach"] == "switching" and
       (not j.contains("switching_direction"))) {
-    j.at("switching_direction").get_to(p.switching_direction);
-  } else {
     spdlog::critical("The switching direction is not defined, see \
       `switching_direction` parameter.");
     exit(1);
+  } else {
+    j.at("switching_direction").get_to(p.switching_direction);
   }
 
+  // Making sure that the correct parameter is available
   if ((j["approach"] == "switching" or j["approach"] == "swapping") and
       (not j.contains("selection_method"))) {
-    j.at("selection_method").get_to(p.selection_method);
-  } else {
     spdlog::critical("The selection method is not defined, see \
       `selection_method` parameter.");
+    exit(1);
+  } else {
+    j.at("selection_method").get_to(p.selection_method);
   }
 
   if (j.contains("stage")) {
@@ -995,7 +999,12 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
 
 /// Fabricating Data Hacking Strategy
 ///
+/// This algorithm fabricates some fake data by either perturbing the existing
+/// data points and add them back to the datasets, or by duplicating them in the
+/// datasets.
+///
 /// @ingroup HackingStrategies
+///
 class FabricatingData final : public HackingStrategy {
 
 public:
@@ -1005,6 +1014,13 @@ public:
   /// ```json
   ///  {
   ///    "name": "FabricatingData",
+  ///    "num": 5,
+  ///    "approach": "generating",
+  ///    "dist": {
+  ///       "dist": "normal_distribution",
+  ///       "mean": 2,
+  ///       "stddev": 1
+  ///    }
   ///  }
   /// ```
   ///
@@ -1014,8 +1030,10 @@ public:
     HackingMethod name = HackingMethod::FabricatingData;
 
     //! Falsification approach. We've discussed two possible way of doing this
-    //!   - generating, perturbing a value
-    //!   - duplicating, swapping values between groups
+    //!   \li `generating`, generates new data and adds them to the datasets
+    //!   \li `duplicating`, add duplicates of new values to the target group
+    //!   \li `manipulating`, manipulates a set of data points, and add them to 
+    //!     the datasets again.
     std::string approach{"generating"};
 
     //! Indicates which outcome variables are going to be targeted,
@@ -1035,10 +1053,18 @@ public:
     //! Number of observations to be perturbed
     int num;
 
-    //! Distribution of fabricated data
-    //! @todo Check if this is even necessary, I think in most cases, we
-    //! can probably just use the data_strategy and get over it
+    //! Distribution of fabricated data. Only used for `generating`
     std::optional<UnivariateDistribution> dist;
+
+    //! Indicates whether the mean of each target dependent variable should be
+    //! used as the mean of the random distribution used for generating new 
+    //! data points.
+    //! @todo this would be nice to have, but I don't think I have get it right
+    //! yet.
+    bool use_dv_mean_as_dist_mean {false};
+
+    //! Distribution of fabricated data. Only used for `noise`
+    std::optional<UnivariateDistribution> noise;
 
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
@@ -1073,8 +1099,15 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
+  /// Generates new data based on the given `dist`
   bool generate(Experiment *experiment, int n);
+
+  /// Duplicates some of the data points
   bool duplicate(Experiment *experiment, int n);
+
+  /// Manipulates some of the data by adding some noise to them, and adding them
+  /// back again to the datasets.
+  bool manipulate(Experiment *experiment, int n);
 };
 
 inline void to_json(json &j, const FabricatingData::Parameters &p) {
@@ -1083,7 +1116,6 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"num", p.num},
            {"target", p.target},
-           //    {"dist", p.dist},
            {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
 
@@ -1094,6 +1126,10 @@ inline void to_json(json &j, const FabricatingData::Parameters &p) {
   if (p.defensibility) {
     j["defensibility"] = p.defensibility.value();
   }
+
+  // @todo this cannot be done, and needs a fix
+  // j["dist"] = p.dist.value();
+  // j["noise"] = p.noise.value();
 }
 
 inline void from_json(const json &j, FabricatingData::Parameters &p) {
@@ -1101,7 +1137,6 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("num").get_to(p.num);
@@ -1122,9 +1157,20 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
     j.at("stage").get_to(p.stage);
   }
 
-  if (j.contains("dist")) {
+  if (j["approach"] == "generating" and (not j.contains("dist"))) {
+    spdlog::critical("Please specify a distribution for new values to be \
+    generated from.");
+    exit(1);
+  } else {
     p.dist = makeUnivariateDistribution(j["dist"]);
   }
+
+  if (j["approach"] == "manipulating" and (not j.contains("noise"))) {
+    spdlog::critical("Please specify the noise distribution.");
+    exit(1);
+  } else {
+    p.dist = makeUnivariateDistribution(j["noise"]);
+  } 
 
   if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);

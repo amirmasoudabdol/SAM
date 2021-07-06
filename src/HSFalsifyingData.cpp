@@ -1,6 +1,15 @@
+//===-- HSFalsifyingData.cpp - Falsifying Data Implementation ---------------------------------===//
 //
+// Part of the SAM Project
 // Created by Amir Masoud Abdol on 2020-08-28.
 //
+//===----------------------------------------------------------------------===//
+///
+/// @file
+/// This file contains the implementation of Falsifying Data hacking strategy 
+/// and its related subroutines.
+///
+//===----------------------------------------------------------------------===//
 
 #include "HackingStrategy.h"
 
