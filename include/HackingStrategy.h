@@ -263,10 +263,10 @@ static std::pair<int, int> getTargetBounds(Experiment *experiment,
 ///
 /// @brief      Declaration of Outliers Removal hacking strategy based on items'
 ///             distance from the sample mean.
-///             
+///
 /// @note       Note that you can use the Outliers Removal hacking strategy to
-///             achieve much more elaborate outliers removal by simply defining 
-///             a `stopping_condition` parameter. For instance, using {{"sig"}} 
+///             achieve much more elaborate outliers removal by simply defining
+///             a `stopping_condition` parameter. For instance, using {{"sig"}}
 ///             as the stopping condition will simulate a more greedy version of
 ///             the Outliers Removal knows as Subjective Outliers Removal.
 ///
@@ -368,7 +368,8 @@ public:
 
   /// Implementation of the outliers removal
   static bool removeOutliers(Experiment *experiment, int n, float k, int side,
-                             HackingTarget &target, std::string &order, int min_n);
+                             HackingTarget &target, std::string &order,
+                             int min_n);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -428,21 +429,20 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   }
 }
 
-/// Declaration of GroupPooling hacking strategy. 
-/// 
-/// This strategy pools two or more treatments groups together, and creates a new 
-/// treatment groups. In this process, the data from related DVs will be pooled 
-/// to create a twice as big of a DV with the same property.
-/// 
-/// @note       It is even possible to pool a control group into the treatment 
+/// Declaration of GroupPooling hacking strategy.
+///
+/// This strategy pools two or more treatments groups together, and creates a
+/// new treatment groups. In this process, the data from related DVs will be
+/// pooled to create a twice as big of a DV with the same property.
+///
+/// @note       It is even possible to pool a control group into the treatment
 ///             group to create a new group!
-///             
+///
 /// @ingroup    HackingStrategies
 ///
 class GroupPooling final : public HackingStrategy {
 
 public:
-
   ///
   /// @brief      Parameters of the Group Pooling hacking strategy
   ///
@@ -452,14 +452,12 @@ public:
 
     //! List of paired indices indicating which groups should be pooled
     //! together, e.g., [[1, 2], [1, 3], [1, 2, 3]]. The stopping condition will
-    //! be checked between each pair, and the pooling will stop as soon as the 
+    //! be checked between each pair, and the pooling will stop as soon as the
     //! condition is met.
     std::vector<std::vector<int>> pooled_conditions;
 
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-
-    
   };
 
   Parameters params;
@@ -478,7 +476,6 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
-
   /// Pools two conditions together, and returns all the pooled dvs
   std::vector<DependentVariable> pool(Experiment *experiment,
                                       std::vector<int> &conds_inx, int ng);
@@ -488,8 +485,9 @@ private:
 };
 
 inline void to_json(json &j, const GroupPooling::Parameters &p) {
-  j = json{{"name", p.name}, {"pooled_conditions", p.pooled_conditions},
-            {"stopping_condition", p.stopping_cond_defs}};
+  j = json{{"name", p.name},
+           {"pooled_conditions", p.pooled_conditions},
+           {"stopping_condition", p.stopping_cond_defs}};
 }
 
 inline void from_json(const json &j, GroupPooling::Parameters &p) {
@@ -582,8 +580,8 @@ public:
     ///
     /// @todo I can possibly add more methods here, e.g.,
     /// \li rounding, where I just round the value down
-    /// \li random_rounding, where I generate a threshold, then round the `p-value
-    /// \li threshold` value
+    /// \li random_rounding, where I generate a threshold, then round the
+    /// `p-value \li threshold` value
     std::string rounding_method = "diff";
 
     //! The prevalence factor of the strategy
@@ -646,9 +644,9 @@ inline void from_json(const json &j, QuestionableRounding::Parameters &p) {
 }
 
 /// @brief Declaration of the Peeking Outliers Removal Hacking Strategy
-/// 
-/// In this strategy, the Researcher performs the outliers removal on the copy 
-/// of the Experiment to peek into its effect. If the result is satisfactory, 
+///
+/// In this strategy, the Researcher performs the outliers removal on the copy
+/// of the Experiment to peek into its effect. If the result is satisfactory,
 /// she then saves the altered dataset, and registers the outliers removal.
 ///
 /// @ingroup HackingStrategies
@@ -684,10 +682,10 @@ public:
     HackingTarget target{HackingTarget::Both};
 
     //! Indicates the order where outliers are going to be removed from the
-    //! experiment. 
-    //! 
-    //! \li `max first`, removes the biggest outlier first 
-    //! \li `random`, removes the first outlier first, this is as a random 
+    //! experiment.
+    //!
+    //! \li `max first`, removes the biggest outlier first
+    //! \li `random`, removes the first outlier first, this is as a random
     //! outlier is being removed
     std::string order{"max first"};
 
@@ -745,7 +743,6 @@ public:
   };
 
   void perform(Experiment *experiment) override;
-  
 };
 
 inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
@@ -809,17 +806,17 @@ inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
 }
 
 /// Falsifying Data Hacking Strategy
-/// 
-/// This algorithm falsifies the available datasets using different means, e.g., 
-/// *perturbation*, *swapping* or *switching*. 
-/// 
-/// \li Perturbation, a selected number of data points will be perturbed by 
-/// adding some noise to them. 
+///
+/// This algorithm falsifies the available datasets using different means, e.g.,
+/// *perturbation*, *swapping* or *switching*.
+///
+/// \li Perturbation, a selected number of data points will be perturbed by
+/// adding some noise to them.
 /// \li Group Swapping, a selected number of data points will be swapped between
 /// two groups.
-/// \li Group Switching, a selected number of data points will be moved from 
-/// one group to another. 
-/// 
+/// \li Group Switching, a selected number of data points will be moved from
+/// one group to another.
+///
 /// @ingroup HackingStrategies
 ///
 class FalsifyingData final : public HackingStrategy {
@@ -854,7 +851,7 @@ public:
 
     //! Swapping Method
     //!   \li random
-    //!   \li smart, selecting the 
+    //!   \li smart, selecting the
     std::string selection_method{"random"};
 
     //! Indicates which outcome variables are going to be targeted,
@@ -875,9 +872,8 @@ public:
     size_t num;
 
     //! Distribution of noise. Default: e ~ N(0, 1)
-    std::optional<UnivariateDistribution> noise =
-        makeUnivariateDistribution(
-            {{"dist", "normal_distribution"}, {"mean", 0}, {"stddev", 1}});
+    std::optional<UnivariateDistribution> noise = makeUnivariateDistribution(
+        {{"dist", "normal_distribution"}, {"mean", 0}, {"stddev", 1}});
 
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
@@ -967,7 +963,8 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
     p.defensibility = j.at("defensibility");
   }
 
-  if (j["approach"] == "switching" and (not j.contains("switching_direction"))) {
+  if (j["approach"] == "switching" and
+      (not j.contains("switching_direction"))) {
     j.at("switching_direction").get_to(p.switching_direction);
   } else {
     spdlog::critical("The switching direction is not defined, see \
@@ -975,7 +972,8 @@ inline void from_json(const json &j, FalsifyingData::Parameters &p) {
     exit(1);
   }
 
-  if ((j["approach"] == "switching" or j["approach"] == "swapping") and (not j.contains("selection_method"))) {
+  if ((j["approach"] == "switching" or j["approach"] == "swapping") and
+      (not j.contains("selection_method"))) {
     j.at("selection_method").get_to(p.selection_method);
   } else {
     spdlog::critical("The selection method is not defined, see \
