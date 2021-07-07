@@ -88,10 +88,15 @@ private:
   virtual void perform(Experiment *experiment) = 0;
 };
 
-/// Declaration of OptionalStopping hacking strategy
+///
+/// @brief    Declaration of OptionalStopping hacking strategy
+/// 
+/// The algorithm adds new observations to every dependent variables in every 
+/// group based on the data generated from the current instance of the 
+/// DataStrategy defined in the Experiment.
 ///
 /// @ingroup  HackingStrategies
-///
+/// 
 class OptionalStopping final : public HackingStrategy {
 
 public:
@@ -160,11 +165,11 @@ public:
     stage_ = params.stage;
   };
 
-  /// Adds new observations to each group
+  void perform(Experiment *experiment) override;
+
+  /// @brief      Adds new observations to each group
   void addObservations(Experiment *experiment, const arma::Row<int> &ns);
 
-private:
-  void perform(Experiment *experiment) override;
 };
 
 inline void to_json(json &j, const OptionalStopping::Parameters &p) {
@@ -582,7 +587,8 @@ public:
     /// @todo I can possibly add more methods here, e.g.,
     /// \li rounding, where I just round the value down
     /// \li random_rounding, where I generate a threshold, then round the
-    /// `p-value \li threshold` value
+    /// `p-value 
+    /// \li threshold` value
     std::string rounding_method = "diff";
 
     //! The prevalence factor of the strategy
@@ -1032,7 +1038,7 @@ public:
     //! Falsification approach. We've discussed two possible way of doing this
     //!   \li `generating`, generates new data and adds them to the datasets
     //!   \li `duplicating`, add duplicates of new values to the target group
-    //!   \li `manipulating`, manipulates a set of data points, and add them to 
+    //!   \li `manipulating`, manipulates a set of data points, and add them to
     //!     the datasets again.
     std::string approach{"generating"};
 
@@ -1057,11 +1063,11 @@ public:
     std::optional<UnivariateDistribution> dist;
 
     //! Indicates whether the mean of each target dependent variable should be
-    //! used as the mean of the random distribution used for generating new 
+    //! used as the mean of the random distribution used for generating new
     //! data points.
     //! @todo this would be nice to have, but I don't think I have get it right
     //! yet.
-    bool use_dv_mean_as_dist_mean {false};
+//    bool use_dv_mean_as_dist_mean{false};
 
     //! Distribution of fabricated data. Only used for `noise`
     std::optional<UnivariateDistribution> noise;
@@ -1172,7 +1178,7 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
     exit(1);
   } else {
     p.dist = makeUnivariateDistribution(j["noise"]);
-  } 
+  }
 
   if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
