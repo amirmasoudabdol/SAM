@@ -1157,6 +1157,7 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
     j.at("stage").get_to(p.stage);
   }
 
+  // `dist` has to be defined if the method is `generating`
   if (j["approach"] == "generating" and (not j.contains("dist"))) {
     spdlog::critical("Please specify a distribution for new values to be \
     generated from.");
@@ -1165,6 +1166,7 @@ inline void from_json(const json &j, FabricatingData::Parameters &p) {
     p.dist = makeUnivariateDistribution(j["dist"]);
   }
 
+  // `noise` dist has to be defined if the method is manipulating
   if (j["approach"] == "manipulating" and (not j.contains("noise"))) {
     spdlog::critical("Please specify the noise distribution.");
     exit(1);

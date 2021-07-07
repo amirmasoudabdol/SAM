@@ -68,34 +68,37 @@ TTest::compute_pvalue(float t_stat, float df, float alpha, TestStrategy::TestAlt
   using boost::math::students_t;
   students_t dist(df);
   
-  float p;
-  float sig;
+  double p{0};
+  bool sig{false};
   
   if (alternative == TestStrategy::TestAlternative::TwoSided) {
     // Mean != M
-    p = 2 * cdf(complement(dist, fabs(t_stat)));
-    if (p < alpha) // Alternative "NOT REJECTED"
+    p = 2. * cdf(complement(dist, fabs(t_stat)));
+    if (p < alpha) { // Alternative "NOT REJECTED"
       sig = true;
-    else // Alternative "REJECTED"
+    } else { // Alternative "REJECTED"
       sig = false;
+    }
   }
   
   if (alternative == TestStrategy::TestAlternative::Greater) {
     // Mean  > M
     p = cdf(dist, t_stat);
-    if (p > alpha) // Alternative "NOT REJECTED"
+    if (p > alpha) { // Alternative "NOT REJECTED"
       sig = true;
-    else // Alternative "REJECTED"
+    } else { // Alternative "REJECTED"
       sig = false;
+    }
   }
   
   if (alternative == TestStrategy::TestAlternative::Less) {
     // Mean  < M
     p = cdf(complement(dist, t_stat));
-    if (p > alpha) // Alternative "NOT REJECTED"
+    if (p > alpha) { // Alternative "NOT REJECTED"
       sig = true;
-    else // Alternative "REJECTED"
+    } else { // Alternative "REJECTED"
       sig = false;
+    }
   }
   
   return std::make_pair(p, sig);
