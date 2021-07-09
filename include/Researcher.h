@@ -123,7 +123,7 @@ class Researcher {
   //! 
   //! This being a Parameter allows it to be randomized at each run if necessary
   //! 
-  Parameter<float> probability_of_being_a_hacker;
+  Parameter<float> probability_of_being_a_hacker {0};
 
   //! Indicates the probability of a Researcher _actually applying_ a chosen
   //! hacking strategy.
@@ -303,9 +303,11 @@ public:
     }
 
     // Setting up the Probability of Being a Hacker
-    // -------------------------------------------- 
-    researcher.probability_of_being_a_hacker = Parameter<float>(
+    // --------------------------------------------
+    if (config["researcher_parameters"].contains("probability_of_being_a_hacker")) {
+      researcher.probability_of_being_a_hacker = Parameter<float>(
         config["researcher_parameters"]["probability_of_being_a_hacker"], 1);
+    }
 
     // Setting up the Probability of Committing to a Hack
     // -------------------------------------------------

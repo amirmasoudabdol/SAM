@@ -42,34 +42,8 @@
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
                 ["sig", "min(pvalue)"]
-            ],
-            "between_stashed_selection_policies": [
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
-                ]
-            ],
-            "between_replications_selection_policies": [
-                [
-                    "effect > 0",
-                    "sig",
-                    "first"
-                ],
-                [
-                    "effect > 0",
-                    "min(pvalue)"
-                ],
-                [
-                    "effect < 0",
-                    "max(pvalue)"
-                ]
             ]
         },
-        "probability_of_being_a_hacker": 1,
         "is_pre_processing": false,
         "pre_processing_methods": [
             ""
