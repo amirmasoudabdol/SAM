@@ -132,6 +132,7 @@ HackingStrategy::build(json &hacking_strategy_config) {
     
   } 
     
-  throw std::invalid_argument("Unknown Hacking Strategies.");
+  spdlog::critical("Unknown Hacking Strategies.");
+  exit(1);
   
 }

@@ -24,7 +24,8 @@ EffectStrategy::build(json &effect_strategy_config) {
   } else if (effect_strategy_config["name"] == "StandardizedMeanDifference") {
     return std::make_unique<StandardizedMeanDifference>();
   } else {
-    throw std::invalid_argument("Unknown effect size strategy.\n");
+    spdlog::critical("Unknown effect size strategy.");
+    exit(1);
   }
 }
 

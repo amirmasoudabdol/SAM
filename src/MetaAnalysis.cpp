@@ -46,7 +46,8 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
   }else if (name == "RankCorrelation") {
     return std::make_unique<RankCorrelation>();
   }else{
-    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+    spdlog::critical("Invalid Meta Analysis Strategy.");
+    exit(1);
   }
 }
 
@@ -75,7 +76,8 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(const json &config) {
     return std::make_unique<RankCorrelation>(p);
     
   }else{
-    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+    spdlog::critical("Invalid Meta Analysis Strategy.");
+    exit(1);
   }
 }
 
@@ -93,7 +95,8 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
   }else if (name == "RankCorrelation") {
     return RankCorrelation::ResultType::Columns();
   }else{
-    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+    spdlog::critical("Invalid Meta Analysis Strategy.");
+    exit(1);
   }
 }
 
@@ -112,7 +115,8 @@ void RandomEffectEstimator::estimate(Journal *journal) {
   if (params.estimator.find("DL") != std::string::npos){
     tau2 = RandomEffectEstimator::DL(journal->yi, journal->vi, journal->wi);
   }else if (params.estimator.find("DL") != std::string::npos){
-    throw std::invalid_argument("Not implemented yet!");
+    spdlog::critical("Not implemented yet!");
+    exit(1);
 //    tau2 = RandomEffectEstimator::PM(journal->yi, journal->vi, tau2);
   }
   

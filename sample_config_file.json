@@ -70,23 +70,6 @@
             ]
         },
         "probability_of_being_a_hacker": 1,
-        "probability_of_committing_a_hack": 1,
-        "hacking_strategies": [
-            [
-                {
-                    "name": "GroupPooling",
-                    "pooled_conditions": [[1, 2], [0, 1]]
-                },
-                [
-                    [
-                        "min(pvalue)"
-                    ]
-                ],
-                [
-                    "!sig"
-                ]
-            ]
-        ],
         "is_pre_processing": false,
         "pre_processing_methods": [
             ""

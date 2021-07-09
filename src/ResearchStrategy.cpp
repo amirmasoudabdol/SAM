@@ -67,7 +67,8 @@ std::unique_ptr<ResearchStrategy> ResearchStrategy::build(
     return std::make_unique<DefaultResearchStrategy>(params);
   }
 
-  throw std::invalid_argument("Unknown ResearchStrategy");
+  spdlog::critical("Unknown ResearchStrategy");
+  exit(1);
 }
 
 ///

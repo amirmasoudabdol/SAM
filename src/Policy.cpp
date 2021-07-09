@@ -190,7 +190,8 @@ Policy::Policy(const std::string &p_def, sol::state &lua) {
     def = p_def;
 
   } else {
-    throw std::invalid_argument("Invalid policy definition.");
+    spdlog::critical("Invalid policy definition.");
+    exit(1);
   }
 
   spdlog::trace("Lua Function: {}", f_def);
@@ -284,7 +285,8 @@ Policy::operator()(ForwardIt begin, ForwardIt end) {
   } break;
 
   default: {
-    throw std::invalid_argument("Invalid Policy Type.");
+    spdlog::critical("Invalid Policy Type.");
+    exit(1);
   }
   }
 
@@ -318,14 +320,16 @@ PolicyChain::PolicyChain(const std::vector<std::string> &pchain_defs,
     
     if (type_ == PolicyChainType::Decision and
         pchain.back().type != PolicyType::Comp) {
-      throw std::domain_error("Decision policies could only contain comparative operators;");
+      spdlog::critical("Decision policies could only contain comparative operators.");
+      exit(1);
     }
 
     // Checking whether there is any formula after the first non-comparative
     // formula
     if (pchain.back().type != PolicyType::Comp and i + 1 < pchain_defs.size()) {
-      throw std::invalid_argument(
+      spdlog::critical(
           "No formula should be listed after any of the unary functions.");
+      exit(1);
     }
   }
 }

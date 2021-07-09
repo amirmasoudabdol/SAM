@@ -33,7 +33,8 @@ std::unique_ptr<TestStrategy> TestStrategy::build(json &test_strategy_config) {
     auto params = test_strategy_config.get<WilcoxonTest::Parameters>();
     return std::make_unique<WilcoxonTest>(params);
   } else {
-    throw std::invalid_argument("Unknown Test Strategy.");
+    spdlog::critical("Unknown Test Strategy.");
+    exit(1);
   }
 }
 

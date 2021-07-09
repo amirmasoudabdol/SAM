@@ -78,7 +78,8 @@ std::unique_ptr<ReviewStrategy> ReviewStrategy::build(
     return std::make_unique<FreeSelection>();
   } 
   
-  throw std::invalid_argument("Unknown Selection Strategy.");
+  spdlog::critical("Unknown Selection Strategy.");
+  exit(1);
 }
 
 /// Reviews the list of submissions based on the user-defined policy

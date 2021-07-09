@@ -357,9 +357,10 @@ public:
                 item[1].get<std::vector<std::vector<std::string>>>(),
                 researcher.research_strategy->lua});
           } else {
-            throw std::domain_error(
+            spdlog::critical(
                 "You must provide a Selection policy, otherwise, the researcher "
                 "doesn't know what to do!");
+            exit(1);
           }
         }
 
@@ -377,7 +378,8 @@ public:
     } else {
       // If the Researcher a hacker, it has to have some methods
       if (researcher.isHacker()) {
-        throw std::domain_error("You defined a hacker, but didn't provide any hacking strategies.");
+        spdlog::critical("You defined a hacker, but didn't provide any hacking strategies.");
+        exit(1);
       }
     }
 

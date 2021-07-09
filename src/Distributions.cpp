@@ -100,8 +100,8 @@ UnivariateDistribution makeUnivariateDistribution(json const &j) {
 
 #undef generate_univariate_distribution_factory
 
-  //    throw std::runtime_error{&"Unknown distribution " [ distributionName]};
-  throw std::runtime_error{"Unknown distribution"};
+  spdlog::critical("Unknown distribution");
+  exit(1);
 }
 
 ///
@@ -151,7 +151,8 @@ MultivariateDistribution makeMultivariateDistribution(json const &j) {
 
 #undef generate_multivariate_distribution_factory
 
-  throw std::runtime_error{"Unknown distribution "};
+  spdlog::critical("Unknown distribution ");
+  exit(1);
 }
 
 

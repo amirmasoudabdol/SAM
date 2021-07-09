@@ -426,7 +426,8 @@ void Researcher::reorderHackingStrategies(HackingWorkflow &hw,
                std::get<0>(h2[0])->defensibility();
       });
     } else /* sequential */ {
-      throw std::invalid_argument("Invalid argument!");
+      spdlog::critical("Invalid argument!");
+      exit(1);
     }
 
   } catch (const std::bad_optional_access& e) {

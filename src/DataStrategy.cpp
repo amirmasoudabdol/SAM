@@ -28,6 +28,7 @@ std::unique_ptr<DataStrategy> DataStrategy::build(json &data_strategy_config) {
     return std::make_unique<GRMDataStrategy>(params);
 
   } else {
-    throw std::invalid_argument("Unknown Data Strategy.");
+    spdlog::critical("Unknown Data Strategy.");
+    exit(1);
   }
 }
