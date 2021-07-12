@@ -339,7 +339,12 @@ inline void from_json(const json &j, DefaultResearchStrategy::Parameters &p) {
   j.at("name").get_to(p.name);
 
   // This one is not optional, but the rest can be!
-  j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
+  if (j.contains("initial_selection_policies")) {
+    j.at("initial_selection_policies").get_to(p.initial_selection_policies_defs);
+  } else {
+    spdlog::critical("The `initial_selection_policies` is required.");
+    exit(1);
+  }
 
   if (j.contains("submission_decision_policies")) {
     j.at("submission_decision_policies")

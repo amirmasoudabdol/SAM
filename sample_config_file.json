@@ -43,11 +43,7 @@
             "initial_selection_policies": [
                 ["sig", "min(pvalue)"]
             ]
-        },
-        "is_pre_processing": false,
-        "pre_processing_methods": [
-            ""
-        ]
+        }
     },
     "simulation_parameters": {
         "log_level": "trace",

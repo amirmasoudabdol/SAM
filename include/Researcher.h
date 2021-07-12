@@ -292,14 +292,18 @@ public:
 
     // Setting up the Pre-processing Methods
     // -------------------------------------
-    researcher.is_pre_processing =
-        config["researcher_parameters"]["is_pre_processing"];
-    if (researcher.is_pre_processing) {
-      auto &methods = config["researcher_parameters"]["pre_processing_methods"];
+    if (config["researcher_parameters"].contains("is_pre_processing")) {
+      researcher.is_pre_processing =
+          config["researcher_parameters"]["is_pre_processing"];
+      if (researcher.is_pre_processing) {
+        auto &methods = config["researcher_parameters"]["pre_processing_methods"];
 
-      std::transform(methods.begin(), methods.end(),
-                     std::back_inserter(researcher.pre_processing_methods),
-                     HackingStrategy::build);
+        std::transform(methods.begin(), methods.end(),
+                       std::back_inserter(researcher.pre_processing_methods),
+                       HackingStrategy::build);
+      }
+    } else {
+      spdlog::info("No pre-processing step is defined.");
     }
 
     // Setting up the Probability of Being a Hacker
