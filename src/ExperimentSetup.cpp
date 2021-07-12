@@ -25,7 +25,9 @@ ExperimentSetup::ExperimentSetup(json &config) {
   nd_ = config["n_dep_vars"];
   ng_ = nc_ * nd_;
 
-  n_reps_ = config["n_reps"];
+  if (config.contains("n_reps")) {
+    n_reps_ = config["n_reps"];
+  }
 
   nobs_ = Parameter<int>(config["n_obs"], ng_);
 

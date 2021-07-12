@@ -3,8 +3,6 @@
         "n_conditions": 3,
         "n_dep_vars": 2,
         "n_obs": 10,
-        "n_reps": 1,
-        "n_covariants": 3,
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
