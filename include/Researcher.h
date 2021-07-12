@@ -126,7 +126,8 @@ class Researcher {
   Parameter<float> probability_of_being_a_hacker {0};
 
   //! Indicates the probability of a Researcher _actually applying_ a chosen
-  //! hacking strategy.
+  //! hacking strategy. The default value is set to 1, meaning that if nothing is
+  //! defiend, the Researcher will 100% go for a hack!
   //!
   //! This can have any of the given numbers:
   //! - A fixed value
@@ -315,31 +316,36 @@ public:
 
     // Setting up the Probability of Committing to a Hack
     // -------------------------------------------------
-    auto prob_of_committing_a_hack =
-        config["researcher_parameters"]["probability_of_committing_a_hack"];
-    switch (prob_of_committing_a_hack.type()) {
-    case nlohmann::detail::value_t::number_integer:
-    case nlohmann::detail::value_t::number_unsigned:
-    case nlohmann::detail::value_t::number_float:
-      researcher.probability_of_committing_a_hack =
-          prob_of_committing_a_hack.get<float>();
-      break;
-    case nlohmann::detail::value_t::string:
-      researcher.probability_of_committing_a_hack =
-          prob_of_committing_a_hack.get<std::string>();
-      break;
-    case nlohmann::detail::value_t::object: {
-      if (prob_of_committing_a_hack.contains("dist")) {
+    if (config["researcher_parameters"].contains("probability_of_committing_a_hack")) {
+      auto prob_of_committing_a_hack =
+          config["researcher_parameters"]["probability_of_committing_a_hack"];
+      switch (prob_of_committing_a_hack.type()) {
+      case nlohmann::detail::value_t::number_integer:
+      case nlohmann::detail::value_t::number_unsigned:
+      case nlohmann::detail::value_t::number_float:
         researcher.probability_of_committing_a_hack =
-            makeUnivariateDistribution(prob_of_committing_a_hack);
-      } else {
+            prob_of_committing_a_hack.get<float>();
+        break;
+      case nlohmann::detail::value_t::string:
         researcher.probability_of_committing_a_hack =
-            HackingProbabilityStrategy::build(prob_of_committing_a_hack);
+            prob_of_committing_a_hack.get<std::string>();
+        break;
+      case nlohmann::detail::value_t::object: {
+        if (prob_of_committing_a_hack.contains("dist")) {
+          researcher.probability_of_committing_a_hack =
+              makeUnivariateDistribution(prob_of_committing_a_hack);
+        } else {
+          researcher.probability_of_committing_a_hack =
+              HackingProbabilityStrategy::build(prob_of_committing_a_hack);
+        }
+      } break;
+      default:
+        researcher.probability_of_committing_a_hack = static_cast<float>(0);
+        break;
       }
-    } break;
-    default:
-      researcher.probability_of_committing_a_hack = static_cast<float>(0);
-      break;
+    } else {
+      // If it's not defined, it's going to be set to 1
+      researcher.probability_of_committing_a_hack = static_cast<float>(1.0);
     }
 
     // Setting up Hacking Workflow / Strategies
