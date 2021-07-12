@@ -21,9 +21,7 @@ using namespace sam;
 /// @param config A JSON configuration object
 ExperimentSetup::ExperimentSetup(json &config) {
 
-  nc_ = config["n_conditions"];
-  nd_ = config["n_dep_vars"];
-  ng_ = nc_ * nd_;
+  updateDesignParameters(config["n_conditions"], config["n_dep_vars"]);
 
   if (config.contains("n_reps")) {
     n_reps_ = config["n_reps"];
