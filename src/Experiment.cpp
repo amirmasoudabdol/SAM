@@ -108,14 +108,9 @@ void Experiment::generateCovariants() {
     covariants.fill(0);
     
     for (int i = 0; i < n_covariants; ++i) {
-      std::cout << dvs_[i].nobs_ << ", " << dvs_[i].nobs_ / 2 << std::endl;
       covariants.col(i).head(dvs_[i].nobs_ / 2).fill(1);
       covariants.col(i) = arma::shuffle(covariants.col(i));
     }
-
-    covariants.print();
-    std::cout << arma::size(arma::find(covariants == 0)) << std::endl;
-    std::cout << arma::size(arma::find(covariants == 1)) << std::endl;
     
     is_covariants_generated = true;
   }
