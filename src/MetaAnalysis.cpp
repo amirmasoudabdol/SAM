@@ -46,7 +46,8 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(std::string name) {
   }else if (name == "RankCorrelation") {
     return std::make_unique<RankCorrelation>();
   }else{
-    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+    spdlog::critical("Invalid Meta Analysis Strategy.");
+    exit(1);
   }
 }
 
@@ -75,7 +76,8 @@ std::unique_ptr<MetaAnalysis> MetaAnalysis::build(const json &config) {
     return std::make_unique<RankCorrelation>(p);
     
   }else{
-    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+    spdlog::critical("Invalid Meta Analysis Strategy.");
+    exit(1);
   }
 }
 
@@ -93,7 +95,8 @@ std::vector<std::string> MetaAnalysis::Columns(std::string name) {
   }else if (name == "RankCorrelation") {
     return RankCorrelation::ResultType::Columns();
   }else{
-    throw std::invalid_argument("Invalid Meta Analysis Strategy.");
+    spdlog::critical("Invalid Meta Analysis Strategy.");
+    exit(1);
   }
 }
 
@@ -107,12 +110,13 @@ void RandomEffectEstimator::estimate(Journal *journal) {
   
   spdlog::debug("Computing Random Effect Estimate...");
   
-  double tau2 {0};
+  float tau2 {0};
   
   if (params.estimator.find("DL") != std::string::npos){
     tau2 = RandomEffectEstimator::DL(journal->yi, journal->vi, journal->wi);
   }else if (params.estimator.find("DL") != std::string::npos){
-    throw std::invalid_argument("Not implemented yet!");
+    spdlog::critical("Not implemented yet!");
+    exit(1);
 //    tau2 = RandomEffectEstimator::PM(journal->yi, journal->vi, tau2);
   }
   
@@ -129,7 +133,7 @@ void EggersTestEstimator::estimate(Journal *journal) {
 
 
 RandomEffectEstimator::ResultType
-RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row<double> &vi, double tau2) {
+RandomEffectEstimator::RandomEffect(const arma::Row<float> &yi, const arma::Row<float> &vi, float tau2) {
   
   using boost::math::normal;
   using boost::math::chi_squared;
@@ -137,7 +141,7 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
   normal norm(0, 1);
   
   // Weight per study
-  arma::rowvec wi = 1. / (vi + tau2);
+  arma::Row<float> wi = 1. / (vi + tau2);
   // Meta-analytic estimate
   auto est = arma::accu(yi % wi) / arma::accu(wi);
   // Standard error of meta-analytic estimate
@@ -153,7 +157,7 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
   // Compute two-tailed p-value
   auto pval = pval_one > 0.5 ? (1. - pval_one) * 2 : pval_one * 2;
   
-  arma::rowvec wi_fe = 1. / vi;
+  arma::Row<float> wi_fe = 1. / vi;
   auto est_fe = arma::accu(wi_fe % yi)/ arma::accu(wi_fe);
   
   // Q-statistic
@@ -163,12 +167,12 @@ RandomEffectEstimator::RandomEffect(const arma::Row<double> &yi, const arma::Row
   // p-value of Q-statistic
   auto q_pval = cdf(complement(chisq, q_stat));
   
-  return ResultType{est, se, ci_lb, ci_ub, zval, pval, q_stat, q_pval};
+  return ResultType{est, static_cast<float>(se), static_cast<float>(ci_lb), static_cast<float>(ci_ub), static_cast<float>(zval), static_cast<float>(pval), q_stat, static_cast<float>(q_pval)};
 }
 
 
 // General method-of-moments estimate (Eq. 6 in DerSimonian and Kacker, 2007)
-double RandomEffectEstimator::DL(const arma::Row<double> &yi, const arma::Row<double> &vi, const arma::Row<double> &ai) {
+float RandomEffectEstimator::DL(const arma::Row<float> &yi, const arma::Row<float> &vi, const arma::Row<float> &ai) {
   
   spdlog::trace("→ Estimating the tau2 using DL ...");
   
@@ -180,11 +184,11 @@ double RandomEffectEstimator::DL(const arma::Row<double> &yi, const arma::Row<do
 }
 
 // Function for estimating tau2 with Paule-Mandel estimator
-double RandomEffectEstimator::PM(const arma::Row<double> &yi, const arma::Row<double> &vi, const double tau2) {
+float RandomEffectEstimator::PM(const arma::Row<float> &yi, const arma::Row<float> &vi, const float tau2) {
   // Degrees of freedom of Q-statistic (df is also expected value because chi square distributed)
   auto df = yi.n_elem - 1;
   // Weights in meta-analysis
-  arma::rowvec wi = 1. / (vi + tau2);
+  arma::Row<float> wi = 1. / (vi + tau2);
   // Meta-analytic effect size
   auto theta = arma::accu(yi % wi)/arma::accu(wi);
   // Q-statistic
@@ -196,42 +200,45 @@ double RandomEffectEstimator::PM(const arma::Row<double> &yi, const arma::Row<do
 }
 
 EggersTestEstimator::ResultType
-EggersTestEstimator::EggersTest(const arma::Row<double> &yi, const arma::Row<double> &vi, double alpha) {
+EggersTestEstimator::EggersTest(const arma::Row<float> &yi, const arma::Row<float> &vi, float alpha) {
   
   using namespace mlpack;
   using namespace mlpack::regression;
   
   using boost::math::students_t;
   
-  auto n = yi.n_elem;
+  arma::Row<double> Yi = arma::conv_to<arma::Row<double>>::from(yi);
+  arma::Row<double> Vi = arma::conv_to<arma::Row<double>>::from(vi);
+  
+  auto n = Yi.n_elem;
   auto p = 2;
-  double df = n - p;
+  float df = n - p;
   
-  arma::rowvec wi = 1./vi;
-  arma::rowvec wts = arma::sqrt(wi);
-  arma::rowvec si = arma::sqrt(vi);
+  arma::Row<double> Wi = 1./Vi;
+  arma::Row<double> wts = arma::sqrt(Wi);
+  arma::Row<double> si = arma::sqrt(Vi);
   
-  arma::rowvec predictions(n);
+  arma::Row<double> predictions(n);
   
-  arma::mat X(2, n);
-  X.row(0) = arma::ones(n).as_row();
+  arma::Mat<double> X;
+  X.ones(2, n);
   X.row(1) = si;
   
-  LinearRegression lg(X, yi, wi);
-  lg.Train(X, yi, wi, false);
+  LinearRegression lg(X, Yi, Wi);
+  lg.Train(X, Yi, Wi, false);
   lg.Predict(X, predictions);
   
-  arma::rowvec errors = yi - predictions;
+  arma::Row<double> errors = Yi - predictions;
   
   auto slope = lg.Parameters().at(1);
   
-  arma::mat W = arma::diagmat(wi);
+  arma::Mat<double> W = arma::diagmat(Wi);
   
-  double res_var_2 = sqrt(arma::accu(wi % arma::pow(errors, 2)) / (n - 2));
-  arma::mat S_2 = arma::diagmat(arma::pow(res_var_2 / sqrt(wi), 2));
+  double res_var_2 = sqrt(arma::accu(Wi % arma::pow(errors, 2)) / (n - 2));
+  arma::Mat<double> S_2 = arma::diagmat(arma::pow(res_var_2 / sqrt(Wi), 2));
   
-  arma::mat Z = X.t();
-  arma::mat var_betas = arma::sqrt(arma::inv(Z.t() * W * Z) * (Z.t() * W * S_2 * W.t() * Z) * arma::inv(Z.t() * W * Z));
+  arma::Mat<double> Z = X.t();
+  arma::Mat<double> var_betas = arma::sqrt(arma::inv(Z.t() * W * Z) * (Z.t() * W * S_2 * W.t() * Z) * arma::inv(Z.t() * W * Z));
   
   double slope_se = var_betas.diag().at(1);
   
@@ -239,42 +246,42 @@ EggersTestEstimator::EggersTest(const arma::Row<double> &yi, const arma::Row<dou
   
   auto res = TTest::compute_pvalue(slope_stat, n - 2, 0.1, TestStrategy::TestAlternative::TwoSided);
   
-  return ResultType{slope, slope_se, slope_stat, res.first, res.second, df};
+  return ResultType{static_cast<float>(slope), static_cast<float>(slope_se), static_cast<float>(slope_stat), res.first, res.second, df};
 }
 
 sam::TestOfObsOverExptSig::ResultType
-TestOfObsOverExptSig::TES(const arma::Row<double> &sigs, const arma::Row<double> &ni, double beta, double alpha) {
+TestOfObsOverExptSig::TES(const arma::Row<float> &sigs, const arma::Row<float> &ni, float beta, float alpha) {
   
   using boost::math::students_t;
   using boost::math::non_central_t;
   using boost::math::chi_squared;
   
-  double k = sigs.n_elem;
+  float k = sigs.n_elem;
   
-  double O = arma::accu(sigs);
+  float O = arma::accu(sigs);
 
-  arma::rowvec tcvs(k);
+  arma::Row<float> tcvs(k);
   tcvs.imbue([&, i = 0]() mutable {
     students_t tdist(ni[i] - 1); i++;
     return quantile(tdist, 0.95);
   });
   
   // non-central t-statistics
-  arma::rowvec powers(k);
+  arma::Row<float> powers(k);
   powers.imbue([&, i = 0]() mutable {
     non_central_t nct(ni[i] - 1, beta * sqrt(ni[i]));
     return cdf(complement(nct, tcvs[i++]));
   });
   
-  double E = arma::accu(powers);
+  float E = arma::accu(powers);
   
   /// @note If E is absolute zero, I'm adding some noise that I don't have to deal with the explosion
   if (E < 0.0000001)
     E = 1e-10;
   
   /// A is most likely different from what R spit out, due to brutal rounding that's happening in R.
-  double A {100000};
-  double pval {0.0};
+  float A {100000};
+  float pval {0.0};
   if (k != E) {
     A = pow(O - E, 2.) / E + pow(O - E, 2.) / (k - E);
   
@@ -292,14 +299,14 @@ void TestOfObsOverExptSig::estimate(Journal *journal) {
   
   spdlog::debug("Computing Test Of Obs Over Expt Significance...");
   
-  double beta = FixedEffectEstimator::FixedEffect(journal->yi, journal->vi).est;
+  float beta = FixedEffectEstimator::FixedEffect(journal->yi, journal->vi).est;
   
-  arma::rowvec sigs(journal->yi.n_elem);
+  arma::Row<float> sigs(journal->yi.n_elem);
   sigs.imbue([&, i = 0]() mutable {
     return journal->publications_list[i++].dv_.sig_;
   });
   
-  arma::rowvec ni(journal->yi.n_elem);
+  arma::Row<float> ni(journal->yi.n_elem);
   ni.imbue([&, i = 0]() mutable {
     return journal->publications_list[i++].dv_.nobs_;
   });
@@ -312,7 +319,7 @@ void TrimAndFill::estimate(Journal *journal) {
   
   spdlog::debug("Computing Trim And Fill...");
   
-  arma::rowvec ni(journal->yi.n_elem);
+  arma::Row<float> ni(journal->yi.n_elem);
   ni.imbue([&, i = 0]() mutable {
     return journal->publications_list[i++].dv_.nobs_;
   });
@@ -320,15 +327,15 @@ void TrimAndFill::estimate(Journal *journal) {
   journal->storeMetaAnalysisResult(TrimAndFill::TF(journal->yi, journal->vi, ni, params));
 }
 
-TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni, const Parameters &params) {
+TrimAndFill::ResultType TrimAndFill::TF(arma::Row<float> yi, arma::Row<float> vi, arma::Row<float> ni, const Parameters &params) {
   
   int k = yi.n_elem;
-  arma::rowvec wi = 1. / vi;
+  arma::Row<float> wi = 1. / vi;
   
   std::string side = params.side;
 
   /// Determining the side
-  double beta = FixedEffectEstimator::FixedEffect(yi, vi).est;
+  float beta = FixedEffectEstimator::FixedEffect(yi, vi).est;
   
   if (params.side.find("auto") != std::string::npos) {
     if (beta < 0) {
@@ -345,24 +352,24 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
   
   /// sort data by increasing yi
   arma::uvec ix = arma::sort_index(yi);
-  arma::rowvec yi_s = yi.elem(ix).as_row();
-  arma::rowvec vi_s = vi.elem(ix).as_row();
-  arma::rowvec wi_s = wi.elem(ix).as_row();
-  arma::rowvec ni_s = wi.elem(ix).as_row();
+  arma::Row<float> yi_s = yi.elem(ix).as_row();
+  arma::Row<float> vi_s = vi.elem(ix).as_row();
+  arma::Row<float> wi_s = wi.elem(ix).as_row();
+  arma::Row<float> ni_s = wi.elem(ix).as_row();
   
   int iter{0};
   int maxiter{100};
   
-  double k0_sav{-1};
-  double k0{0}; // estimated number of missing studies;
-  double se_k0{0};
-  double Sr{0};
-  double varSr{0};
-  double k0_pval{0};
+  float k0_sav{-1};
+  float k0{0}; // estimated number of missing studies;
+  float se_k0{0};
+  float Sr{0};
+  float varSr{0};
+  float k0_pval{0};
   
-  arma::rowvec yi_c;
-  arma::rowvec yi_c_r;
-  arma::rowvec yi_c_r_s;
+  arma::Row<float> yi_c;
+  arma::Row<float> yi_c_r;
+  arma::Row<float> yi_c_r_s;
   
   while (abs(k0 - k0_sav) > 0) {
     
@@ -375,10 +382,10 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     
     //  truncated data
     arma::uvec elems = arma::regspace<arma::uvec>(0, 1, k - k0 - 1);
-    arma::rowvec yi_t = yi_s.elem(elems).as_row();
-    arma::rowvec vi_t = vi_s.elem(elems).as_row();
-    arma::rowvec wi_t = wi_s.elem(elems).as_row();
-    arma::rowvec ni_t = wi_s.elem(elems).as_row();
+    arma::Row<float> yi_t = yi_s.elem(elems).as_row();
+    arma::Row<float> vi_t = vi_s.elem(elems).as_row();
+    arma::Row<float> wi_t = wi_s.elem(elems).as_row();
+    arma::Row<float> ni_t = wi_s.elem(elems).as_row();
     
     //  intercept estimate based on truncated data
     beta = FixedEffectEstimator::FixedEffect(yi_t, vi_t).est;
@@ -392,7 +399,7 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     if (params.estimator.find("R0") != std::string::npos) {
       arma::uvec inx = arma::find(yi_c_r_s < 0);
       k0 = (k - arma::max(-1. * yi_c_r_s.elem(inx))) - 1;
-      se_k0 = sqrt(2 * std::max(0., k0) + 2);
+      se_k0 = sqrt(2 * std::max(static_cast<float>(0.), k0) + 2);
     }
     
     ///  estimate the number of missing studies with the L0 estimator
@@ -414,8 +421,8 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     }
     
     ///  round k0 and make sure that k0 is non-negative
-    k0 = std::max(0., std::round(k0));
-    se_k0 = std::max(0., se_k0);
+    k0 = std::max(static_cast<float>(0.), std::round(k0));
+    se_k0 = std::max(static_cast<float>(0.), se_k0);
     
   }
   
@@ -424,8 +431,8 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
   /// ------------------ Filling and estimating ----------------
   
   auto res = FixedEffectEstimator::FixedEffect(yi, vi);
-  double imputed_est = res.est;
-  double imputed_pval = res.pval;
+  float imputed_est = res.est;
+  float imputed_pval = res.pval;
   
   /// if estimated number of missing studies is > 0
   if (k0 > 0) {
@@ -439,8 +446,8 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     }
     
     /// create filled-in data set
-    arma::rowvec yi_f = yi_c;
-    arma::rowvec yi_fill = yi;
+    arma::Row<float> yi_f = yi_c;
+    arma::Row<float> yi_fill = yi;
     yi_fill.insert_cols(yi_f.n_elem, -1. * yi_c.elem(arma::regspace<arma::uvec>(k - k0, 1, k - 1)).as_row());
     
     /// apply limits if specified
@@ -453,11 +460,11 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
     //        yi_fill[yi_fill > ilim[2]] = ilim[2]
     //        }
     
-    arma::rowvec vi_fill = vi;
+    arma::Row<float> vi_fill = vi;
     vi_fill.insert_cols(vi.n_elem, vi.elem(arma::regspace<arma::uvec>(k - k0, 1, k - 1)).as_row());
-    arma::rowvec wi_fill = wi;
+    arma::Row<float> wi_fill = wi;
     wi_fill.insert_cols(wi.n_elem, wi.elem(arma::regspace<arma::uvec>(k - k0, 1, k - 1)).as_row());
-    arma::rowvec ni_fill = ni;
+    arma::Row<float> ni_fill = ni;
     ni_fill.insert_cols(ni.n_elem, ni.elem(arma::regspace<arma::uvec>(k - k0, 1, k - 1)).as_row());
     
     
@@ -469,19 +476,19 @@ TrimAndFill::ResultType TrimAndFill::TF(arma::Row<double> yi, arma::Row<double> 
   }
     
   /// @todo need to be integrated!
-  std::optional<double> p_k0;
+  std::optional<float> p_k0;
   
   /// Adjustment for p_k0
   if (params.estimator.find("R0") != std::string::npos) {
-    arma::rowvec m {arma::regspace<arma::rowvec>(-1, 1, (k0-1))};
-    arma::rowvec bin_coefs(m.n_elem);
+    arma::Row<float> m {arma::regspace<arma::Row<float>>(-1, 1, (k0-1))};
+    arma::Row<float> bin_coefs(m.n_elem);
     /// @todo This imbue can be improved
     bin_coefs.imbue([&, i = 0]() mutable {
-      auto x = boost::math::binomial_coefficient<double>(0+m.at(i)+1, m.at(i)+1);
+      auto x = boost::math::binomial_coefficient<float>(0+m.at(i)+1, m.at(i)+1);
       i++;
       return x;
     });
-    arma::rowvec tmp(m.n_elem);
+    arma::Row<float> tmp(m.n_elem);
     tmp.imbue([&, i = 0]() mutable {
       return pow(0.5, static_cast<int>(0 + m.at(i++) + 2));
     });
@@ -501,7 +508,7 @@ namespace sam {
  *
  * from: https://afni.nimh.nih.gov/pub/dist/src/ktaub.c
  */
-double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y) {
+float kendallcor(const arma::Row<float> &x, const arma::Row<float> &y) {
   
   spdlog::debug(" → Computing Kendall Correlation...");
   
@@ -548,9 +555,9 @@ double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y) {
   return cor;
 }
 
-double ckendall(int k, int n, arma::mat &w) {
+float ckendall(int k, int n, arma::Mat<float> &w) {
   int i, u;
-  double s;
+  float s;
   
   u =  (n * (n - 1) / 2);
   if ((k < 0) || (k > u))
@@ -569,18 +576,18 @@ double ckendall(int k, int n, arma::mat &w) {
   return(w.at(n, k));
 }
 
-double pkendall(int len, int n) {
+float pkendall(int len, int n) {
   
   spdlog::debug(" → Computing Kendall Probability...");
   
   int i, j;
-  double p, q;
+  float p, q;
   
   p = 0;
   q = len;
   
   size_t u =  (n * (n - 1) / 2);
-  arma::mat w(n, u); w.fill(-1);
+  arma::Mat<float> w(n, u); w.fill(-1);
 
     if (q < 0)
       p = 0;
@@ -597,7 +604,7 @@ double pkendall(int len, int n) {
   return p;
 }
 
-std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arma::Row<double> &y, const TestStrategy::TestAlternative alternative) {
+std::pair<float, float> kendall_cor_test(const arma::Row<float> &x, const arma::Row<float> &y, const TestStrategy::TestAlternative alternative) {
   
   spdlog::debug(" → Running Kendall Correlation Test...");
   
@@ -606,15 +613,15 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
   
   auto q = round((r + 1.) * n * (n - 1.) / 4.);
   
-  arma::rowvec x_uqniues = arma::unique(x);
+  arma::Row<float> x_uqniues = arma::unique(x);
   size_t x_n_uqniues = x_uqniues.n_elem;
-  arma::rowvec y_uqniues = arma::unique(y);
+  arma::Row<float> y_uqniues = arma::unique(y);
   size_t y_n_uqniues = y_uqniues.n_elem;
   
   bool ties = (min(x_n_uqniues, y_n_uqniues) < n);
 
-  double p{0};
-  double statistic;
+  float p{0};
+  float statistic;
   
   if (!ties) {
     
@@ -660,25 +667,25 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
     }else
       yties = arma::urowvec({0});
     
-    double T0 = n * (n - 1)/2;
+    float T0 = n * (n - 1)/2;
     
-    double T1 = arma::accu(xties % (xties - 1))/2;
+    float T1 = arma::accu(xties % (xties - 1))/2;
     
-    double T2 = arma::accu(yties % (yties - 1))/2;
+    float T2 = arma::accu(yties % (yties - 1))/2;
     
-    double S = r * sqrt((T0 - T1) * (T0 - T2));
+    float S = r * sqrt((T0 - T1) * (T0 - T2));
     
-    double v0 = n * (n - 1) * (2 * n + 5);
+    float v0 = n * (n - 1) * (2 * n + 5);
     
-    double vt = arma::accu(xties % (xties - 1) % (2 * xties + 5));
+    float vt = arma::accu(xties % (xties - 1) % (2 * xties + 5));
     
-    double vu = arma::accu(yties % (yties - 1) % (2 * yties + 5));
+    float vu = arma::accu(yties % (yties - 1) % (2 * yties + 5));
     
-    double v1 = arma::accu((xties % (xties - 1))) * arma::accu(yties % (yties - 1));
+    float v1 = arma::accu((xties % (xties - 1))) * arma::accu(yties % (yties - 1));
     
-    double v2 = arma::accu((xties % (xties - 1)) % (xties - 2)) * arma::accu(yties % (yties - 1) % (yties - 2));
+    float v2 = arma::accu((xties % (xties - 1)) % (xties - 2)) * arma::accu(yties % (yties - 1) % (yties - 2));
     
-    double var_S = (v0 - vt - vu) / 18. + v1 / (2. * n * (n - 1.)) + v2 / (9. * n * (n - 1.) * (n - 2.));
+    float var_S = (v0 - vt - vu) / 18. + v1 / (2. * n * (n - 1.)) + v2 / (9. * n * (n - 1.) * (n - 2.));
     
     statistic = S / sqrt(var_S);
     
@@ -708,14 +715,14 @@ std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arm
 
 }
 
-RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<double> yi, arma::Row<double> vi, const Parameters &params) {
+RankCorrelation::ResultType RankCorrelation::RankCor(arma::Row<float> yi, arma::Row<float> vi, const Parameters &params) {
   
   auto res  = FixedEffectEstimator::FixedEffect(yi, vi);
   auto beta = res.est;
   auto vb = pow(res.se, 2);
   
-  arma::rowvec vi_star = vi - vb;
-  arma::rowvec yi_star = (yi - beta) / arma::sqrt(vi_star);
+  arma::Row<float> vi_star = vi - vb;
+  arma::Row<float> yi_star = (yi - beta) / arma::sqrt(vi_star);
   
 //  vi_star.replace(arma::datum::nan, 0.);
 //  yi_star.replace(arma::datum::nan, 0.);

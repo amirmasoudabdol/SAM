@@ -12,20 +12,20 @@ class HackingProbabilityStrategy {
   
 public:
   
-  double prob;
-  arma::rowvec probabilities;
+  float prob;
+  arma::Row<float> probabilities;
   
   virtual ~HackingProbabilityStrategy() = 0;
   
   static std::unique_ptr<HackingProbabilityStrategy> build(json &config);
   
-  virtual double estimate(Experiment *experiment) = 0;
+  virtual float estimate(Experiment *experiment) = 0;
   
-  operator double() {
+  operator float() {
     return prob;
   }
   
-  operator arma::rowvec() {
+  operator arma::Row<float>() {
     return probabilities;
   }
 };
@@ -33,25 +33,25 @@ public:
 
 class FrankenbachStrategy final : public HackingProbabilityStrategy {
   
-  arma::rowvec se_seq;
-  arma::rowvec p_seq;
-  arma::rowvec se_seq_p;
-  arma::rowvec hackborder;
-  arma::rowvec hp_range;
+  arma::Row<float> se_seq;
+  arma::Row<float> p_seq;
+  arma::Row<float> se_seq_p;
+  arma::Row<float> hackborder;
+  arma::Row<float> hp_range;
   
   /// Left border of the danger zone
-  double border(double se_d) {
+  float border(float se_d) {
     return arma::as_scalar(hackborder.at(arma::max(find(se_seq < se_d))));
   }
 
 public:
   struct Parameters {
     std::string method {"FrankenbachStrategy"};
-    double base_hp {0};
-    double lo_se {0.4};
-    double hi_se {0.6};
-    double min_se {0.1};
-    double max_se {0.6};
+    float base_hp {0};
+    float lo_se {0.4};
+    float hi_se {0.6};
+    float min_se {0.1};
+    float max_se {0.6};
   };
   
   Parameters params;
@@ -62,8 +62,8 @@ public:
     
     using boost::math::normal; normal norm;
     
-    se_seq = arma::regspace<arma::rowvec>(params.min_se, 0.0001, params.max_se);
-    p_seq = arma::linspace<arma::rowvec>(params.lo_se + 0.0001, params.hi_se - 0.0001, se_seq.n_elem);
+    se_seq = arma::regspace<arma::Row<float>>(params.min_se, 0.0001, params.max_se);
+    p_seq = arma::linspace<arma::Row<float>>(params.lo_se + 0.0001, params.hi_se - 0.0001, se_seq.n_elem);
     
     se_seq_p.resize(p_seq.n_elem);
     se_seq_p.imbue([&, i = 0]() mutable {
@@ -73,10 +73,10 @@ public:
     hackborder = se_seq_p % se_seq;
     hackborder = arma::sort(hackborder);
     
-    hp_range = arma::linspace<arma::rowvec>(params.base_hp - 0.2, params.base_hp + 0.2 - 0.0001, 11);
+    hp_range = arma::linspace<arma::Row<float>>(params.base_hp - 0.2, params.base_hp + 0.2 - 0.0001, 11);
   };
   
-  virtual double estimate(Experiment *experiment) override;
+  virtual float estimate(Experiment *experiment) override;
   
 };
 

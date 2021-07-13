@@ -71,8 +71,8 @@ using Random = effolkronium::random_static;
  */
 ///@{
 using Generator = std::mt19937;
-using UnivariateDistribution = std::function<double(Generator &)>;
-using MultivariateDistribution = std::function<arma::mat(Generator &)>;
+using UnivariateDistribution = std::function<float(Generator &)>;
+using MultivariateDistribution = std::function<arma::Mat<float>(Generator &)>;
 ///@}
 
 /// Univariate Distribution's Constructor
@@ -107,21 +107,21 @@ make_multivariate_distribution_impl(json const &j, Parameters... parameters) {
 /// @brief Fills the matrix with values drawn from the given distribution
 ///
 /// @note At least one of the optionals should have values!
-static arma::mat fillMatrix(std::optional<std::vector<UnivariateDistribution>> &dists,
+static arma::Mat<float> fillMatrix(std::optional<std::vector<UnivariateDistribution>> &dists,
                             std::optional<MultivariateDistribution> &mdist,
                             int n_rows, int n_cols) {
   
-  arma::mat data(n_rows, n_cols);
+  arma::Mat<float> data(n_rows, n_cols);
   
   if (mdist) {
     // Multivariate Distributions
     // Filling by columns because MultiDist returns a column of results
-    data.each_col([&](arma::vec &v) { v = Random::get(mdist.value()); });
+    data.each_col([&](arma::Col<float> &v) { v = Random::get(mdist.value()); });
   } else {
     if (dists) {
       // Set of Univariate Distributions
       // Filling by rows because each row has its own distribution now
-      data.each_row([&, i = 0](arma::rowvec &v) mutable {
+      data.each_row([&, i = 0](arma::Row<float> &v) mutable {
         v.imbue([&]() { return Random::get(dists.value()[i]); });
         i++;
       });
@@ -140,7 +140,7 @@ static arma::mat fillMatrix(std::optional<std::vector<UnivariateDistribution>> &
 /// I faced some header collisions and I gave up!
 ///
 /// @see Parameter<T>
-template <typename T = double>
+template <typename T = float>
 std::vector<T> get_expr_setup_params(json const &j, size_t size) {
   
   switch (j.type()) {
@@ -172,16 +172,16 @@ std::vector<T> get_expr_setup_params(json const &j, size_t size) {
  *
  */
 ///@{
-arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     const arma::Row<double> &covs,
+arma::Mat<float> constructCovMatrix(const arma::Row<float> &stddevs,
+                                     const arma::Row<float> &covs,
                                      int n);
 
-arma::Mat<double> constructCovMatrix(const arma::Row<double> &stddevs,
-                                     double cov,
+arma::Mat<float> constructCovMatrix(const arma::Row<float> &stddevs,
+                                     float cov,
                                      int n);
 
-arma::Mat<double> constructCovMatrix(double stddev,
-                                     double cov,
+arma::Mat<float> constructCovMatrix(float stddev,
+                                     float cov,
                                      int n);
 ///@}
 
@@ -245,26 +245,26 @@ template <typename T> struct adl_serializer<baaraan::mvnorm_distribution<T>> {
   static void to_json(json &j, const baaraan::mvnorm_distribution<T> &mdist) {
 
     j["dist"] = "mvnorm_distribution";
-    j["means"] = arma::rowvec(mdist.means().as_row());
+    j["means"] = arma::Row<float>(mdist.means().as_row());
     j["sigma"] = mdist.sigma();
   }
 
   static baaraan::mvnorm_distribution<T> from_json(const json &j) {
 
-    arma::Row<double> means = j.at("means").get<arma::Row<double>>();
-    arma::Mat<double> sigma;
+    arma::Row<float> means = j.at("means").get<arma::Row<float>>();
+    arma::Mat<float> sigma;
     auto n_dims = means.n_elem;
 
     if (j.find("sigma") != j.end()) {
-      sigma = j.at("sigma").get<arma::Mat<double>>();
+      sigma = j.at("sigma").get<arma::Mat<float>>();
       // TODO: Check for sigma dimension
     } else {
       if (j.find("stddevs") == j.end() || j.find("covs") == j.end()) {
         throw std::invalid_argument(
             "Either `sigma` or `covs` and `stddevs` have to be given.");
       }
-      arma::rowvec stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
-      arma::rowvec covs =
+      arma::Row<float> stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
+      arma::Row<float> covs =
       get_expr_setup_params(j.at("covs"), n_dims * (n_dims - 1) / 2);
       sigma = constructCovMatrix(stddevs, covs, n_dims);
     }
@@ -280,15 +280,15 @@ struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
                       const baaraan::truncated_mvnorm_distribution<T> &mdist) {
 
     j["dist"] = "truncated_mvnorm_distribution";
-    j["means"] = arma::rowvec(mdist.means().as_row());
+    j["means"] = arma::Row<float>(mdist.means().as_row());
     j["sigma"] = mdist.sigma();
-    j["lowers"] = arma::rowvec(mdist.lowers().as_row());
-    j["uppers"] = arma::rowvec(mdist.uppers().as_row());
+    j["lowers"] = arma::Row<float>(mdist.lowers().as_row());
+    j["uppers"] = arma::Row<float>(mdist.uppers().as_row());
   }
 
   static baaraan::truncated_mvnorm_distribution<T> from_json(const json &j) {
 
-    auto means = j.at("means").get<arma::Row<double>>();
+    auto means = j.at("means").get<arma::Row<float>>();
     auto n_dims = means.n_elem;
 
     arma::Mat<T> sigma;
@@ -296,7 +296,7 @@ struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
     arma::Mat<T> uppers;
 
     if (j.find("sigma") != j.end()) {
-      sigma = j.at("sigma").get<arma::Mat<double>>();
+      sigma = j.at("sigma").get<arma::Mat<float>>();
       if (sigma.n_elem != n_dims * n_dims) {
         throw std::domain_error("`sigma` doesn't have the correct size.");
       }
@@ -306,8 +306,8 @@ struct adl_serializer<baaraan::truncated_mvnorm_distribution<T>> {
             "Either `sigma` or `covs` and `stddevs` have to be given.");
       }
 
-      arma::rowvec stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
-      arma::rowvec covs =
+      arma::Row<float> stddevs = get_expr_setup_params(j.at("stddevs"), n_dims);
+      arma::Row<float> covs =
       get_expr_setup_params(j.at("covs"), n_dims * (n_dims - 1) / 2);
       sigma = constructCovMatrix(stddevs, covs, n_dims);
     }

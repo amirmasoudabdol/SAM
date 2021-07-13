@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_SUITE( meta_analysis_strategy, SampleResearch )
     BOOST_AUTO_TEST_CASE( fixed_effect_model )
     {
         
-        double r_estimate = 0.7766;
+        float r_estimate = 0.7766;
         
         nobs = 20;
         mean = 0.5;

@@ -55,11 +55,18 @@ class Experiment {
   
   //! Indicates whether any of the dependent variables are candidate for Submission
   bool has_candidates{false};
+  
+  //! Indicates whether any of there are any covariant variable exists in the experiment
+  bool is_covariants_generated{false};
 
 public:
   int simid{0};
   int exprid{0};
   int repid{0};
+  
+  //! Indicates the number of covariants
+  int n_covariants{0};
+  arma::Mat<int> covariants;
 
   //! An instance of the ExperimentSetup. All other strategies can access and query it
   //! for meta information about the Experiment
@@ -94,6 +101,17 @@ public:
              std::shared_ptr<TestStrategy> &ts,
              std::shared_ptr<EffectStrategy> &es);
   
+  /// Adds a new condition
+  /// @TODO TO BE IMPLEMENTED!
+  void addNewCondition();
+  
+  /// Adds a new condition
+  /// @TODO TO BE IMPLEMENTED!
+  void addNewCondition(const std::vector<DependentVariable>& dvs);
+  
+  /// Adds a new dependent variable to the list
+  void addNewDependentVariable(const DependentVariable& dv);
+  
   /// Adds new submissions to the list of submissions
   void addNewCandidates(const std::vector<Submission>& subs);
   
@@ -118,11 +136,16 @@ public:
   /// Returns true if there is an candidate in the experiment
   [[nodiscard]] bool hasCandidates() const;
   
+  /// Returns true if there is an candidate in the experiment
+  [[nodiscard]] bool hasCovariants() const;
+  
   /// Returns true if the experiment has been published by the Journal
   [[nodiscard]] bool isPublished() const;
   
   /// Returns the number of candidate DVs
   [[nodiscard]] size_t nCandidates() const;
+  
+  [[nodiscard]] int nCovariants() const;
   
   /**
    * @name STL-like operators and methods
@@ -150,6 +173,9 @@ public:
 
   /// Uses the DataStrategy to populate every DVs with raw the data.
   void generateData();
+  
+  /// Generates covariants data
+  void generateCovariants();
 
   /// Asks each DependentVariable to update its general statistics, e.g., mean, var.
   void calculateStatistics();

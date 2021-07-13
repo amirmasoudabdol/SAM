@@ -57,16 +57,16 @@ class RandomEffectEstimator : public MetaAnalysis {
 public:
   
   struct ResultType {
-    double est;
-    double se;
-    double ci_lb;
-    double ci_ub;
-    double zval;
-    double pval;
-    double q_stat;
-    double q_pval;
+    float est;
+    float se;
+    float ci_lb;
+    float ci_ub;
+    float zval;
+    float pval;
+    float q_stat;
+    float q_pval;
     
-    double tau2;
+    float tau2;
     
     ResultType() = default;
 
@@ -111,7 +111,7 @@ public:
       };
     }
     
-    operator arma::Row<double>() {
+    operator arma::Row<float>() {
       return {
           est,
           se,
@@ -147,9 +147,9 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType RandomEffect(const arma::Row<double> &vi, const arma::Row<double> &yi, double tau2);
-  double DL(const arma::Row<double> &yi, const arma::Row<double> &vi, const arma::Row<double> &ai);
-  double PM(const arma::Row<double> &yi, const arma::Row<double> &vi, const double tau2);
+  static ResultType RandomEffect(const arma::Row<float> &vi, const arma::Row<float> &yi, float tau2);
+  float DL(const arma::Row<float> &yi, const arma::Row<float> &vi, const arma::Row<float> &ai);
+  float PM(const arma::Row<float> &yi, const arma::Row<float> &vi, const float tau2);
 };
 
 
@@ -162,16 +162,16 @@ class FixedEffectEstimator : public MetaAnalysis {
 public:
   
   struct ResultType {
-    double est;
-    double se;
-    double ci_lb;
-    double ci_ub;
-    double zval;
-    double pval;
-    double q_stat;
-    double q_pval;
+    float est;
+    float se;
+    float ci_lb;
+    float ci_ub;
+    float zval;
+    float pval;
+    float q_stat;
+    float q_pval;
     
-    double tau2;
+    float tau2;
     
     ResultType() = default;
     
@@ -206,7 +206,7 @@ public:
       };
     }
     
-    operator arma::Row<double>() {
+    operator arma::Row<float>() {
       return {
         est,
         se,
@@ -234,7 +234,7 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType FixedEffect(const arma::Row<double> &yi, const arma::Row<double> &vi) {
+  static ResultType FixedEffect(const arma::Row<float> &yi, const arma::Row<float> &vi) {
     return RandomEffectEstimator::RandomEffect(yi, vi, 0);
   }
 };
@@ -254,22 +254,22 @@ public:
   ///
   struct ResultType {
     //! The slope of the fitted line
-    double slope;
+    float slope;
     
     //! The standard error of the slope
-    double se;
+    float se;
     
     //! The t-statistic of the test
-    double tstat;
+    float tstat;
     
     //! The p-value of the test
-    double pval;
+    float pval;
     
     //! The significance of the test
     bool sig;
     
     //! The degree-of-freedom of the test
-    double df;
+    float df;
     
     static std::vector<std::string> Columns() {
       return {"slope", "se", "tstat", "pval", "sig", "df"};
@@ -286,13 +286,13 @@ public:
       };
     }
     
-    operator arma::Row<double>() {
+    operator arma::Row<float>() {
       return {
         slope,
         se,
         tstat,
         pval,
-        static_cast<double>(sig),
+        static_cast<float>(sig),
         df
       };
     }
@@ -309,7 +309,7 @@ public:
     std::string name {"EggersTestEstimator"};
     
     //! The ɑ of the test
-    double alpha {0.10};
+    float alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(EggersTestEstimator::Parameters, name, alpha);
   };
@@ -322,7 +322,7 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType EggersTest(const arma::Row<double> &yi, const arma::Row<double> &vi, double alpha);
+  static ResultType EggersTest(const arma::Row<float> &yi, const arma::Row<float> &vi, float alpha);
   
 };
 
@@ -336,13 +336,13 @@ public:
   
   struct ResultType {
     //! Sum of the expected probabilities
-    double E;
+    float E;
     
     //! The chi-square statistic of the test
-    double A;
+    float A;
     
     //! The p-value of the test
-    double pval;
+    float pval;
     
     //! The significance of the test
     bool sig;
@@ -360,12 +360,12 @@ public:
       };
     }
     
-    operator arma::Row<double>() {
+    operator arma::Row<float>() {
       return {
         E,
         A,
         pval,
-        static_cast<double>(sig)
+        static_cast<float>(sig)
       };
     }
     
@@ -376,7 +376,7 @@ public:
   /// @ingroup MetaAnalysisParameters
   struct Parameters {
     std::string name {"TestOfObsOverExptSig"};
-    double alpha {0.10};
+    float alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(TestOfObsOverExptSig::Parameters, name, alpha);
   };
@@ -389,7 +389,7 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType TES(const arma::Row<double> &sigs, const arma::Row<double> &ni, double beta, double alpha);
+  static ResultType TES(const arma::Row<float> &sigs, const arma::Row<float> &ni, float beta, float alpha);
   
 };
 
@@ -401,13 +401,13 @@ class TrimAndFill : public MetaAnalysis {
 public:
   
   struct ResultType {
-    double k0;
-    double se_k0;
-    double k_all;
+    float k0;
+    float se_k0;
+    float k_all;
     std::string side;
-    double imputed_est;
-    double imputed_pval;
-//    std::optional<double> k0_pval;  // I don't report this yet
+    float imputed_est;
+    float imputed_pval;
+//    std::optional<float> k0_pval;  // I don't report this yet
     
     static std::vector<std::string> Columns() {
       return {"k0", "se_k0", "k_all", "side", "imputed_est", "imputed_pval"};
@@ -424,12 +424,12 @@ public:
       };
     }
     
-    operator arma::Row<double>() {
+    operator arma::Row<float>() {
       return {
         k0,
         se_k0,
         k_all,
-        1. ? (side.find("left") != std::string::npos) : -1.,
+        static_cast<float>(1. ? (side.find("left") != std::string::npos) : -1.),
         imputed_est,
         imputed_pval
       };
@@ -447,7 +447,7 @@ public:
     std::string estimator {"R0"};
     
     //! The ɑ of the test
-    double alpha {0.10};
+    float alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(TrimAndFill::Parameters, name, side, estimator, alpha);
   };
@@ -460,7 +460,7 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType TF(arma::Row<double> yi, arma::Row<double> vi, arma::Row<double> ni, const Parameters &params);
+  static ResultType TF(arma::Row<float> yi, arma::Row<float> vi, arma::Row<float> ni, const Parameters &params);
   
 };
 
@@ -473,10 +473,10 @@ public:
   
   struct ResultType {
     //! Kendall's tau estimate
-    double est;
+    float est;
     
     //! The p-value of the test
-    double pval;
+    float pval;
     
     //! The significance of the test
     bool sig;
@@ -493,11 +493,11 @@ public:
       };
     }
     
-    operator arma::Row<double>() {
+    operator arma::Row<float>() {
       return {
         est,
         pval,
-        static_cast<double>(sig)
+        static_cast<float>(sig)
       };
     }
     
@@ -512,7 +512,7 @@ public:
     TestStrategy::TestAlternative alternative = TestStrategy::TestAlternative::TwoSided;
     
     //! The ɑ of the test
-    double alpha {0.10};
+    float alpha {0.10};
     
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(RankCorrelation::Parameters, name, alternative, alpha);
   };
@@ -525,20 +525,20 @@ public:
   
   void estimate(Journal *journal);
   
-  static ResultType RankCor(arma::Row<double> yi, arma::Row<double> vi, const Parameters &params);
+  static ResultType RankCor(arma::Row<float> yi, arma::Row<float> vi, const Parameters &params);
   
-  static arma::Row<int> duplicate_count(arma::rowvec x);
+  static arma::Row<int> duplicate_count(arma::Row<float> x);
   
 };
 
 
-double kendallcor(const arma::Row<double> &x, const arma::Row<double> &y);
+float kendallcor(const arma::Row<float> &x, const arma::Row<float> &y);
 
-std::pair<double, double> kendall_cor_test(const arma::Row<double> &x, const arma::Row<double> &y, const TestStrategy::TestAlternative alternative);
+std::pair<float, float> kendall_cor_test(const arma::Row<float> &x, const arma::Row<float> &y, const TestStrategy::TestAlternative alternative);
 
-double ckendall(int k, int n, double **w);
+float ckendall(int k, int n, float **w);
 
-void pkendall(int len, double *Q, double *P, int n);
+void pkendall(int len, float *Q, float *P, int n);
 
 } // namespace sam
 

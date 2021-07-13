@@ -61,63 +61,78 @@ HackingStrategy::build(json &hacking_strategy_config) {
     auto params = hacking_strategy_config.get<OptionalStopping::Parameters>();
     return std::make_unique<OptionalStopping>(params);
 
-  } else if (hacking_strategy_config["name"] == "OutliersRemoval") {
+  } 
+
+  if (hacking_strategy_config["name"] == "OutliersRemoval") {
 
     auto params = hacking_strategy_config.get<OutliersRemoval::Parameters>();
     return std::make_unique<OutliersRemoval>(params);
 
-  } else if (hacking_strategy_config["name"] == "GroupPooling") {
+  } 
+
+  if (hacking_strategy_config["name"] == "GroupPooling") {
 
     auto params = hacking_strategy_config.get<GroupPooling::Parameters>();
     return std::make_unique<GroupPooling>(params);
 
-  } else if (hacking_strategy_config["name"] == "ConditionDropping") {
+  } 
+
+  if (hacking_strategy_config["name"] == "ConditionDropping") {
 
     auto params = hacking_strategy_config.get<ConditionDropping::Parameters>();
     return std::make_unique<ConditionDropping>(params);
 
-  } else if (hacking_strategy_config["name"] == "SubjectiveOutlierRemoval") {
+  } 
 
-    auto params =
-        hacking_strategy_config.get<SubjectiveOutlierRemoval::Parameters>();
-    return std::make_unique<SubjectiveOutlierRemoval>(params);
-
-  } else if (hacking_strategy_config["name"] == "QuestionableRounding") {
+  if (hacking_strategy_config["name"] == "QuestionableRounding") {
     
     auto params =
     hacking_strategy_config.get<QuestionableRounding::Parameters>();
     return std::make_unique<QuestionableRounding>(params);
     
-  } else if (hacking_strategy_config["name"] == "PeekingOutliersRemoval") {
+  } 
+
+  if (hacking_strategy_config["name"] == "PeekingOutliersRemoval") {
     
     auto params =
     hacking_strategy_config.get<PeekingOutliersRemoval::Parameters>();
     return std::make_unique<PeekingOutliersRemoval>(params);
     
-  } else if (hacking_strategy_config["name"] == "FalsifyingData") {
+  } 
+
+  if (hacking_strategy_config["name"] == "FalsifyingData") {
     
     auto params =
     hacking_strategy_config.get<FalsifyingData::Parameters>();
     return std::make_unique<FalsifyingData>(params);
     
-  } else if (hacking_strategy_config["name"] == "FabricatingData") {
+  } 
+
+  if (hacking_strategy_config["name"] == "FabricatingData") {
     
     auto params =
     hacking_strategy_config.get<FabricatingData::Parameters>();
     return std::make_unique<FabricatingData>(params);
     
-  } else if (hacking_strategy_config["name"] == "StoppingDataCollection") {
+  } 
+
+  if (hacking_strategy_config["name"] == "StoppingDataCollection") {
     
     auto params =
     hacking_strategy_config.get<StoppingDataCollection::Parameters>();
     return std::make_unique<StoppingDataCollection>(params);
     
-  } else if (hacking_strategy_config["name"] == "NoHack") {
+  } 
 
-    return std::make_unique<NoHack>();
-
-  } else {
-    throw std::invalid_argument("Unknown Hacking Strategies.");
-  }
+  if (hacking_strategy_config["name"] == "OptionalDropping") {
+    
+    auto params =
+    hacking_strategy_config.get<OptionalDropping::Parameters>();
+    return std::make_unique<OptionalDropping>(params);
+    
+  } 
+    
+  spdlog::critical("Unknown Hacking Strategies.");
+  exit(1);
   
 }

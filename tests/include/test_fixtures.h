@@ -38,14 +38,14 @@ struct SampleResearch {
     int ng = nc * nd;
 
     int nobs = 20;
-    double mean = 0;
-    double var = 1;
-    double cov = 0.00;
+    float mean = 0;
+    float var = 1;
+    float cov = 0.00;
 
     arma::Row<int> v_nobs;
-    arma::Row<double> v_means;
-    arma::Row<double> v_vars;
-    arma::Mat<double> v_sigma;
+    arma::Row<float> v_means;
+    arma::Row<float> v_vars;
+    arma::Mat<float> v_sigma;
 
     DataStrategy *ds;
     json d_s_conf = {
@@ -107,9 +107,9 @@ struct SampleResearch {
         BOOST_TEST_MESSAGE( "Preparing the sample research enviroment..." );
 
         v_nobs = arma::Row<int>(ng).fill(nobs);
-        v_means = arma::Row<double>(ng).fill(mean);
-        v_vars = arma::Row<double>(ng).fill(var);
-        v_sigma = arma::Mat<double>(ng, ng).fill(cov);
+        v_means = arma::Row<float>(ng).fill(mean);
+        v_vars = arma::Row<float>(ng).fill(var);
+        v_sigma = arma::Mat<float>(ng, ng).fill(cov);
         v_sigma.diag() = v_vars;
 
     }

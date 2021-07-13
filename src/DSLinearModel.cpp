@@ -14,14 +14,14 @@ using namespace sam;
 void LinearModelStrategy::genData(Experiment *experiment) {
   
   /// Generates the samples
-  arma::mat sample = fillMatrix(params.meas_dists,
+  arma::Mat<float> sample = fillMatrix(params.meas_dists,
                                 params.m_meas_dist,
                                 experiment->setup.ng(),
                                 experiment->setup.nobs().max());
 
   /// Generate the error terms if specified
   if (params.m_erro_dist or params.erro_dists) {
-    arma::mat errors = fillMatrix(params.erro_dists,
+    arma::Mat<float> errors = fillMatrix(params.erro_dists,
                                   params.m_erro_dist,
                                   experiment->setup.ng(),
                                   experiment->setup.nobs().max());
@@ -35,24 +35,24 @@ void LinearModelStrategy::genData(Experiment *experiment) {
   }
 }
 
-std::vector<arma::Row<double>>
+std::vector<arma::Row<float>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                                                     int n_new_obs) {
 
-  arma::mat sample = fillMatrix(params.meas_dists,
+  arma::Mat<float> sample = fillMatrix(params.meas_dists,
                                 params.m_meas_dist,
                                 experiment->setup.ng(),
                                 n_new_obs);
 
   if (params.m_erro_dist or params.erro_dists) {
-    arma::mat errors = fillMatrix(params.erro_dists,
+    arma::Mat<float> errors = fillMatrix(params.erro_dists,
                                   params.m_erro_dist,
                                   experiment->setup.ng(),
                                   n_new_obs);
     sample += errors;
   }
 
-  std::vector<arma::Row<double>> new_values(experiment->setup.ng());
+  std::vector<arma::Row<float>> new_values(experiment->setup.ng());
 
   std::generate(new_values.begin(), new_values.end(),
                 [&, i = 0]() mutable { return sample.row(i++); });

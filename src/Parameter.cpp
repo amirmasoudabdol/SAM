@@ -44,8 +44,8 @@ Parameter<T>::Parameter(const json &j, size_t size) {
     case nlohmann::detail::value_t::object: {
       
       if (!j.contains("dist")) {
-        throw std::invalid_argument(
-            "Please provide a distribution specification.\n");
+        spdlog::critical("Please provide a distribution specification.\n");
+        exit(1);
       }
       
       auto name = j.at("dist").get<std::string>();
@@ -65,8 +65,11 @@ Parameter<T>::Parameter(const json &j, size_t size) {
     } break;
       
     case nlohmann::detail::value_t::null:
-    default:
-      throw std::invalid_argument("Missing parameter.\n");
+    default: {
+      spdlog::critical("Missing parameter.\n");
+      exit(1);
+    }
+                       
   }
   
   // Fill in the array values into `this`

@@ -103,12 +103,12 @@ BOOST_FIXTURE_TEST_SUITE( outliers_removal, SampleResearch );
         // Adding 3 very far values
 //        RandomNumberGenerator rng;
 
-        arma::rowvec outliers(3);
+        arma::Row<float> outliers(3);
         for (int i = 0; i < setup.ng(); ++i) {
             
             // adding three new outliers
-            outliers.each_col([](arma::vec &v){
-                v = Random::get<std::normal_distribution<double>>(2.0, 0.1);
+            outliers.each_col([](arma::Col<float> &v){
+                v = Random::get<std::normal_distribution<float>>(2.0, 0.1);
             });
             
             experiment->measurements[i].insert_cols(experiment->measurements[i].size(), outliers);

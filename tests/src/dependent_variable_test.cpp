@@ -26,9 +26,9 @@ BOOST_AUTO_TEST_SUITE(constructor)
 
   BOOST_AUTO_TEST_CASE( from_an_arma_array ) {
     
-    BOOST_TEST_MESSAGE("Testing the Initialization from arma::rowvec...");
+    BOOST_TEST_MESSAGE("Testing the Initialization from arma::Row<float>...");
     
-    arma::rowvec data(100);
+    arma::Row<float> data(100);
     data.randn();
     
     DependentVariable dp{data};
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_SUITE(constructor)
     
     BOOST_TEST_MESSAGE("Testing the Copy Constructor...");
     
-    arma::rowvec data(100);
+    arma::Row<float> data(100);
     data.randn();
     
     DependentVariable dv{data};
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_SUITE( working_with_dependent_variable )
 
   BOOST_AUTO_TEST_CASE( manipulating_measurements ) {
     
-    arma::rowvec data(100);
+    arma::Row<float> data(100);
     data.randn();
     
     DependentVariable dp{data};
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_SUITE( working_with_dependent_variable )
     BOOST_TEST(dp.nobs_ == 96);
     BOOST_TEST(dp.n_removed_obs == 4);
     
-    dp.addNewMeasurements(arma::rowvec{50000});
+    dp.addNewMeasurements(arma::Row<float>{50000});
     BOOST_TEST(dp.nobs_ == 97);
     BOOST_TEST(dp.mean_ > arma::mean(data));
     BOOST_TEST(dp.var_ > arma::var(data));
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_SUITE( working_with_dependent_variable )
 
   BOOST_AUTO_TEST_CASE( indices_operator_test, * utf::expected_failures(1) ) {
     
-    arma::rowvec data(100);
+    arma::Row<float> data(100);
     data.randn();
     
     DependentVariable dp{data};
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_SUITE( working_with_dependent_variable )
 
   BOOST_AUTO_TEST_CASE( manipulating_dps_status) {
     
-    arma::rowvec data(100);
+    arma::Row<float> data(100);
     data.randn();
     
     DependentVariable dp{data};

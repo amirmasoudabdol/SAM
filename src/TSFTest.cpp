@@ -27,15 +27,12 @@ void FTest::run(Experiment *experiment) {
   }
 }
 
-FTest::ResultType FTest::f_test(double Sd1,   // Sample 1 std deviation
+FTest::ResultType FTest::f_test(float Sd1,   // Sample 1 std deviation
                                 unsigned Sn1, // Sample 1 size
-                                double Sd2,   // Sample 2 std deviation
+                                float Sd2,   // Sample 2 std deviation
                                 unsigned Sn2, // Sample 2 size
-                                double alpha) // Significance level
+                                float alpha) // Significance level
 {
-
-  bool sig{false};
-
   // F-statistic:
   double f_stats = (Sd1 / Sd2);
 
@@ -53,20 +50,19 @@ FTest::ResultType FTest::f_test(double Sd1,   // Sample 1 std deviation
   //
   // Finally print out results of null and alternative hypothesis:
   //
-  if ((ucv2 < f_stats) || (lcv2 > f_stats)) // Alternative "NOT REJECTED"
-    sig = true;
-  else // Alternative "REJECTED"
-    sig = false;
+  if ((ucv2 < f_stats) || (lcv2 > f_stats)) { // Alternative "NOT REJECTED"
+    return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = true};
+  }
 
-  if (lcv > f_stats) // Alternative "NOT REJECTED"
-    sig = true;
-  else // Alternative "REJECTED"
-    sig = false;
+  if (lcv > f_stats) {// Alternative "NOT REJECTED"
+    return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = true};
+  }
 
-  if (ucv < f_stats) // Alternative "NOT REJECTED"
-    sig = true;
-  else // Alternative "REJECTED"
-    sig = false;
+  if (ucv < f_stats) { // Alternative "NOT REJECTED"
+    return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = true};
+  }
 
-  return {.fstat = f_stats, .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = p, .sig = sig};
+  // Alternative "Rejected"
+  return {.fstat = static_cast<float>(f_stats), .df1 = Sn1 - 1, .df2 = Sn2 - 1, .pvalue = static_cast<float>(p), .sig = false};
+
 }

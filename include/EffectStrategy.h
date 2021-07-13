@@ -119,20 +119,20 @@ public:
 //    const std::string name = "EtaSquared";
 //};
 
-double mean_difference(double Sm1, double Sm2);
+float mean_difference(float Sm1, float Sm2);
 
-double standardized_mean_difference(double Sm1, double Sd1, double Sm2, double Sd2);
+float standardized_mean_difference(float Sm1, float Sd1, float Sm2, float Sd2);
 
 void cohens_d(Experiment *expr);
 
-std::tuple<double, double, double>
-cohens_d(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
-                double Sn2);
-double hedges_g(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
-                double Sn2);
-double pearsons_r(double Cd);
-double glass_delta(double Sm1, double Sd1, double Sn1, double Sm2, double Sd2,
-                   double Sn2);
+std::tuple<float, float, float>
+cohens_d(float Sm1, float Sd1, float Sn1, float Sm2, float Sd2,
+                float Sn2);
+float hedges_g(float Sm1, float Sd1, float Sn1, float Sm2, float Sd2,
+                float Sn2);
+float pearsons_r(float Cd);
+float glass_delta(float Sm1, float Sd1, float Sn1, float Sm2, float Sd2,
+                   float Sn2);
 
 } // namespace sam
 

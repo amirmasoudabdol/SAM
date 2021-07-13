@@ -70,7 +70,7 @@ class Journal {
   int n_studies{0};
   
   //! Indicates the maximum number of submissions to be accepted by the Journal.
-  double max_pubs{};
+  float max_pubs{};
 
   /** @name Publication Runner Statistic
    */
@@ -86,7 +86,7 @@ class Journal {
   std::vector<std::string> pubs_stats_columns;
   
   //! Runner statistics for _Publications_.
-  arma::running_stat_vec<arma::Row<double>> pubs_stats_runner;
+  arma::running_stat_vec<arma::Row<float>> pubs_stats_runner;
   
   //! CSV writer for _Publications_.
   std::unique_ptr<PersistenceManager::Writer> pubs_stats_writer;
@@ -117,7 +117,7 @@ class Journal {
   
   //! A group of stat runners aggregating information of every meta-analysis
   //! method chosen
-  std::map<std::string, arma::running_stat_vec<arma::Row<double>>>
+  std::map<std::string, arma::running_stat_vec<arma::Row<float>>>
   meta_stats_runners;
   
   //! A group of csv headers for each meta-analysis aggregated method
@@ -138,7 +138,7 @@ class Journal {
   bool is_saving_pubs_per_sim_summaries{false};
   
   //! Runner statistics engine
-  arma::running_stat_vec<arma::Row<double>> pubs_per_sim_stats_runner;
+  arma::running_stat_vec<arma::Row<float>> pubs_per_sim_stats_runner;
   
   //! CSV writer for pubs_per_sim_stats
   std::unique_ptr<PersistenceManager::Writer> pubs_per_sim_stats_writer;
@@ -154,13 +154,13 @@ class Journal {
 
   //! Caching variables
   //! The effect sizes of the accepted submissions.
-  arma::Row<double> yi;
+  arma::Row<float> yi;
 
   //! The variance of the accepted submissions.
-  arma::Row<double> vi;
+  arma::Row<float> vi;
 
   //! The weight of the accepted submissions, computed as 1./vi;
-  arma::Row<double> wi;
+  arma::Row<float> wi;
 
   //! Journal's Selection Model/Strategy
   std::unique_ptr<ReviewStrategy> review_strategy;
@@ -236,9 +236,9 @@ class Journal {
       std::to_string(n_sigs)};
   }
   
-  explicit operator arma::Row<double>() const {
-    return {static_cast<double>(n_accepted), static_cast<double>(n_rejected),
-      static_cast<double>(n_sigs)};
+  explicit operator arma::Row<float>() const {
+    return {static_cast<float>(n_accepted), static_cast<float>(n_rejected),
+      static_cast<float>(n_sigs)};
   }
 };
 

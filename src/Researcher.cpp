@@ -16,6 +16,7 @@
 
 #include "Researcher.h"
 
+#include <optional>
 #include <utility>
 
 using namespace sam;
@@ -197,7 +198,7 @@ void Researcher::submitTheResearch(
 
     // Decides whether the researcher follows through with the submission or
     // bails out and put her research into the drawer!
-    if (Random::get<bool>(static_cast<double>(submission_probability()))) {
+    if (Random::get<bool>(static_cast<float>(submission_probability()))) {
       journal->review(candidate_submissions.value());
     }
   }
@@ -215,7 +216,7 @@ void Researcher::submitTheResearch(
 ///
 bool Researcher::isHacker() {
   return Random::get<bool>(
-      static_cast<double>(probability_of_being_a_hacker()));
+      static_cast<float>(probability_of_being_a_hacker()));
 }
 
 ///
@@ -226,7 +227,7 @@ bool Researcher::isHacker() {
 /// 
 bool Researcher::isCommittingToTheHack(HackingStrategy *hs) {
   return std::visit(
-      overload{[&](double &p) { return Random::get<bool>(p); },
+      overload{[&](float &p) { return Random::get<bool>(p); },
                [&](std::string &s) {
                  if (s == "prevalence") {
                    return Random::get<bool>(hs->prevalence());
@@ -391,35 +392,47 @@ void Researcher::research() {
 /// @param      hw        The hacking workflow
 /// @param      priority  The sorting priority
 ///
+/// @note This will return a critical error if either of the hacking strategies doesn't
+/// have the appropriate parameters defined
+///
 void Researcher::reorderHackingStrategies(HackingWorkflow &hw,
                                           std::string &priority) {
   if (priority.empty()) {
     return;
   }
 
-  if (priority == "random") {
-    Random::shuffle(hw);
-  } else if (priority == "asc(prevalence)") {
-    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-      return std::get<0>(h1[0])->prevalence() <
-             std::get<0>(h2[0])->prevalence();
-    });
-  } else if (priority == "desc(prevalence)") {
-    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-      return std::get<0>(h1[0])->prevalence() >
-             std::get<0>(h2[0])->prevalence();
-    });
-  } else if (priority == "asc(defensibility)") {
-    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-      return std::get<0>(h1[0])->defensibility() <
-             std::get<0>(h2[0])->defensibility();
-    });
-  } else if (priority == "desc(defensibility)") {
-    std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-      return std::get<0>(h1[0])->defensibility() >
-             std::get<0>(h2[0])->defensibility();
-    });
-  } else /* sequential */ {
-    throw std::invalid_argument("Invalid argument!");
+  try {
+
+    if (priority == "random") {
+      Random::shuffle(hw);
+    } else if (priority == "asc(prevalence)") {
+      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
+        return std::get<0>(h1[0])->prevalence() <
+               std::get<0>(h2[0])->prevalence();
+      });
+    } else if (priority == "desc(prevalence)") {
+      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
+        return std::get<0>(h1[0])->prevalence() >
+               std::get<0>(h2[0])->prevalence();
+      });
+    } else if (priority == "asc(defensibility)") {
+      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
+        return std::get<0>(h1[0])->defensibility() <
+               std::get<0>(h2[0])->defensibility();
+      });
+    } else if (priority == "desc(defensibility)") {
+      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
+        return std::get<0>(h1[0])->defensibility() >
+               std::get<0>(h2[0])->defensibility();
+      });
+    } else /* sequential */ {
+      spdlog::critical("Invalid argument!");
+      exit(1);
+    }
+
+  } catch (const std::bad_optional_access& e) {
+    spdlog::critical("Cannot sort the hacking strategies based on the given priority.");
+    spdlog::critical("Make sure that the defensibility and/or prevalence are defined for every hacking strategy.");
+    exit(1);
   }
 }

@@ -81,8 +81,8 @@ class Researcher {
   //! - `"random"`, random order
   //! - `"asc(prevalence)"`, ascending prevalence
   //! - `"desc(prevalence)"`, descending prevalence
-  //! - `"asc(defensibly)"`, ascending defensibly
-  //! - `"desc(defensibly)"`, descending defensibly
+  //! - `"asc(defensibility)"`, ascending defensibility
+  //! - `"desc(defensibility)"`, descending defensibility
   //!
   //! **If not specified the given order will be used.**
   //!
@@ -99,8 +99,8 @@ class Researcher {
   //! - `"random"`, random order
   //! - `"asc(prevalence)"`, ascending prevalence
   //! - `"desc(prevalence)"`, descending prevalence
-  //! - `"asc(defensibly)"`, ascending defensibly
-  //! - `"desc(defensibly)"`, descending defensibly
+  //! - `"asc(defensibility)"`, ascending defensibility
+  //! - `"desc(defensibility)"`, descending defensibility
   //!
   //! **If not specified the given order will be used.**
   //!
@@ -108,7 +108,7 @@ class Researcher {
 
   //! Indicates the probability of committing to the submission process given 
   //! the availability of submissions
-  Parameter<double> submission_probability{1};
+  Parameter<float> submission_probability{1};
 
   //! A list of satisfactory submissions collected by the researcher at the end
   //! of each replications.
@@ -123,10 +123,11 @@ class Researcher {
   //! 
   //! This being a Parameter allows it to be randomized at each run if necessary
   //! 
-  Parameter<double> probability_of_being_a_hacker;
+  Parameter<float> probability_of_being_a_hacker {0};
 
   //! Indicates the probability of a Researcher _actually applying_ a chosen
-  //! hacking strategy.
+  //! hacking strategy. The default value is set to 1, meaning that if nothing is
+  //! defiend, the Researcher will 100% go for a hack!
   //!
   //! This can have any of the given numbers:
   //! - A fixed value
@@ -136,7 +137,7 @@ class Researcher {
   //! - One of the HackingProbabilityStrategy classes, which will be used by the
   //!   researcher to base her decision based on characteristic of individual
   //!   experiment.
-  std::variant<double, std::string, UnivariateDistribution,
+  std::variant<float, std::string, UnivariateDistribution,
                std::unique_ptr<HackingProbabilityStrategy>>
       probability_of_committing_a_hack;
 
@@ -292,48 +293,59 @@ public:
 
     // Setting up the Pre-processing Methods
     // -------------------------------------
-    researcher.is_pre_processing =
-        config["researcher_parameters"]["is_pre_processing"];
-    if (researcher.is_pre_processing) {
-      auto &methods = config["researcher_parameters"]["pre_processing_methods"];
+    if (config["researcher_parameters"].contains("is_pre_processing")) {
+      researcher.is_pre_processing =
+          config["researcher_parameters"]["is_pre_processing"];
+      if (researcher.is_pre_processing) {
+        auto &methods = config["researcher_parameters"]["pre_processing_methods"];
 
-      std::transform(methods.begin(), methods.end(),
-                     std::back_inserter(researcher.pre_processing_methods),
-                     HackingStrategy::build);
+        std::transform(methods.begin(), methods.end(),
+                       std::back_inserter(researcher.pre_processing_methods),
+                       HackingStrategy::build);
+      }
+    } else {
+      spdlog::info("No pre-processing step is defined.");
     }
 
     // Setting up the Probability of Being a Hacker
-    // -------------------------------------------- 
-    researcher.probability_of_being_a_hacker = Parameter<double>(
+    // --------------------------------------------
+    if (config["researcher_parameters"].contains("probability_of_being_a_hacker")) {
+      researcher.probability_of_being_a_hacker = Parameter<float>(
         config["researcher_parameters"]["probability_of_being_a_hacker"], 1);
+    }
 
     // Setting up the Probability of Committing to a Hack
     // -------------------------------------------------
-    auto prob_of_committing_a_hack =
-        config["researcher_parameters"]["probability_of_committing_a_hack"];
-    switch (prob_of_committing_a_hack.type()) {
-    case nlohmann::detail::value_t::number_integer:
-    case nlohmann::detail::value_t::number_unsigned:
-    case nlohmann::detail::value_t::number_float:
-      researcher.probability_of_committing_a_hack =
-          prob_of_committing_a_hack.get<double>();
-      break;
-    case nlohmann::detail::value_t::string:
-      researcher.probability_of_committing_a_hack =
-          prob_of_committing_a_hack.get<std::string>();
-      break;
-    case nlohmann::detail::value_t::object: {
-      if (prob_of_committing_a_hack.contains("dist")) {
+    if (config["researcher_parameters"].contains("probability_of_committing_a_hack")) {
+      auto prob_of_committing_a_hack =
+          config["researcher_parameters"]["probability_of_committing_a_hack"];
+      switch (prob_of_committing_a_hack.type()) {
+      case nlohmann::detail::value_t::number_integer:
+      case nlohmann::detail::value_t::number_unsigned:
+      case nlohmann::detail::value_t::number_float:
         researcher.probability_of_committing_a_hack =
-            makeUnivariateDistribution(prob_of_committing_a_hack);
-      } else {
+            prob_of_committing_a_hack.get<float>();
+        break;
+      case nlohmann::detail::value_t::string:
         researcher.probability_of_committing_a_hack =
-            HackingProbabilityStrategy::build(prob_of_committing_a_hack);
+            prob_of_committing_a_hack.get<std::string>();
+        break;
+      case nlohmann::detail::value_t::object: {
+        if (prob_of_committing_a_hack.contains("dist")) {
+          researcher.probability_of_committing_a_hack =
+              makeUnivariateDistribution(prob_of_committing_a_hack);
+        } else {
+          researcher.probability_of_committing_a_hack =
+              HackingProbabilityStrategy::build(prob_of_committing_a_hack);
+        }
+      } break;
+      default:
+        researcher.probability_of_committing_a_hack = static_cast<float>(0);
+        break;
       }
-    } break;
-    default:
-      researcher.probability_of_committing_a_hack = 0.;
-      break;
+    } else {
+      // If it's not defined, it's going to be set to 1
+      researcher.probability_of_committing_a_hack = static_cast<float>(1.0);
     }
 
     // Setting up Hacking Workflow / Strategies
@@ -357,9 +369,10 @@ public:
                 item[1].get<std::vector<std::vector<std::string>>>(),
                 researcher.research_strategy->lua});
           } else {
-            throw std::domain_error(
+            spdlog::critical(
                 "You must provide a Selection policy, otherwise, the researcher "
                 "doesn't know what to do!");
+            exit(1);
           }
         }
 
@@ -377,7 +390,8 @@ public:
     } else {
       // If the Researcher a hacker, it has to have some methods
       if (researcher.isHacker()) {
-        throw std::domain_error("You defined a hacker, but didn't provide any hacking strategies.");
+        spdlog::critical("You defined a hacker, but didn't provide any hacking strategies.");
+        exit(1);
       }
     }
 
@@ -436,7 +450,7 @@ public:
     // researcher and submit it to the Journal, instead of putting it to the
     // drawer.
     if (config["researcher_parameters"].contains("submission_probability")) {
-      researcher.submission_probability = Parameter<double>(
+      researcher.submission_probability = Parameter<float>(
           config["researcher_parameters"]["submission_probability"], 1);
     }
 

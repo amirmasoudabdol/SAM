@@ -78,16 +78,16 @@ DependentVariable::operator std::map<std::string, std::string>() const {
 }
 
 /// Similar to the `map<string, string>()` operator, this allows for casting to
-/// `arma::Row<double>`
+/// `arma::Row<float>`
 ///
 /// @attention If you are modifying the internal of the DependentVariable, you need to
 /// make sure that your changes are reflected here; otherwise, SAM will not export your
 /// new variables to the output.
-DependentVariable::operator arma::Row<double>() {
+DependentVariable::operator arma::Row<float>() {
   
-  return {static_cast<double>(id_),
-    static_cast<double>(true_nobs_),
-    static_cast<double>(nobs_),
+  return {static_cast<float>(id_),
+    static_cast<float>(true_nobs_),
+    static_cast<float>(nobs_),
     mean_,
     var_,
     stddev_,
@@ -96,10 +96,10 @@ DependentVariable::operator arma::Row<double>() {
     effect_,
     var_effect_,
     se_effect_,
-    static_cast<double>(sig_),
-    static_cast<double>(eff_side_),
-    static_cast<double>(is_hacked_),
-    static_cast<double>(is_candidate_)
+    static_cast<float>(sig_),
+    static_cast<float>(eff_side_),
+    static_cast<float>(is_hacked_),
+    static_cast<float>(is_candidate_)
   };
   
 }

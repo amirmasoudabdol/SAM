@@ -40,31 +40,31 @@ void YuenTest::run(Experiment *experiment) {
 }
 
 YuenTest::ResultType YuenTest::yuen_t_test_one_sample(
-    const arma::Row<double> &x, double alpha,
-    const TestStrategy::TestAlternative alternative, double trim = 0.2,
-    double mu = 0.0) {
+    const arma::Row<float> &x, float alpha,
+    const TestStrategy::TestAlternative alternative, float trim = 0.2,
+    float mu = 0.0) {
 
-  double M{0};
+  float M{0};
 
   bool sig{false};
-  double Sm1 = arma::mean(x);
+  float Sm1 = arma::mean(x);
 
   auto n = x.n_elem;
 
   int g = static_cast<int>(floor(trim * n));
 
-  double df = n - 2 * g - 1;
+  float df = n - 2 * g - 1;
 
-  double sw = sqrt(win_var(x, trim));
+  float sw = sqrt(win_var(x, trim));
 
-  double se = sw / ((1. - 2. * trim) * sqrt(n));
+  float se = sw / ((1. - 2. * trim) * sqrt(n));
 
-  double dif = trim_mean(x, trim);
+  float dif = trim_mean(x, trim);
 
-  double t_stat = (dif - mu) / se;
+  float t_stat = (dif - mu) / se;
 
   students_t dist(df);
-  double p = 0;
+  float p = 0;
 
   if (alternative == TestStrategy::TestAlternative::TwoSided) {
     // Mean != M
@@ -99,35 +99,35 @@ YuenTest::ResultType YuenTest::yuen_t_test_one_sample(
 }
 
 YuenTest::ResultType
-YuenTest::yuen_t_test_paired(const arma::Row<double> &x,
-                             const arma::Row<double> &y, double alpha,
+YuenTest::yuen_t_test_paired(const arma::Row<float> &x,
+                             const arma::Row<float> &y, float alpha,
                              const TestStrategy::TestAlternative alternative,
-                             double trim = 0.2, double mu = 0) {
+                             float trim = 0.2, float mu = 0) {
   // Do some check whether it's possible to run the test
 
-  double Sm1 = arma::mean(x);
-  double Sm2 = arma::mean(y);
+  float Sm1 = arma::mean(x);
+  float Sm2 = arma::mean(y);
 
   bool sig{false};
 
   auto h1 = x.n_elem - 2 * static_cast<int>(floor(trim * x.n_elem));
 
-  double q1 = (x.n_elem - 1) * win_var(x, trim);
+  float q1 = (x.n_elem - 1) * win_var(x, trim);
 
-  double q2 = (y.n_elem - 1) * win_var(y, trim);
+  float q2 = (y.n_elem - 1) * win_var(y, trim);
 
-  double q3 = (x.n_elem - 1) * std::get<1>(win_cor_cov(x, y, trim));
+  float q3 = (x.n_elem - 1) * std::get<1>(win_cor_cov(x, y, trim));
 
-  double df = h1 - 1;
+  float df = h1 - 1;
 
-  double se = sqrt((q1 + q2 - 2 * q3) / (h1 * (h1 - 1)));
+  float se = sqrt((q1 + q2 - 2 * q3) / (h1 * (h1 - 1)));
 
-  double dif = trim_mean(x, trim) - trim_mean(y, trim);
+  float dif = trim_mean(x, trim) - trim_mean(y, trim);
 
-  double t_stat = (dif - mu) / se;
+  float t_stat = (dif - mu) / se;
 
   students_t dist(df);
-  double p = 0;
+  float p = 0;
 
   if (alternative == TestStrategy::TestAlternative::TwoSided) {
     // Mean != M
@@ -162,41 +162,41 @@ YuenTest::yuen_t_test_paired(const arma::Row<double> &x,
 }
 
 YuenTest::ResultType YuenTest::yuen_t_test_two_samples(
-    const arma::Row<double> &x, const arma::Row<double> &y, double alpha,
-    const TestStrategy::TestAlternative alternative, double trim, double mu) {
+    const arma::Row<float> &x, const arma::Row<float> &y, float alpha,
+    const TestStrategy::TestAlternative alternative, float trim, float mu) {
 
-  double Sm1 = arma::mean(x);
-  double Sm2 = arma::mean(y);
+  float Sm1 = arma::mean(x);
+  float Sm2 = arma::mean(y);
 
   bool sig{false};
 
   int h1 = x.n_elem - 2 * floor(trim * x.n_elem);
   int h2 = y.n_elem - 2 * floor(trim * y.n_elem);
 
-  double d1 = (x.n_elem - 1.) * win_var(x, trim) / (h1 * (h1 - 1.));
-  double d2 = (y.n_elem - 1.) * win_var(y, trim) / (h2 * (h2 - 1.));
+  float d1 = (x.n_elem - 1.) * win_var(x, trim) / (h1 * (h1 - 1.));
+  float d2 = (y.n_elem - 1.) * win_var(y, trim) / (h2 * (h2 - 1.));
 
   if (!(isgreater(d1, 0) or isless(d1, 0))) {
     // Samples are almost equal and elements are constant
-    d1 += std::numeric_limits<double>::epsilon();
+    d1 += std::numeric_limits<float>::epsilon();
   }
 
   if (!(isgreater(d2, 0) or isless(d2, 0))) {
     // Samples are almost equal and elements are constant
-    d2 += std::numeric_limits<double>::epsilon();
+    d2 += std::numeric_limits<float>::epsilon();
   }
 
-  double df =
+  float df =
       pow(d1 + d2, 2) / (pow(d1, 2) / (h1 - 1.) + pow(d2, 2) / (h2 - 1.));
 
-  double se = sqrt(d1 + d2);
+  float se = sqrt(d1 + d2);
 
-  double dif = trim_mean(x, trim) - trim_mean(y, trim);
+  float dif = trim_mean(x, trim) - trim_mean(y, trim);
 
-  double t_stat = (dif - mu) / se;
+  float t_stat = (dif - mu) / se;
 
   students_t dist(df);
-  double p;
+  float p;
 
   if (alternative == TestStrategy::TestAlternative::TwoSided) {
     // Sample 1 Mean != Sample 2 Mean

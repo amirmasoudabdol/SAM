@@ -129,6 +129,13 @@ public:
   
 private:
   void updateDesignParameters(size_t n_c, size_t n_d) {
+
+    if (n_c < 2 or n_d < 1) {
+      spdlog::critical("Number of conditions must be greater than 2, and every \
+        condition should have at least 1 dependent variable.");
+      exit(1);
+    }
+
     nc_ = n_c;
     nd_ = n_d;
     ng_ = nc_ * nd_;

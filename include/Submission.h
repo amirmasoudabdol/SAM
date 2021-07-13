@@ -60,7 +60,7 @@ public:
   ///@}
 
   explicit operator std::map<std::string, std::string>();
-  explicit operator arma::Row<double>();
+  explicit operator arma::Row<float>();
 };
 
 } // namespace sam

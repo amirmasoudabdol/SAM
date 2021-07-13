@@ -32,7 +32,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(Threads REQUIRED)
 
-find_package(Boost 1.73 COMPONENTS unit_test_framework program_options REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework program_options REQUIRED)
 find_package(nlohmann_json 3.9 REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(mlpack)

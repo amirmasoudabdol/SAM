@@ -7,7 +7,7 @@
 ///
 /// @file
 /// This file contains the deceleration of the Abstract Hacking Strategy class
-/// and all the other classes inhereted from it.
+/// and all the other classes inherited from it.
 ///
 //===----------------------------------------------------------------------===//
 ///
@@ -21,13 +21,16 @@
 #ifndef SAMPP_HACKINGSTRATEGIES_H
 #define SAMPP_HACKINGSTRATEGIES_H
 
+#include <cstdlib>
 #include <map>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "Distributions.h"
-#include "ResearchStrategy.h"
 #include "Experiment.h"
 #include "HackingStrategyTypes.h"
+#include "ResearchStrategy.h"
 
 namespace sam {
 
@@ -43,21 +46,20 @@ namespace sam {
 class HackingStrategy {
 
 public:
-  
   sol::state lua;
-  
-  double defensibility_;
-  
-  double prevalence_;
-  
+
+  std::optional<float> defensibility_;
+
+  std::optional<float> prevalence_;
+
   HackingStage stage_;
-  
+
   HackingTarget target_;
-  
+
   /// @brief      Pure destructor of the Base class. This is important
   /// for proper deconstruction of Derived classes.
   virtual ~HackingStrategy() = 0;
-  
+
   HackingStrategy();
 
   /// @brief      Factory method for building a HackingStrategy
@@ -69,21 +71,13 @@ public:
   /// @return     A new HackingStrategy
   static std::unique_ptr<HackingStrategy> build(json &hacking_strategy_config);
 
-  void operator()(Experiment *experiment) {
-    perform(experiment);
-  };
-  
-  [[nodiscard]] double defensibility() const {
-    return defensibility_;
-  }
+  void operator()(Experiment *experiment) { perform(experiment); };
 
-  [[nodiscard]] double prevalence() const {
-    return prevalence_;
-  }
+  [[nodiscard]] float defensibility() const { return defensibility_.value(); }
 
-  [[nodiscard]] HackingStage stage() const {
-    return stage_;
-  }
+  [[nodiscard]] float prevalence() const { return prevalence_.value(); }
+
+  [[nodiscard]] HackingStage stage() const { return stage_; }
 
   [[nodiscard]] HackingTarget target() const { return target_; }
 
@@ -94,24 +88,30 @@ private:
   virtual void perform(Experiment *experiment) = 0;
 };
 
-class NoHack final : public HackingStrategy {
-public:
-  NoHack(){
-
-  };
-
-private:
-  void perform(Experiment *experiment) override{};
-};
-
-/// Declaration of OptionalStopping hacking strategy
+///
+/// @brief    Declaration of OptionalStopping hacking strategy
+/// 
+/// The algorithm adds new observations to every dependent variables in every 
+/// group based on the data generated from the current instance of the 
+/// DataStrategy defined in the Experiment.
 ///
 /// @ingroup  HackingStrategies
-///
+/// 
 class OptionalStopping final : public HackingStrategy {
 
 public:
-  /// Parameter of optional stopping method.
+  /// Parameter of optional stopping strategy.
+  ///
+  /// For example, the below parameters configures an optional stopping strategy
+  /// where the Researcher adds only 10 new observations to the experiment. If
+  /// we would like to allow the researcher to try more than once, we can use
+  /// the `n_attempts` parameters to adjust the number of attempts.
+  ///
+  ///  ```json
+  /// {
+  ///     "name": "OptionalStopping",
+  ///     "num": 10
+  /// }
   ///
   /// @ingroup  HackingStrategiesParameters
   ///
@@ -119,27 +119,34 @@ public:
     //! Placeholder for hacking strategy name
     HackingMethod name = HackingMethod::OptionalStopping;
 
-    //! Number of new observations to be added to each group
+    //! Number of new observations to be added to each group. It can be a fixed
+    //! value or a univariate distribution that is being used to generate a new
+    //! value for each experiment.
     Parameter<int> num;
-    
-    //! Indicates which groups are going to be targets
-    HackingTarget target {HackingTarget::Both};
-    
+
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    HackingTarget target{HackingTarget::Both};
+
     //! If not 0., `ratio` * n_obs will be added to the experiment.
-    Parameter<double> ratio;
+    Parameter<float> ratio;
 
     //! Number of times that Researcher add `num` observations to each group
-    Parameter<int> n_attempts {1};
-    
+    Parameter<int> n_attempts{1};
+
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-    
-    double defensibility {0.1};
-    
-    double prevalence {0.7};
-    
-    HackingStage stage {HackingStage::PostProcessing};
-    
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::PostProcessing};
   };
 
   Parameters params;
@@ -147,30 +154,22 @@ public:
 
   OptionalStopping() = default;
 
-  OptionalStopping(const Parameters &p)
-      : params{p} {
-        stopping_condition = PolicyChain{p.stopping_cond_defs, PolicyChainType::Decision, lua};
-        
-        prevalence_ = params.prevalence;
-        defensibility_ = params.defensibility;
-        stage_ = params.stage;
-  };
-  
-  /// Adds `n` observations to all groups
-  ///
-  /// @param experiment A pointer to the experiment
-  /// @param n number of new observations to be added
-  void addObservations(Experiment *experiment, const int n);
-  
-  
-  /// Adds `ns[i]` new items to `i`th group
-  ///
-  /// @param experiment A pointer to an experiment
-  /// @param ns An array indicating how many new items should be added to each group
-  void addObservations(Experiment *experiment, const arma::Row<int> ns);
+  explicit OptionalStopping(const Parameters &p) : params{p} {
+    spdlog::debug("Initializing the Optional Stopping strategy...");
 
-private:
+    stopping_condition =
+        PolicyChain{p.stopping_cond_defs, PolicyChainType::Decision, lua};
+
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
+
   void perform(Experiment *experiment) override;
+
+  /// @brief      Adds new observations to each group
+  void addObservations(Experiment *experiment, const arma::Row<int> &ns);
+
 };
 
 inline void to_json(json &j, const OptionalStopping::Parameters &p) {
@@ -179,11 +178,16 @@ inline void to_json(json &j, const OptionalStopping::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"target", p.target},
            {"ratio", p.ratio},
-           {"defensibility", p.defensibility},
-           {"prevalence", p.prevalence},
            {"stage", p.stage},
-           {"stopping_condition", p.stopping_cond_defs}
-  };
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, OptionalStopping::Parameters &p) {
@@ -192,135 +196,186 @@ inline void from_json(const json &j, OptionalStopping::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  if (j.contains("num"))
+  if (j.contains("num")) {
+
+    if (j.at("num") < 1.) {
+      spdlog::critical("The `num` parameter should be greater than 1.");
+      exit(1);
+    }
+
     p.num = Parameter<int>(j.at("num"), 1);
-  else if (j.contains("ratio"))
-    p.ratio = Parameter<double>(j.at("ratio"), 1);
-  else
-    throw std::invalid_argument("Either `num` or `ratio` should be given as input.");
-  
-  j.at("target").get_to(p.target);
-  
-  p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("stage"))
+  } else if (j.contains("ratio")) {
+    if (j.at("ratio") < 0. or j.at("ratio") > 1.) {
+      spdlog::critical("The `ratio` parameter should be between 0 and 1.");
+      exit(1);
+    }
+    p.ratio = Parameter<float>(j.at("ratio"), 1);
+  } else {
+    throw std::invalid_argument(
+        "Either `num` or `ratio` should be given as input.");
+  }
+
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
+  if (j.contains("n_attempts")) {
+    p.n_attempts = Parameter<int>(j.at("n_attempts"), 1);
+  }
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
-  
-  if (j.contains("stopping_condition"))
+  }
+
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
-  
+  }
 }
 
-
-
-
-
-static std::pair<int, int>
-getTargetBounds(Experiment *experiment, HackingTarget &target) {
-  static int s, e;
+///
+///
+/// @param experiment a pointer to the Experiment object
+/// @param target
+/// @return
+static std::pair<int, int> getTargetBounds(Experiment *experiment,
+                                           HackingTarget &target) {
+  int s{0};
+  int e{0};
   switch (target) {
-    case HackingTarget::Control: {
-      s = 0; e = experiment->setup.nd();
-    } break;
-    case HackingTarget::Treatment: {
-      s = experiment->setup.nd(); e = experiment->setup.ng();
-    } break;
-    case HackingTarget::Both: {
-      s = 0; e = experiment->setup.ng();
-    } break;
+  case HackingTarget::Control: {
+    s = 0;
+    e = experiment->setup.nd();
+  } break;
+  case HackingTarget::Treatment: {
+    s = experiment->setup.nd();
+    e = experiment->setup.ng();
+  } break;
+  case HackingTarget::Both: {
+    s = 0;
+    e = experiment->setup.ng();
+  } break;
   }
   return std::make_pair(s, e);
 }
 
-
-
 ///
-/// @brief      Declaration of Outlier Removal hacking method based on items'
-///             distance from their sample mean.
+/// @brief      Declaration of Outliers Removal hacking strategy based on items'
+///             distance from the sample mean.
 ///
+/// @note       Note that you can use the Outliers Removal hacking strategy to
+///             achieve much more elaborate outliers removal by simply defining
+///             a `stopping_condition` parameter. For instance, using {{"sig"}}
+///             as the stopping condition will simulate a more greedy version of
+///             the Outliers Removal knows as Subjective Outliers Removal.
 ///
 /// @ingroup    HackingStrategies
+///
 class OutliersRemoval final : public HackingStrategy {
 public:
-  
   /// Parameters of Outliers Removal Strategy
+  ///
+  ///
+  /// As an example, the below declaration configures an outliers removal
+  /// strategy that leads the Researcher to remove the outliers of the dataset
+  /// in 3 consecutive attempts, while removing at most 5 observations in each
+  /// trial. In addition, the Researcher stops as soon as there are less than 5
+  /// observations left in the dataset.
   ///
   ///  ```json
   /// {
   ///     "name": "OutliersRemoval",
-  ///     "level": "dv",
-  ///     "min_observations": 10,
+  ///     "num": 5,
+  ///     "n_attempts": 3,
+  ///     "min_observations": 5,
   ///     "multipliers": [
-  ///         0.5
-  ///     ],
-  ///     "n_attempts": 1000,
-  ///     "num": 1000,
-  ///     "order": "random"
+  ///         2.5
+  ///     ]
   /// }
   /// ```
   ///
   /// @ingroup HackingStrategiesParameters
+  ///
   struct Parameters {
     HackingMethod name = HackingMethod::OutliersRemoval;
 
-    //! TO BE IMPLEMENTED!
-    HackingTarget target {HackingTarget::Both};
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    HackingTarget target{HackingTarget::Both};
 
     //! Indicates the order where outliers are going to be removed from the
-    //! experiment. \li `max first`, removes the biggest outlier first \li
-    //! `random`, removes the first outlier first, this is as a random outlier
-    //! is being removed
-    std::string order {"max first"};
+    //! experiment.
+    //!
+    //! \li `max first`, removes the biggest outlier first
+    //! \li `random`, removes the first outlier first, this is as a random
+    //! outlier is being removed
+    std::string order{"max first"};
 
     //! Indicates the number of outliers to be removed in each iteration
-    int num{3};
+    int num;
 
     //! Indicates the total number of attempts, i.e., _iterations_, to remove
     //! outliers
     int n_attempts{1};
 
     //! Indicates the minimum number of observations allowed during the process
-    int min_observations{15};
+    int min_observations;
 
     //! A list of standard deviation multipliers for identifying outliers
-    std::vector<double> multipliers = {3};
-    
+    std::vector<float> multipliers;
+
+    //! Indicates the side where the outliers should be removed from,
+    //!   \li side == 0 → |Z| < k
+    //!   \li side == 1 →   Z > k
+    //!   \li side == -1 →  Z < k
+    int side{0};
+
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-    
-    double defensibility {0.5};
-    
-    double prevalence {0.7};
-    
-    HackingStage stage {HackingStage::PostProcessing};
-    
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::PostProcessing};
   };
 
   Parameters params;
-  
+
   PolicyChain stopping_condition;
 
   OutliersRemoval() = default;
 
-  OutliersRemoval(const Parameters &p)
-      : params{p} {
-        stopping_condition = PolicyChain(params.stopping_cond_defs,
-                                         PolicyChainType::Decision,
-                                         lua);
-        
-        prevalence_ = params.prevalence;
-        defensibility_ = params.defensibility;
-        stage_ = params.stage;
-        };
+  explicit OutliersRemoval(Parameters p) : params{std::move(p)} {
 
-  // Submission hackedSubmission;
+    spdlog::debug("Initializing the Outliers Removal strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
+
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
+
   void perform(Experiment *experiment) override;
 
-private:
-  bool removeOutliers(Experiment *experiment, const int n, const double k);
+  /// Implementation of the outliers removal
+  static bool removeOutliers(Experiment *experiment, int n, float k, int side,
+                             HackingTarget &target, std::string &order,
+                             int min_n);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -331,10 +386,17 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"n_attempts", p.n_attempts},
            {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
-           {"prevalence", p.prevalence},
-           {"defensibility", p.defensibility},
+           {"side", p.side},
            {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
@@ -343,157 +405,95 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  j.at("target").get_to(p.target);
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("stage"))
+  if (j.contains("side")) {
+    j.at("side").get_to(p.side);
+  }
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
-  
-  if (j.contains("stopping_condition"))
+  }
+
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
+/// Declaration of GroupPooling hacking strategy.
 ///
-/// @brief      The subjective outlier removal refers to a type of outliers
-/// removal
-///             where the researcher continuously lowers the threshold of
-///             identifying an outlier, `k`, until it finds a significant (or
-///             satisfactory) result.
+/// This strategy pools two or more treatments groups together, and creates a
+/// new treatment groups. In this process, the data from related DVs will be
+/// pooled to create a twice as big of a DV with the same property.
 ///
-/// @ingroup  HackingStrategies
-/// @sa       ResearchStrategy
+/// @note       It is even possible to pool a control group into the treatment
+///             group to create a new group!
 ///
-class SubjectiveOutlierRemoval final : public HackingStrategy {
+/// @ingroup    HackingStrategies
+///
+class GroupPooling final : public HackingStrategy {
+
 public:
-  /// @brief SubjectiveOutlierRemoval's parameters.
   ///
-  /// These are parameters specific to this hacking strategy. You can set them
-  /// either pragmatically when you are constructing a new
-  /// SubjectiveOutlierRemoval, e.g., `SubjectiveOutlierRemoval sor{<name>,
-  /// {min, max}, ssize};`.
+  /// @brief      Parameters of the Group Pooling hacking strategy
   ///
-  /// Or, when you are using `SAMrun` to run your simulation. In this case,
-  /// your JSON variable must comply with the name and type of parameters here.
-  /// For example, the following JSON defines the default subjective outliers
-  /// removal.
-  ///
-  /// ```json
-  /// {
-  ///    "name": "SubjectiveOutlierRemoval",
-  ///    "range": [2, 4],
-  ///    "step_size": 0.1,
-  ///    "min_observations": 5
-  /// }
-  /// ```
-  /// @ingroup HackingStrategiesParameters
   struct Parameters {
-    //! A placeholder for the name
-    HackingMethod name = HackingMethod::SubjectiveOutlierRemoval;
-    
-    //! @todo TO BE IMPLEMENTED
-    HackingTarget target {HackingTarget::Both};
+    //! Placeholder for hacking strategy name
+    HackingMethod name = HackingMethod::GroupPooling;
 
-    //! A vector of `{min, max}`, defining the range of `K`.
-    std::vector<int> range{2, 4};
+    //! List of paired indices indicating which groups should be pooled
+    //! together, e.g., [[1, 2], [1, 3], [1, 2, 3]]. The stopping condition will
+    //! be checked between each pair, and the pooling will stop as soon as the
+    //! condition is met.
+    std::vector<std::vector<int>> pooled_conditions;
 
-    //! Indicates the step size of walking through K's
-    double step_size{0.1};
-
-    //! Indicates minimum number of observations
-    int min_observations{5};
-    
     //! Stopping condition PolicyChain definitions
-    std::vector<std::string> stopping_cond_defs {{"sig"}};
-    
-    double prevalence {0.1};
-    
-    double defensibility {0.1};
-    
-    HackingStage stage {HackingStage::PostProcessing};
+    std::vector<std::string> stopping_cond_defs;
   };
 
   Parameters params;
   PolicyChain stopping_condition;
 
-  SubjectiveOutlierRemoval() = default;
-
-  SubjectiveOutlierRemoval(const Parameters &p)
-      : params(p) {
-          stopping_condition = PolicyChain(params.stopping_cond_defs,
-                                           PolicyChainType::Decision,
-                                           lua);
-        
-        prevalence_ = params.prevalence;
-        defensibility_ = params.defensibility;
-        stage_ = params.stage;
-        };
-
-private:
-  void perform(Experiment *experiment) override;
-};
-
-inline void to_json(json &j, const SubjectiveOutlierRemoval::Parameters &p) {
-  j = json{{"name", p.name},
-           {"range", p.range},
-           {"step_size", p.step_size},
-           {"min_observations", p.min_observations},
-            {"prevalence", p.prevalence},
-            {"defensibility", p.defensibility},
-            {"stage", p.stage},
-           {"stopping_condition", p.stopping_cond_defs}};
-}
-
-inline void from_json(const json &j, SubjectiveOutlierRemoval::Parameters &p) {
-
-  // Using a helper template function to handle the optional and throw if
-  // necessary.
-  j.at("name").get_to(p.name);
-  j.at("range").get_to(p.range);
-  j.at("step_size").get_to(p.step_size);
-  j.at("min_observations").get_to(p.min_observations);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("stage"))
-    j.at("stage").get_to(p.stage);
-  
-  if (j.contains("stopping_condition"))
-    j.at("stopping_condition").get_to(p.stopping_cond_defs);
-}
-
-class GroupPooling final : public HackingStrategy {
-
-public:
-  struct Parameters {
-    HackingMethod name = HackingMethod::GroupPooling;
-    std::vector<int> num = {2};
-  };
-
-  Parameters params;
-
   GroupPooling() = default;
 
-  GroupPooling(const Parameters &p)
-      : params{p} {
-        
-        };
+  explicit GroupPooling(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Group Pooling strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
+  };
 
   void perform(Experiment *experiment) override;
 
 private:
-  void pool(Experiment *experiment, int r);
+  /// Pools two conditions together, and returns all the pooled dvs
+  std::vector<DependentVariable> pool(Experiment *experiment,
+                                      std::vector<int> &conds_inx, int ng);
+
+  /// Pools the data from two pained DVs together, and returns a new DV
+  DependentVariable pool(Experiment *experiment, std::vector<int> &dvs_inx);
 };
 
 inline void to_json(json &j, const GroupPooling::Parameters &p) {
-  j = json{{"name", p.name}, {"num", p.num}};
+  j = json{{"name", p.name},
+           {"pooled_conditions", p.pooled_conditions},
+           {"stopping_condition", p.stopping_cond_defs}};
 }
 
 inline void from_json(const json &j, GroupPooling::Parameters &p) {
@@ -502,7 +502,11 @@ inline void from_json(const json &j, GroupPooling::Parameters &p) {
   // necessary.
   j.at("name").get_to(p.name);
 
-  j.at("num").get_to(p.num);
+  j.at("pooled_conditions").get_to(p.pooled_conditions);
+
+  if (j.contains("stopping_condition")) {
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
 class ConditionDropping : public HackingStrategy {
@@ -514,16 +518,15 @@ public:
 
   Parameters params;
 
-  ConditionDropping(const Parameters &p)
-      : params{p} {
-        std::cerr << "To Be Implemented!";
-        exit(1);
-        };
+  explicit ConditionDropping(const Parameters &p) : params{p} {
+    std::cerr << "To Be Implemented!";
+    exit(1);
+  };
 
   ConditionDropping() { params.name = HackingMethod::ConditionDropping; };
 
 private:
-  void perform(Experiment *experiment) override {};
+  void perform(Experiment *experiment) override{};
 };
 
 inline void to_json(json &j, const ConditionDropping::Parameters &p) {
@@ -537,18 +540,16 @@ inline void from_json(const json &j, ConditionDropping::Parameters &p) {
   j.at("name").get_to(p.name);
 }
 
-
 /// QuestionableRounding Hacking Strategy
 ///
 /// Questionable rounding strategy mimics the behavior of a researcher who might
-/// hack its way to significance by aggressively rounding the pvalue and ignoring
-/// everything else.
+/// hack its way to significance by aggressively rounding the p-value and
+/// ignoring everything else.
 ///
 /// @ingroup HackingStrategies
 class QuestionableRounding final : public HackingStrategy {
-  
+
 public:
-  
   /// Questionable Rounding Parameters
   ///
   /// Example usage:
@@ -567,55 +568,98 @@ public:
   ///
   struct Parameters {
     HackingMethod name = HackingMethod::QuestionableRounding;
-    
-    //! Indicates the distance between the pvalue and alpha by which the researcher
-    //! considers to round the pvalue to significance
-    double threshold {0.005};
-    
+
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    HackingTarget target{HackingTarget::Treatment};
+
+    //! Indicates the distance between the p-value and alpha by which the
+    //! researcher considers to round the p-value to significance
+    float threshold;
+
     /// Rounding Method
-    /// - diff: Setting the rounded p-value to the difference between pvalue and threshold
-    /// - alpha: Setting the rounded p-value to the value of alpha
+    /// \li diff: Setting the rounded p-value to the difference between p-value
+    /// and threshold
+    /// \li alpha: Setting the rounded p-value to the value of alpha
     ///
-    /// @todo I cna possibly add more methods here, e.g.,
-    /// - rounding, where I just round the value down
-    /// - random_rounding, where I generate a threshold, then round the `pvalue - threshold` value
+    /// @todo I can possibly add more methods here, e.g.,
+    /// \li rounding, where I just round the value down
+    /// \li random_rounding, where I generate a threshold, then round the
+    /// `p-value 
+    /// \li threshold` value
     std::string rounding_method = "diff";
-    
-    double prevalence {0.9};
-    
-    double defensibility {0.7};
-    
-    HackingStage stage {HackingStage::Reporting};
-    
-    /// This is a helper macro that generates from/to_json methods for this struct.
-    /// @note While this mostly works fine, there is one drawback that it cannot handle missing
-    /// argument. The change is in nlohmann list and when released, I can use optional and this
-    /// macro will handle everything just fine
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(QuestionableRounding::Parameters, name, threshold,  rounding_method,
-                                   prevalence, defensibility, stage);
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::Reporting};
   };
-  
+
   Parameters params;
-  
+
   QuestionableRounding() = default;
-  
-  QuestionableRounding(const Parameters &p) : params{p} {
+
+  explicit QuestionableRounding(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Questionable Rounding strategy...");
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
   };
-  
+
   void perform(Experiment *experiment) override;
 };
 
+inline void to_json(json &j, const QuestionableRounding::Parameters &p) {
+  j = json{{"name", p.name},
+           {"threshold", p.threshold},
+           {"rounding_method", p.rounding_method},
+           {"stage", p.stage}};
 
-/// PeekingOutliersRemoval Hacking Strategy
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
+}
+
+inline void from_json(const json &j, QuestionableRounding::Parameters &p) {
+
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  j.at("threshold").get_to(p.threshold);
+  j.at("rounding_method").get_to(p.rounding_method);
+  j.at("stage").get_to(p.stage);
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+}
+
+/// @brief Declaration of the Peeking Outliers Removal Hacking Strategy
+///
+/// In this strategy, the Researcher performs the outliers removal on the copy
+/// of the Experiment to peek into its effect. If the result is satisfactory,
+/// she then saves the altered dataset, and registers the outliers removal.
 ///
 /// @ingroup HackingStrategies
 class PeekingOutliersRemoval final : public HackingStrategy {
-  
+
 public:
-  
   /// Peaking Outliers Removal Parameters
   ///
   /// Example usage:
@@ -625,10 +669,10 @@ public:
   ///     "level": "dv",
   ///     "min_observations": 10,
   ///     "multipliers": [
-  ///         0.5
+  ///         2.5
   ///     ],
-  ///     "n_attempts": 1000,
-  ///     "num": 1000,
+  ///     "n_attempts": 2,
+  ///     "num": 5,
   ///     "order": "random"
   ///  }
   /// ```
@@ -637,114 +681,162 @@ public:
   ///
   struct Parameters {
     HackingMethod name = HackingMethod::PeekingOutliersRemoval;
-    
-    //! TO BE IMPLEMENTED!
-    HackingTarget target {HackingTarget::Both};
-    
+
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    HackingTarget target{HackingTarget::Both};
+
     //! Indicates the order where outliers are going to be removed from the
-    //! experiment. \li `max first`, removes the biggest outlier first \li
-    //! `random`, removes the first outlier first, this is as a random outlier
-    //! is being removed
-    std::string order {"max first"};
-    
+    //! experiment.
+    //!
+    //! \li `max first`, removes the biggest outlier first
+    //! \li `random`, removes the first outlier first, this is as a random
+    //! outlier is being removed
+    std::string order{"max first"};
+
     //! Indicates the number of outliers to be removed in each iteration
-    int num{3};
-    
+    int num;
+
     //! Indicates the total number of attempts, i.e., _iterations_, to remove
     //! outliers
     int n_attempts{1};
-    
+
     //! Indicates the minimum number of observations allowed during the process
-    int min_observations{15};
-    
+    int min_observations;
+
     //! A list of standard deviation multipliers for identifying outliers
-    std::vector<double> multipliers = {3};
-    
+    std::vector<float> multipliers;
+
+    //! Indicates the side where the outliers should be removed from,
+    //!   \li side == 0 → |Z| < k
+    //!   \li side == 1 →   Z > k
+    //!   \li side == -1 →  Z < k
+    int side{0};
+
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-    
-    //! Removing if
+
+    //! A decision policy used to evaluate the status of the experiment after
+    //! performing the outliers removal. The Researcher only commits to the
+    //! outliers removal only if this condition passes, otherwise, she will
+    //! ignore the step, and the peeking will be unsuccessful.
     std::vector<std::string> whether_to_save_cond_defs;
-    
-    double prevalence {0.9};
-    
-    double defensibility {0.7};
-    
-    HackingStage stage {HackingStage::PostProcessing};
-    
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::PostProcessing};
   };
-  
+
   Parameters params;
   PolicyChain stopping_condition;
   PolicyChain whether_to_save_condition;
-  
+
   PeekingOutliersRemoval() = default;
-  
-  PeekingOutliersRemoval(const Parameters &p) : params{p} {
+
+  explicit PeekingOutliersRemoval(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Peeking Outliers Removal strategy...");
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
   };
-  
+
   void perform(Experiment *experiment) override;
-  
-private:
-  bool removeOutliers(Experiment *experiment, const int n, const double k);
 };
 
 inline void to_json(json &j, const PeekingOutliersRemoval::Parameters &p) {
   j = json{{"name", p.name},
-    {"target", p.target},
-    {"order", p.order},
-    {"num", p.num},
-    {"n_attempts", p.n_attempts},
-    {"min_observations", p.min_observations},
-    {"multipliers", p.multipliers},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
-    {"stage", p.stage},
-    {"whether_to_save_condition", p.whether_to_save_cond_defs},
-    {"stopping_condition", p.stopping_cond_defs}};
+           {"target", p.target},
+           {"order", p.order},
+           {"num", p.num},
+           {"n_attempts", p.n_attempts},
+           {"min_observations", p.min_observations},
+           {"multipliers", p.multipliers},
+           {"side", p.side},
+           {"stage", p.stage},
+           {"whether_to_save_condition", p.whether_to_save_cond_defs},
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, PeekingOutliersRemoval::Parameters &p) {
-  
+
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-  
-  j.at("target").get_to(p.target);
+
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
   j.at("whether_to_save_condition").get_to(p.whether_to_save_cond_defs);
-  
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("stage"))
-    j.at("stage").get_to(p.stage);
-  
-  if (j.contains("stopping_condition"))
-    j.at("stopping_condition").get_to(p.stopping_cond_defs);
-}
 
+  if (j.contains("side")) {
+    j.at("side").get_to(p.side);
+  }
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  if (j.contains("stage")) {
+    j.at("stage").get_to(p.stage);
+  }
+
+  if (j.contains("stopping_condition")) {
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
+}
 
 /// Falsifying Data Hacking Strategy
 ///
+/// This algorithm falsifies the available datasets using different means, e.g.,
+/// *perturbation*, *swapping* or *switching*.
+///
+/// \li Perturbation, a selected number of data points will be perturbed by
+/// adding some noise to them.
+/// \li Group Swapping, a selected number of data points will be swapped between
+/// two groups.
+/// \li Group Switching, a selected number of data points will be moved from
+/// one group to another.
+///
 /// @ingroup HackingStrategies
+///
 class FalsifyingData final : public HackingStrategy {
-  
+
 public:
-  
   /// Falsifying Data Parameters
   ///
   /// Example usage:
   /// ```json
   ///  {
   ///    "name": "FalsifyingData",
+  ///    "approach": "perturbation",
+  ///    "num": 5,
   ///  }
   /// ```
   ///
@@ -754,137 +846,187 @@ public:
     HackingMethod name = HackingMethod::FalsifyingData;
 
     //! Falsification approach. We've discussed two possible way of doing this
-    //!   - perturbation, perturbing a value
-    //!   - group swapping, swapping values between groups
-    //!   - group switching, moving values between groups
-    std::string approach {"perturbation"};
-
+    //!   \li `perturbation`, perturbing a value
+    //!   \li `swapping`, swapping values between groups
+    //!   \li `switching`, moving values between groups
+    std::string approach{"perturbation"};
 
     //! Switching direction
-    //!   - control-to-treatment
-    //!   - treatment-to-control
-    std::string switching_direction {"control-to-treatment"};
+    //!   \li  `control-to-treatment`
+    //!   \li  `treatment-to-control`
+    std::string switching_direction{"control-to-treatment"};
 
     //! Swapping Method
-    //!   - random
-    //!   - smart
-    std::string selection_method {"random"};
-    
+    //!   \li `random`
+    //!   \li `smart`
+    std::string selection_method{"random"};
+
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
-    HackingTarget target {HackingTarget::Both};
-    
-    //! Indicates a set of rule that is going to be used to select the target group
-    //! @todo To be implemented
-//    PolicyChain target_policy;
-    
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    HackingTarget target{HackingTarget::Both};
+
+    //! Indicates a set of rule that is going to be used to select the target
+    //! group
+    //! @todo To be implemented, @maybe
+    //    PolicyChain target_policy;
+
     //! Number of trials
-    int n_attempts {1};
-    
-    //! Number of observations to be perturbed
-    size_t num {5};
-    
-    //! Distribution of noise
-    std::optional<UnivariateDistribution> noise_dist = makeUnivariateDistribution({
-      {"dist", "normal_distribution"},
-      {"mean", 0},
-      {"stddev", 0.1}
-    });
-    
+    int n_attempts{1};
+
+    //! Number of observations that are going to be affected/used
+    size_t num;
+
+    //! Distribution of noise. Default: e ~ N(0, 1)
+    std::optional<UnivariateDistribution> noise = makeUnivariateDistribution(
+        {{"dist", "normal_distribution"}, {"mean", 0}, {"stddev", 1}});
+
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-    
-    double defensibility {0.05};
 
-    double prevalence {0.1};
-    
-    HackingStage stage {HackingStage::PostProcessing};
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::PostProcessing};
   };
-  
+
   Parameters params;
   PolicyChain stopping_condition;
-  
+
   FalsifyingData() = default;
-  
-  FalsifyingData(const Parameters &p) : params{p} {
-    stopping_condition = PolicyChain(params.stopping_cond_defs,
-                                     PolicyChainType::Decision,
-                                     lua);
-    
+
+  explicit FalsifyingData(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Falsifying Data strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
   };
-  
+
   void perform(Experiment *experiment) override;
-  
+
 private:
+  /// Perturbs a set of observations by adding noise to them
   bool perturb(Experiment *experiment);
+
+  /// Swaps a set of observations between two groups
   bool swapGroups(Experiment *experiment);
+
+  /// Switches a set of observations from one group to another
   bool switchGroups(Experiment *experiment);
 };
 
 inline void to_json(json &j, const FalsifyingData::Parameters &p) {
   j = json{{"name", p.name},
-    {"approach", p.approach},
-    {"n_attempts", p.n_attempts},
-    {"num", p.num},
-    {"target", p.target},
-    {"switching_direction", p.switching_direction},
-    {"selection_method", p.selection_method},
-//    {"noise_dist", p.noise_dist},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
-    {"stage", p.stage},
-    {"stopping_condition", p.stopping_cond_defs}};
+           {"approach", p.approach},
+           {"n_attempts", p.n_attempts},
+           {"num", p.num},
+           {"target", p.target},
+           {"switching_direction", p.switching_direction},
+           {"selection_method", p.selection_method},
+           {"stage", p.stage},
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
+
+  // @todo this is not possible at the moment, but it'd be nice to have it
+  // j["noise"] = p.noise.value();
 }
 
 inline void from_json(const json &j, FalsifyingData::Parameters &p) {
-  
+
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-  
+
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("num").get_to(p.num);
-  j.at("target").get_to(p.target);
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("switching_direction"))
-    j.at("switching_direction").get_to(p.switching_direction);
 
-  if (j.contains("selection_method"))
-    j.at("selection_method").get_to(p.selection_method);
-
-  if (j.contains("stage"))
-    j.at("stage").get_to(p.stage);
-  
-  if (j.contains("noise")) {
-    p.noise_dist = makeUnivariateDistribution(j["noise"]);
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
   }
-  
-  if (j.contains("stopping_condition"))
-    j.at("stopping_condition").get_to(p.stopping_cond_defs);
-}
 
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  // Making sure that the correct parameter is available
+  if (j["approach"] == "switching" and
+      (not j.contains("switching_direction"))) {
+    spdlog::critical("The switching direction is not defined, see \
+      `switching_direction` parameter.");
+    exit(1);
+  } else {
+    j.at("switching_direction").get_to(p.switching_direction);
+  }
+
+  // Making sure that the correct parameter is available
+  if ((j["approach"] == "switching" or j["approach"] == "swapping") and
+      (not j.contains("selection_method"))) {
+    spdlog::critical("The selection method is not defined, see \
+      `selection_method` parameter.");
+    exit(1);
+  } else {
+    j.at("selection_method").get_to(p.selection_method);
+  }
+
+  if (j.contains("stage")) {
+    j.at("stage").get_to(p.stage);
+  }
+
+  if (j.contains("noise")) {
+    p.noise = makeUnivariateDistribution(j["noise"]);
+  }
+
+  if (j.contains("stopping_condition")) {
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
+}
 
 /// Fabricating Data Hacking Strategy
 ///
+/// This algorithm fabricates some fake data by either perturbing the existing
+/// data points and add them back to the datasets, or by duplicating them in the
+/// datasets.
+///
 /// @ingroup HackingStrategies
+///
 class FabricatingData final : public HackingStrategy {
-  
+
 public:
-  
   /// Fabricating Data Parameters
   ///
   /// Example usage:
   /// ```json
   ///  {
   ///    "name": "FabricatingData",
+  ///    "num": 5,
+  ///    "approach": "generating",
+  ///    "dist": {
+  ///       "dist": "normal_distribution",
+  ///       "mean": 2,
+  ///       "stddev": 1
+  ///    }
   ///  }
   /// ```
   ///
@@ -892,110 +1034,163 @@ public:
   ///
   struct Parameters {
     HackingMethod name = HackingMethod::FabricatingData;
-    
+
     //! Falsification approach. We've discussed two possible way of doing this
-    //!   - generating, perturbing a value
-    //!   - duplicating, swapping values between groups
-    std::string approach {"generating"};
-    
+    //!   \li `generating`, generates new data and adds them to the datasets
+    //!   \li `duplicating`, add duplicates of new values to the target group
+    //!   \li `manipulating`, manipulates a set of data points, and add them to
+    //!     the datasets again.
+    std::string approach{"generating"};
+
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
-    HackingTarget target {HackingTarget::Both};
-    
-    //! Indicates a set of rule that is going to be used to select the target group
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    HackingTarget target{HackingTarget::Both};
+
+    //! Indicates a set of rule that is going to be used to select the target
+    //! group
     //! @todo To be implemented
-//    PolicyChain target_policy;
-    
+    //    PolicyChain target_policy;
+
     //! Number of trials
-    int n_attempts {1};
-    
+    int n_attempts{1};
+
     //! Number of observations to be perturbed
-    int num {5};
-    
-    //! Distribution of fabricated data
-    //! @todo Check if this is even necessary, I think in most cases, we
-    //! can probably just use the data_strategy and get over it
+    int num;
+
+    //! Distribution of fabricated data. Only used for `generating`
     std::optional<UnivariateDistribution> dist;
-    
+
+    //! Indicates whether the mean of each target dependent variable should be
+    //! used as the mean of the random distribution used for generating new
+    //! data points.
+    //! @todo this would be nice to have, but I don't think I have get it right
+    //! yet.
+//    bool use_dv_mean_as_dist_mean{false};
+
+    //! Distribution of fabricated data. Only used for `noise`
+    std::optional<UnivariateDistribution> noise;
+
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs;
-      
-    double defensibility {0.05};
-    
-    double prevalence {0.1};
-    
-    HackingStage stage {HackingStage::PostProcessing};
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::PostProcessing};
   };
-  
+
   Parameters params;
   PolicyChain stopping_condition;
-  
+
   FabricatingData() = default;
-  
-  FabricatingData(const Parameters &p) : params{p} {
-    stopping_condition = PolicyChain(params.stopping_cond_defs,
-                                     PolicyChainType::Decision,
-                                     lua);
-    
+
+  explicit FabricatingData(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Fabricating Data strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
   };
-  
+
   void perform(Experiment *experiment) override;
-  
+
 private:
-  bool generate(Experiment *experiment, const int n);
-  bool duplicate(Experiment *experiment, const int n);
+  /// Generates new data based on the given `dist`
+  bool generate(Experiment *experiment, int n);
+
+  /// Duplicates some of the data points
+  bool duplicate(Experiment *experiment, int n);
+
+  /// Manipulates some of the data by adding some noise to them, and adding them
+  /// back again to the datasets.
+  bool manipulate(Experiment *experiment, int n);
 };
 
 inline void to_json(json &j, const FabricatingData::Parameters &p) {
   j = json{{"name", p.name},
-    {"approach", p.approach},
-    {"n_attempts", p.n_attempts},
-    {"num", p.num},
-    {"target", p.target},
-    //    {"dist", p.dist},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
-    {"stage", p.stage},
-    {"stopping_condition", p.stopping_cond_defs}};
+           {"approach", p.approach},
+           {"n_attempts", p.n_attempts},
+           {"num", p.num},
+           {"target", p.target},
+           {"stage", p.stage},
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
+
+  // @todo this cannot be done, and needs a fix
+  // j["dist"] = p.dist.value();
+  // j["noise"] = p.noise.value();
 }
 
 inline void from_json(const json &j, FabricatingData::Parameters &p) {
-  
+
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-  
   j.at("approach").get_to(p.approach);
   j.at("n_attempts").get_to(p.n_attempts);
   j.at("num").get_to(p.num);
-  j.at("target").get_to(p.target);
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("stage"))
+
+  if (j.contains("target")) {
+    j.at("target").get_to(p.target);
+  }
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
-  
-  if (j.contains("dist")) {
+  }
+
+  // `dist` has to be defined if the method is `generating`
+  if (j["approach"] == "generating" and (not j.contains("dist"))) {
+    spdlog::critical("Please specify a distribution for new values to be \
+    generated from.");
+    exit(1);
+  } else {
     p.dist = makeUnivariateDistribution(j["dist"]);
   }
-  
-  if (j.contains("stopping_condition"))
+
+  // `noise` dist has to be defined if the method is manipulating
+  if (j["approach"] == "manipulating" and (not j.contains("noise"))) {
+    spdlog::critical("Please specify the noise distribution.");
+    exit(1);
+  } else {
+    p.dist = makeUnivariateDistribution(j["noise"]);
+  }
+
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
-        
 /// Fabricating Data Hacking Strategy
 ///
 /// @ingroup HackingStrategies
 class StoppingDataCollection final : public HackingStrategy {
-  
+
 public:
-  
   /// Stopping Data Collection Parameters
   ///
   /// Example usage:
@@ -1011,80 +1206,225 @@ public:
   ///
   struct Parameters {
     HackingMethod name = HackingMethod::StoppingDataCollection;
-        
+
     //! Indicates which outcome variables are going to be targeted,
-    //!   - control
-    //!   - treatment
-    //!   - both
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
     //! @todo to be implemented
-    HackingTarget target {HackingTarget::Both};
-    
-    //! Indicates a set of rule that is going to be used to select the target group
+    HackingTarget target{HackingTarget::Both};
+
+    //! Indicates a set of rule that is going to be used to select the target
+    //! group
     //! @todo To be implemented
     //    PolicyChain target_policy;
-        
+
     //! Number of observations to be perturbed
-    int batch_size {5};
-    
+    int batch_size;
+
     //! Stopping condition PolicyChain definitions
-    std::vector<std::string> stopping_cond_defs {"sig"};
-    
-    double defensibility {0.05};
-    
-    double prevalence {0.1};
-    
-    HackingStage stage {HackingStage::DataCollection};
+    std::vector<std::string> stopping_cond_defs{"sig"};
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::DataCollection};
   };
-  
+
   Parameters params;
   PolicyChain stopping_condition;
-  
+
   StoppingDataCollection() = default;
-  
-  StoppingDataCollection(const Parameters &p) : params{p} {
-    stopping_condition = PolicyChain(params.stopping_cond_defs,
-                                     PolicyChainType::Decision,
-                                     lua);
-    
+
+  explicit StoppingDataCollection(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Stopping Data Collection strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
+
     prevalence_ = params.prevalence;
     defensibility_ = params.defensibility;
     stage_ = params.stage;
   };
-  
+
   void perform(Experiment *experiment) override;
-  
-//private:
-//  bool generate(Experiment *experiment, const int n);
-//  bool duplicate(Experiment *experiment, const int n);
+
+  // private:
+  //   bool generate(Experiment *experiment, const int n);
+  //   bool duplicate(Experiment *experiment, const int n);
 };
 
 inline void to_json(json &j, const StoppingDataCollection::Parameters &p) {
   j = json{{"name", p.name},
-    {"batch_size", p.batch_size},
-    {"prevalence", p.prevalence},
-    {"defensibility", p.defensibility},
-    {"stage", p.stage},
-    {"stopping_condition", p.stopping_cond_defs}};
+           {"batch_size", p.batch_size},
+           {"stage", p.stage},
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
 }
 
 inline void from_json(const json &j, StoppingDataCollection::Parameters &p) {
-  
+
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-  
+
   j.at("batch_size").get_to(p.batch_size);
 
-  j.at("prevalence").get_to(p.prevalence);
-  j.at("defensibility").get_to(p.defensibility);
-  
-  if (j.contains("stage"))
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  if (j.contains("stage")) {
     j.at("stage").get_to(p.stage);
-    
-  if (j.contains("stopping_condition"))
+  }
+
+  if (j.contains("stopping_condition")) {
     j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
 }
 
+/// Optional Dropping Hacking Strategy
+///
+/// The _Optional Dropping_ algorithm uses the covariant values to split the
+/// dataset, and generates new condition groups.
+///
+/// @ingroup HackingStrategies
+class OptionalDropping final : public HackingStrategy {
+
+public:
+  /// Optional Dropping Collection Parameters
+  ///
+  /// Indicates the indices of groups that you like to be used for splitting in
+  /// `pooled` variable, e.g. [[1]], the first treatment group; and then use the
+  /// `split_by` parameters to define the [index, value] of the covariant.
+  ///
+  /// Example usage:
+  /// ```json
+  ///  {
+  ///    "name": "OptionalDropping",
+  ///    "pooled": [[1]],
+  ///    "split_by": [[0, 1]],
+  ///    "stopping_condition": ["sig"]
+  ///  }
+  /// ```
+  ///
+  /// @ingroup HackingStrategiesParameters
+  ///
+  struct Parameters {
+    HackingMethod name = HackingMethod::OptionalDropping;
+
+    //! Indicates which outcome variables are going to be targeted,
+    //!   \li Both (default)
+    //!   \li Control
+    //!   \li Treatment
+    //! @todo to be implemented
+    HackingTarget target{HackingTarget::Both};
+
+    //! List of condition groups to be used for the dropping procedure
+    std::vector<std::vector<int>> pooled;
+
+    //! Lists of covariant index, and their value pairs, e.g., [[0, 0], [0, 1]],
+    //! that is going to be used by the algorithm to split the dependent
+    //! variables. In this case, the data will be split by the first covariant
+    //! (level == 0), and then by the second covariant (level == 1).
+    std::vector<std::vector<int>> split_by;
+
+    //! Stopping condition PolicyChain definitions
+    std::vector<std::string> stopping_cond_defs{"sig"};
+
+    //! The defensibility factor of the strategy
+    std::optional<float> defensibility;
+
+    //! The prevalence factor of the strategy
+    std::optional<float> prevalence;
+
+    //! The default execution stage of the strategy
+    HackingStage stage{HackingStage::PostProcessing};
+  };
+
+  Parameters params;
+  PolicyChain stopping_condition;
+
+  OptionalDropping() = default;
+
+  explicit OptionalDropping(Parameters p) : params{std::move(p)} {
+
+    spdlog::debug("Initializing the Optional Dropping strategy...");
+
+    stopping_condition =
+        PolicyChain(params.stopping_cond_defs, PolicyChainType::Decision, lua);
+
+    prevalence_ = params.prevalence;
+    defensibility_ = params.defensibility;
+    stage_ = params.stage;
+  };
+
+  void perform(Experiment *experiment) override;
+
+private:
+  std::vector<DependentVariable> split(Experiment *experiment,
+                                       std::vector<int> &conds,
+                                       std::vector<int> &by, int ng);
+  DependentVariable split(Experiment *experiment, std::vector<int> &gs,
+                          arma::uvec cov);
+};
+
+inline void to_json(json &j, const OptionalDropping::Parameters &p) {
+  j = json{{"name", p.name},
+           {"pooled", p.pooled},
+           {"split_by", p.split_by},
+           {"stage", p.stage},
+           {"stopping_condition", p.stopping_cond_defs}};
+
+  if (p.prevalence) {
+    j["prevalence"] = p.prevalence.value();
+  }
+
+  if (p.defensibility) {
+    j["defensibility"] = p.defensibility.value();
+  }
+}
+
+inline void from_json(const json &j, OptionalDropping::Parameters &p) {
+
+  // Using a helper template function to handle the optional and throw if
+  // necessary.
+  j.at("name").get_to(p.name);
+  j.at("pooled").get_to(p.pooled);
+  j.at("split_by").get_to(p.split_by);
+
+  if (j.contains("prevalence")) {
+    p.prevalence = j.at("prevalence");
+  }
+
+  if (j.contains("defensibility")) {
+    p.defensibility = j.at("defensibility");
+  }
+
+  if (j.contains("stage")) {
+    j.at("stage").get_to(p.stage);
+  }
+
+  if (j.contains("stopping_condition")) {
+    j.at("stopping_condition").get_to(p.stopping_cond_defs);
+  }
+}
 
 } // namespace sam
 
