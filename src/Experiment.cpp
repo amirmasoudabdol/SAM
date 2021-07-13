@@ -108,7 +108,7 @@ void Experiment::generateCovariants() {
     covariants.fill(0);
     
     for (int i = 0; i < n_covariants; ++i) {
-      covariants.col(i).head(dvs_[i].nobs_ / 2).fill(1);
+      covariants.col(i).head((*max_nobs_).nobs_ / 2).fill(1);
       covariants.col(i) = arma::shuffle(covariants.col(i));
     }
     
