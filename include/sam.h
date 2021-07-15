@@ -14,8 +14,6 @@
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
-#include <boost/filesystem.hpp>
-
 using json = nlohmann::ordered_json;
 
 namespace sam {
