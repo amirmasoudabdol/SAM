@@ -16,8 +16,6 @@
 #include <iostream>
 #include <memory>
 
-#include <boost/filesystem.hpp>
-
 #include "sam.h"
 
 #include "effolkronium/random.hpp"
