@@ -92,7 +92,7 @@ int main(int argc, const char **argv) {
   std::string config_file_name{};
   if (vm.count("config")) {
     config_file_name = vm["config"].as<string>();
-    if (!filesystem::exists(config_file_name)){
+    if (!boost::filesystem::exists(config_file_name)){
       std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "config file does not exist." << std::endl;
       return(1);
     }
@@ -133,11 +133,11 @@ int main(int argc, const char **argv) {
   if (vm.count("output-path")) {
     output_path = vm["output-path"].as<string>();
   }
-  if (!filesystem::exists(output_path)){
+  if (!boost::filesystem::exists(output_path)){
     spdlog::debug("Creating {} directory...", output_path);
     try {
-      filesystem::create_directory(output_path);
-    } catch (filesystem::filesystem_error &e) {
+      boost::filesystem::create_directory(output_path);
+    } catch (boost::filesystem::filesystem_error &e) {
       std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "cannot create a directory in the given path.\n";
       std::cerr << e.what();
       exit(1);
