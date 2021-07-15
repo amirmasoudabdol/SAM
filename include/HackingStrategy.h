@@ -1336,14 +1336,11 @@ public:
     //! @todo to be implemented
     HackingTarget target{HackingTarget::Both};
 
-    //! List of condition groups to be used for the dropping procedure
-    std::vector<std::vector<int>> pooled;
-
-    //! Lists of covariant index, and their value pairs, e.g., [[0, 0], [0, 1]],
+    //! Lists of covariant index, and their value pairs, e.g., [0, 0]
     //! that is going to be used by the algorithm to split the dependent
     //! variables. In this case, the data will be split by the first covariant
-    //! (level == 0), and then by the second covariant (level == 1).
-    std::vector<std::vector<int>> split_by;
+    //! (level == 0)
+    std::vector<int> split_by;
 
     //! Stopping condition PolicyChain definitions
     std::vector<std::string> stopping_cond_defs{"sig"};
@@ -1378,16 +1375,12 @@ public:
   void perform(Experiment *experiment) override;
 
 private:
-  std::vector<DependentVariable> split(Experiment *experiment,
-                                       std::vector<int> &conds,
-                                       std::vector<int> &by, int ng);
-  DependentVariable split(Experiment *experiment, std::vector<int> &gs,
-                          arma::uvec cov);
+  void split(Experiment *experiment,std::vector<int> &by);
+  
 };
 
 inline void to_json(json &j, const OptionalDropping::Parameters &p) {
   j = json{{"name", p.name},
-           {"pooled", p.pooled},
            {"split_by", p.split_by},
            {"stage", p.stage},
            {"stopping_condition", p.stopping_cond_defs}};
@@ -1406,7 +1399,6 @@ inline void from_json(const json &j, OptionalDropping::Parameters &p) {
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
-  j.at("pooled").get_to(p.pooled);
   j.at("split_by").get_to(p.split_by);
 
   if (j.contains("prevalence")) {
