@@ -40,84 +40,87 @@ std::optional<SubmissionPool>
 Researcher::hackTheResearch() {
 
   spdlog::debug("Initiate the Hacking Procedure...");
+  
+  for (auto &hacking_group : hacking_workflow) {
 
-  Experiment copy_of_experiment = *experiment;
+    Experiment copy_of_experiment = *experiment;
 
-  // It indicates whether or not the hacking is successful, if so, we skip the
-  // remaining of the methods
-  bool stopped_hacking{false};
+    // It indicates whether or not the hacking is successful, if so, we skip the
+    // remaining of the methods
+    bool stopped_hacking{false};
 
-  for (auto &h_set : hacking_workflow) {
+    for (auto &h_set : hacking_group) {
 
-    // This is a handy flag to propagate the information out of the std::visit
-    // It indicates whether or not the Researcher has committed to the hack or
-    // not.
-    bool has_committed{true};
+      // This is a handy flag to propagate the information out of the std::visit
+      // It indicates whether or not the Researcher has committed to the hack or
+      // not.
+      bool has_committed{true};
 
-    std::optional<SubmissionPool> hacked_subs;
+      std::optional<SubmissionPool> hacked_subs;
 
-    for (auto &step : h_set) {
+      for (auto &step : h_set) {
 
-      // In each step, we either run a hack or a policy, HackingWorkflow is
-      // ordered such that every hacking strategy is followed by a
-      // selection → decision sequence
-      std::visit(
-          overload{
+        // In each step, we either run a hack or a policy, HackingWorkflow is
+        // ordered such that every hacking strategy is followed by a
+        // selection → decision sequence
+        std::visit(
+            overload{
 
-              [&](std::shared_ptr<HackingStrategy> &hacking_strategy) {
-                // Performing a Hack
+                [&](std::shared_ptr<HackingStrategy> &hacking_strategy) {
+                  // Performing a Hack
 
-                // If we are not committed to the method, we leave the entire
-                // set behind
-                has_committed = isCommittingToTheHack(hacking_strategy.get());
+                  // If we are not committed to the method, we leave the entire
+                  // set behind
+                  has_committed = isCommittingToTheHack(hacking_strategy.get());
 
-                if (has_committed) {
-                  spdlog::trace("++++++++++++++++");
-                  spdlog::trace("→ Starting a new HackingSet");
+                  if (has_committed) {
+                    spdlog::trace("++++++++++++++++");
+                    spdlog::trace("→ Starting a new HackingSet");
 
-                  // Applying the hack
-                  (*hacking_strategy)(&copy_of_experiment);
+                    // Applying the hack
+                    (*hacking_strategy)(&copy_of_experiment);
 
-                  copy_of_experiment.setHackedStatus(true);
+                    copy_of_experiment.setHackedStatus(true);
+                  }
+                },
+                [&](PolicyChainSet &selection_policies) {
+                  // Performing a Selection
+
+                  // This will overwrite the submission_candidates, and if
+                  // stashing, it'll select and stash some of the outcomes to
+                  // into stashed_submissions
+                  hacked_subs = research_strategy->selectOutcomeFromExperiment(
+                      &copy_of_experiment, selection_policies);
+                },
+                [&](PolicyChain &decision_policy) {
+                  // Performing a Decision
+
+                  spdlog::trace(
+                      "Checking whether we are going to continue hacking?");
+
+                  if (hacked_subs and
+                      !research_strategy->willContinueHacking(hacked_subs, decision_policy)) {
+                    spdlog::trace("Done Hacking!");
+                    stopped_hacking = true;
+                  }
+
+                  spdlog::trace("Continue Hacking...");
                 }
-              },
-              [&](PolicyChainSet &selection_policies) {
-                // Performing a Selection
 
-                // This will overwrite the submission_candidates, and if
-                // stashing, it'll select and stash some of the outcomes to
-                // into stashed_submissions
-                hacked_subs = research_strategy->selectOutcomeFromExperiment(
-                    &copy_of_experiment, selection_policies);
-              },
-              [&](PolicyChain &decision_policy) {
-                // Performing a Decision
+            },
+            step);
 
-                spdlog::trace(
-                    "Checking whether we are going to continue hacking?");
+        // If we haven't committed to the current method, we skip its
+        // corresponding selection → decision sequence as well
+        if (not has_committed) {
+          break;
+        }
 
-                if (hacked_subs and
-                    !research_strategy->willContinueHacking(hacked_subs, decision_policy)) {
-                  spdlog::trace("Done Hacking!");
-                  stopped_hacking = true;
-                }
-
-                spdlog::trace("Continue Hacking...");
-              }
-
-          },
-          step);
-
-      // If we haven't committed to the current method, we skip its
-      // corresponding selection → decision sequence as well
-      if (not has_committed) {
-        break;
-      }
-
-      // We leave the workflow when we have a submission, ie., after successful
-      // decision policy
-      if (stopped_hacking) {
-        return hacked_subs;
+        // We leave the workflow when we have a submission, ie., after successful
+        // decision policy
+        if (stopped_hacking) {
+          return hacked_subs;
+        }
       }
     }
   }
@@ -401,38 +404,40 @@ void Researcher::reorderHackingStrategies(HackingWorkflow &hw,
     return;
   }
 
-  try {
+  for (auto &group : hw) {
+    try {
 
-    if (priority == "random") {
-      Random::shuffle(hw);
-    } else if (priority == "asc(prevalence)") {
-      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-        return std::get<0>(h1[0])->prevalence() <
-               std::get<0>(h2[0])->prevalence();
-      });
-    } else if (priority == "desc(prevalence)") {
-      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-        return std::get<0>(h1[0])->prevalence() >
-               std::get<0>(h2[0])->prevalence();
-      });
-    } else if (priority == "asc(defensibility)") {
-      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-        return std::get<0>(h1[0])->defensibility() <
-               std::get<0>(h2[0])->defensibility();
-      });
-    } else if (priority == "desc(defensibility)") {
-      std::sort(hw.begin(), hw.end(), [&](auto &h1, auto &h2) {
-        return std::get<0>(h1[0])->defensibility() >
-               std::get<0>(h2[0])->defensibility();
-      });
-    } else /* sequential */ {
-      spdlog::critical("Invalid argument!");
+      if (priority == "random") {
+        Random::shuffle(hw);
+      } else if (priority == "asc(prevalence)") {
+        std::sort(group.begin(), group.end(), [&](auto &h1, auto &h2) {
+          return std::get<0>(h1[0])->prevalence() <
+                 std::get<0>(h2[0])->prevalence();
+        });
+      } else if (priority == "desc(prevalence)") {
+        std::sort(group.begin(), group.end(), [&](auto &h1, auto &h2) {
+          return std::get<0>(h1[0])->prevalence() >
+                 std::get<0>(h2[0])->prevalence();
+        });
+      } else if (priority == "asc(defensibility)") {
+        std::sort(group.begin(), group.end(), [&](auto &h1, auto &h2) {
+          return std::get<0>(h1[0])->defensibility() <
+                 std::get<0>(h2[0])->defensibility();
+        });
+      } else if (priority == "desc(defensibility)") {
+        std::sort(group.begin(), group.end(), [&](auto &h1, auto &h2) {
+          return std::get<0>(h1[0])->defensibility() >
+                 std::get<0>(h2[0])->defensibility();
+        });
+      } else /* sequential */ {
+        spdlog::critical("Invalid argument!");
+        exit(1);
+      }
+
+    } catch (const std::bad_optional_access& e) {
+      spdlog::critical("Cannot sort the hacking strategies based on the given priority.");
+      spdlog::critical("Make sure that the defensibility and/or prevalence are defined for every hacking strategy.");
       exit(1);
     }
-
-  } catch (const std::bad_optional_access& e) {
-    spdlog::critical("Cannot sort the hacking strategies based on the given priority.");
-    spdlog::critical("Make sure that the defensibility and/or prevalence are defined for every hacking strategy.");
-    exit(1);
   }
 }

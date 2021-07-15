@@ -39,19 +39,23 @@ class ResearcherBuilder;
 
 //! The representation of the Hacking Workflow
 //!
-//! This is defined to capture a sequence of _hacking → selection → decision_.
-//! While it looks rather strange, it allows for some nice and flexible setup 
-//! using the std::visit(). 
+//! This is defined to capture a collection of list of
+//! [_hacking → selection → decision_] sequences. While it looks rather strange,
+//! it allows for some nice and flexible setup using the std::visit(). 
 //!
 //! @sa Researcher::hackTheResearch()
 //!
 //! @ingroup HackingStrategies Policies
 using HackingWorkflow =
+std::vector<
     std::vector<
       std::vector<
         std::variant<std::shared_ptr<HackingStrategy>,
                      PolicyChain,
-                     PolicyChainSet>>>;
+                     PolicyChainSet>
+        >
+      >
+    >;
 
 ///
 /// @brief      This class describes a researcher
@@ -351,41 +355,46 @@ public:
     // Setting up Hacking Workflow / Strategies
     // ----------------------------------------
     if (config["researcher_parameters"].contains("hacking_strategies")) {
-
+      
       researcher.hacking_workflow.resize(
           config["researcher_parameters"]["hacking_strategies"].size());
+      
+      for (int g{0}; g < researcher.hacking_workflow.size(); ++g) {
+        
+        researcher.hacking_workflow[g].resize(config["researcher_parameters"]["hacking_strategies"][g].size());
 
-      for (int h{0}; h < researcher.hacking_workflow.size(); ++h) {
+        for (int h{0}; h < researcher.hacking_workflow[g].size(); ++h) {
 
-        auto &item = config["researcher_parameters"]["hacking_strategies"][h];
+          auto &item = config["researcher_parameters"]["hacking_strategies"][g][h];
 
-        // Adding the Hacking Strategy
-        researcher.hacking_workflow[h].push_back(HackingStrategy::build(item[0]));
+          // Adding the Hacking Strategy
+          researcher.hacking_workflow[g][h].push_back(HackingStrategy::build(item[0]));
 
-        // Adding the Selection
-        if (item.size() > 1) {
-          if (item[1][0].type() == nlohmann::detail::value_t::array) {
-            researcher.hacking_workflow[h].push_back(PolicyChainSet{
-                item[1].get<std::vector<std::vector<std::string>>>(),
-                researcher.research_strategy->lua});
-          } else {
-            spdlog::critical(
-                "You must provide a Selection policy, otherwise, the researcher "
-                "doesn't know what to do!");
-            exit(1);
+          // Adding the Selection
+          if (item.size() > 1) {
+            if (item[1][0].type() == nlohmann::detail::value_t::array) {
+              researcher.hacking_workflow[g][h].push_back(PolicyChainSet{
+                  item[1].get<std::vector<std::vector<std::string>>>(),
+                  researcher.research_strategy->lua});
+            } else {
+              spdlog::critical(
+                  "You must provide a Selection policy, otherwise, the researcher "
+                  "doesn't know what to do!");
+              exit(1);
+            }
+          }
+
+          // Adding the Decision
+          if (item.size() > 2) {
+            researcher.hacking_workflow[g][h].push_back(PolicyChain{
+              item[2].get<std::vector<std::string>>(), PolicyChainType::Decision,
+              researcher.research_strategy->lua});
           }
         }
 
-        // Adding the Decision
-        if (item.size() > 2) {
-          researcher.hacking_workflow[h].push_back(PolicyChain{
-            item[2].get<std::vector<std::string>>(), PolicyChainType::Decision,
-            researcher.research_strategy->lua});
-        }
+        // Making a copy of the original workflow
+        researcher.original_workflow = researcher.hacking_workflow;
       }
-
-      // Making a copy of the original workflow
-      researcher.original_workflow = researcher.hacking_workflow;
 
     } else {
       // If the Researcher a hacker, it has to have some methods
@@ -440,11 +449,13 @@ public:
     // Sorting the selected hacking strategies based on their stage
     // The stable_sort has been used because I'd like to keep the given
     // order if there is any
-    std::stable_sort(
-        researcher.hacking_workflow.begin(), researcher.hacking_workflow.end(),
-        [&](auto &h1, auto &h2) {
-          return std::get<0>(h1[0])->stage() < std::get<0>(h2[0])->stage();
-        });
+    for (auto &hacking_group : researcher.hacking_workflow) {
+      std::stable_sort(
+          hacking_group.begin(), hacking_group.end(),
+          [&](auto &h1, auto &h2) {
+            return std::get<0>(h1[0])->stage() < std::get<0>(h2[0])->stage();
+          });
+    }
 
     // Setting up the change of researcher following through with this 
     // researcher and submit it to the Journal, instead of putting it to the
