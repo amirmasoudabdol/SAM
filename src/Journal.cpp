@@ -114,20 +114,16 @@ Journal::Journal(json &journal_config) {
   }
 
   if (is_saving_summaries) {
-    std::filesystem::path filepath{
-            journal_config["output_path"].get<std::string>() +
+    pubs_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
                 journal_config["output_prefix"].get<std::string>() +
-                "_Publications_Summaries.csv"};
-    pubs_stats_writer = std::make_unique<PersistenceManager::Writer>(filepath,
+                "_Publications_Summaries.csv",
             pubs_stats_columns);
   }
 
   if (is_saving_pubs_per_sim_summaries) {
-    std::filesystem::path filepath{
-            journal_config["output_path"].get<std::string>() +
+    pubs_per_sim_stats_writer = std::make_unique<PersistenceManager::Writer>(journal_config["output_path"].get<std::string>() +
                 journal_config["output_prefix"].get<std::string>() +
-                "_Publications_Per_Sim_Summaries.csv"};
-    pubs_per_sim_stats_writer = std::make_unique<PersistenceManager::Writer>(filepath,
+                "_Publications_Per_Sim_Summaries.csv",
         pubs_stats_columns);
   }
 

@@ -15,7 +15,8 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <filesystem>
+
+#include <boost/filesystem.hpp>
 
 #include "sam.h"
 
@@ -90,7 +91,7 @@ int main(int argc, const char **argv) {
 
   json configs;
 
-  std::filesystem::path config_file_name{};
+  filesystem::path config_file_name{};
   if (vm.count("config")) {
     config_file_name = vm["config"].as<string>();
     if (!exists(config_file_name)){
@@ -130,7 +131,7 @@ int main(int argc, const char **argv) {
 
   spdlog::info("Processing the configuration file...");
 
-  std::filesystem::path output_path{configs["simulation_parameters"]["output_path"]};
+  filesystem::path output_path{configs["simulation_parameters"]["output_path"]};
   if (vm.count("output-path")) {
     output_path = vm["output-path"].as<string>();
   }
@@ -138,7 +139,7 @@ int main(int argc, const char **argv) {
     spdlog::debug("Creating {} directory...", output_path.native());
     try {
       create_directory(output_path);
-    } catch (std::filesystem::filesystem_error &e) {
+    } catch (filesystem::filesystem_error &e) {
       std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "cannot create a directory in the given path.\n";
       std::cerr << e.what();
       exit(1);
@@ -219,13 +220,13 @@ void runSimulation(json &sim_configs) {
   // Initiate the csvWriter
   // I need an interface for this
   bool is_saving_all_pubs = sim_configs["simulation_parameters"]["save_all_pubs"];
-  std::filesystem::path pubs_file_name =
+  filesystem::path pubs_file_name =
       sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
       sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Publications.csv";
 
   bool is_saving_rejected = sim_configs["simulation_parameters"]["save_rejected"];
-  std::filesystem::path rejs_file_name =
+  filesystem::path rejs_file_name =
       sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
       sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
