@@ -17,7 +17,6 @@
 #include <memory>
 
 #include <boost/filesystem.hpp>
-using namespace boost::filesystem;
 
 #include "sam.h"
 
