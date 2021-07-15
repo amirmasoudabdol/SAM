@@ -6,6 +6,7 @@ project(SAM
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(GCC_COVERAGE_COMPILE_FLAGS "-lstdc++fs")
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAP)
 
@@ -30,8 +31,6 @@ endif()
 
 # This is a hack and I need to manage it
 set(CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
-
-set(CMAKE_CXX_STANDARD 17)
 
 find_package(Threads REQUIRED)
 
