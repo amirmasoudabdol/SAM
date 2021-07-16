@@ -57,7 +57,7 @@ int main(int argc, const char **argv) {
     ("help,h", "produce help message")
     ("version,v", "print version string")
     (
-      "debug", po::value<std::string>(), "Print debugging information")
+      "log-level", po::value<std::string>(), "Level of logging.")
     (
       "update-config", po::bool_switch(),
       "Update the config file with the drawn seeds")
@@ -111,8 +111,8 @@ int main(int argc, const char **argv) {
   spdlog::set_level(log_level);
 
   // Overwriting the logging level if given in CLI
-  if (vm.count("debug")) {
-    const string debug = vm["debug"].as<string>();
+  if (vm.count("log-level")) {
+    const string debug = vm["log-level"].as<string>();
     if (debug == "trace")
       spdlog::set_level(spdlog::level::trace);
     else if (debug == "debug")
