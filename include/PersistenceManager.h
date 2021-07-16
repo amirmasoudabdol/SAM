@@ -50,11 +50,11 @@ public:
   Writer() = default;
   ~Writer();
 
-  Writer(const std::filesystem::path &filename);
+  Writer(const std::string &filename);
   
-  Writer(const std::filesystem::path &path, const string &prefix, const std::filesystem::path filename);
+  Writer(const std::string &path, const string &prefix, const std::string filename);
   
-  Writer(const std::filesystem::path &filename, const std::vector<std::string> colnames);
+  Writer(const std::string &filename, const std::vector<std::string> colnames);
   
   void write(const std::vector<std::string> &row_entries);
   
@@ -87,9 +87,9 @@ public:
   Reader() = default;
   ~Reader();
 
-  Reader(const std::filesystem::path &filename);
+  Reader(const std::string &filename);
 
-  void filename(const std::filesystem::path &name) {
+  void filename(const std::string &name) {
     file_name_ = name;
     reader->read(file_name_);
   };

@@ -31,11 +31,9 @@ endif()
 # This is a hack and I need to manage it
 set(CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
 
-set(CMAKE_CXX_STANDARD 17)
-
 find_package(Threads REQUIRED)
 
-find_package(Boost COMPONENTS unit_test_framework program_options REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework program_options filesystem REQUIRED)
 find_package(nlohmann_json 3.9 REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(mlpack)

@@ -15,7 +15,8 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <filesystem>
+
+#include <boost/filesystem.hpp>
 
 #include "sam.h"
 
@@ -56,7 +57,7 @@ int main(int argc, const char **argv) {
     ("help,h", "produce help message")
     ("version,v", "print version string")
     (
-      "debug", po::value<std::string>(), "Print debugging information")
+      "log-level", po::value<std::string>(), "Level of logging.")
     (
       "update-config", po::bool_switch(),
       "Update the config file with the drawn seeds")
@@ -90,10 +91,10 @@ int main(int argc, const char **argv) {
 
   json configs;
 
-  std::filesystem::path config_file_name{};
+  std::string config_file_name{};
   if (vm.count("config")) {
     config_file_name = vm["config"].as<string>();
-    if (!exists(config_file_name)){
+    if (!boost::filesystem::exists(config_file_name)){
       std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "config file does not exist." << std::endl;
       return(1);
     }
@@ -110,8 +111,8 @@ int main(int argc, const char **argv) {
   spdlog::set_level(log_level);
 
   // Overwriting the logging level if given in CLI
-  if (vm.count("debug")) {
-    const string debug = vm["debug"].as<string>();
+  if (vm.count("log-level")) {
+    const string debug = vm["log-level"].as<string>();
     if (debug == "trace")
       spdlog::set_level(spdlog::level::trace);
     else if (debug == "debug")
@@ -130,15 +131,15 @@ int main(int argc, const char **argv) {
 
   spdlog::info("Processing the configuration file...");
 
-  std::filesystem::path output_path{configs["simulation_parameters"]["output_path"]};
+  std::string output_path{configs["simulation_parameters"]["output_path"]};
   if (vm.count("output-path")) {
     output_path = vm["output-path"].as<string>();
   }
-  if (!exists(output_path)){
-    spdlog::debug("Creating {} directory...", output_path.native());
+  if (!boost::filesystem::exists(output_path)){
+    spdlog::debug("Creating {} directory...", output_path);
     try {
-      create_directory(output_path);
-    } catch (std::filesystem::filesystem_error &e) {
+      boost::filesystem::create_directory(output_path);
+    } catch (boost::filesystem::filesystem_error &e) {
       std::cerr << "SAMrun: " << rang::fg::red << rang::style::bold << "error: " << rang::style::reset << "cannot create a directory in the given path.\n";
       std::cerr << e.what();
       exit(1);
@@ -219,13 +220,13 @@ void runSimulation(json &sim_configs) {
   // Initiate the csvWriter
   // I need an interface for this
   bool is_saving_all_pubs = sim_configs["simulation_parameters"]["save_all_pubs"];
-  std::filesystem::path pubs_file_name =
+  std::string pubs_file_name =
       sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
       sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Publications.csv";
 
   bool is_saving_rejected = sim_configs["simulation_parameters"]["save_rejected"];
-  std::filesystem::path rejs_file_name =
+  std::string rejs_file_name =
       sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
       sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
