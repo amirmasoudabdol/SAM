@@ -101,9 +101,16 @@ void Experiment::generateCovariants() {
   
   if (!is_covariants_generated) {
   
-    /// @Todo Check if all groups are the same size
+    
     auto max_nobs_ = std::max_element(dvs_.begin(), dvs_.end(),
                                        [](auto &a, auto &b) { return a.nobs_ < b.nobs_; });
+    
+    if (std::any_of(dvs_.begin(), dvs_.end(),
+                    [&](auto &dv){return dv.nobs_ != (*max_nobs_).nobs_;})) {
+      spdlog::critical("Cannot create the covariants matrix because Experiment's gorups have different sizes.");
+      exit(1);
+    }
+    
     covariants.resize((*max_nobs_).nobs_, n_covariants);
     covariants.fill(0);
     
