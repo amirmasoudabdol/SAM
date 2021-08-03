@@ -31,6 +31,7 @@ std::vector<std::string>
 DependentVariable::Columns() {
   return {
     "gid",
+    "tnobs",
     "nobs",
     "mean",
     "var",
@@ -42,7 +43,8 @@ DependentVariable::Columns() {
     "se_effect",
     "sig",
     "side",
-    "is_hacked"
+    "is_hacked",
+    "is_candidate"
   };
 }
 

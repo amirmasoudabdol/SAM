@@ -42,7 +42,7 @@ public:
    *  These are determined by the DataStrategy
    */
   ///@{
-  float true_nobs_{0};
+  int true_nobs_{0};
   float true_mean_{0};
   float true_std_{0};
   ///@}
