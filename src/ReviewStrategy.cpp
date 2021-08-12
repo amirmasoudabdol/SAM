@@ -78,7 +78,7 @@ std::unique_ptr<ReviewStrategy> ReviewStrategy::build(
     return std::make_unique<FreeSelection>();
   } 
   
-  spdlog::critical("Unknown Selection Strategy.");
+  spdlog::critical("Unknown Review Strategy.");
   exit(1);
 }
 

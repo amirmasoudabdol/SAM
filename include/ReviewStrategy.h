@@ -108,7 +108,7 @@ class ReviewStrategy {
 };
 
 ///
-/// @brief      Policy-based Selection Strategy
+/// @brief      Policy-based Review Strategy
 ///
 ///             Policy-based review strategy accepts a submission if any of the
 ///             submissions pass all the criteria specified by the
@@ -162,7 +162,7 @@ class PolicyBasedSelection final : public ReviewStrategy {
 };
 
 ///
-/// @brief      Significant-based Selection Strategy
+/// @brief      Significant-based Review Strategy
 ///
 ///             Significant-based review strategy accepts a publication if the
 ///             given *p*-value is significant. Certain degree of *publication
@@ -177,12 +177,12 @@ class PolicyBasedSelection final : public ReviewStrategy {
 class SignificantSelection final : public ReviewStrategy {
  public:
   ///
-  /// A type keeping the parameters of the Significant Selection strategy.
+  /// A type keeping the parameters of the Significant Review Strategy.
   ///
   /// @ingroup    ReviewStrategiesParameters
   /// 
   struct Parameters {
-    //! Selection strategy name
+    //! Review Strategy name
     SelectionMethod name = SelectionMethod::SignificantSelection;
 
     //! The \alpha at which the _review strategy_ decides the significance
@@ -192,7 +192,7 @@ class SignificantSelection final : public ReviewStrategy {
     //! Publication bias rate
     float pub_bias_rate{};
 
-    //! Indicates the _selection strategy_'s preference toward positive, `1`,
+    //! Indicates the _Review Strategy_'s preference toward positive, `1`,
     //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
     int side{1};
 
@@ -210,7 +210,7 @@ class SignificantSelection final : public ReviewStrategy {
 };
 
 ///
-/// @brief      Random Selection Strategy
+/// @brief      Random Review Strategy
 ///
 ///             In this method, Journal does not check any criteria for
 ///             accepting or rejecting a submission. The `acceptance_rate` will

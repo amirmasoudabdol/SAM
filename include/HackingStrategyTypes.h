@@ -17,7 +17,6 @@ enum class HackingMethod {
   OutliersRemoval,
   GroupPooling,
   ConditionDropping,
-  SubjectiveOutlierRemoval,
   QuestionableRounding,
   PeekingOutliersRemoval,
   FalsifyingData,
