@@ -10,6 +10,9 @@
 #define SAMPP_VERSION_MINOR 1 // for backwards-compatible features
 #define SAMPP_VERSION_PATCH 0 // for backwards-compatible bug fixes
 
+#undef JSON_DIAGNOSTICS
+#define JSON_DIAGNOSTICS 1
+
 #include <mlpack/core.hpp>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>

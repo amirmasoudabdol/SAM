@@ -44,20 +44,21 @@ void OptionalDropping::perform(Experiment *experiment) {
   }
 
 
-    // actually splitting the groups
-    split(experiment, params.split_by);
+  // actually splitting the groups
+  spdlog::trace("Filtering by: [{}]", fmt::join(params.split_by.begin(), params.split_by.end(), ", "));
+  split(experiment, params.split_by);
 
-    experiment->recalculateEverything();
+  experiment->recalculateEverything();
 
-    spdlog::trace("{}", *experiment);
+  spdlog::trace("{}", *experiment);
 
-    if (!params.stopping_cond_defs.empty()) {
-      if (stopping_condition(experiment)) {
-        spdlog::trace("⚠️ Stopping the hacking procedure, stopping "
-                      "condition has been met!");
-        return;
-      }
+  if (!params.stopping_cond_defs.empty()) {
+    if (stopping_condition(experiment)) {
+      spdlog::trace("⚠️ Stopping the hacking procedure, stopping "
+                    "condition has been met!");
+      return;
     }
+  }
 
   spdlog::trace("{}", *experiment);
 }

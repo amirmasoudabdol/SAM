@@ -148,7 +148,7 @@ public:
   void estimate(Journal *journal);
   
   static ResultType RandomEffect(const arma::Row<float> &vi, const arma::Row<float> &yi, float tau2);
-  float DL(const arma::Row<float> &yi, const arma::Row<float> &vi, const arma::Row<float> &ai);
+  float DL(const arma::Row<float> &yi, const arma::Row<float> &vi, const arma::Row<float> &wi);
   float PM(const arma::Row<float> &yi, const arma::Row<float> &vi, const float tau2);
 };
 

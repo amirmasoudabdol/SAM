@@ -114,7 +114,7 @@ void RandomEffectEstimator::estimate(Journal *journal) {
   
   if (params.estimator.find("DL") != std::string::npos){
     tau2 = RandomEffectEstimator::DL(journal->yi, journal->vi, journal->wi);
-  }else if (params.estimator.find("DL") != std::string::npos){
+  }else if (params.estimator.find("PM") != std::string::npos){
     spdlog::critical("Not implemented yet!");
     exit(1);
 //    tau2 = RandomEffectEstimator::PM(journal->yi, journal->vi, tau2);
@@ -167,20 +167,24 @@ RandomEffectEstimator::RandomEffect(const arma::Row<float> &yi, const arma::Row<
   // p-value of Q-statistic
   auto q_pval = cdf(complement(chisq, q_stat));
   
-  return ResultType{est, static_cast<float>(se), static_cast<float>(ci_lb), static_cast<float>(ci_ub), static_cast<float>(zval), static_cast<float>(pval), q_stat, static_cast<float>(q_pval)};
+  return ResultType{est, static_cast<float>(se), static_cast<float>(ci_lb), static_cast<float>(ci_ub), static_cast<float>(zval), static_cast<float>(pval), q_stat, static_cast<float>(q_pval), tau2};
 }
 
 
 // General method-of-moments estimate (Eq. 6 in DerSimonian and Kacker, 2007)
-float RandomEffectEstimator::DL(const arma::Row<float> &yi, const arma::Row<float> &vi, const arma::Row<float> &ai) {
+float RandomEffectEstimator::DL(const arma::Row<float> &yi, const arma::Row<float> &vi, const arma::Row<float> &wi) {
   
   spdlog::trace("→ Estimating the tau2 using DL ...");
   
-  auto yw = arma::accu(ai % yi) / arma::accu(ai);
-  auto est_tau2 = (arma::accu(ai % arma::pow(yi-yw, 2))-(arma::accu(ai % vi)-arma::accu(arma::pow(ai, 2) % vi)/arma::accu(ai)))/(arma::accu(ai)-arma::accu(arma::pow(ai, 2))/arma::accu(ai));
-  est_tau2 = est_tau2 < 0 ? 0 : est_tau2;
+  auto q = arma::accu(wi % arma::pow(yi - (arma::accu(wi % yi)/arma::accu(wi)), 2));
+  // spdlog::trace("Q: {}", q);
   
-  return (est_tau2);
+  auto tau2 = (q - (yi.n_elem - 1)) / (arma::accu(wi) - (arma::accu(arma::pow(wi, 2))/arma::accu(wi)));
+  // spdlog::trace("Tau2: {}", tau2);
+  
+  tau2 = tau2 < 0 ? 0 : tau2;
+  
+  return tau2;
 }
 
 // Function for estimating tau2 with Paule-Mandel estimator
