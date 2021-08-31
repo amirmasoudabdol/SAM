@@ -36,8 +36,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
     for (int t = 0; t < params.n_attempts && res; ++t) {
 
       res = this->removeOutliers(experiment, params.num, k, params.side,
-                                  params.target, params.order, 
-                                  params.min_observations);
+                                  params.target, params.order);
 
       experiment->recalculateEverything();
 
@@ -71,8 +70,7 @@ void OutliersRemoval::perform(Experiment *experiment) {
 ///
 bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
                                      const float k, const int side, 
-                                     HackingTarget &target, std::string &order, 
-                                     int min_n) {
+                                     HackingTarget &target, std::string &order) {
 
   // Getting the boundary of the targeted group
   int begin{0};
@@ -85,9 +83,9 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
     auto &row = (*experiment)[i].measurements();
 
     // At least one row has less than `min_n`
-    if (row.size() <= min_n) {
-      return false; // Unsuccessful return, nothing can be removed!
-    }
+    // if (row.size() <= min_n) {
+    //   return false; // Unsuccessful return, nothing can be removed!
+    // }
 
     // This trick makes finding the largest outlier easier. I'll see if I can
     // find a better way
@@ -101,8 +99,7 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
       // Both
       inx = arma::find(arma::abs(row - (*experiment)[i].mean_) /
                                (*experiment)[i].stddev_ >
-                           k,
-                       n, "first");
+                       k, n, "first");
     } else if (side > 0) {
       // Right
       inx = arma::find(
@@ -118,9 +115,9 @@ bool OutliersRemoval::removeOutliers(Experiment *experiment, const int n,
     // If removing all the detected outliers lead to selected group having less
     // observations than `min_n`, then the algorithm removes the
     // portion of the detected outliers
-    if ((row.n_elem - inx.n_elem) <= min_n) {
-      inx = inx.head(row.n_elem - min_n);
-    }
+//    if ((row.n_elem - inx.n_elem) >= min_n) {
+//      inx = inx.head(min_n);
+//    }
 
     // actually removing them from the group
     (*experiment)[i].removeMeasurements(inx);

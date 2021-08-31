@@ -328,7 +328,7 @@ public:
     int n_attempts{1};
 
     //! Indicates the minimum number of observations allowed during the process
-    int min_observations;
+//    int min_observations;
 
     //! A list of standard deviation multipliers for identifying outliers
     std::vector<float> multipliers;
@@ -374,8 +374,7 @@ public:
 
   /// Implementation of the outliers removal
   static bool removeOutliers(Experiment *experiment, int n, float k, int side,
-                             HackingTarget &target, std::string &order,
-                             int min_n);
+                             HackingTarget &target, std::string &order);
 };
 
 inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
@@ -384,7 +383,7 @@ inline void to_json(json &j, const OutliersRemoval::Parameters &p) {
            {"order", p.order},
            {"num", p.num},
            {"n_attempts", p.n_attempts},
-           {"min_observations", p.min_observations},
+//           {"min_observations", p.min_observations},
            {"multipliers", p.multipliers},
            {"side", p.side},
            {"stage", p.stage},
@@ -412,7 +411,7 @@ inline void from_json(const json &j, OutliersRemoval::Parameters &p) {
   j.at("order").get_to(p.order);
   j.at("num").get_to(p.num);
   j.at("n_attempts").get_to(p.n_attempts);
-  j.at("min_observations").get_to(p.min_observations);
+//  j.at("min_observations").get_to(p.min_observations);
   j.at("multipliers").get_to(p.multipliers);
   if (j.contains("side")) {
     j.at("side").get_to(p.side);

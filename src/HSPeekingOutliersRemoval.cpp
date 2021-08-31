@@ -24,7 +24,7 @@ void PeekingOutliersRemoval::perform(Experiment *experiment) {
       spdlog::trace("Removing the outliers of the copied experiment...");
       res = OutliersRemoval::removeOutliers(copy_of_expr, params.num, k, 
                                     params.side, params.target,
-                                    params.order, params.min_observations);
+                                    params.order);
       
       copy_of_expr->recalculateEverything();
       
