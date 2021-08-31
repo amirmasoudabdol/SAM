@@ -102,27 +102,12 @@ std::tuple<float, float, float> cohens_d(float Sm1, float Sd1, float Sn1, float 
 float hedges_g(float Sm1, float Sd1, float Sn1, float Sm2, float Sd2,
                 float Sn2) {
   
-  std::cout << "Test me first...\n";
+  auto Cd = cohens_d(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2);
+  
+  float d = std::get<0>(Cd);
+  float J = 1 - (3 / (4 * (Sn1 + Sn2) - 9));
 
-  // Degrees of freedom:
-  float df = Sn1 + Sn2 - 2;
-
-  // Pooled variance and hence standard deviation:
-  float sp = sqrt(((Sn1 - 1) * Sd1 * Sd1 + (Sn2 - 1) * Sd2 * Sd2) / df);
-
-  // Cohen's D:
-  float Cd = std::abs(Sm1 - Sm2) / sp;
-
-  // Sum of sample sizes
-  float n = Sn1 + Sn2;
-
-  // Adding the bias correction factor for n < 50
-  if (n < 50) {
-    return Cd * (n - 3) / (n - 2.25) * sqrt((n - 2) / n);
-  }
-
-  return Cd;
-  //    return Cd / sqrt(Sn / df);
+  return J * d;
 }
 
 float pearsons_r(float Cd) { return Cd / sqrt(Cd * Cd + 4); }
