@@ -65,6 +65,7 @@
         "save_meta": false,
         "save_overall_summaries": true,
         "save_pubs_per_sim_summaries": false,
+        "save_every_experiment": true,
         "save_rejected": false
     }
 }
