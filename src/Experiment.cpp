@@ -134,6 +134,13 @@ void Experiment::calculateStatistics() {
     dv.updateStats();
   });
   
+  for (int i{setup.nd()}, d{0}; i < setup.ng();
+       ++i, ++d %= setup.nd()) {
+    
+    dvs_[i].pooled_var = dvs_[i].var_ + dvs_[d].var_ + 2 * arma::as_scalar(arma::cov(dvs_[i].measurements(), dvs_[d].measurements()));
+    
+  }
+  
 }
 
 void Experiment::calculateEffects() {

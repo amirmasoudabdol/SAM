@@ -230,6 +230,17 @@ void runSimulation(json &sim_configs) {
       sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
       sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Rejected.csv";
+  
+  bool is_saving_every_experiment{false};
+  std::string exprs_file_name;
+  if (sim_configs["simulation_parameters"].contains("save_every_experiment")) {
+    bool is_saving_every_experiment = sim_configs["simulation_parameters"]["save_every_experiment"];
+    std::string exprs_file_name =
+      sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
+      sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
+      "_Experiments.csv";
+  }
+  
 
   bool is_saving_pubs_summaries_per_sim =
       sim_configs["simulation_parameters"]["save_pubs_per_sim_summaries"];
@@ -241,14 +252,21 @@ void runSimulation(json &sim_configs) {
 
   std::unique_ptr<PersistenceManager::Writer> pubs_writer;
   std::unique_ptr<PersistenceManager::Writer> rejs_writer;
+  std::unique_ptr<PersistenceManager::Writer> experiment_writer;
 
   // Initializing the csv writers
-  if (is_saving_all_pubs)
+  if (is_saving_all_pubs) {
     pubs_writer = std::make_unique<PersistenceManager::Writer>(pubs_file_name);
+  }
 
-  if (is_saving_rejected)
+  if (is_saving_rejected) {
     rejs_writer =
         std::make_unique<PersistenceManager::Writer>(rejs_file_name);
+  }
+  
+  if (is_saving_every_experiment) {
+    experiment_writer = std::make_unique<PersistenceManager::Writer>(exprs_file_name);
+  }
 
   indicators::show_console_cursor(false);
 
@@ -287,6 +305,10 @@ void runSimulation(json &sim_configs) {
       researcher.research();
 
       researcher.experiment->exprid++;
+      
+      if (is_saving_every_experiment) {
+        experiment_writer->write(researcher.experiment.get(), i);
+      }
 
       spdlog::trace("\n\n======================================================"
                     "====================\n");

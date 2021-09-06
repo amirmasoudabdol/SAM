@@ -64,6 +64,24 @@ void PersistenceManager::Writer::write(std::vector<Submission> &subs, int simid)
   spdlog::trace("Publications: {}", subs);
 }
 
+
+void PersistenceManager::Writer::write(Experiment *expr, int sid) {
+  int i = 0;
+  
+  for (auto &dv : expr->dvs_) {
+    if (!is_header_set) {
+      writer->configure_dialect().column_names(Submission::Columns());
+      is_header_set = true;
+    }
+    
+    std::map<std::string, std::string> record{dv};
+    
+    writer->write_row(record);
+  }
+  
+}
+
+
 void PersistenceManager::Writer::setColumnNames(const std::vector<std::string> &colnames) {
   writer->configure_dialect().column_names(colnames);
 }

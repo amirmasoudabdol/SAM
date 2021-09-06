@@ -65,6 +65,10 @@ public:
   /// Write a list of submission records to a file, or a database
   /// @param subs A reference to Submission container
   void write(std::vector<Submission> &subs, int sid = 0);
+  
+  /// Write all groups of the experiment into a file, or a database
+  /// @param expr A reference to Experience
+  void write(Experiment *expr, int sid = 0);
 
   /// Write each groups' data to a file, or a database
   /// @param data A reference to the Experiment->measurements
