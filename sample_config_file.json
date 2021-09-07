@@ -16,14 +16,15 @@
                 "covs": 0.0,
                 "stddevs": 1
             },
+            "tau2": 0.0,
             "errors": {
                 "dist": "mvnorm_distribution",
                 "means": [
                     0,
-                    0
+                    0.1
                 ],
                 "covs": 0.0,
-                "stddevs": 0.32
+                "stddevs": 1
             }
         },
         "effect_strategy": {
@@ -37,7 +38,7 @@
         }
     },
     "journal_parameters": {
-        "max_pubs": 50,
+        "max_pubs": 500,
         "review_strategy": {
             "name": "FreeSelection"
         }

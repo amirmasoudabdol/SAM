@@ -101,6 +101,9 @@ public:
     std::optional<std::vector<UnivariateDistribution>> erro_dists;
     std::optional<MultivariateDistribution> m_erro_dist;
     ///@}
+    
+    float tau2;
+    MultivariateDistribution tau2_dist;
 
     Parameters() = default;
   };
@@ -137,6 +140,8 @@ inline void from_json(const json &j, LinearModelStrategy::Parameters &p) {
   // Using a helper template function to handle the optional and throw if
   // necessary.
   j.at("name").get_to(p.name);
+  
+  j.at("tau2").get_to(p.tau2);
 
   if (j.at("measurements").type() == nlohmann::detail::value_t::object) {
     p.m_meas_dist = makeMultivariateDistribution(j.at("measurements"));
