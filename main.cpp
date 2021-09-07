@@ -234,8 +234,8 @@ void runSimulation(json &sim_configs) {
   bool is_saving_every_experiment{false};
   std::string exprs_file_name;
   if (sim_configs["simulation_parameters"].contains("save_every_experiment")) {
-    bool is_saving_every_experiment = sim_configs["simulation_parameters"]["save_every_experiment"];
-    std::string exprs_file_name =
+    is_saving_every_experiment = sim_configs["simulation_parameters"]["save_every_experiment"];
+    exprs_file_name =
       sim_configs["simulation_parameters"]["output_path"].get<std::string>() +
       sim_configs["simulation_parameters"]["output_prefix"].get<std::string>() +
       "_Experiments.csv";
