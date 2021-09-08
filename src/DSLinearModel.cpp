@@ -9,6 +9,10 @@
 #include "DataStrategy.h"
 #include "Experiment.h"
 
+#include <boost/math/special_functions/relative_difference.hpp>
+
+using boost::math::relative_difference;
+
 using namespace sam;
 
 void LinearModelStrategy::genData(Experiment *experiment) {
@@ -23,22 +27,27 @@ void LinearModelStrategy::genData(Experiment *experiment) {
 
   /// Generate the error terms if specified
 //  if (params.m_erro_dist or params.erro_dists) {
-  std::normal_distribution<> norm(0, sqrt(params.tau2));
-  float t2 = Random::get(norm);
-    params.m_erro_dist = makeMultivariateDistribution({
-      {"dist", "mvnorm_distribution"},
-      {"means", {0, t2}},
-      {"covs", 0},
-      {"stddevs", 1}
-    });
+
+  if (params.tau2 != 0.) {
     
-    arma::Mat<float> errors = fillMatrix(params.erro_dists,
-                                  params.m_erro_dist,
-                                  experiment->setup.ng(),
-                                  experiment->setup.nobs().max());
+    std::normal_distribution<> norm(0, sqrt(params.tau2));
+    float t2 = Random::get(norm);
+      params.m_erro_dist = makeMultivariateDistribution({
+        {"dist", "mvnorm_distribution"},
+        {"means", {t2, t2}},
+        {"covs", 0},
+        {"stddevs", 1}
+      });
+      
+      arma::Mat<float> errors = fillMatrix(params.erro_dists,
+                                    params.m_erro_dist,
+                                    experiment->setup.ng(),
+                                    experiment->setup.nobs().max());
+    
+      sample += errors;
+  }
   
-    sample += errors;
-//  }
+//  sample.print();
 
   /// This is ugly but it should work
   for (int g{0}; g < experiment->setup.ng(); ++g) {

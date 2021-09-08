@@ -4,7 +4,7 @@
         "n_reps": 1,
         "n_conditions": 2,
         "n_dep_vars": 1,
-        "n_obs": 128,
+        "n_obs": 10,
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
@@ -16,7 +16,7 @@
                 "covs": 0.0,
                 "stddevs": 1
             },
-            "tau2": 0.1
+            "tau2": 0.2
         },
         "effect_strategy": {
             "name": "MeanDifference"
