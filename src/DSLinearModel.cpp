@@ -21,91 +21,33 @@ void LinearModelStrategy::genData(Experiment *experiment) {
   
   
   if (params.tau2 != 0.) {
+
+    MultivariateDistribution mu_noiser = makeMultivariateDistribution({
+      {"dist", "mvnorm_distribution"},
+      {"means", arma::conv_to<std::vector<float>>::from(params.means)},
+      {"covs", 0},
+      {"stddevs", sqrt(params.tau2)}
+    });
     
-//    std::cout << "adding some randome effect noise to the data\n";
+    arma::Col<float> noisy_means = Random::get(mu_noiser);
+
     
-//    if (experiment->setup.nd() > 1) {
+    MultivariateDistribution tau2_bar = makeMultivariateDistribution({
+      {"dist", "mvnorm_distribution"},
+      {"means", arma::conv_to<std::vector<float>>::from(noisy_means)},
+      {"covs", 0},
+      {"stddevs", 1}
+    });
     
-//      arma::Row<float> mus(experiment->setup.ng());
-//      mus.imbue([&, i = experiment->setup.ng()]() mutable {
-//        return experiment->dvs_[i++].true_mean_;
-//      });
-      
-//    mus.print("mus: ");
-//      arma::Mat<float> sigma = constructCovMatrix(sqrt(params.tau2), 0, experiment->setup.nd());
-      
-//      json mu_noiser_def;
-      MultivariateDistribution mu_noiser = makeMultivariateDistribution({
-        {"dist", "mvnorm_distribution"},
-        {"means", arma::conv_to<std::vector<float>>::from(params.means)},
-        {"covs", 0},
-        {"stddevs", sqrt(params.tau2)}
-      });
-      
-      arma::Col<float> noisy_means = Random::get(mu_noiser);
-//    noisy_means.print("noisy means: ");
-      
-      MultivariateDistribution tau2_bar = makeMultivariateDistribution({
-        {"dist", "mvnorm_distribution"},
-        {"means", arma::conv_to<std::vector<float>>::from(noisy_means)},
-        {"covs", 0},
-        {"stddevs", 1}
-      });
-      
-  //    params.tau2_bar =
-  //      baaraan::mvnorm_distribution<float>(arma::Row<float>(experiment->setup.nd()),
-  //                                        constructCovMatrix(sqrt(params.tau2), 0, experiment->setup.nd()));
-      
-      arma::Mat<float> random_effect_error(experiment->setup.ng(),
-                                           experiment->setup.nobs().max());
-      random_effect_error.each_col([&](arma::Col<float> &v) {
-        v = Random::get(tau2_bar);
-      });
+    arma::Mat<float> random_effect_error(experiment->setup.ng(),
+                                         experiment->setup.nobs().max());
+    random_effect_error.each_col([&](arma::Col<float> &v) {
+      v = Random::get(tau2_bar);
+    });
     
-//    random_effect_error.print("random effect error:" );
-      
-    // last t groups
     auto t_inxs = experiment->setup.ng() - experiment->setup.nd();
-//    std::cout << t_inxs;
-      
-//    sample.print("sample: ");
+
     sample.tail_rows(t_inxs) += random_effect_error.tail_rows(t_inxs);
-    
-//    sample.print("sample: ");
-      
-//    } else {
-//      float mu = experiment->dvs_[experiment->setup.nd()].true_mean_;
-//
-//      float sigma = sqrt(params.tau2);
-//
-//      UnivariateDistribution mu_noiser = makeUnivariateDistribution({
-//        {"dist", "normal_distribution"},
-//        {"means", mu},
-//        {"covs", 0},
-//        {"stddevs", sqrt(params.tau2)}
-//      });
-//
-//      float noisy_mean = Random::get(mu_noiser);
-//
-//      MultivariateDistribution tau2_bar = makeMultivariateDistribution({
-//        {"dist", "normal_distribution"},
-//        {"means", noisy_mean},
-//        {"covs", 0},
-//        {"stddevs", 1}
-//      });
-//
-//  //    params.tau2_bar =
-//  //      baaraan::mvnorm_distribution<float>(arma::Row<float>(experiment->setup.nd()),
-//  //                                        constructCovMatrix(sqrt(params.tau2), 0, experiment->setup.nd()));
-//
-//      arma::Col<float> random_effect_error(experiment->setup.ng(),
-//                                           experiment->setup.nobs().max());
-//      random_effect_error.each_col([&](arma::Col<float> &v) {
-//        v = Random::get(tau2_bar);
-//      });
-//
-//      sample.tail_cols(experiment->setup.nd()) += random_effect_error;
-//    }
   }
 
   /// Generate the error terms if specified
