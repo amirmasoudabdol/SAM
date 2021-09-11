@@ -40,8 +40,8 @@ DependentVariable::Columns() {
     "sei",
     "pvalue",
     "effect",
-    "var_effect",
-    "se_effect",
+    "effect_var",
+    "effect_sei",
     "sig",
     "side",
     "is_hacked",
@@ -70,8 +70,8 @@ DependentVariable::operator std::map<std::string, std::string>() const {
 
   record["pvalue"] = std::to_string(pvalue_);
   record["effect"] = std::to_string(effect_);
-  record["var_effect"] = std::to_string(var_effect_);
-  record["se_effect"] = std::to_string(se_effect_);
+  record["effect_var"] = std::to_string(effect_var);
+  record["effect_sei"] = std::to_string(effect_sei);
   record["sig"] = std::to_string(sig_);
   record["side"] = std::to_string(eff_side_);
 
@@ -99,8 +99,8 @@ DependentVariable::operator arma::Row<float>() {
     sei_,
     pvalue_,
     effect_,
-    var_effect_,
-    se_effect_,
+    effect_var,
+    effect_sei,
     static_cast<float>(sig_),
     static_cast<float>(eff_side_),
     static_cast<float>(is_hacked_),

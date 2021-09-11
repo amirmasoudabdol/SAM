@@ -22,6 +22,8 @@ void LinearModelStrategy::genData(Experiment *experiment) {
   
   if (params.tau2 != 0.) {
     
+//    std::cout << "adding some randome effect noise to the data\n";
+    
 //    if (experiment->setup.nd() > 1) {
     
 //      arma::Row<float> mus(experiment->setup.ng());
@@ -41,7 +43,7 @@ void LinearModelStrategy::genData(Experiment *experiment) {
       });
       
       arma::Col<float> noisy_means = Random::get(mu_noiser);
-    noisy_means.print("noisy means: ");
+//    noisy_means.print("noisy means: ");
       
       MultivariateDistribution tau2_bar = makeMultivariateDistribution({
         {"dist", "mvnorm_distribution"},
@@ -59,8 +61,17 @@ void LinearModelStrategy::genData(Experiment *experiment) {
       random_effect_error.each_col([&](arma::Col<float> &v) {
         v = Random::get(tau2_bar);
       });
+    
+//    random_effect_error.print("random effect error:" );
       
-      sample.tail_cols(experiment->setup.nd()) += random_effect_error.tail_cols(experiment->setup.nd());
+    // last t groups
+    auto t_inxs = experiment->setup.ng() - experiment->setup.nd();
+//    std::cout << t_inxs;
+      
+//    sample.print("sample: ");
+    sample.tail_rows(t_inxs) += random_effect_error.tail_rows(t_inxs);
+    
+//    sample.print("sample: ");
       
 //    } else {
 //      float mu = experiment->dvs_[experiment->setup.nd()].true_mean_;

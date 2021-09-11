@@ -48,14 +48,14 @@ float FrankenbachStrategy::estimate(Experiment *experiment) {
   arma::Row<float> dangers(g - d);
 
   dangers.imbue([&, i = d]() mutable {
-    return this->border(experiment->dvs_[i++].se_effect_);
+    return this->border(experiment->dvs_[i++].effect_sei);
   });
 
   probabilities.resize(g - d);
   probabilities.imbue([&, i = d]() mutable {
     if (experiment->dvs_[i].effect_ > dangers[i - 1]) {
 
-      float d_sig = experiment->dvs_[i].se_effect_ * 1.959964;
+      float d_sig = experiment->dvs_[i].effect_sei * 1.959964;
       arma::Row<float> danger_breaks =
           arma::linspace<arma::Row<float>>(dangers[i - 1], d_sig, 11);
 

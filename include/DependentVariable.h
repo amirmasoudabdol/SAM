@@ -73,8 +73,8 @@ public:
    */
   ///@{
   float effect_{0};
-  float var_effect_{0};
-  float se_effect_{0};
+  float effect_var{0};
+  float effect_sei{0};
   int eff_side_{0};
   ///@}
 
@@ -226,11 +226,11 @@ template <> struct fmt::formatter<sam::DependentVariable> {
     // ctx.out() is an output iterator to write to.
     return format_to(
                      ctx.out(),
-                     (presentation == 'l' or presentation == 'u') ? "id: {} tnobs: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} var_effect: {:.5f} se_effect: {:.5f} sig: {} side: {} is_hacked: {} is_candidate: {}" : "{},{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{},{},{}",
+                     (presentation == 'l' or presentation == 'u') ? "id: {} tnobs: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} effect_var: {:.5f} effect_se: {:.5f} sig: {} side: {} is_hacked: {} is_candidate: {}" : "{},{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{},{},{}",
                      dv.id_, dv.true_nobs_, dv.nobs_,
                      dv.mean_, dv.var_, dv.stddev_, dv.sei_,
                      dv.stats_, dv.pvalue_,
-                     dv.effect_, dv.var_effect_, dv.se_effect_,
+                     dv.effect_, dv.effect_var, dv.effect_sei,
                      dv.sig_, dv.eff_side_,
                      dv.is_hacked_, dv.is_candidate_);
     
