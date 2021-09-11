@@ -18,6 +18,7 @@ void LinearModelStrategy::genData(Experiment *experiment) {
                                 params.m_meas_dist,
                                 experiment->setup.ng(),
                                 experiment->setup.nobs().max());
+//  sample.print("sample before error: ");
   
   
   if (params.tau2 != 0.) {
@@ -45,9 +46,13 @@ void LinearModelStrategy::genData(Experiment *experiment) {
       v = Random::get(tau2_bar);
     });
     
+//    random_effect_error.print("random: ");
     auto t_inxs = experiment->setup.ng() - experiment->setup.nd();
+//    std::cout << "t_inxs: " << t_inxs << std::endl;
 
-    sample.tail_rows(t_inxs) += random_effect_error.tail_rows(t_inxs);
+    sample.tail_rows(t_inxs) = random_effect_error.tail_rows(t_inxs);
+    
+//    sample.print("sample after error: ");
   }
 
   /// Generate the error terms if specified
@@ -58,6 +63,8 @@ void LinearModelStrategy::genData(Experiment *experiment) {
                                   experiment->setup.nobs().max());
     sample += errors;
   }
+  
+//  sample.print("final sample: ");
 
   /// This is ugly but it should work
   for (int g{0}; g < experiment->setup.ng(); ++g) {
