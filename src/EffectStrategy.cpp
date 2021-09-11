@@ -100,11 +100,9 @@ CohensD::cohens_d(float Sm1, float Sd1, float Sn1, float Sm2, float Sd2,
   // Pooled variance and hence standard deviation:
   float var_d = ((Sn1 - 1) * Sd1 * Sd1 + (Sn2 - 1) * Sd2 * Sd2) / df;
   
+  // Cohen's D
   float d = (Sm1 - Sm2) / sqrt(var_d);
-//  float var_d = ((Sn1 + Sn2) / (Sn1 * Sn2) + pow(d, 2) / (2 * df)) * ((Sn1 + Sn2) / (df));
-//  float se_d = sqrt(var_d);
 
-  // Cohen's D:
   return {d, var_d};
 }
 
@@ -112,9 +110,10 @@ HedgesG::ResultType
 HedgesG::hedges_g(float Sm1, float Sd1, float Sn1, float Sm2, float Sd2,
                 float Sn2) {
   
+  // Cohen's D
   auto Cd = CohensD::cohens_d(Sm1, Sd1, Sn1, Sm2, Sd2, Sn2);
   
-//  float d = Cd.est;
+  // Hedges' adjustment
   float J = 1 - (3 / (4 * (Sn1 + Sn2) - 9));
 
   return {J * Cd.est, Cd.var};
