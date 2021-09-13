@@ -18,8 +18,6 @@ void LinearModelStrategy::genData(Experiment *experiment) {
                                 params.m_meas_dist,
                                 experiment->setup.ng(),
                                 experiment->setup.nobs().max());
-//  sample.print("sample before error: ");
-  
   
   if (params.tau2 != 0.) {
 
@@ -46,13 +44,9 @@ void LinearModelStrategy::genData(Experiment *experiment) {
       v = Random::get(tau2_bar);
     });
     
-//    random_effect_error.print("random: ");
     auto t_inxs = experiment->setup.ng() - experiment->setup.nd();
-//    std::cout << "t_inxs: " << t_inxs << std::endl;
 
     sample.tail_rows(t_inxs) = random_effect_error.tail_rows(t_inxs);
-    
-//    sample.print("sample after error: ");
   }
 
   /// Generate the error terms if specified
@@ -63,8 +57,6 @@ void LinearModelStrategy::genData(Experiment *experiment) {
                                   experiment->setup.nobs().max());
     sample += errors;
   }
-  
-//  sample.print("final sample: ");
 
   /// This is ugly but it should work
   for (int g{0}; g < experiment->setup.ng(); ++g) {
@@ -77,11 +69,43 @@ std::vector<arma::Row<float>>
 LinearModelStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                                                     int n_new_obs) {
 
+  /// Generates the samples
   arma::Mat<float> sample = fillMatrix(params.meas_dists,
                                 params.m_meas_dist,
                                 experiment->setup.ng(),
                                 n_new_obs);
+  
+  if (params.tau2 != 0.) {
 
+    MultivariateDistribution mu_noiser = makeMultivariateDistribution({
+      {"dist", "mvnorm_distribution"},
+      {"means", arma::conv_to<std::vector<float>>::from(params.means)},
+      {"covs", 0},
+      {"stddevs", sqrt(params.tau2)}
+    });
+    
+    arma::Col<float> noisy_means = Random::get(mu_noiser);
+
+    
+    MultivariateDistribution tau2_bar = makeMultivariateDistribution({
+      {"dist", "mvnorm_distribution"},
+      {"means", arma::conv_to<std::vector<float>>::from(noisy_means)},
+      {"covs", 0},
+      {"stddevs", 1}
+    });
+    
+    arma::Mat<float> random_effect_error(experiment->setup.ng(),
+                                         n_new_obs);
+    random_effect_error.each_col([&](arma::Col<float> &v) {
+      v = Random::get(tau2_bar);
+    });
+    
+    auto t_inxs = experiment->setup.ng() - experiment->setup.nd();
+
+    sample.tail_rows(t_inxs) = random_effect_error.tail_rows(t_inxs);
+  }
+
+  /// Generate the error terms if specified
   if (params.m_erro_dist or params.erro_dists) {
     arma::Mat<float> errors = fillMatrix(params.erro_dists,
                                   params.m_erro_dist,
@@ -89,7 +113,7 @@ LinearModelStrategy::genNewObservationsForAllGroups(Experiment *experiment,
                                   n_new_obs);
     sample += errors;
   }
-
+  
   std::vector<arma::Row<float>> new_values(experiment->setup.ng());
 
   std::generate(new_values.begin(), new_values.end(),
