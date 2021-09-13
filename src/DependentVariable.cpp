@@ -35,7 +35,6 @@ DependentVariable::Columns() {
     "nobs",
     "mean",
     "var",
-    "pooled_var",
     "stddev",
     "sei",
     "pvalue",
@@ -64,7 +63,6 @@ DependentVariable::operator std::map<std::string, std::string>() const {
   record["nobs"] = std::to_string(nobs_);
   record["mean"] = std::to_string(mean_);
   record["var"] = std::to_string(var_);
-  record["pooled_var"] = std::to_string(pooled_var);
   record["stddev"] = std::to_string(stddev_);
   record["sei"] = std::to_string(sei_);
 
@@ -94,7 +92,6 @@ DependentVariable::operator arma::Row<float>() {
     static_cast<float>(nobs_),
     mean_,
     var_,
-    pooled_var,
     stddev_,
     sei_,
     pvalue_,

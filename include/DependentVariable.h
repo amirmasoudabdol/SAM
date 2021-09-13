@@ -54,7 +54,6 @@ public:
   int nobs_{0};
   float mean_{0};
   float var_{0};
-  float pooled_var{0};
   float stddev_{0};
   float sei_{0};
   ///@}
