@@ -1,25 +1,25 @@
 {
-    "name": "Case 1",
+    "name": "Case 2",
     "experiment_parameters": {
         "n_reps": 1,
         "n_conditions": 2,
         "n_dep_vars": 1,
-        "n_obs": 10,
+        "n_obs": 15,
         "data_strategy": {
             "name": "LinearModel",
             "measurements": {
                 "dist": "mvnorm_distribution",
                 "means": [
                     0.0,
-                    0.25
+                    0.1
                 ],
                 "covs": 0.0,
-                "stddevs": 1
+                "stddevs": 1.0
             },
-            "tau2": 0.1
+            "tau2": 0.1024
         },
         "effect_strategy": {
-            "name": "CohensD"
+            "name": "HedgesG"
         },
         "test_strategy": {
             "name": "TTest",
@@ -31,7 +31,10 @@
     "journal_parameters": {
         "max_pubs": 50,
         "review_strategy": {
-            "name": "FreeSelection"
+            "name": "SignificantSelection",
+            "alpha": 0.05,
+            "pub_bias_rate": 0.95,
+            "side": 0
         }
     },
     "researcher_parameters": {
@@ -39,11 +42,40 @@
             "name": "DefaultResearchStrategy",
             "initial_selection_policies": [
                 [
-                    "id == 1"
+                    "id == 1",
+                    "sig",
+                    "effect > 0"
                 ]
+            ],
+            "will_not_start_hacking_decision_policies": [
+                "sig",
+                "effect > 0"
             ]
         },
-        "probability_of_being_a_hacker": 0
+        "probability_of_being_a_hacker": 1,
+        "hacking_strategies": [
+            [
+                [
+                    {
+                        "name": "OptionalStopping",
+                        "num": 5,
+                        "n_attempts": 3,
+                        "stopping_condition": [
+                            "sig",
+                            "effect > 0"
+                        ]
+                    },
+                    [
+                        [
+                            "id == 1"
+                        ]
+                    ],
+                    [
+                        "id == 1"
+                    ]
+                ]
+            ]
+        ]
     },
     "simulation_parameters": {
         "log_level": "trace",
