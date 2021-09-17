@@ -192,12 +192,8 @@ class SignificantSelection final : public ReviewStrategy {
     //! Publication bias rate
     float pub_bias_rate{};
 
-    //! Indicates the _Review Strategy_'s preference toward positive, `1`,
-    //! or negative, `-1` effect. If `0`, Journal doesn't have any preferences.
-    int side{1};
-
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(SignificantSelection::Parameters, name,
-                                   alpha, pub_bias_rate, side);
+                                   alpha, pub_bias_rate);
   };
 
   Parameters params;

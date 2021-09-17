@@ -32,7 +32,6 @@ void TTest::run(Experiment *experiment) {
 
     (*experiment)[i].stats_ = res.tstat;
     (*experiment)[i].pvalue_ = res.pvalue;
-    (*experiment)[i].eff_side_ = res.side;
     (*experiment)[i].sig_ = res.sig;
   }
 }
@@ -173,9 +172,7 @@ TTest::single_sample_t_test(float M, float Sm, float Sd, unsigned Sn,
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, M - Sm);
-
-  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .sig = sig};
 }
 
 ///
@@ -256,9 +253,7 @@ TTest::ResultType TTest::two_samples_t_test_equal_sd(
       sig = false; // Alternative "REJECTED"
   }
 
-  int eff_side = std::copysign(1.0, Sm2 - Sm1);
-
-  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .sig = sig};
 }
 
 ///
@@ -335,7 +330,5 @@ TTest::ResultType TTest::two_samples_t_test_unequal_sd(
       sig = false; // Alternative "REJECTED"
   }
 
-  int eff_side = std::copysign(1.0, Sm2 - Sm1);
-
-  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .sig = sig};
 }

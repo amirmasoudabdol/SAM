@@ -42,7 +42,6 @@ DependentVariable::Columns() {
     "effect_var",
     "effect_sei",
     "sig",
-    "side",
     "is_hacked",
     "is_candidate"
   };
@@ -71,7 +70,6 @@ DependentVariable::operator std::map<std::string, std::string>() const {
   record["effect_var"] = std::to_string(effect_var);
   record["effect_sei"] = std::to_string(effect_sei);
   record["sig"] = std::to_string(sig_);
-  record["side"] = std::to_string(eff_side_);
 
   record["is_hacked"] = std::to_string(is_hacked_);
   record["is_candidate"] = std::to_string(is_candidate_);
@@ -99,7 +97,6 @@ DependentVariable::operator arma::Row<float>() {
     effect_var,
     effect_sei,
     static_cast<float>(sig_),
-    static_cast<float>(eff_side_),
     static_cast<float>(is_hacked_),
     static_cast<float>(is_candidate_)
   };

@@ -110,13 +110,7 @@ bool PolicyBasedSelection::review(const std::vector<Submission> &subs) {
 /// @return     a boolean indicating whether the Submission is accepted.
 ///
 bool SignificantSelection::review(const std::vector<Submission> &subs) {
-  // Only accepting +/- results if journal cares about it, side != 0
-  if (params.side != 0 and std::any_of(subs.begin(), subs.end(), [&](auto &s) {
-        return s.dv_.eff_side_ != params.side;
-      })) {
-    return false;
-  }
-
+  
   // Checking whether any of the outcomes are significant
   return std::any_of(
              subs.begin(), subs.end(),

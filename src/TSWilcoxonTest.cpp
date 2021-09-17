@@ -22,7 +22,6 @@ void WilcoxonTest::run(Experiment *experiment) {
 
     (*experiment)[i].stats_ = res.wstat;
     (*experiment)[i].pvalue_ = res.pvalue;
-    (*experiment)[i].eff_side_ = res.side;
     (*experiment)[i].sig_ = res.sig;
   }
 }
@@ -94,7 +93,5 @@ WilcoxonTest::ResultType WilcoxonTest::wilcoxon_test(
 
   float u = u2;
 
-  int eff_side = std::copysign(1.0, Sm2 - Sm1);
-
-  return {.zstat = z, .wstat = u, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.zstat = z, .wstat = u, .pvalue = p, .sig = sig};
 }

@@ -35,7 +35,6 @@ void YuenTest::run(Experiment *experiment) {
     (*experiment)[i].stats_ = res.tstat;
     (*experiment)[i].pvalue_ = res.pvalue;
     (*experiment)[i].sig_ = res.sig;
-    (*experiment)[i].eff_side_ = res.side;
   }
 }
 
@@ -93,9 +92,7 @@ YuenTest::ResultType YuenTest::yuen_t_test_one_sample(
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, Sm1 - M);
-
-  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .sig = sig};
 }
 
 YuenTest::ResultType
@@ -156,9 +153,7 @@ YuenTest::yuen_t_test_paired(const arma::Row<float> &x,
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, Sm2 - Sm1);
-
-  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .sig = sig};
 }
 
 YuenTest::ResultType YuenTest::yuen_t_test_two_samples(
@@ -225,7 +220,5 @@ YuenTest::ResultType YuenTest::yuen_t_test_two_samples(
       sig = false;
   }
 
-  int eff_side = std::copysign(1.0, Sm2 - Sm1);
-
-  return {.tstat = t_stat, .df = df, .pvalue = p, .side = eff_side, .sig = sig};
+  return {.tstat = t_stat, .df = df, .pvalue = p, .sig = sig};
 }

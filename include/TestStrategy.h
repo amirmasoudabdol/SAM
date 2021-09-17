@@ -91,20 +91,18 @@ public:
     float tstat;
     float df;
     float pvalue;
-    int side;
     bool sig;
 
     operator std::map<std::string, std::string>() {
       return {{"tstat", std::to_string(tstat)},
               {"df", std::to_string(df)},
               {"pvalue", std::to_string(pvalue)},
-              {"side", std::to_string(side)},
               {"sig", std::to_string(sig)}};
     }
 
     friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
       os << "tstat: " << type.tstat << " df: " << type.df
-         << " pvalue: " << type.pvalue << " side: " << type.side
+         << " pvalue: " << type.pvalue
          << " sig: " << type.sig;
       return os;
     }
@@ -218,20 +216,18 @@ public:
     float tstat;
     float df;
     float pvalue;
-    int side;
     bool sig;
 
     operator std::map<std::string, std::string>() {
       return {{"tstat", std::to_string(tstat)},
               {"df", std::to_string(df)},
               {"pvalue", std::to_string(pvalue)},
-              {"side", std::to_string(side)},
               {"sig", std::to_string(sig)}};
     }
 
     friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
       os << "tstat: " << type.tstat << " df: " << type.df
-         << " pvalue: " << type.pvalue << " side: " << type.side
+         << " pvalue: " << type.pvalue
          << " sig: " << type.sig;
       return os;
     }
@@ -281,20 +277,18 @@ public:
     float zstat;
     float wstat;
     float pvalue;
-    int side;
     bool sig;
 
     operator std::map<std::string, std::string>() {
       return {{"zstat", std::to_string(zstat)},
               {"Wstat", std::to_string(wstat)},
               {"pvalue", std::to_string(pvalue)},
-              {"side", std::to_string(side)},
               {"sig", std::to_string(sig)}};
     }
 
     friend std::ostream &operator<<(std::ostream &os, const ResultType &type) {
       os << "zstat: " << type.zstat << " wstat: " << type.wstat
-         << " pvalue: " << type.pvalue << " side: " << type.side
+         << " pvalue: " << type.pvalue
          << " sig: " << type.sig;
       return os;
     }
