@@ -6,3 +6,4 @@ SAM is a **modular**, **flexible**, and **extensible** simulation framework for 
 
 You can find more about SAM, on our [website](https://sam.amirmasoudabdol.name).
 
+You can find our pre-print on [PsyArXiv](https://psyarxiv.com/zy29t).
