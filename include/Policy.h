@@ -247,7 +247,7 @@ template <> struct formatter<sam::Policy> {
   };
 
   template <typename FormatContext>
-  auto format(sam::Policy const &policy, FormatContext &ctx) {
+  auto format(sam::Policy const &policy, FormatContext &ctx) const {
     return format_to(ctx.out(), "{}", policy.def);
   };
 };
@@ -258,7 +258,7 @@ template <> struct formatter<sam::PolicyChain> {
   };
 
   template <typename FormatContext>
-  auto format(sam::PolicyChain const &pchain, FormatContext &ctx) {
+  auto format(sam::PolicyChain const &pchain, FormatContext &ctx) const {
     return format_to(ctx.out(), "[{}]",
                      join(pchain.cbegin(), pchain.cend(), ", "));
   };

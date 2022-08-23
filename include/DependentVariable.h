@@ -195,46 +195,31 @@ public:
 
 } // namespace sam
 
-template <> struct fmt::formatter<sam::DependentVariable> {
-  // Presentation format: 'u' - undefined, 'l' - log, 'c' - csv
-  char presentation = 'u';
+namespace fmt {
+  template <>
+  struct formatter<sam::DependentVariable> {
+    // Presentation format: 'u' - undefined, 'l' - log, 'c' - csv
+    char presentation = 'u';
 
-  // Parses format specifications of the form ['l' | 'c'].
-  constexpr auto parse(format_parse_context &ctx) {
-
-    auto it = ctx.begin();
-    auto end = ctx.end();
-    if (it != end && (*it == 'l' || *it == 'c')) {
-      presentation = *it++;
+    // Parses format specifications of the form ['l' | 'c'].
+    constexpr auto parse(format_parse_context &ctx) {
+      return ctx.begin();
     }
 
-    // Check if reached the end of the range:
-    if (it != end && *it != '}') {
-      throw format_error("invalid format");
+    // Formats the point p using the parsed format specification (presentation)
+    // stored in this formatter.
+    template <typename FormatContext>
+    auto format(const sam::DependentVariable &dv, FormatContext &ctx) const {
+      // ctx.out() is an output iterator to write to.
+      return format_to(
+          ctx.out(),
+          "id: {} tnobs: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} effect_var: {:.5f} effect_se: {:.5f} sig: {} is_hacked: {} is_candidate: {}",
+          dv.id_, dv.true_nobs_, dv.nobs_, dv.mean_, dv.var_, dv.stddev_, dv.sei_,
+          dv.stats_, dv.pvalue_, dv.effect_, dv.effect_var, dv.effect_sei,
+          dv.sig_, dv.is_hacked_, dv.is_candidate_);
     }
+  };
 
-    // Return an iterator past the end of the parsed range:
-    return it;
-  }
-
-  // Formats the point p using the parsed format specification (presentation)
-  // stored in this formatter.
-  template <typename FormatContext>
-  auto format(const sam::DependentVariable &dv, FormatContext &ctx) {
-    // ctx.out() is an output iterator to write to.
-    return format_to(
-                     ctx.out(),
-                     (presentation == 'l' or presentation == 'u') ? "id: {} tnobs: {} nobs: {} mean: {:.5f} var: {:.5f} stddev: {:.5f} sei: {:.5f} stats: {:.5f} pvalue: {:.5f} effect: {:.5f} effect_var: {:.5f} effect_se: {:.5f} sig: {} is_hacked: {} is_candidate: {}" : "{},{},{},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{:.5f},{},{},{},{}",
-                     dv.id_, dv.true_nobs_, dv.nobs_,
-                     dv.mean_, dv.var_, dv.stddev_, dv.sei_,
-                     dv.stats_, dv.pvalue_,
-                     dv.effect_, dv.effect_var, dv.effect_sei,
-                     dv.sig_,
-                     dv.is_hacked_, dv.is_candidate_);
-    
-    /// @todo this is an example of how fmt can be used to generate CSV rows, but I've not yet
-    /// implemented it, I need to re-write the Writer class for this first
-  }
-};
+}
 
 #endif // SAMPP_DEPENDENTVARIABLE_H

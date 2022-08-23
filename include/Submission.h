@@ -65,50 +65,45 @@ public:
 
 } // namespace sam
 
-template <>
-struct fmt::formatter<sam::Submission> {
-  // Presentation format: 'f' - fixed, 'e' - exponential.
-  char presentation = 'f';
+namespace fmt {
 
-  // Parses format specifications of the form ['f' | 'e'].
-  constexpr auto parse(format_parse_context& ctx) {
-    return ctx.begin();
-  }
+  template <>
+  struct formatter<sam::Submission> {
+    // Presentation format: 'f' - fixed, 'e' - exponential.
+    char presentation = 'f';
 
-  // Formats the point p using the parsed format specification (presentation)
-  // stored in this formatter.
-  template <typename FormatContext>
-  auto format(const sam::Submission& s, FormatContext& ctx) {
-    // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
-    // ctx.out() is an output iterator to write to.
-    return format_to(
-        ctx.out(),
-        "{}, {}, {}, {}, {}",
-        s.simid, s.exprid, s.repid, s.pubid, s.dv_);
-  }
-};
+    // Parses format specifications of the form ['f' | 'e'].
+    constexpr auto parse(format_parse_context &ctx) { return ctx.begin(); }
 
-template <>
-struct fmt::formatter<std::vector<sam::Submission>> {
-  // Presentation format: 'f' - fixed, 'e' - exponential.
-  char presentation = 'f';
-  
-  // Parses format specifications of the form ['f' | 'e'].
-  constexpr auto parse(format_parse_context& ctx) {
-    return ctx.begin();
-  }
-  
-  // Formats the point p using the parsed format specification (presentation)
-  // stored in this formatter.
-  template <typename FormatContext>
-  auto format(const std::vector<sam::Submission>& subs, FormatContext& ctx) {
-    // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
-    // ctx.out() is an output iterator to write to.
-    ctx.out() = format_to(ctx.out(), "\n\t\t");
-    return format_to(ctx.out(),
-                     "{}",
-                     join(subs.begin(), subs.end(), "\n\t\t"));
-  }
-};
+    // Formats the point p using the parsed format specification (presentation)
+    // stored in this formatter.
+    template <typename FormatContext>
+    auto format(const sam::Submission &s, FormatContext &ctx) const {
+      return format_to(ctx.out(),
+                       "{}, {}, {}, {}, {}",
+                       s.simid, s.exprid, s.repid, s.pubid, s.dv_);
+    }
+  };
+
+  template <>
+  struct formatter<std::vector<sam::Submission>> {
+    // Presentation format: 'f' - fixed, 'e' - exponential.
+    char presentation = 'f';
+
+    // Parses format specifications of the form ['f' | 'e'].
+    constexpr auto parse(format_parse_context &ctx) { return ctx.begin(); }
+
+    // Formats the point p using the parsed format specification (presentation)
+    // stored in this formatter.
+    template <typename FormatContext>
+    auto format(const std::vector<sam::Submission> &subs, FormatContext &ctx) const {
+      ctx.out() = format_to(ctx.out(), "\n\t\t");
+      return format_to(ctx.out(),
+                       "{}",
+                       join(subs.begin(), subs.end(), "\n\t\t"));
+    }
+  };
+
+}
 
 #endif // SAMPP_SUBMISSION_H

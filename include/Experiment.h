@@ -237,9 +237,7 @@ namespace fmt {
     // Formats the point p using the parsed format specification (presentation)
     // stored in this formatter.
     template <typename FormatContext>
-    auto format(const sam::Experiment& e, FormatContext& ctx) {
-      // auto format(const point &p, FormatContext &ctx) -> decltype(ctx.out()) // c++11
-      // ctx.out() is an output iterator to write to.
+    auto format(const sam::Experiment& e, FormatContext& ctx) const {
       ctx.out() = format_to(ctx.out(), "\n\t\t");
       return format_to(ctx.out(),
                        "{}",
