@@ -207,7 +207,6 @@ EggersTestEstimator::ResultType
 EggersTestEstimator::EggersTest(const arma::Row<float> &yi, const arma::Row<float> &vi, float alpha) {
   
   using namespace mlpack;
-  using namespace mlpack::regression;
   
   using boost::math::students_t;
   
