@@ -16,8 +16,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-#set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-#set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release") 
     include(CheckCXXCompilerFlag)
@@ -28,16 +26,18 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 endif()
 
-# This is a hack and I need to manage it
+# This is a hack and I need to manage it, and it is only needed for Lisa
 set(CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
 
 find_package(Threads REQUIRED)
 
+find_package(PkgConfig)
+
+pkg_check_modules(MLPACK REQUIRED mlpack)
+
 find_package(Boost COMPONENTS unit_test_framework program_options filesystem REQUIRED)
 find_package(nlohmann_json 3.9 REQUIRED)
 find_package(Armadillo REQUIRED)
-find_package(mlpack)
-find_package(OpenMP)
 find_package(ensmallen)
 find_package(LAPACK)
 find_package(BLAS)
@@ -65,30 +65,28 @@ file(GLOB SOURCES "src/*.cpp")
 
 add_library(sam STATIC ${INCLUDES} ${SOURCES})
 target_link_libraries(sam baaraan
-                            ${ARMADILLO_LIBRARIES}
                             ${BOOST_LIBRARIES}
                             ${NLOHMANN_JSON_LIBRARIES}
                             ${SPDLOG_LIBRARIES}
                             ${LUA_LIBRARIES}
                             fmt::fmt
                             Threads::Threads
-                            mlpack::mlpack)
+                            )
 
 # Building the SAMrun
 if (${BUILD_SAM_EXEC})
     add_executable(SAMrun main.cpp)
-    target_link_libraries(SAMrun sam ${ARMADILLO_LIBRARIES}
-                                      ${Boost_LIBRARIES}
+    target_link_libraries(SAMrun sam ${Boost_LIBRARIES}
                                       ${NLOHMANN_JSON_LIBRARIES}
-                                      Threads::Threads
-                                      mlpack::mlpack)
+                                      Threads::Threads)
+
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sample_config_file.json
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
                                     ${BOOST_INCLUDE_DIRS}
-                                    ${ARMADILLO_INCLUDE_DIRS}
+                                    ${ARMADILLO_INCLUDE_DIR}
                                     CACHE INTERNAL "${PROJECT_NAME}: Includes Directory" FORCE)
 
 # Setup Tests
