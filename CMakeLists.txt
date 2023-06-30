@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.21)
 
 project(SAM
         LANGUAGES CXX
@@ -6,8 +6,6 @@ project(SAM
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_CAP)
 
 option(ENABLE_TESTS "Enable tests" OFF)
 option(BUILD_SAM_EXEC "Build SAMrun executable" ON)
@@ -84,7 +82,7 @@ if (${BUILD_SAM_EXEC})
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-set(${PROJECT_NAME_CAP}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
+set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/include
                                     ${BOOST_INCLUDE_DIRS}
                                     ${ARMADILLO_INCLUDE_DIR}
                                     CACHE INTERNAL "${PROJECT_NAME}: Includes Directory" FORCE)
